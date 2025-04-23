@@ -80,4 +80,4 @@ const ContactForm = () => {
   );
 };
 
-export default Pillars;
+export default ContactForm;
