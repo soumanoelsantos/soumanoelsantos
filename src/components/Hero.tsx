@@ -49,7 +49,7 @@ const Hero = () => {
           <div className="md:w-1/2 mb-8 md:mb-0">
             <div className="rounded-full overflow-hidden w-64 h-64 mx-auto border-4 border-dark-primary shadow-modern">
               <img
-                src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
+                src="/lovable-uploads/08e009e4-a00d-4283-9ede-2cc3d1b461c2.png"
                 alt="Manoel Santos"
                 className="w-full h-full object-cover"
               />

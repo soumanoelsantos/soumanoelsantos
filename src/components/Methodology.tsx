@@ -1,8 +1,7 @@
-
 const Methodology = () => {
   const areas = [
     {
-      title: "Times Especializados",
+      title: "Acompanhamento",
       items: ["Time comercial", "Time de sucesso do cliente", "Time de marketing", "Time de produto"]
     },
     {

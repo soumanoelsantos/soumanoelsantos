@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,7 +21,7 @@ const ContactForm = () => {
       <div className="container mx-auto px-4">
         <Card className="max-w-2xl mx-auto p-8 bg-dark-secondary shadow-modern border-none">
           <h2 className="text-3xl font-bold text-center mb-8 text-dark-primary">
-            Agende sua Consultoria Gratuita
+            Agendar diagnóstico gratuito
           </h2>
           <p className="text-center text-dark-text/70 mb-8">
             Análise gratuita do comercial, marketing e produto da sua empresa
@@ -71,7 +70,7 @@ const ContactForm = () => {
               size="lg"
             >
               <Calendar className="mr-2 h-5 w-5" />
-              Agendar Consultoria
+              Agendar diagnóstico gratuito
             </Button>
           </form>
         </Card>
