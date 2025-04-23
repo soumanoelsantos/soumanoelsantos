@@ -4,6 +4,7 @@ import Benefits from "@/components/Benefits";
 import Experience from "@/components/Experience";
 import Pillars from "@/components/Pillars";
 import Methodology from "@/components/Methodology";
+import Testimonials from "@/components/Testimonials";
 import ContactForm from "@/components/ContactForm";
 
 const Index = () => {
@@ -16,6 +17,7 @@ const Index = () => {
       <Benefits />
       <Experience />
       <Pillars />
+      <Testimonials />
       <Methodology />
       <ContactForm />
     </div>
