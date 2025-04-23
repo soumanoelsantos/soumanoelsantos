@@ -9,7 +9,10 @@ import ContactForm from "@/components/ContactForm";
 const Index = () => {
   return (
     <div className="min-h-screen bg-dark-background">
-      <Hero />
+      <div className="relative overflow-hidden">
+        <Hero />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.1)_0%,rgba(0,0,0,0)_70%)] pointer-events-none"></div>
+      </div>
       <Benefits />
       <Experience />
       <Pillars />

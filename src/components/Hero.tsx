@@ -1,7 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BarChart2, BriefcaseIcon, Star, Target } from "lucide-react";
+import { ArrowRight, BarChart2, BriefcaseIcon, Star, Target, CheckCircle } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -18,17 +17,31 @@ const Hero = () => {
           {/* Content Column */}
           <div className="lg:w-1/2 space-y-8">
             <div className="space-y-6 text-center lg:text-left">
-              <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                Elite Business Program
+              <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-6 py-3 text-lg">
+                Programa Exclusivo 2024
               </Badge>
               
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                Seja o próximo <span className="text-dark-primary">caso de sucesso</span>
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
+                Transforme sua <span className="text-dark-primary">empresa</span> em uma máquina de resultados
               </h1>
               
               <p className="text-xl md:text-2xl text-dark-text/80">
-                Programa exclusivo de alta performance para empresários que querem escalar seus negócios
+                Aprenda com quem já transformou mais de 180 empresas em 23 estados
               </p>
+
+              <div className="flex flex-wrap gap-4 mt-8">
+                {[
+                  "Vendas Sistematizadas",
+                  "Marketing Estratégico",
+                  "Gestão de Alta Performance",
+                  "Liderança Empresarial"
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-dark-primary/10 px-4 py-2 rounded-full">
+                    <CheckCircle className="w-5 h-5 text-dark-primary" />
+                    <span className="text-sm font-medium">{item}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
@@ -52,12 +65,12 @@ const Hero = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button 
                 size="lg"
-                className="bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-6 px-8 rounded-full shadow-gold group"
+                className="bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-xl py-8 px-10 rounded-full shadow-gold group"
                 onClick={() => window.location.href = "#contato"}
               >
-                <Target className="mr-2 h-5 w-5" />
-                Quero Participar
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                <Target className="mr-2 h-6 w-6" />
+                Quero Transformar Minha Empresa
+                <ArrowRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>
 
@@ -85,27 +98,39 @@ const Hero = () => {
           <div className="lg:w-1/2">
             <div className="relative">
               <div className="card-glow">
-                <div className="relative z-10 rounded-2xl overflow-hidden">
+                <div className="relative z-10 rounded-3xl overflow-hidden transform rotate-1 hover:rotate-0 transition-transform duration-500">
                   <img
                     src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
                     alt="Manoel Santos"
-                    className="w-full h-[600px] object-cover object-center"
+                    className="w-full h-[700px] object-cover object-center"
                   />
                   
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 </div>
               </div>
 
-              {/* Floating achievements */}
-              <div className="glass-morphism absolute -top-6 -right-6 p-4 rounded-xl shadow-gold animate-float">
-                <p className="text-sm font-semibold text-dark-primary">18+ Anos</p>
-                <p className="text-xs text-dark-text/80">de Experiência</p>
+              <div className="glass-morphism absolute -top-6 -right-6 p-6 rounded-xl shadow-gold animate-float">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-dark-primary/20 rounded-full">
+                    <Star className="w-6 h-6 text-dark-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold text-dark-primary">18+ Anos</p>
+                    <p className="text-sm text-dark-text/80">de Experiência</p>
+                  </div>
+                </div>
               </div>
               
-              <div className="glass-morphism absolute -bottom-6 -left-6 p-4 rounded-xl shadow-gold animate-float" style={{ animationDelay: '1s' }}>
-                <p className="text-sm font-semibold text-dark-primary">23 Estados</p>
-                <p className="text-xs text-dark-text/80">Alcançados</p>
+              <div className="glass-morphism absolute -bottom-6 -left-6 p-6 rounded-xl shadow-gold animate-float" style={{ animationDelay: '1s' }}>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-dark-primary/20 rounded-full">
+                    <BriefcaseIcon className="w-6 h-6 text-dark-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold text-dark-primary">23 Estados</p>
+                    <p className="text-sm text-dark-text/80">Alcançados</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
