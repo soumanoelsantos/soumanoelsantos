@@ -1,8 +1,6 @@
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { CalendarDays, ChartBar, CheckCircle } from "lucide-react";
 import Hero from "@/components/Hero";
+import Benefits from "@/components/Benefits";
 import Experience from "@/components/Experience";
 import Pillars from "@/components/Pillars";
 import Methodology from "@/components/Methodology";
@@ -10,8 +8,9 @@ import ContactForm from "@/components/ContactForm";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-dark-background">
       <Hero />
+      <Benefits />
       <Experience />
       <Pillars />
       <Methodology />
