@@ -5,6 +5,16 @@
 
 @layer base {
   body {
-    @apply bg-dark-background text-dark-text;
+    @apply bg-dark-background text-dark-text antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-morphism {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-br from-dark-primary via-dark-primary/90 to-dark-primary/70 bg-clip-text text-transparent;
   }
 }
