@@ -1,3 +1,4 @@
+
 const Methodology = () => {
   const areas = [
     {
