@@ -20,19 +20,19 @@ const Methodology = () => {
   ];
 
   return (
-    <div className="py-20 bg-gray-50">
+    <div className="py-20 bg-dark-background">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-[#1A365D]">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-dark-primary">
           Metodologia
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {areas.map((area) => (
-            <div key={area.title} className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-xl font-bold mb-4 text-[#1A365D]">{area.title}</h3>
+            <div key={area.title} className="bg-dark-secondary rounded-lg shadow-modern p-6">
+              <h3 className="text-xl font-bold mb-4 text-dark-primary">{area.title}</h3>
               <ul className="space-y-2">
                 {area.items.map((item) => (
-                  <li key={item} className="text-gray-600 flex items-center">
-                    <span className="w-2 h-2 bg-[#C4A14D] rounded-full mr-2"></span>
+                  <li key={item} className="text-dark-text/70 flex items-center">
+                    <span className="w-2 h-2 bg-dark-primary rounded-full mr-2"></span>
                     {item}
                   </li>
                 ))}

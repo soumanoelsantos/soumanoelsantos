@@ -18,13 +18,13 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="py-20" id="contato">
+    <div className="py-20 bg-dark-background" id="contato">
       <div className="container mx-auto px-4">
-        <Card className="max-w-2xl mx-auto p-8">
-          <h2 className="text-3xl font-bold text-center mb-8 text-[#1A365D]">
+        <Card className="max-w-2xl mx-auto p-8 bg-dark-secondary shadow-modern border-none">
+          <h2 className="text-3xl font-bold text-center mb-8 text-dark-primary">
             Agende sua Consultoria Gratuita
           </h2>
-          <p className="text-center text-gray-600 mb-8">
+          <p className="text-center text-dark-text/70 mb-8">
             Análise gratuita do comercial, marketing e produto da sua empresa
           </p>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -34,6 +34,7 @@ const ContactForm = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                className="bg-dark-accent text-dark-text border-none focus:ring-2 focus:ring-dark-primary"
               />
             </div>
             <div>
@@ -43,6 +44,7 @@ const ContactForm = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="bg-dark-accent text-dark-text border-none focus:ring-2 focus:ring-dark-primary"
               />
             </div>
             <div>
@@ -51,6 +53,7 @@ const ContactForm = () => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
+                className="bg-dark-accent text-dark-text border-none focus:ring-2 focus:ring-dark-primary"
               />
             </div>
             <div>
@@ -59,11 +62,12 @@ const ContactForm = () => {
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 required
+                className="bg-dark-accent text-dark-text border-none focus:ring-2 focus:ring-dark-primary"
               />
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-[#1A365D] hover:bg-[#152A4A] text-white"
+              className="w-full bg-dark-primary hover:bg-dark-primary/80 text-dark-background"
               size="lg"
             >
               <Calendar className="mr-2 h-5 w-5" />
@@ -76,4 +80,4 @@ const ContactForm = () => {
   );
 };
 
-export default ContactForm;
+export default Pillars;
