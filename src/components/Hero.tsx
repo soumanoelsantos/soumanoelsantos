@@ -38,6 +38,13 @@ const Hero = () => {
                 Mentoria de alta performance para empresários que querem vender MUITO MAIS
               </p>
 
+              {/* Bio Section - MOVED BEFORE BUSINESS CHALLENGES */}
+              <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
+                <p className="text-sm sm:text-base text-dark-text/90">
+                  Eu sou Manoel Santos, especialista em escalar negócios. Como CRO (Chief Revenue Officer), minha missão é conectar comercial, marketing e produto para transformar sua empresa em uma máquina de vendas. E tudo começa com um diagnóstico gratuito ao vivo comigo.
+                </p>
+              </div>
+
               {/* Business Challenges Section */}
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
                 <h3 className="text-lg sm:text-xl font-semibold text-dark-primary mb-4">
@@ -78,13 +85,6 @@ const Hero = () => {
                     😓 Reflexos na saúde, como estresse e vida sedentária
                   </p>
                 </div>
-              </div>
-
-              {/* Bio Section */}
-              <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
-                <p className="text-sm sm:text-base text-dark-text/90">
-                  Eu sou Manoel Santos, especialista em escalar negócios. Como CRO (Chief Revenue Officer), minha missão é conectar comercial, marketing e produto para transformar sua empresa em uma máquina de vendas. E tudo começa com um diagnóstico gratuito ao vivo comigo.
-                </p>
               </div>
 
               <Button 
