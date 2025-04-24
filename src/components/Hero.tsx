@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target } from "lucide-react";
@@ -6,6 +5,11 @@ import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target } from "l
 const Hero = () => {
   return (
     <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
+      {/* New Yellow Banner */}
+      <div className="bg-[#FEF7CD] text-black text-center py-2 text-sm font-medium">
+        Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
+      </div>
+
       {/* Background pattern and overlays */}
       <div className="absolute inset-0 bg-hero-pattern opacity-5"></div>
       <div className="absolute inset-0">
