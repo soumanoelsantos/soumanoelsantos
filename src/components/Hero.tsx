@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
@@ -39,7 +38,7 @@ const Hero = () => {
                 Mentoria de alta performance para empresários que querem vender MUITO MAIS
               </p>
 
-              {/* Bio Section - MOVED BEFORE BUSINESS CHALLENGES */}
+              {/* Bio Section */}
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
                 <p className="text-sm sm:text-base text-dark-text/90">
                   Eu sou Manoel Santos, especialista em escalar negócios. Como CRO (Chief Revenue Officer), minha missão é conectar comercial, marketing e produto para transformar sua empresa em uma máquina de vendas. E tudo começa com um diagnóstico gratuito ao vivo comigo.
@@ -52,9 +51,6 @@ const Hero = () => {
                   Isso acontece em sua empresa?
                 </h3>
                 <div className="space-y-3">
-                  <p className="text-sm sm:text-base text-dark-text/90">
-                    ❌ Multiplicidade de demandas, processos desorganizados e falta de indicadores
-                  </p>
                   <p className="text-sm sm:text-base text-dark-text/90">
                     ❌ Política do "Apaga Incêndio", negligenciando o importante por conta das urgências
                   </p>
@@ -158,4 +154,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
