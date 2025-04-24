@@ -1,10 +1,12 @@
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
 
 const Hero = () => {
   const handleScheduleClick = () => {
-    window.location.href = 'https://wa.me/31986994906';
+    const message = encodeURIComponent("Olá, Manoel! Gostaria de agendar meu diagnóstico gratuito com você!");
+    window.location.href = `https://wa.me/31986994906?text=${message}`;
   };
 
   return (
@@ -23,7 +25,6 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 relative z-10 pt-20 lg:pt-32">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
-          {/* Content Column */}
           <div className="lg:w-1/2 space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6 text-center lg:text-left">
               <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
@@ -108,27 +109,27 @@ const Hero = () => {
               <div className="grid gap-3">
                 <div className="flex items-center gap-3">
                   <GraduationCap className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">✅ Mestrando em Administração de Empresas</p>
+                  <p className="text-dark-text/90">Mestrando em Administração de Empresas</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Book className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">✅ Pós-Graduado em Marketing e Gestão Empresarial</p>
+                  <p className="text-dark-text/90">Pós-Graduado em Marketing e Gestão Empresarial</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Award className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">✅ Psicólogo com foco em comportamento organizacional</p>
+                  <p className="text-dark-text/90">Psicólogo com foco em comportamento organizacional</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <BriefcaseIcon className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">✅ 18 anos de experiência</p>
+                  <p className="text-dark-text/90">18 anos de experiência</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Target className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">✅ Mais de 180 empresas transformadas em 23 estados e 2 países</p>
+                  <p className="text-dark-text/90">Mais de 180 empresas transformadas em 23 estados e 2 países</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Award className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">✅ Mais de 1 bilhão de reais em vendas geradas</p>
+                  <p className="text-dark-text/90">Mais de 1 bilhão de reais em vendas geradas</p>
                 </div>
               </div>
             </div>
@@ -157,3 +158,4 @@ const Hero = () => {
 };
 
 export default Hero;
+

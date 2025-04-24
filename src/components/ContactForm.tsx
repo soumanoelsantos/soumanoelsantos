@@ -1,10 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 
 const ContactForm = () => {
   const handleWhatsAppClick = () => {
-    window.location.href = 'https://wa.me/31986994906';
+    const message = encodeURIComponent("Olá, Manoel! Gostaria de agendar meu diagnóstico gratuito com você!");
+    window.location.href = `https://wa.me/31986994906?text=${message}`;
   };
 
   return (
