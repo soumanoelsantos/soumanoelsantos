@@ -8,7 +8,7 @@ const Hero = () => {
     <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
       {/* Yellow Banner */}
       <div className="bg-dark-primary text-black text-center py-2 text-sm font-medium">
-        Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
+        CRO Diretor de Receita: Alinhando Marketing, Produto e Comercial como uma Engrenagem Perfeita
       </div>
 
       {/* Background pattern and overlays */}
@@ -32,7 +32,7 @@ const Hero = () => {
               </h1>
               
               <p className="text-lg md:text-xl text-dark-text/80">
-                Programa exclusivo de alta performance para empresas digitais que querem escalar seus resultados através da gestão integrada de Marketing, Comercial e Produto
+                Programa exclusivo de alta performance para empresas que querem escalar seus resultados através da gestão integrada de Marketing, Comercial e Produto
               </p>
             </div>
 
@@ -46,7 +46,11 @@ const Hero = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <Book className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Pós-Graduação em Administração de Empresas e Marketing</p>
+                  <p className="text-dark-text/90">Pós-Graduação em Administração de Empresas</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Book className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">Pós-Graduação em Marketing</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Award className="w-5 h-5 text-dark-primary" />
