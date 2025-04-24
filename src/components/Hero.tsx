@@ -23,7 +23,7 @@ const Hero = () => {
           <div className="lg:w-1/2 space-y-8">
             <div className="space-y-6 text-center lg:text-left">
               <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                Programa Exclusivo 2025
+                Programa Maximus
               </Badge>
               
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -37,7 +37,7 @@ const Hero = () => {
               <div className="glass-morphism p-6 rounded-lg space-y-4 text-left">
                 <h3 className="text-xl font-semibold text-dark-primary">Como CRO (Chief Revenue Officer), minha missão é:</h3>
                 <p className="text-base text-dark-text/90">
-                  Acompanhar e treinar seu time para garantir que você bata meta todos os meses
+                  Acompanhar e treinar seu time comercial, de marketing e produto para aumentar a receita da sua empresa
                 </p>
               </div>
             </div>
