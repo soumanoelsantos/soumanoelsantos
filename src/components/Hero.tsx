@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
@@ -8,7 +7,7 @@ const Hero = () => {
     <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
       {/* Yellow Banner */}
       <div className="bg-dark-primary text-black text-center py-2 text-sm font-medium">
-        CRO Diretor de Receita: Alinhando Marketing, Produto e Comercial como uma Engrenagem Perfeita
+        Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
       </div>
 
       {/* Background pattern and overlays */}
@@ -31,9 +30,16 @@ const Hero = () => {
                 Seja o próximo <span className="text-dark-primary">caso de sucesso</span>
               </h1>
               
-              <p className="text-lg md:text-xl text-dark-text/80">
+              <p className="text-lg md:text-xl text-dark-text/80 mb-4">
                 Programa exclusivo de alta performance para empresas que querem escalar seus resultados através da gestão integrada de Marketing, Comercial e Produto
               </p>
+
+              <div className="glass-morphism p-6 rounded-lg space-y-4 text-left">
+                <h3 className="text-xl font-semibold text-dark-primary">Como CRO (Chief Revenue Officer), minha missão é:</h3>
+                <p className="text-base text-dark-text/90">
+                  Conectar marketing, vendas e produto para acelerar o crescimento com foco em aquisição, retenção e alta performance dos times.
+                </p>
+              </div>
             </div>
 
             {/* Credentials Section */}
@@ -99,7 +105,6 @@ const Hero = () => {
                     className="w-full h-[600px] object-cover object-center"
                   />
                   
-                  {/* Overlay gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
               </div>
