@@ -39,20 +39,49 @@ const Hero = () => {
                 Mentoria de alta performance para empresários que querem vender MUITO MAIS
               </p>
 
+              {/* Business Challenges Section */}
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
                 <h3 className="text-lg sm:text-xl font-semibold text-dark-primary mb-4">
-                  Chegou a hora de destravar o verdadeiro potencial da sua empresa
+                  Isso acontece em sua empresa?
                 </h3>
                 <div className="space-y-3">
                   <p className="text-sm sm:text-base text-dark-text/90">
-                    Você sente que sua equipe comercial, de marketing ou produto não entrega o que poderia?
+                    ❌ Multiplicidade de demandas, processos desorganizados e falta de indicadores
                   </p>
                   <p className="text-sm sm:text-base text-dark-text/90">
-                    Você sabe que tem um bom produto, mas as vendas não decolam?
+                    ❌ Política do "Apaga Incêndio", negligenciando o importante por conta das urgências
+                  </p>
+                  <p className="text-sm sm:text-base text-dark-text/90">
+                    ❌ Time dependente, sem autonomia ou iniciativa
+                  </p>
+                  <p className="text-sm sm:text-base text-dark-text/90">
+                    ❌ Falta de clareza e perspectiva no processo de crescimento e escalada
                   </p>
                 </div>
               </div>
 
+              {/* Personal Challenges Section */}
+              <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
+                <h3 className="text-lg sm:text-xl font-semibold text-dark-primary mb-4">
+                  Você sofre com:
+                </h3>
+                <div className="space-y-3">
+                  <p className="text-sm sm:text-base text-dark-text/90">
+                    😓 Sobrecarga de trabalho, mais de 12 horas por dia
+                  </p>
+                  <p className="text-sm sm:text-base text-dark-text/90">
+                    😓 Dificuldade em se ausentar da empresa e tirar férias
+                  </p>
+                  <p className="text-sm sm:text-base text-dark-text/90">
+                    😓 Falta de tempo para a família, amigos e lazer
+                  </p>
+                  <p className="text-sm sm:text-base text-dark-text/90">
+                    😓 Reflexos na saúde, como estresse e vida sedentária
+                  </p>
+                </div>
+              </div>
+
+              {/* Bio Section */}
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
                 <p className="text-sm sm:text-base text-dark-text/90">
                   Eu sou Manoel Santos, especialista em escalar negócios.
@@ -131,4 +160,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
