@@ -27,7 +27,7 @@ const Hero = () => {
           <div className="lg:w-1/2 space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6 text-center lg:text-left">
               <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                🚀 Programa Maximus
+                Programa Maximus
               </Badge>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -83,9 +83,7 @@ const Hero = () => {
               {/* Bio Section */}
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
                 <p className="text-sm sm:text-base text-dark-text/90">
-                  Eu sou Manoel Santos, especialista em escalar negócios.
-                  Como CRO (Chief Revenue Officer), minha missão é conectar comercial, marketing e produto para transformar sua empresa em uma máquina de vendas.
-                  E tudo começa com um diagnóstico gratuito ao vivo comigo.
+                  Eu sou Manoel Santos, especialista em escalar negócios. Como CRO (Chief Revenue Officer), minha missão é conectar comercial, marketing e produto para transformar sua empresa em uma máquina de vendas. E tudo começa com um diagnóstico gratuito ao vivo comigo.
                 </p>
               </div>
 
@@ -100,7 +98,7 @@ const Hero = () => {
               </Button>
               
               <p className="text-sm text-dark-text/70">
-                👉 Clique acima e agende agora – As vagas são limitadas!
+                Clique acima e agende agora – As vagas são limitadas!
               </p>
             </div>
 
