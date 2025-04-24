@@ -3,10 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
 
 const Hero = () => {
+  const handleScheduleClick = () => {
+    window.open('https://calendly.com/contato-soumanoelsantos/45min', '_blank');
+  };
+
   return (
     <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
       {/* Yellow Banner */}
-      <div className="bg-dark-primary text-black text-center py-2 text-sm font-medium">
+      <div className="bg-dark-primary text-black text-center py-2 text-sm font-medium px-4">
         Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
       </div>
 
@@ -17,34 +21,44 @@ const Hero = () => {
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-dark-primary/5 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10 pt-32">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+      <div className="container mx-auto px-4 relative z-10 pt-20 lg:pt-32">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
           {/* Content Column */}
-          <div className="lg:w-1/2 space-y-8">
-            <div className="space-y-6 text-center lg:text-left">
+          <div className="lg:w-1/2 space-y-6 lg:space-y-8">
+            <div className="space-y-4 lg:space-y-6 text-center lg:text-left">
               <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
                 Programa Maximus
               </Badge>
               
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 Seja o próximo <span className="text-dark-primary">caso de sucesso</span>
               </h1>
               
-              <p className="text-lg md:text-xl text-dark-text/80 mb-4">
+              <p className="text-base sm:text-lg md:text-xl text-dark-text/80 mb-4">
                 Programa exclusivo de alta performance para empresas que querem escalar seus resultados através da gestão integrada de Marketing, Comercial e Produto
               </p>
 
-              <div className="glass-morphism p-6 rounded-lg space-y-4 text-left">
-                <h3 className="text-xl font-semibold text-dark-primary">Como CRO (Chief Revenue Officer), minha missão é:</h3>
-                <p className="text-base text-dark-text/90">
+              <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
+                <h3 className="text-lg sm:text-xl font-semibold text-dark-primary">Como CRO (Chief Revenue Officer), minha missão é:</h3>
+                <p className="text-sm sm:text-base text-dark-text/90">
                   Acompanhar e treinar seu time comercial, de marketing e produto para aumentar a receita da sua empresa
                 </p>
               </div>
+
+              <Button 
+                size="lg"
+                className="w-full sm:w-auto bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group"
+                onClick={handleScheduleClick}
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                Agendar diagnóstico gratuito
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Button>
             </div>
 
             {/* Credentials Section */}
-            <div className="glass-morphism p-8 rounded-xl space-y-4">
-              <h2 className="text-2xl font-bold text-dark-primary mb-4">Quem é Manoel Santos?</h2>
+            <div className="glass-morphism p-6 sm:p-8 rounded-xl space-y-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-dark-primary mb-4">Quem é Manoel Santos?</h2>
               <div className="grid gap-3">
                 <div className="flex items-center gap-3">
                   <GraduationCap className="w-5 h-5 text-dark-primary" />
@@ -79,18 +93,6 @@ const Hero = () => {
                   <p className="text-dark-text/90">Mais de 1 Bilhão em vendas geradas</p>
                 </div>
               </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button 
-                size="lg"
-                className="bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-6 px-8 rounded-full shadow-gold group"
-                onClick={() => window.open('https://calendly.com/contato-soumanoelsantos/45min', '_blank')}
-              >
-                <Calendar className="mr-2 h-5 w-5" />
-                Agende diagnóstico gratuito da sua empresa
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
             </div>
           </div>
 
