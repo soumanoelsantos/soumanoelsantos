@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
@@ -27,21 +28,36 @@ const Hero = () => {
           <div className="lg:w-1/2 space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6 text-center lg:text-left">
               <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                Programa Maximus
+                🚀 Programa Maximus
               </Badge>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Seja o próximo <span className="text-dark-primary">caso de sucesso</span>
+                Transforme seu negócio em uma <span className="text-dark-primary">máquina de faturamento</span>
               </h1>
               
               <p className="text-base sm:text-lg md:text-xl text-dark-text/80 mb-4">
-                Programa exclusivo de alta performance para empresas que querem escalar seus resultados através da gestão integrada de Marketing, Comercial e Produto
+                Mentoria de alta performance para empresários que querem vender MUITO MAIS
               </p>
 
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-dark-primary">Como CRO (Chief Revenue Officer), minha missão é:</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-dark-primary mb-4">
+                  Chegou a hora de destravar o verdadeiro potencial da sua empresa
+                </h3>
+                <div className="space-y-3">
+                  <p className="text-sm sm:text-base text-dark-text/90">
+                    Você sente que sua equipe comercial, de marketing ou produto não entrega o que poderia?
+                  </p>
+                  <p className="text-sm sm:text-base text-dark-text/90">
+                    Você sabe que tem um bom produto, mas as vendas não decolam?
+                  </p>
+                </div>
+              </div>
+
+              <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
                 <p className="text-sm sm:text-base text-dark-text/90">
-                  Acompanhar e treinar seu time comercial, de marketing e produto para escalar seus resultados e aumentar a receita da sua empresa
+                  Eu sou Manoel Santos, especialista em escalar negócios.
+                  Como CRO (Chief Revenue Officer), minha missão é conectar comercial, marketing e produto para transformar sua empresa em uma máquina de vendas.
+                  E tudo começa com um diagnóstico gratuito ao vivo comigo.
                 </p>
               </div>
 
@@ -54,6 +70,10 @@ const Hero = () => {
                 Agendar diagnóstico gratuito
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
+              
+              <p className="text-sm text-dark-text/70">
+                👉 Clique acima e agende agora – As vagas são limitadas!
+              </p>
             </div>
 
             {/* Credentials Section */}
@@ -62,35 +82,27 @@ const Hero = () => {
               <div className="grid gap-3">
                 <div className="flex items-center gap-3">
                   <GraduationCap className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Mestrando em Administração de Empresas</p>
+                  <p className="text-dark-text/90">✅ Mestrando em Administração de Empresas</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Book className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Pós-Graduação em Administração de Empresas</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Book className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Pós-Graduação em Marketing</p>
+                  <p className="text-dark-text/90">✅ Pós-Graduado em Marketing e Gestão Empresarial</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Award className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Extensão em Gestão de Recursos Humanos</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <GraduationCap className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Graduação em Psicologia com ênfase Organizacional</p>
+                  <p className="text-dark-text/90">✅ Psicólogo com foco em comportamento organizacional</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <BriefcaseIcon className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">18 anos de experiência em Gestão, Marketing e Vendas</p>
+                  <p className="text-dark-text/90">✅ 18 anos de experiência</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Target className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">✅ Mais de 180 empresas transformadas em 23 estados e 2 países</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Award className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Mais de 180 empresas transformadas em 23 estados e 2 países</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Award className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Mais de 1 Bilhão em vendas geradas</p>
+                  <p className="text-dark-text/90">✅ Mais de 1 bilhão de reais em vendas geradas</p>
                 </div>
               </div>
             </div>
@@ -119,3 +131,4 @@ const Hero = () => {
 };
 
 export default Hero;
+
