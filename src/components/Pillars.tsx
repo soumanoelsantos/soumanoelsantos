@@ -7,22 +7,43 @@ const Pillars = () => {
     {
       title: "Produto",
       icon: <PackageOpen className="w-6 h-6" />,
-      items: ["Churn", "NPS e Pós venda", "Esteira de produto", "Head de produto", "Farmer / CS", "Encantamento do cliente"]
+      items: [
+        "Redução de churn",
+        "Encantamento do cliente",
+        "Pós-venda que fideliza",
+        "Esteira de produto lucrativa"
+      ]
     },
     {
       title: "Marketing",
       icon: <Target className="w-6 h-6" />,
-      items: ["CAC / CPL / MQL", "Conect Rate", "Conversão da página", "Ajuste nos materiais", "Análise de ICP", "Head de Marketing"]
+      items: [
+        "Diminuição do CAC e CPL",
+        "Geração de leads qualificados",
+        "Páginas de alta conversão",
+        "Materiais irresistíveis",
+        "Análise de ICP"
+      ]
     },
     {
       title: "Vendas",
       icon: <BadgeDollarSign className="w-6 h-6" />,
-      items: ["Closer/SDR/BDR", "Análise de Calls e Scripts", "Acompanhamento", "Treinamentos", "Análise de performance", "Head comercial"]
+      items: [
+        "Diagnóstico dos scripts",
+        "Treinamentos de SDR, Closer e BDR",
+        "Acompanhamento de performance",
+        "Otimização da taxa de conversão"
+      ]
     },
     {
       title: "Gestão",
       icon: <LayoutDashboard className="w-6 h-6" />,
-      items: ["Processo seletivo", "Dashboard", "Feedbacks", "Pesquisa de clima", "Processos", "Cultura"]
+      items: [
+        "Processo seletivo estratégico",
+        "Cultura de performance",
+        "Dashboard de gestão",
+        "Feedbacks e pesquisa de clima"
+      ]
     }
   ];
 
