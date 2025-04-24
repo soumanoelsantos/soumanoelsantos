@@ -41,7 +41,7 @@ const Hero = () => {
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
                 <h3 className="text-lg sm:text-xl font-semibold text-dark-primary">Como CRO (Chief Revenue Officer), minha missão é:</h3>
                 <p className="text-sm sm:text-base text-dark-text/90">
-                  Acompanhar e treinar seu time comercial, de marketing e produto para aumentar a receita da sua empresa
+                  Acompanhar e treinar seu time comercial, de marketing e produto para escalar seus resultados e aumentar a receita da sua empresa
                 </p>
               </div>
 
