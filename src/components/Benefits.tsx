@@ -1,11 +1,10 @@
-
 import { CheckCircle } from "lucide-react";
 
 const Benefits = () => {
   const benefits = [
     {
       title: "Resultados Comprovados",
-      description: "Média de crescimento de 300% em faturamento dos nossos alunos"
+      description: "Média de crescimento de 300% em faturamento nas empresas acompanhadas"
     },
     {
       title: "Mentoria Personalizada",
