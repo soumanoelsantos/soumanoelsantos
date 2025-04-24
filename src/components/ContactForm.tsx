@@ -3,9 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 
 const ContactForm = () => {
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/31986994906', '_blank');
+  };
+
   return (
     <div className="relative py-32 bg-gradient-to-b from-dark-background to-black" id="contato">
-      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-80 h-80 bg-dark-primary/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-dark-primary/5 rounded-full blur-3xl"></div>
@@ -19,22 +22,24 @@ const ContactForm = () => {
           </h2>
           <div className="w-16 h-1 bg-dark-primary mx-auto"></div>
           <p className="text-dark-text/70 mt-6 text-lg">
-            Análise gratuita do comercial, marketing e produto da sua empresa
+            Análise estratégica especializada do comercial, marketing e produto da sua empresa
           </p>
         </div>
         
         <div className="max-w-md mx-auto text-center">
           <Button 
             size="lg"
-            className="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-7 rounded-full shadow-gold"
-            onClick={() => window.open('https://calendly.com/contato-soumanoelsantos/45min', '_blank')}
+            className="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-7 rounded-full shadow-gold transform hover:scale-105 transition-all duration-300"
+            onClick={handleWhatsAppClick}
           >
             <Calendar className="mr-2 h-6 w-6" />
             Agendar diagnóstico gratuito
           </Button>
           
-          <div className="text-center mt-12 text-dark-text/60 text-sm">
-            <p>Seu investimento: GRATUITO • Valor aproximado deste diagnóstico: R$ 2.500,00</p>
+          <div className="mt-8 space-y-4 text-dark-text/60">
+            <p className="text-lg font-medium">Seu investimento: GRATUITO</p>
+            <p className="text-dark-primary">Valor aproximado deste diagnóstico: R$ 2.500,00</p>
+            <p className="text-sm">Vagas limitadas - Garanta sua análise estratégica agora</p>
           </div>
         </div>
       </div>

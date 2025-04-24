@@ -49,7 +49,6 @@ const Pillars = () => {
 
   return (
     <div className="py-32 bg-gradient-to-b from-[#252525] to-dark-secondary relative overflow-hidden">
-      {/* Elementos decorativos */}
       <div className="absolute inset-0 bg-hero-pattern opacity-3"></div>
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 w-80 h-80 bg-dark-primary/5 rounded-full blur-3xl"></div>
@@ -62,24 +61,27 @@ const Pillars = () => {
           <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6 font-serif text-dark-text">
             Pilares do Programa
           </h2>
-          <div className="w-16 h-1 bg-dark-primary mx-auto"></div>
+          <p className="text-lg text-dark-text/80 mt-4">
+            Transforme sua empresa com nossa metodologia comprovada
+          </p>
+          <div className="w-16 h-1 bg-dark-primary mx-auto mt-6"></div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {pillars.map((pillar, index) => (
-            <div key={pillar.title} className="card-glow">
-              <div className="glass-morphism rounded-xl p-8 relative z-10 h-full">
+            <div key={pillar.title} className="card-glow transform hover:-translate-y-2 transition-all duration-300">
+              <div className="glass-morphism rounded-xl p-8 relative z-10 h-full border border-white/10">
                 <div className="flex items-center mb-6">
                   <div className="w-12 h-12 rounded-full bg-dark-primary/20 flex items-center justify-center mr-4">
                     <span className="text-dark-primary">{pillar.icon}</span>
                   </div>
                   <h3 className="text-2xl font-bold text-dark-primary">{pillar.title}</h3>
                 </div>
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {pillar.items.map((item) => (
-                    <li key={item} className="text-dark-text/80 flex items-center">
-                      <span className="w-1.5 h-1.5 bg-dark-primary rounded-full mr-2.5"></span>
-                      {item}
+                    <li key={item} className="text-dark-text/80 flex items-center group">
+                      <span className="w-1.5 h-1.5 bg-dark-primary rounded-full mr-2.5 group-hover:scale-150 transition-transform"></span>
+                      <span className="group-hover:text-dark-primary transition-colors">{item}</span>
                     </li>
                   ))}
                 </ul>
