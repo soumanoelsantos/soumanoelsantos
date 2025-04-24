@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
@@ -38,7 +37,7 @@ const Hero = () => {
               <div className="glass-morphism p-6 rounded-lg space-y-4 text-left">
                 <h3 className="text-xl font-semibold text-dark-primary">Como CRO (Chief Revenue Officer), minha missão é:</h3>
                 <p className="text-base text-dark-text/90">
-                  Conectar, acompanhar de perto e desenvolver o marketing, vendas e produto para acelerar o crescimento com foco em aquisição, retenção e alta performance dos times.
+                  Acompanhar e treinar seu time para garantir que você bata meta todos os meses
                 </p>
               </div>
             </div>
