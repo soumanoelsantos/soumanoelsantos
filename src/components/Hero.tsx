@@ -1,12 +1,17 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Target, BriefcaseIcon, ChartLine, ShoppingCart, LayoutGrid } from "lucide-react";
+import { ArrowRight, BarChart2, BriefcaseIcon, Star, Target } from "lucide-react";
 
 const Hero = () => {
   return (
-    <div className="relative min-h-screen bg-gradient-radial text-dark-text">
+    <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
+      {/* Background pattern and overlays */}
       <div className="absolute inset-0 bg-hero-pattern opacity-5"></div>
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-dark-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-dark-primary/5 rounded-full blur-3xl"></div>
+      </div>
 
       <div className="container mx-auto px-4 relative z-10 pt-32">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
@@ -14,35 +19,33 @@ const Hero = () => {
           <div className="lg:w-1/2 space-y-8">
             <div className="space-y-6 text-center lg:text-left">
               <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                Programa Exclusivo 2025
+                Elite Business Program
               </Badge>
               
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                Transforme sua <span className="text-dark-primary">empresa digital</span> em uma máquina de resultados
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                Seja o próximo <span className="text-dark-primary">caso de sucesso</span>
               </h1>
               
-              <p className="text-lg md:text-xl text-dark-text/80 max-w-2xl">
-                Como seu CRO (Chief Revenue Officer), vou integrar e otimizar seus setores de Marketing, Comercial e Produto para maximizar sua receita.
+              <p className="text-xl md:text-2xl text-dark-text/80">
+                Programa exclusivo de alta performance para empresários que querem escalar seus negócios
               </p>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
-                <div className="glass-morphism p-4 rounded-xl text-center hover-scale">
-                  <ShoppingCart className="w-8 h-8 text-dark-primary mx-auto mb-2" />
-                  <h3 className="font-semibold">Marketing Digital</h3>
-                  <p className="text-sm text-dark-text/70">Estratégias comprovadas de aquisição</p>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="glass-morphism p-6 rounded-xl text-center hover-scale">
+                <div className="bg-dark-primary/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star className="w-6 h-6 text-dark-primary" />
                 </div>
-                
-                <div className="glass-morphism p-4 rounded-xl text-center hover-scale">
-                  <ChartLine className="w-8 h-8 text-dark-primary mx-auto mb-2" />
-                  <h3 className="font-semibold">Gestão Comercial</h3>
-                  <p className="text-sm text-dark-text/70">Processos de vendas otimizados</p>
+                <p className="text-sm text-dark-text/70">Taxa de Sucesso</p>
+                <p className="text-2xl font-bold text-dark-primary">97%</p>
+              </div>
+              
+              <div className="glass-morphism p-6 rounded-xl text-center hover-scale">
+                <div className="bg-dark-primary/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BarChart2 className="w-6 h-6 text-dark-primary" />
                 </div>
-                
-                <div className="glass-morphism p-4 rounded-xl text-center hover-scale">
-                  <LayoutGrid className="w-8 h-8 text-dark-primary mx-auto mb-2" />
-                  <h3 className="font-semibold">Gestão de Produto</h3>
-                  <p className="text-sm text-dark-text/70">Desenvolvimento focado em resultados</p>
-                </div>
+                <p className="text-sm text-dark-text/70">Empresas Impactadas</p>
+                <p className="text-2xl font-bold text-dark-primary">180+</p>
               </div>
             </div>
 
@@ -53,19 +56,26 @@ const Hero = () => {
                 onClick={() => window.location.href = "#contato"}
               >
                 <Target className="mr-2 h-5 w-5" />
-                Quero Maximizar Minha Receita
+                Quero Participar
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>
 
             <div className="glass-morphism p-6 rounded-xl">
               <div className="flex items-center gap-4">
-                <div className="flex-shrink-0">
-                  <BriefcaseIcon className="w-12 h-12 text-dark-primary" />
+                <div className="flex -space-x-4">
+                  {[1,2,3].map((i) => (
+                    <div key={i} className="w-12 h-12 rounded-full border-2 border-dark-primary bg-dark-accent overflow-hidden">
+                      <img 
+                        src={`/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png`}
+                        alt={`Empresário ${i}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-xl mb-1">Seu CRO Dedicado</h4>
-                  <p className="text-dark-text/90 text-sm">Vou integrar e otimizar todos os setores da sua empresa, garantindo que cada engrenagem funcione em perfeita harmonia para maximizar seus resultados.</p>
+                  <p className="text-dark-text/90 text-sm">Junte-se a + de <span className="text-dark-primary font-semibold">180 empresários</span> que já transformaram seus negócios</p>
                 </div>
               </div>
             </div>
@@ -75,24 +85,27 @@ const Hero = () => {
           <div className="lg:w-1/2">
             <div className="relative">
               <div className="card-glow">
-                <div className="relative z-10 rounded-3xl overflow-hidden">
+                <div className="relative z-10 rounded-2xl overflow-hidden">
                   <img
                     src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
                     alt="Manoel Santos"
-                    className="w-full h-[700px] object-cover object-center"
+                    className="w-full h-[600px] object-cover object-center"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
               </div>
 
-              <div className="glass-morphism absolute -top-6 -right-6 p-6 rounded-xl shadow-gold">
-                <div className="flex items-center gap-3">
-                  <BriefcaseIcon className="w-6 h-6 text-dark-primary" />
-                  <div>
-                    <p className="text-xl font-bold text-dark-primary">CRO</p>
-                    <p className="text-sm text-dark-text/80">Diretor de Receita</p>
-                  </div>
-                </div>
+              {/* Floating achievements */}
+              <div className="glass-morphism absolute -top-6 -right-6 p-4 rounded-xl shadow-gold animate-float">
+                <p className="text-sm font-semibold text-dark-primary">18+ Anos</p>
+                <p className="text-xs text-dark-text/80">de Experiência</p>
+              </div>
+              
+              <div className="glass-morphism absolute -bottom-6 -left-6 p-4 rounded-xl shadow-gold animate-float" style={{ animationDelay: '1s' }}>
+                <p className="text-sm font-semibold text-dark-primary">23 Estados</p>
+                <p className="text-xs text-dark-text/80">Alcançados</p>
               </div>
             </div>
           </div>
