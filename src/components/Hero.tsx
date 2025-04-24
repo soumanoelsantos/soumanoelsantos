@@ -1,12 +1,13 @@
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target } from "lucide-react";
+import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
 
 const Hero = () => {
   return (
     <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
-      {/* New Yellow Banner */}
-      <div className="bg-[#FEF7CD] text-black text-center py-2 text-sm font-medium">
+      {/* Yellow Banner */}
+      <div className="bg-dark-primary text-black text-center py-2 text-sm font-medium">
         Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
       </div>
 
@@ -74,10 +75,10 @@ const Hero = () => {
               <Button 
                 size="lg"
                 className="bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-6 px-8 rounded-full shadow-gold group"
-                onClick={() => window.location.href = "#contato"}
+                onClick={() => window.open('https://calendly.com/contato-soumanoelsantos/45min', '_blank')}
               >
-                <Target className="mr-2 h-5 w-5" />
-                Quero Participar
+                <Calendar className="mr-2 h-5 w-5" />
+                Agende diagnóstico gratuito da sua empresa
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>
