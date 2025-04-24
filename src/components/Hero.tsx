@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BarChart2, BriefcaseIcon, Star, Target } from "lucide-react";
+import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -19,33 +19,50 @@ const Hero = () => {
           <div className="lg:w-1/2 space-y-8">
             <div className="space-y-6 text-center lg:text-left">
               <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                Elite Business Program
+                Programa Exclusivo 2025
               </Badge>
               
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 Seja o próximo <span className="text-dark-primary">caso de sucesso</span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-dark-text/80">
-                Programa exclusivo de alta performance para empresários que querem escalar seus negócios
+              <p className="text-lg md:text-xl text-dark-text/80">
+                Programa exclusivo de alta performance para empresas digitais que querem escalar seus resultados através da gestão integrada de Marketing, Comercial e Produto
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
-              <div className="glass-morphism p-6 rounded-xl text-center hover-scale">
-                <div className="bg-dark-primary/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="w-6 h-6 text-dark-primary" />
+            {/* Credentials Section */}
+            <div className="glass-morphism p-8 rounded-xl space-y-4">
+              <h2 className="text-2xl font-bold text-dark-primary mb-4">Quem é Manoel Santos?</h2>
+              <div className="grid gap-3">
+                <div className="flex items-center gap-3">
+                  <GraduationCap className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">Mestrando em Administração de Empresas</p>
                 </div>
-                <p className="text-sm text-dark-text/70">Taxa de Sucesso</p>
-                <p className="text-2xl font-bold text-dark-primary">97%</p>
-              </div>
-              
-              <div className="glass-morphism p-6 rounded-xl text-center hover-scale">
-                <div className="bg-dark-primary/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BarChart2 className="w-6 h-6 text-dark-primary" />
+                <div className="flex items-center gap-3">
+                  <Book className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">Pós-Graduação em Administração de Empresas e Marketing</p>
                 </div>
-                <p className="text-sm text-dark-text/70">Empresas Impactadas</p>
-                <p className="text-2xl font-bold text-dark-primary">180+</p>
+                <div className="flex items-center gap-3">
+                  <Award className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">Extensão em Gestão de Recursos Humanos</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <GraduationCap className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">Graduação em Psicologia com ênfase Organizacional</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <BriefcaseIcon className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">18 anos de experiência em Gestão, Marketing e Vendas</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Award className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">Mais de 180 empresas transformadas em 23 estados e 2 países</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Award className="w-5 h-5 text-dark-primary" />
+                  <p className="text-dark-text/90">Mais de 1 Bilhão em vendas geradas</p>
+                </div>
               </div>
             </div>
 
@@ -59,25 +76,6 @@ const Hero = () => {
                 Quero Participar
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
-            </div>
-
-            <div className="glass-morphism p-6 rounded-xl">
-              <div className="flex items-center gap-4">
-                <div className="flex -space-x-4">
-                  {[1,2,3].map((i) => (
-                    <div key={i} className="w-12 h-12 rounded-full border-2 border-dark-primary bg-dark-accent overflow-hidden">
-                      <img 
-                        src={`/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png`}
-                        alt={`Empresário ${i}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className="flex-1">
-                  <p className="text-dark-text/90 text-sm">Junte-se a + de <span className="text-dark-primary font-semibold">180 empresários</span> que já transformaram seus negócios</p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -95,17 +93,6 @@ const Hero = () => {
                   {/* Overlay gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
-              </div>
-
-              {/* Floating achievements */}
-              <div className="glass-morphism absolute -top-6 -right-6 p-4 rounded-xl shadow-gold animate-float">
-                <p className="text-sm font-semibold text-dark-primary">18+ Anos</p>
-                <p className="text-xs text-dark-text/80">de Experiência</p>
-              </div>
-              
-              <div className="glass-morphism absolute -bottom-6 -left-6 p-4 rounded-xl shadow-gold animate-float" style={{ animationDelay: '1s' }}>
-                <p className="text-sm font-semibold text-dark-primary">23 Estados</p>
-                <p className="text-xs text-dark-text/80">Alcançados</p>
               </div>
             </div>
           </div>
