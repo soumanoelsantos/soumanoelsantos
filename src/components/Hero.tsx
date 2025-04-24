@@ -1,11 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
 
 const Hero = () => {
   const handleScheduleClick = () => {
-    window.open('https://calendly.com/contato-soumanoelsantos/45min', '_blank');
+    window.location.href = 'https://wa.me/31986994906';
   };
 
   return (

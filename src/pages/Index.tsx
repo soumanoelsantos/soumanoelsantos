@@ -10,7 +10,7 @@ import { Calendar, ArrowRight } from "lucide-react";
 
 const Index = () => {
   const handleScheduleClick = () => {
-    window.open('https://wa.me/31986994906', '_blank');
+    window.location.href = 'https://wa.me/31986994906';
   };
 
   return (

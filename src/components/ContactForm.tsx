@@ -4,7 +4,7 @@ import { Calendar } from "lucide-react";
 
 const ContactForm = () => {
   const handleWhatsAppClick = () => {
-    window.open('https://wa.me/31986994906', '_blank');
+    window.location.href = 'https://wa.me/31986994906';
   };
 
   return (
