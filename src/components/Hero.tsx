@@ -1,3 +1,5 @@
+
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
@@ -35,7 +37,7 @@ const Hero = () => {
               </h1>
               
               <p className="text-base sm:text-lg md:text-xl text-dark-text/80 mb-4">
-                Mentoria de alta performance para empresários que querem vender MUITO MAIS
+                Em 45 minutos farei um DIAGNÓSTICO gratuito do seu negócio e você sairá com um plano de ação pronto para DOBRAR seu faturamento
               </p>
 
               {/* Bio Section */}
