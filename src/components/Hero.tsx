@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +55,7 @@ const Hero = () => {
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
               
-              <p className="text-sm text-dark-text/70 mt-2">
+              <p className="text-sm text-dark-text/70 -mt-2">
                 Clique acima e agende agora – As vagas são limitadas!
               </p>
             </div>
