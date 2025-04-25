@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BriefcaseIcon, GraduationCap, Book, Award, Target, Calendar } from "lucide-react";
+import { ArrowRight, Calendar } from "lucide-react";
 
 const Hero = () => {
   const handleScheduleClick = () => {
@@ -60,37 +60,6 @@ const Hero = () => {
               <p className="text-sm text-dark-text/70">
                 Clique acima e agende agora – As vagas são limitadas!
               </p>
-
-              {/* Credentials Section */}
-              <div className="glass-morphism p-6 sm:p-8 rounded-xl space-y-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-dark-primary mb-4">Quem é Manoel Santos?</h2>
-                <div className="grid gap-3">
-                  <div className="flex items-center gap-3">
-                    <GraduationCap className="w-5 h-5 text-dark-primary" />
-                    <p className="text-dark-text/90">Mestrando em Administração de Empresas</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Book className="w-5 h-5 text-dark-primary" />
-                    <p className="text-dark-text/90">Pós-Graduado em Marketing e Gestão Empresarial</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Award className="w-5 h-5 text-dark-primary" />
-                    <p className="text-dark-text/90">Psicólogo com foco em comportamento organizacional</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <BriefcaseIcon className="w-5 h-5 text-dark-primary" />
-                    <p className="text-dark-text/90">18 anos de experiência</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Target className="w-5 h-5 text-dark-primary" />
-                    <p className="text-dark-text/90">Mais de 180 empresas transformadas em 23 estados e 2 países</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Award className="w-5 h-5 text-dark-primary" />
-                    <p className="text-dark-text/90">Mais de 1 bilhão de reais em vendas geradas</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
