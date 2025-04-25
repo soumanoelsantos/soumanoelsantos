@@ -47,45 +47,6 @@ const Hero = () => {
                 </p>
               </div>
 
-              {/* Business Challenges Section */}
-              <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-dark-primary mb-4">
-                  Isso acontece em sua empresa?
-                </h3>
-                <div className="space-y-3">
-                  <p className="text-sm sm:text-base text-dark-text/90">
-                    ❌ Política do "Apaga Incêndio", negligenciando o importante por conta das urgências
-                  </p>
-                  <p className="text-sm sm:text-base text-dark-text/90">
-                    ❌ Time dependente, sem autonomia ou iniciativa
-                  </p>
-                  <p className="text-sm sm:text-base text-dark-text/90">
-                    ❌ Falta de clareza e perspectiva no processo de crescimento e escalada
-                  </p>
-                </div>
-              </div>
-
-              {/* Personal Challenges Section */}
-              <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-dark-primary mb-4">
-                  Você sofre com:
-                </h3>
-                <div className="space-y-3">
-                  <p className="text-sm sm:text-base text-dark-text/90">
-                    😓 Sobrecarga de trabalho, mais de 12 horas por dia
-                  </p>
-                  <p className="text-sm sm:text-base text-dark-text/90">
-                    😓 Dificuldade em se ausentar da empresa e tirar férias
-                  </p>
-                  <p className="text-sm sm:text-base text-dark-text/90">
-                    😓 Falta de tempo para a família, amigos e lazer
-                  </p>
-                  <p className="text-sm sm:text-base text-dark-text/90">
-                    😓 Reflexos na saúde, como estresse e vida sedentária
-                  </p>
-                </div>
-              </div>
-
               <Button 
                 size="lg"
                 className="w-full sm:w-auto bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group"
@@ -99,35 +60,35 @@ const Hero = () => {
               <p className="text-sm text-dark-text/70">
                 Clique acima e agende agora – As vagas são limitadas!
               </p>
-            </div>
 
-            {/* Credentials Section */}
-            <div className="glass-morphism p-6 sm:p-8 rounded-xl space-y-4">
-              <h2 className="text-xl sm:text-2xl font-bold text-dark-primary mb-4">Quem é Manoel Santos?</h2>
-              <div className="grid gap-3">
-                <div className="flex items-center gap-3">
-                  <GraduationCap className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Mestrando em Administração de Empresas</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Book className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Pós-Graduado em Marketing e Gestão Empresarial</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Award className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Psicólogo com foco em comportamento organizacional</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <BriefcaseIcon className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">18 anos de experiência</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Target className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Mais de 180 empresas transformadas em 23 estados e 2 países</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Award className="w-5 h-5 text-dark-primary" />
-                  <p className="text-dark-text/90">Mais de 1 bilhão de reais em vendas geradas</p>
+              {/* Credentials Section */}
+              <div className="glass-morphism p-6 sm:p-8 rounded-xl space-y-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-dark-primary mb-4">Quem é Manoel Santos?</h2>
+                <div className="grid gap-3">
+                  <div className="flex items-center gap-3">
+                    <GraduationCap className="w-5 h-5 text-dark-primary" />
+                    <p className="text-dark-text/90">Mestrando em Administração de Empresas</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Book className="w-5 h-5 text-dark-primary" />
+                    <p className="text-dark-text/90">Pós-Graduado em Marketing e Gestão Empresarial</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Award className="w-5 h-5 text-dark-primary" />
+                    <p className="text-dark-text/90">Psicólogo com foco em comportamento organizacional</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <BriefcaseIcon className="w-5 h-5 text-dark-primary" />
+                    <p className="text-dark-text/90">18 anos de experiência</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Target className="w-5 h-5 text-dark-primary" />
+                    <p className="text-dark-text/90">Mais de 180 empresas transformadas em 23 estados e 2 países</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Award className="w-5 h-5 text-dark-primary" />
+                    <p className="text-dark-text/90">Mais de 1 bilhão de reais em vendas geradas</p>
+                  </div>
                 </div>
               </div>
             </div>
