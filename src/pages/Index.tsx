@@ -1,7 +1,5 @@
 
 import Hero from "@/components/Hero";
-import Benefits from "@/components/Benefits";
-import Experience from "@/components/Experience";
 import ContactForm from "@/components/ContactForm";
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight } from "lucide-react";
@@ -15,7 +13,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-dark-background">
       <Hero />
-      <Benefits />
       <div className="container mx-auto px-4 py-12 text-center">
         <Button 
           size="lg"
@@ -27,7 +24,6 @@ const Index = () => {
           <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
         </Button>
       </div>
-      <Experience />
       <ContactForm />
     </div>
   );
