@@ -31,7 +31,7 @@ const Hero = () => {
               </Badge>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Transforme seu negócio em uma <span className="text-dark-primary">máquina de vendas</span>
+                Transforme sua empresa em uma <span className="text-dark-primary">máquina de vendas</span>
               </h1>
               
               <p className="text-base sm:text-lg md:text-xl text-dark-text/80 mb-4">
