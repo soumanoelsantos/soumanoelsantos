@@ -45,7 +45,7 @@ const Hero = () => {
                   <br />
                   • Sobrecarga de trabalho, mais de 12 horas por dia;
                   <br />
-                  • Dificuldade em se ausentar da empresa e tirar férias;
+                  • Dificuldade em tirar férias;
                   <br />
                   • Falta de tempo para a família, amigos e lazer;
                   <br />
