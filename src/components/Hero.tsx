@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +36,7 @@ const Hero = () => {
               </h1>
               
               <p className="text-base sm:text-lg md:text-xl text-dark-text/80 mb-4">
-                Em 45 minutos farei um DIAGNÓSTICO gratuito do seu negócio e você sairá com um plano de ação pronto para DOBRAR seu faturamento
+                Serei seu CRO por 45 minutos e farei um DIAGNÓSTICO gratuito do seu negócio e você sairá com um plano de ação pronto para DOBRAR seu faturamento em 90 dias.
               </p>
 
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
@@ -95,4 +94,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
