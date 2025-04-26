@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,12 +11,10 @@ const Hero = () => {
 
   return (
     <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
-      {/* Yellow Banner */}
       <div className="bg-dark-primary text-black text-center py-2 text-sm font-medium px-4">
         Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
       </div>
 
-      {/* Background pattern and overlays */}
       <div className="absolute inset-0 bg-hero-pattern opacity-5"></div>
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-dark-primary/10 rounded-full blur-3xl"></div>
@@ -44,13 +41,7 @@ const Hero = () => {
                 <p className="text-sm sm:text-base text-dark-text/90">
                   <strong>Se você está com dificuldade de escalar as vendas:</strong>
                   <br />
-                  • Sobrecarga de trabalho, mais de 12 horas por dia;
-                  <br />
-                  • Dificuldade em tirar férias;
-                  <br />
-                  • Falta de tempo para a família, amigos e lazer;
-                  <br />
-                  • Reflexos na saúde, como estresse e vida sedentária.
+                  você precisa de um plano de ação prática para garantir que o seu marketing traga o lead certo, seu comercial converta e seu time de sucesso do cliente fidelize
                 </p>
                 <p className="mt-4 text-dark-primary font-semibold">
                   Clique no botão abaixo
