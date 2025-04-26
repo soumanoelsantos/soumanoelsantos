@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +33,7 @@ const Hero = () => {
               </Badge>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Transforme seu negócio em uma <span className="text-dark-primary">máquina de faturamento</span>
+                Transforme seu negócio em uma <span className="text-dark-primary">máquina de vendas</span>
               </h1>
               
               <p className="text-base sm:text-lg md:text-xl text-dark-text/80 mb-4">
@@ -41,7 +42,18 @@ const Hero = () => {
 
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
                 <p className="text-sm sm:text-base text-dark-text/90">
-                  Eu sou Manoel Santos, especialista em escalar negócios. Como CRO (Chief Revenue Officer), minha missão é transformar sua empresa em uma máquina de vendas.
+                  Se você sofre com:
+                  <br />
+                  • Sobrecarga de trabalho, mais de 12 horas por dia;
+                  <br />
+                  • Dificuldade em se ausentar da empresa e tirar férias;
+                  <br />
+                  • Falta de tempo para a família, amigos e lazer;
+                  <br />
+                  • Reflexos na saúde, como estresse e vida sedentária.
+                </p>
+                <p className="mt-4 text-dark-primary font-semibold">
+                  Clique no botão abaixo
                 </p>
               </div>
 
@@ -83,3 +95,4 @@ const Hero = () => {
 };
 
 export default Hero;
+
