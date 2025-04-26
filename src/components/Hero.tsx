@@ -43,9 +43,6 @@ const Hero = () => {
                   <br />
                   Você precisa de um plano de ação prática para conectar marketing, vendas e produto para acelerar sua receita e garantir a alta performance do seu time.
                 </p>
-                <p className="mt-4 text-dark-primary font-semibold">
-                  Clique no botão abaixo
-                </p>
               </div>
 
               <Button 
