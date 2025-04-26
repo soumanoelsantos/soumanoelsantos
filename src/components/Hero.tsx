@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,12 +37,12 @@ const Hero = () => {
               </h1>
               
               <p className="text-base sm:text-lg md:text-xl text-dark-text/80 mb-4">
-                Serei seu CRO por 45 minutos e farei um DIAGNÓSTICO GRATUITO do seu negócio e você sairá com um plano de ação pronto para DOBRAR seu faturamento em 90 dias.
+                Serei seu CRO por 45 minutos e farei um <strong>DIAGNÓSTICO GRATUITO</strong> do seu negócio e você sairá com um plano de ação pronto para <strong>DOBRAR</strong> seu faturamento em 90 dias.
               </p>
 
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
                 <p className="text-sm sm:text-base text-dark-text/90">
-                  Se você sofre com:
+                  <strong>Se você está com dificuldade de escalar as vendas:</strong>
                   <br />
                   • Sobrecarga de trabalho, mais de 12 horas por dia;
                   <br />
