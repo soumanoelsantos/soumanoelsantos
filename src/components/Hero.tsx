@@ -41,7 +41,7 @@ const Hero = () => {
                 <p className="text-sm sm:text-base text-dark-text/90">
                   <strong>Se você está com dificuldade de escalar as vendas:</strong>
                   <br />
-                  você precisa de um plano de ação prática para garantir que o seu marketing traga o lead certo, seu comercial converta e seu time de sucesso do cliente fidelize
+                  Você precisa de um plano de ação prática para conectar marketing, vendas e produto para acelerar sua receita e garantir a alta performance do seu time.
                 </p>
                 <p className="mt-4 text-dark-primary font-semibold">
                   Clique no botão abaixo
