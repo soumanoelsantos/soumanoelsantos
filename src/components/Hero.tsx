@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,11 +39,7 @@ const Hero = () => {
               </p>
 
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
-                <p className="text-sm sm:text-base text-dark-text/90">
-                  <strong>Se você está com dificuldade de escalar as vendas:</strong>
-                  <br />
-                  Você precisa de um plano de ação prática para conectar marketing, vendas e produto para acelerar sua receita e garantir a alta performance do seu time.
-                </p>
+                {/* Text paragraph removed as requested */}
               </div>
 
               <Button 
