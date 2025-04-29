@@ -1,4 +1,3 @@
-
 import { generateEnhancedActionPlan } from './deepseekApi';
 
 interface DiagnosticResults {
@@ -9,15 +8,28 @@ interface DiagnosticResults {
 }
 
 export const generateActionPlan = async (results: DiagnosticResults, answersData?: any) => {
-  // First try to get an enhanced plan from the DeepSeek API
-  const enhancedPlan = await generateEnhancedActionPlan(results, answersData);
+  console.log("Starting action plan generation with results:", results);
+  console.log("And answers data:", answersData);
   
-  // If we got a successful response from the API, use it
-  if (enhancedPlan) {
-    return enhancedPlan;
+  // First try to get an enhanced plan from the DeepSeek API
+  try {
+    console.log("Attempting to generate enhanced action plan via DeepSeek API...");
+    const enhancedPlan = await generateEnhancedActionPlan(results, answersData);
+    
+    // If we got a successful response from the API, use it
+    if (enhancedPlan && Object.keys(enhancedPlan).length > 0) {
+      console.log("Successfully generated enhanced plan:", enhancedPlan);
+      return enhancedPlan;
+    } else {
+      console.log("DeepSeek API returned empty or invalid response, falling back to local generation");
+    }
+  } catch (error) {
+    console.error("Error with enhanced action plan generation:", error);
+    console.log("Falling back to local generation");
   }
   
   // Fallback to local generation if API fails
+  console.log("Generating fallback local action plan");
   let actionPlan: {
     [key: string]: string[];
   } = {};
@@ -102,5 +114,6 @@ export const generateActionPlan = async (results: DiagnosticResults, answersData
     ];
   }
   
+  console.log("Generated fallback action plan:", actionPlan);
   return actionPlan;
 };

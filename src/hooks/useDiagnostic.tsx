@@ -53,16 +53,31 @@ export const useDiagnostic = () => {
       const savedActionPlan = localStorage.getItem(savedActionPlanKey);
       
       if (savedResults) {
-        setResults(JSON.parse(savedResults));
-        setShowResults(true);
+        try {
+          const parsedResults = JSON.parse(savedResults);
+          setResults(parsedResults);
+          setShowResults(true);
+        } catch (error) {
+          console.error("Error parsing saved results:", error);
+        }
       }
       
       if (savedAnswers) {
-        setAnswersData(JSON.parse(savedAnswers));
+        try {
+          const parsedAnswers = JSON.parse(savedAnswers);
+          setAnswersData(parsedAnswers);
+        } catch (error) {
+          console.error("Error parsing saved answers:", error);
+        }
       }
       
       if (savedActionPlan) {
-        setActionPlan(JSON.parse(savedActionPlan));
+        try {
+          const parsedActionPlan = JSON.parse(savedActionPlan);
+          setActionPlan(parsedActionPlan);
+        } catch (error) {
+          console.error("Error parsing saved action plan:", error);
+        }
       }
     }
 
@@ -72,29 +87,46 @@ export const useDiagnostic = () => {
   // Generate action plan only when explicitly requested
   useEffect(() => {
     const generatePlan = async () => {
-      if (shouldGeneratePlan && showResults && Object.values(results).some(area => area.score > 0)) {
+      if (!shouldGeneratePlan) return;
+      
+      if (showResults && Object.values(results).some(area => area.score > 0)) {
         setIsGeneratingPlan(true);
+        
         try {
+          console.log("Generating action plan with results:", results);
+          console.log("And answers data:", answersData);
+          
           const plan = await generateActionPlan(results, answersData);
-          setActionPlan(plan);
+          console.log("Generated action plan:", plan);
           
-          // Save the action plan to localStorage
-          if (userEmail) {
-            localStorage.setItem(`action_plan_${userEmail}`, JSON.stringify(plan));
+          if (plan && Object.keys(plan).length > 0) {
+            setActionPlan(plan);
+            
+            // Save the action plan to localStorage
+            if (userEmail) {
+              localStorage.setItem(`action_plan_${userEmail}`, JSON.stringify(plan));
+            }
+            
+            toast({
+              title: "Plano de ação gerado!",
+              description: "O plano personalizado foi gerado com base nas suas respostas.",
+            });
+          } else {
+            throw new Error("Plano de ação vazio ou inválido");
           }
-          
-          // Reset the flag after plan generation
-          setShouldGeneratePlan(false);
         } catch (error) {
           console.error("Error generating action plan:", error);
           toast({
             variant: "destructive",
             title: "Erro ao gerar plano de ação",
-            description: "Ocorreu um erro ao gerar o plano de ação detalhado.",
+            description: "Ocorreu um erro ao gerar o plano de ação detalhado. Tente novamente.",
           });
         } finally {
           setIsGeneratingPlan(false);
+          setShouldGeneratePlan(false);
         }
+      } else {
+        setShouldGeneratePlan(false);
       }
     };
     
@@ -104,20 +136,29 @@ export const useDiagnostic = () => {
   // Save diagnostic results and trigger plan generation
   const handleSubmit = () => {
     if (userEmail) {
-      const resultsKey = `diagnostic_results_${userEmail}`;
-      const answersKey = `diagnostic_answers_${userEmail}`;
-      
-      localStorage.setItem(resultsKey, JSON.stringify(results));
-      localStorage.setItem(answersKey, JSON.stringify(answersData));
-      
-      setShowResults(true);
-      // Set the flag to trigger plan generation
-      setShouldGeneratePlan(true);
-      
-      toast({
-        title: "Diagnóstico salvo!",
-        description: "Os resultados foram salvos e estão disponíveis na sua conta.",
-      });
+      try {
+        const resultsKey = `diagnostic_results_${userEmail}`;
+        const answersKey = `diagnostic_answers_${userEmail}`;
+        
+        localStorage.setItem(resultsKey, JSON.stringify(results));
+        localStorage.setItem(answersKey, JSON.stringify(answersData));
+        
+        setShowResults(true);
+        // Set the flag to trigger plan generation
+        setShouldGeneratePlan(true);
+        
+        toast({
+          title: "Diagnóstico salvo!",
+          description: "Gerando seu plano de ação personalizado...",
+        });
+      } catch (error) {
+        console.error("Error saving diagnostic:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao salvar",
+          description: "Ocorreu um erro ao salvar o diagnóstico.",
+        });
+      }
     } else {
       toast({
         variant: "destructive",
@@ -125,6 +166,14 @@ export const useDiagnostic = () => {
         description: "Você precisa estar logado para salvar seu diagnóstico.",
       });
     }
+  };
+
+  const regenerateActionPlan = () => {
+    setShouldGeneratePlan(true);
+    toast({
+      title: "Regenerando plano de ação",
+      description: "Aguarde enquanto geramos um novo plano personalizado...",
+    });
   };
 
   return {
@@ -137,6 +186,7 @@ export const useDiagnostic = () => {
     answersData,
     setAnswersData,
     actionPlan,
-    handleSubmit
+    handleSubmit,
+    regenerateActionPlan
   };
 };
