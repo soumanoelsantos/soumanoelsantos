@@ -99,12 +99,11 @@ const MemberArea = () => {
             <CardHeader>
               <CardTitle className="text-xl text-dark-text">Bem-vindo ao Programa Maximus</CardTitle>
               <CardDescription className="text-dark-text/80">
-                Aqui você encontra todo o conteúdo para transformar sua empresa em uma máquina de vendas
+                {/* Removed text as requested */}
               </CardDescription>
             </CardHeader>
             <CardContent className="text-dark-text/90">
-              <p className="mb-4">Este é o início da sua jornada para dobrar o faturamento da sua empresa nos próximos 90 dias.</p>
-              <p>Explore os módulos abaixo para acessar todo o conteúdo do programa.</p>
+              {/* Removed text as requested */}
             </CardContent>
           </Card>
           
