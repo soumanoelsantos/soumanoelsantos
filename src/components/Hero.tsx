@@ -34,7 +34,7 @@ const Hero = () => {
               </div>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Transforme sua empresa em uma máquina de vendas
+                Transforme sua empresa em uma <span className="text-dark-primary">máquina de vendas</span>
               </h1>
               
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
@@ -73,6 +73,9 @@ const Hero = () => {
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
+              </div>
+              <div className="text-center mt-3">
+                <p className="font-medium text-xl text-dark-primary">Manoel Santos</p>
               </div>
             </div>
           </div>
