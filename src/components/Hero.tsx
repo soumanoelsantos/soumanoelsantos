@@ -47,7 +47,7 @@ const Hero = () => {
               
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
                 <p className="text-base sm:text-lg text-dark-text/80">
-                  Serei seu CRO por 45 minutos e farei um <strong>DIAGNÓSTICO GRATUITO</strong> do seu negócio e você sairá com um plano de ação pronto para <strong>DOBRAR</strong> seu faturamento em 90 dias.
+                  Em 45 minutos farei um plano de ação GRATUITO de vendas, marketing e gestão da sua empresa para você <strong>DOBRAR</strong> seu faturamento em 90 dias.
                 </p>
               </div>
 
