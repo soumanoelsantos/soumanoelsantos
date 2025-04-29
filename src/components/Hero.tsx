@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Calendar, Briefcase } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const handleScheduleClick = () => {
@@ -50,17 +51,30 @@ const Hero = () => {
                 </p>
               </div>
 
-              <Button 
-                size="lg"
-                className="w-full sm:w-auto bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group"
-                onClick={handleScheduleClick}
-              >
-                <Calendar className="mr-2 h-5 w-5" />
-                Agendar diagnóstico gratuito
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg"
+                  className="w-full sm:w-auto bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group"
+                  onClick={handleScheduleClick}
+                >
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Agendar diagnóstico gratuito
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Button>
+                
+                <Button 
+                  size="lg"
+                  className="w-full sm:w-auto bg-transparent hover:bg-dark-primary/10 text-dark-primary border border-dark-primary/30 text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group"
+                  asChild
+                >
+                  <Link to="/teste">
+                    Fazer diagnóstico online
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </div>
               
-              <p className="text-sm text-dark-text/70 -mt-2">
+              <p className="text-sm text-dark-text/70 mt-2">
                 Clique acima e agende agora – As vagas são limitadas!
               </p>
             </div>
