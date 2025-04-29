@@ -18,7 +18,9 @@ const AdminPage = () => {
     isLoading, 
     filteredUsers, 
     toggleModuleAccess, 
-    toggleNewUserStatus 
+    toggleNewUserStatus,
+    deleteUser,
+    editUserEmail
   } = useAdminData(userEmail);
 
   const handleLogout = () => {
@@ -27,14 +29,14 @@ const AdminPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-dark-background flex items-center justify-center">
-        <div className="text-dark-text">Carregando...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-800">Carregando...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-background flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <AdminHeader userEmail={userEmail} onLogout={handleLogout} />
 
       <div className="container mx-auto px-4 pb-8">
@@ -46,6 +48,8 @@ const AdminPage = () => {
           modules={modules}
           toggleNewUserStatus={toggleNewUserStatus}
           toggleModuleAccess={toggleModuleAccess}
+          deleteUser={deleteUser}
+          editUserEmail={editUserEmail}
         />
 
         <AdminInfoCard />

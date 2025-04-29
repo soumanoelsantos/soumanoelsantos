@@ -98,6 +98,31 @@ export function useAdminData(userEmail: string | null) {
     );
   };
 
+  const deleteUser = (email: string) => {
+    setUsers(prevUsers => prevUsers.filter(user => user.email !== email));
+    
+    toast({
+      title: "Usuário excluído",
+      description: `${email} foi removido com sucesso`,
+    });
+  };
+
+  const editUserEmail = (oldEmail: string, newEmail: string) => {
+    setUsers(prevUsers => 
+      prevUsers.map(user => {
+        if (user.email === oldEmail) {
+          toast({
+            title: "Email atualizado",
+            description: `${oldEmail} foi alterado para ${newEmail}`,
+          });
+          
+          return { ...user, email: newEmail };
+        }
+        return user;
+      })
+    );
+  };
+
   const filteredUsers = users.filter(user => 
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -110,6 +135,8 @@ export function useAdminData(userEmail: string | null) {
     isLoading,
     filteredUsers,
     toggleModuleAccess,
-    toggleNewUserStatus
+    toggleNewUserStatus,
+    deleteUser,
+    editUserEmail
   };
 }

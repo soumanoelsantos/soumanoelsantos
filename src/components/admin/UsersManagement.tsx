@@ -19,6 +19,8 @@ interface UsersManagementProps {
   modules: Module[];
   toggleNewUserStatus: (email: string) => void;
   toggleModuleAccess: (email: string, moduleId: number) => void;
+  deleteUser: (email: string) => void;
+  editUserEmail: (oldEmail: string, newEmail: string) => void;
 }
 
 const UsersManagement: React.FC<UsersManagementProps> = ({
@@ -28,13 +30,15 @@ const UsersManagement: React.FC<UsersManagementProps> = ({
   totalUsers,
   modules,
   toggleNewUserStatus,
-  toggleModuleAccess
+  toggleModuleAccess,
+  deleteUser,
+  editUserEmail
 }) => {
   return (
-    <Card className="bg-dark-background/50 border-dark-primary/20 shadow-lg mb-8">
+    <Card className="bg-white border-dark-primary/20 shadow-lg mb-8">
       <CardHeader>
-        <CardTitle className="text-xl text-dark-text">Gerencie o acesso dos usuários</CardTitle>
-        <CardDescription className="text-dark-text/80">
+        <CardTitle className="text-xl text-gray-800">Gerencie o acesso dos usuários</CardTitle>
+        <CardDescription className="text-gray-600">
           Controle quais módulos cada usuário tem acesso, e ajuste outras configurações
         </CardDescription>
       </CardHeader>
@@ -45,10 +49,12 @@ const UsersManagement: React.FC<UsersManagementProps> = ({
           modules={modules}
           toggleNewUserStatus={toggleNewUserStatus}
           toggleModuleAccess={toggleModuleAccess}
+          deleteUser={deleteUser}
+          editUserEmail={editUserEmail}
         />
       </CardContent>
       <CardFooter className="flex justify-between">
-        <p className="text-sm text-dark-text/70">
+        <p className="text-sm text-gray-600">
           Exibindo {filteredUsers.length} de {totalUsers} usuários
         </p>
       </CardFooter>
