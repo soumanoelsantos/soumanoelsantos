@@ -23,25 +23,25 @@ const DiagnosticResultsChart = ({ data }: DiagnosticResultsChartProps) => {
   const chartData = [
     {
       subject: 'PROCESSOS',
-      A: 80, // Desejado
+      A: 100, // Desejado (changed to 100%)
       B: data.processos.percentage, // Atual
       fullMark: 100,
     },
     {
       subject: 'RESULTADOS',
-      A: 100,
+      A: 100, // Desejado (changed to 100%)
       B: data.resultados.percentage,
       fullMark: 100,
     },
     {
       subject: 'SISTEMA DE GESTÃO',
-      A: 70,
+      A: 100, // Desejado (changed to 100%)
       B: data.sistemaGestao.percentage,
       fullMark: 100,
     },
     {
       subject: 'PESSOAS',
-      A: 90,
+      A: 100, // Desejado (changed to 100%)
       B: data.pessoas.percentage,
       fullMark: 100,
     },

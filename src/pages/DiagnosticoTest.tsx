@@ -114,33 +114,28 @@ const DiagnosticoTest = () => {
                       <TableHead>Dimensão</TableHead>
                       <TableHead>Atual</TableHead>
                       <TableHead>Desejado</TableHead>
-                      <TableHead>Prazo</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     <TableRow>
                       <TableCell className="font-medium">PROCESSOS</TableCell>
                       <TableCell>{results.processos.percentage}%</TableCell>
-                      <TableCell>80%</TableCell>
-                      <TableCell>31/12/2025</TableCell>
+                      <TableCell>100%</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium">RESULTADOS</TableCell>
                       <TableCell>{results.resultados.percentage}%</TableCell>
                       <TableCell>100%</TableCell>
-                      <TableCell>31/12/2025</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium">SISTEMA DE GESTÃO</TableCell>
                       <TableCell>{results.sistemaGestao.percentage}%</TableCell>
-                      <TableCell>70%</TableCell>
-                      <TableCell>31/12/2025</TableCell>
+                      <TableCell>100%</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium">PESSOAS</TableCell>
                       <TableCell>{results.pessoas.percentage}%</TableCell>
-                      <TableCell>90%</TableCell>
-                      <TableCell>31/12/2025</TableCell>
+                      <TableCell>100%</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
