@@ -50,6 +50,21 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       .pdf-export .recharts-legend-wrapper {
         bottom: -20px !important;
       }
+      .pdf-export .answers-section ul li {
+        color: #000000 !important;
+      }
+      .pdf-export .answers-section .answer-satisfactory {
+        color: #22c55e !important;
+      }
+      .pdf-export .answers-section .answer-unsatisfactory {
+        color: #eab308 !important;
+      }
+      .pdf-export .answers-section .answer-nonexistent {
+        color: #ef4444 !important;
+      }
+      .pdf-export .answers-section .question-text {
+        font-weight: 600 !important;
+      }
     `;
     document.head.appendChild(styleElement);
 
