@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ interface DiagnosticSectionProps {
     questions: string[];
     pointValue: number;
   };
+  sectionKey: string;
   results: {
     processos: { score: number; total: number; percentage: number };
     resultados: { score: number; total: number; percentage: number };
@@ -24,8 +25,8 @@ interface DiagnosticSectionProps {
   }>>;
 }
 
-const DiagnosticSection = ({ section, results, setResults }: DiagnosticSectionProps) => {
-  const [answers, setAnswers] = React.useState<{ [key: number]: string }>({});
+const DiagnosticSection = ({ section, sectionKey, results, setResults }: DiagnosticSectionProps) => {
+  const [answers, setAnswers] = useState<{ [key: number]: string }>({});
 
   const handleAnswerChange = (questionIndex: number, value: string) => {
     setAnswers((prev) => ({
@@ -33,6 +34,31 @@ const DiagnosticSection = ({ section, results, setResults }: DiagnosticSectionPr
       [questionIndex]: value,
     }));
   };
+
+  useEffect(() => {
+    // Calculate the score based on answers
+    let satisfactoryCount = 0;
+    
+    Object.values(answers).forEach(answer => {
+      if (answer === 'satisfactory') {
+        satisfactoryCount += 1;
+      }
+    });
+    
+    const score = satisfactoryCount * section.pointValue;
+    const total = section.questions.length * section.pointValue;
+    const percentage = Math.round((score / total) * 100) || 0;
+
+    // Update the results
+    setResults(prev => ({
+      ...prev,
+      [sectionKey]: {
+        score,
+        total,
+        percentage
+      }
+    }));
+  }, [answers, section.pointValue, sectionKey, setResults, section.questions.length]);
 
   return (
     <Card className="bg-dark-primary/5 border-dark-primary/20">
@@ -48,31 +74,31 @@ const DiagnosticSection = ({ section, results, setResults }: DiagnosticSectionPr
               </div>
               <div className="md:col-span-6">
                 <RadioGroup 
-                  className="flex justify-between md:justify-end gap-6"
+                  className="flex flex-col md:flex-row justify-between md:justify-end gap-4"
                   value={answers[index]}
                   onValueChange={(value) => handleAnswerChange(index, value)}
                 >
                   <div className="flex items-center space-x-2">
                     <div className={`p-2 rounded-md ${answers[index] === 'satisfactory' ? 'bg-green-600/20' : ''}`}>
-                      <RadioGroupItem value="satisfactory" id={`q${index}-satisfactory`} className="text-green-500" />
+                      <RadioGroupItem value="satisfactory" id={`${sectionKey}-q${index}-satisfactory`} className="text-green-500" />
                     </div>
-                    <Label htmlFor={`q${index}-satisfactory`} className="text-white">
+                    <Label htmlFor={`${sectionKey}-q${index}-satisfactory`} className="text-white">
                       Existe e é satisfatório
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className={`p-2 rounded-md ${answers[index] === 'unsatisfactory' ? 'bg-yellow-600/20' : ''}`}>
-                      <RadioGroupItem value="unsatisfactory" id={`q${index}-unsatisfactory`} className="text-yellow-500" />
+                      <RadioGroupItem value="unsatisfactory" id={`${sectionKey}-q${index}-unsatisfactory`} className="text-yellow-500" />
                     </div>
-                    <Label htmlFor={`q${index}-unsatisfactory`} className="text-white">
+                    <Label htmlFor={`${sectionKey}-q${index}-unsatisfactory`} className="text-white">
                       Existe, mas não é satisfatório
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className={`p-2 rounded-md ${answers[index] === 'nonexistent' ? 'bg-red-600/20' : ''}`}>
-                      <RadioGroupItem value="nonexistent" id={`q${index}-nonexistent`} className="text-red-500" />
+                      <RadioGroupItem value="nonexistent" id={`${sectionKey}-q${index}-nonexistent`} className="text-red-500" />
                     </div>
-                    <Label htmlFor={`q${index}-nonexistent`} className="text-white">
+                    <Label htmlFor={`${sectionKey}-q${index}-nonexistent`} className="text-white">
                       Não existe
                     </Label>
                   </div>

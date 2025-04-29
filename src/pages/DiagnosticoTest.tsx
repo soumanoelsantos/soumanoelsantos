@@ -1,9 +1,7 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import DiagnosticHeader from "@/components/DiagnosticHeader";
@@ -13,20 +11,12 @@ import DiagnosticResultsChart from "@/components/DiagnosticResultsChart";
 
 const DiagnosticoTest = () => {
   const { toast } = useToast();
-  const [currentSection, setCurrentSection] = useState<string>("processos");
   const [results, setResults] = useState({
-    processos: { score: 0, total: 0, percentage: 30 },
-    resultados: { score: 0, total: 0, percentage: 40 },
-    sistemaGestao: { score: 0, total: 0, percentage: 40 },
-    pessoas: { score: 0, total: 0, percentage: 40 },
+    processos: { score: 0, total: 100, percentage: 0 },
+    resultados: { score: 0, total: 100, percentage: 0 },
+    sistemaGestao: { score: 0, total: 100, percentage: 0 },
+    pessoas: { score: 0, total: 100, percentage: 0 },
   });
-
-  const handleSubmit = () => {
-    toast({
-      title: "Diagnóstico concluído!",
-      description: "Seu diagnóstico foi processado com sucesso.",
-    });
-  };
 
   const sections = {
     processos: {
@@ -85,8 +75,11 @@ const DiagnosticoTest = () => {
     }
   };
 
-  const handleSectionChange = (section: string) => {
-    setCurrentSection(section);
+  const handleSubmit = () => {
+    toast({
+      title: "Diagnóstico concluído!",
+      description: "Seu diagnóstico foi processado com sucesso.",
+    });
   };
 
   return (
@@ -96,29 +89,20 @@ const DiagnosticoTest = () => {
         
         <DiagnosticInstructions />
         
-        <div className="my-8">
-          <div className="flex flex-wrap gap-4 justify-center mb-8">
-            {Object.entries(sections).map(([key, section]) => (
-              <Button 
-                key={key} 
-                onClick={() => handleSectionChange(key)}
-                variant={currentSection === key ? "default" : "outline"}
-                className={`${currentSection === key ? 'bg-dark-primary text-black' : 'text-dark-primary'}`}
-              >
-                {section.title}
-              </Button>
-            ))}
-          </div>
-          
-          <DiagnosticSection 
-            section={sections[currentSection as keyof typeof sections]} 
-            results={results}
-            setResults={setResults}
-          />
+        <div className="space-y-8 my-8">
+          {Object.entries(sections).map(([key, section]) => (
+            <DiagnosticSection 
+              key={key}
+              section={section} 
+              results={results}
+              setResults={setResults}
+              sectionKey={key}
+            />
+          ))}
         </div>
 
         <Card className="mt-10 bg-dark-primary/5 border-dark-primary/20">
-          <CardHeader>
+          <CardHeader className="bg-[#1d365c] text-white">
             <CardTitle className="text-xl text-center">Resultados do Diagnóstico</CardTitle>
           </CardHeader>
           <CardContent>
