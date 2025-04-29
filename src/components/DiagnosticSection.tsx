@@ -23,9 +23,10 @@ interface DiagnosticSectionProps {
     sistemaGestao: { score: number; total: number; percentage: number };
     pessoas: { score: number; total: number; percentage: number };
   }>>;
+  setAnswersData?: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const DiagnosticSection = ({ section, sectionKey, results, setResults }: DiagnosticSectionProps) => {
+const DiagnosticSection = ({ section, sectionKey, results, setResults, setAnswersData }: DiagnosticSectionProps) => {
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
 
   const handleAnswerChange = (questionIndex: number, value: string) => {
@@ -72,7 +73,21 @@ const DiagnosticSection = ({ section, sectionKey, results, setResults }: Diagnos
         percentage
       }
     }));
-  }, [answers, section.pointValue, sectionKey, setResults, section.questions.length]);
+    
+    // Store answers data for the PDF
+    if (setAnswersData) {
+      setAnswersData(prev => ({
+        ...prev,
+        [sectionKey]: {
+          title: section.title,
+          answers: Object.entries(answers).map(([index, value]) => ({
+            question: section.questions[Number(index)],
+            answer: value
+          }))
+        }
+      }));
+    }
+  }, [answers, section.pointValue, sectionKey, setResults, section.questions, section.title, setAnswersData]);
 
   return (
     <Card className="bg-dark-primary/5 border-dark-primary/20">
