@@ -8,6 +8,7 @@ import DiagnosticHeader from "@/components/DiagnosticHeader";
 import DiagnosticInstructions from "@/components/DiagnosticInstructions";
 import DiagnosticSection from "@/components/DiagnosticSection";
 import DiagnosticResultsChart from "@/components/DiagnosticResultsChart";
+import WhatsAppModal from "@/components/WhatsAppModal";
 
 const DiagnosticoTest = () => {
   const { toast } = useToast();
@@ -17,6 +18,8 @@ const DiagnosticoTest = () => {
     sistemaGestao: { score: 0, total: 100, percentage: 0 },
     pessoas: { score: 0, total: 100, percentage: 0 },
   });
+  const [showResults, setShowResults] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const sections = {
     processos: {
@@ -76,9 +79,21 @@ const DiagnosticoTest = () => {
   };
 
   const handleSubmit = () => {
+    // Instead of immediately showing results, open the WhatsApp modal
+    setShowModal(true);
+  };
+
+  const handleSendResults = (whatsappNumber: string) => {
+    // Close the modal
+    setShowModal(false);
+    
+    // Show the results
+    setShowResults(true);
+    
+    // Show success toast
     toast({
-      title: "Diagnóstico concluído!",
-      description: "Seu diagnóstico foi processado com sucesso.",
+      title: "Diagnóstico enviado!",
+      description: `Os resultados foram enviados para o WhatsApp ${whatsappNumber}.`,
     });
   };
 
@@ -101,51 +116,53 @@ const DiagnosticoTest = () => {
           ))}
         </div>
 
-        <Card className="mt-10 bg-dark-primary/5 border-dark-primary/20">
-          <CardHeader className="bg-[#1d365c] text-white">
-            <CardTitle className="text-xl text-center">Resultados do Diagnóstico</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <Table className="text-white">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Dimensão</TableHead>
-                      <TableHead>Atual</TableHead>
-                      <TableHead>Desejado</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="font-medium">PROCESSOS</TableCell>
-                      <TableCell>{results.processos.percentage}%</TableCell>
-                      <TableCell>100%</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">RESULTADOS</TableCell>
-                      <TableCell>{results.resultados.percentage}%</TableCell>
-                      <TableCell>100%</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">SISTEMA DE GESTÃO</TableCell>
-                      <TableCell>{results.sistemaGestao.percentage}%</TableCell>
-                      <TableCell>100%</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">PESSOAS</TableCell>
-                      <TableCell>{results.pessoas.percentage}%</TableCell>
-                      <TableCell>100%</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
+        {showResults && (
+          <Card className="mt-10 bg-dark-primary/5 border-dark-primary/20">
+            <CardHeader className="bg-[#1d365c] text-white">
+              <CardTitle className="text-xl text-center">Resultados do Diagnóstico</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <Table className="text-white">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Dimensão</TableHead>
+                        <TableHead>Atual</TableHead>
+                        <TableHead>Desejado</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">PROCESSOS</TableCell>
+                        <TableCell>{results.processos.percentage}%</TableCell>
+                        <TableCell>100%</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">RESULTADOS</TableCell>
+                        <TableCell>{results.resultados.percentage}%</TableCell>
+                        <TableCell>100%</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">SISTEMA DE GESTÃO</TableCell>
+                        <TableCell>{results.sistemaGestao.percentage}%</TableCell>
+                        <TableCell>100%</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">PESSOAS</TableCell>
+                        <TableCell>{results.pessoas.percentage}%</TableCell>
+                        <TableCell>100%</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="flex justify-center items-center">
+                  <DiagnosticResultsChart data={results} />
+                </div>
               </div>
-              <div className="flex justify-center items-center">
-                <DiagnosticResultsChart data={results} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="flex justify-center mt-8">
           <Button 
@@ -156,6 +173,12 @@ const DiagnosticoTest = () => {
             Finalizar Diagnóstico
           </Button>
         </div>
+        
+        <WhatsAppModal 
+          isOpen={showModal} 
+          onClose={() => setShowModal(false)} 
+          onSubmit={handleSendResults} 
+        />
       </div>
     </div>
   );
