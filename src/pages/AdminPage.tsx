@@ -1,7 +1,6 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminData } from "@/hooks/useAdminData";
 import AdminHeader from "@/components/admin/AdminHeader";
@@ -10,8 +9,7 @@ import AdminInfoCard from "@/components/admin/AdminInfoCard";
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { isAuthenticated, userEmail, isAdmin } = useAuth();
+  const { userEmail } = useAuth();
   const { 
     users, 
     modules, 
@@ -22,31 +20,6 @@ const AdminPage = () => {
     toggleModuleAccess, 
     toggleNewUserStatus 
   } = useAdminData(userEmail);
-
-  useEffect(() => {
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      toast({
-        variant: "destructive",
-        title: "Acesso negado",
-        description: "Você precisa fazer login para acessar esta página",
-      });
-      // Redirect to login with the current path as the redirect target
-      navigate("/login?from=/admin");
-      return;
-    }
-
-    // Check if user is admin
-    if (!isAdmin) {
-      toast({
-        variant: "destructive",
-        title: "Acesso restrito",
-        description: "Esta página é apenas para administradores",
-      });
-      navigate("/membros");
-      return;
-    }
-  }, [isAuthenticated, isAdmin, navigate, toast]);
 
   const handleLogout = () => {
     navigate("/membros");
