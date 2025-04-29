@@ -1,0 +1,139 @@
+
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+
+// Sample program modules and content
+const programModules = [
+  {
+    id: 1,
+    title: "Módulo 1 - Diagnóstico e Estratégia",
+    description: "Entendendo seu negócio e traçando o plano de 90 dias",
+    status: "completo",
+    lessons: [
+      { id: 101, title: "Diagnóstico empresarial completo", duration: "45 min", videoUrl: "#" },
+      { id: 102, title: "Definindo metas SMART para 90 dias", duration: "32 min", videoUrl: "#" },
+      { id: 103, title: "Criando seu plano de ação", duration: "51 min", videoUrl: "#" },
+      { id: 104, title: "Workshop: Análise SWOT da sua empresa", duration: "38 min", videoUrl: "#" },
+    ]
+  },
+  {
+    id: 2,
+    title: "Módulo 2 - Sistema de Vendas",
+    description: "Implementando um funil de vendas eficiente",
+    status: "em andamento",
+    lessons: [
+      { id: 201, title: "Estruturando seu funil de vendas", duration: "47 min", videoUrl: "#" },
+      { id: 202, title: "Script de vendas de alto impacto", duration: "39 min", videoUrl: "#" },
+      { id: 203, title: "Técnicas de fechamento avançadas", duration: "43 min", videoUrl: "#" },
+      { id: 204, title: "Objeções: como transformá-las em vendas", duration: "36 min", videoUrl: "#" },
+    ]
+  },
+  {
+    id: 3,
+    title: "Módulo 3 - Marketing Digital",
+    description: "Atraindo leads qualificados para seu negócio",
+    status: "bloqueado",
+    lessons: [
+      { id: 301, title: "Estratégia de marketing de conteúdo", duration: "40 min", videoUrl: "#" },
+      { id: 302, title: "Tráfego pago: Facebook e Instagram Ads", duration: "55 min", videoUrl: "#" },
+      { id: 303, title: "Copywriting para conversão", duration: "48 min", videoUrl: "#" },
+      { id: 304, title: "Automação de marketing", duration: "41 min", videoUrl: "#" },
+    ]
+  },
+  {
+    id: 4,
+    title: "Módulo 4 - Gestão e Escalabilidade",
+    description: "Estruturando sua empresa para crescer",
+    status: "bloqueado",
+    lessons: [
+      { id: 401, title: "KPIs essenciais para seu negócio", duration: "37 min", videoUrl: "#" },
+      { id: 402, title: "Processos e operações eficientes", duration: "49 min", videoUrl: "#" },
+      { id: 403, title: "Recrutamento e gestão de equipe", duration: "44 min", videoUrl: "#" },
+      { id: 404, title: "Plano de crescimento sustentável", duration: "51 min", videoUrl: "#" },
+    ]
+  }
+];
+
+const MemberContentList = () => {
+  const [expandedModule, setExpandedModule] = useState<string>("item-1");
+
+  const getStatusBadge = (status: string) => {
+    switch(status) {
+      case "completo":
+        return <Badge className="bg-green-600">Completo</Badge>;
+      case "em andamento":
+        return <Badge className="bg-amber-500">Em andamento</Badge>;
+      case "bloqueado":
+        return <Badge className="bg-gray-500">Bloqueado</Badge>;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold text-dark-text mb-4">Módulos do programa</h2>
+      
+      <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
+        {programModules.map((module, index) => (
+          <AccordionItem 
+            key={module.id} 
+            value={`item-${module.id}`} 
+            className="border-dark-primary/20"
+          >
+            <AccordionTrigger className="text-dark-text hover:text-dark-primary">
+              <div className="flex items-center justify-between w-full pr-4">
+                <span>{module.title}</span>
+                <div className="flex-shrink-0 ml-2">
+                  {getStatusBadge(module.status)}
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <Card className="bg-transparent border-0 shadow-none">
+                <CardHeader className="pt-0 px-0">
+                  <CardDescription className="text-dark-text/80">
+                    {module.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ul className="space-y-2">
+                    {module.lessons.map((lesson) => (
+                      <li 
+                        key={lesson.id}
+                        className={`p-3 rounded-md border border-dark-primary/10 
+                        ${module.status === 'bloqueado' ? 'opacity-50' : 'bg-dark-background/30'}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="text-dark-text font-medium">{lesson.title}</h4>
+                            <span className="text-sm text-dark-text/60">Duração: {lesson.duration}</span>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant={module.status === 'bloqueado' ? "outline" : "default"}
+                            className={module.status === 'bloqueado' 
+                              ? "cursor-not-allowed border-dark-primary/20 text-dark-text/40" 
+                              : "bg-dark-primary hover:bg-dark-primary/90 text-dark-background"}
+                            disabled={module.status === 'bloqueado'}
+                          >
+                            {module.status === 'bloqueado' ? "Bloqueado" : "Assistir"}
+                          </Button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
+  );
+};
+
+export default MemberContentList;

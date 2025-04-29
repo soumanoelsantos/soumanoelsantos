@@ -2,7 +2,8 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Calendar } from "lucide-react";
+import { ArrowRight, Calendar, UserIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const handleScheduleClick = () => {
@@ -23,6 +24,20 @@ const Hero = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10 pt-12 lg:pt-20">
+        <div className="flex justify-end mb-4">
+          <Button 
+            variant="outline"
+            size="sm"
+            className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
+            asChild
+          >
+            <Link to="/login">
+              <UserIcon className="mr-2 h-4 w-4" />
+              Área de Membros
+            </Link>
+          </Button>
+        </div>
+        
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
           <div className="lg:w-1/2 space-y-4 lg:space-y-6">
             <div className="space-y-3 lg:space-y-4 text-center lg:text-left">
