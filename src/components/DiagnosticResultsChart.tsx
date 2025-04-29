@@ -23,25 +23,25 @@ const DiagnosticResultsChart = ({ data }: DiagnosticResultsChartProps) => {
   const chartData = [
     {
       subject: 'PROCESSOS',
-      A: 100, // Desejado (changed to 100%)
+      A: 100, // Desejado
       B: data.processos.percentage, // Atual
       fullMark: 100,
     },
     {
       subject: 'RESULTADOS',
-      A: 100, // Desejado (changed to 100%)
+      A: 100, // Desejado
       B: data.resultados.percentage,
       fullMark: 100,
     },
     {
       subject: 'SISTEMA DE GESTÃO',
-      A: 100, // Desejado (changed to 100%)
+      A: 100, // Desejado
       B: data.sistemaGestao.percentage,
       fullMark: 100,
     },
     {
       subject: 'PESSOAS',
-      A: 100, // Desejado (changed to 100%)
+      A: 100, // Desejado
       B: data.pessoas.percentage,
       fullMark: 100,
     },
@@ -57,18 +57,24 @@ const DiagnosticResultsChart = ({ data }: DiagnosticResultsChartProps) => {
           <Radar
             name="Desejado"
             dataKey="A"
-            stroke="#4299e1"
-            fill="#4299e1"
-            fillOpacity={0.1}
+            stroke="#1EAEDB"
+            fill="#1EAEDB"
+            fillOpacity={0.3}
+            strokeWidth={2}
           />
           <Radar
             name="Atual"
             dataKey="B"
             stroke="#ed8936"
             fill="#ed8936"
-            fillOpacity={0.1}
+            fillOpacity={0.5}
+            strokeWidth={2}
           />
-          <Legend />
+          <Legend 
+            verticalAlign="bottom"
+            align="center"
+            wrapperStyle={{ paddingTop: "20px" }}
+          />
         </RadarChart>
       </ResponsiveContainer>
     </div>

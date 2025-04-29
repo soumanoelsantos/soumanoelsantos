@@ -15,7 +15,7 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
   const downloadPDF = () => {
     if (!pdfRef.current) return;
 
-    // Add a class to the content temporarily for PDF styling
+    // Add classes to the content temporarily for PDF styling
     const element = pdfRef.current;
     element.classList.add('pdf-export');
 
@@ -28,14 +28,36 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       .pdf-export * {
         color: #000000 !important;
       }
+      .pdf-export .bg-[#1d365c] *, .pdf-export [class*="bg-[#1d365c]"] * {
+        color: #FFFFFF !important;
+      }
+      .pdf-export .recharts-layer {
+        color: inherit !important;
+      }
+      .pdf-export .recharts-surface {
+        overflow: visible !important;
+      }
+      .pdf-export .recharts-wrapper {
+        width: 100% !important;
+        height: 400px !important;
+        overflow: visible !important;
+      }
+      .pdf-export .recharts-legend-wrapper {
+        bottom: -20px !important;
+      }
     `;
     document.head.appendChild(styleElement);
 
     const opt = {
       margin: 10,
       filename: 'diagnostico-negocio.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
+      image: { type: 'jpeg', quality: 1.0 },
+      html2canvas: { 
+        scale: 2,
+        logging: true, 
+        useCORS: true,
+        allowTaint: true
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 

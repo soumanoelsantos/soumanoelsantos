@@ -17,44 +17,44 @@ const ResultsCard = ({ results }: ResultsCardProps) => {
   return (
     <Card className="bg-dark-primary/5 border-dark-primary/20">
       <CardHeader className="bg-[#1d365c] text-white">
-        <CardTitle className="text-xl text-center">Resultados do Diagnóstico</CardTitle>
+        <CardTitle className="text-xl text-center text-white">Resultados do Diagnóstico</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <Table className="text-white">
               <TableHeader>
-                <TableRow>
-                  <TableHead>Dimensão</TableHead>
-                  <TableHead>Atual</TableHead>
-                  <TableHead>Desejado</TableHead>
+                <TableRow className="border-b border-white/20">
+                  <TableHead className="text-white">Dimensão</TableHead>
+                  <TableHead className="text-white text-right">Atual</TableHead>
+                  <TableHead className="text-white text-right">Desejado</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
+                <TableRow className="border-b border-white/10">
                   <TableCell className="font-medium">PROCESSOS</TableCell>
-                  <TableCell>{results.processos.percentage}%</TableCell>
-                  <TableCell>100%</TableCell>
+                  <TableCell className="text-right">{results.processos.percentage}%</TableCell>
+                  <TableCell className="text-right">100%</TableCell>
                 </TableRow>
-                <TableRow>
+                <TableRow className="border-b border-white/10">
                   <TableCell className="font-medium">RESULTADOS</TableCell>
-                  <TableCell>{results.resultados.percentage}%</TableCell>
-                  <TableCell>100%</TableCell>
+                  <TableCell className="text-right">{results.resultados.percentage}%</TableCell>
+                  <TableCell className="text-right">100%</TableCell>
                 </TableRow>
-                <TableRow>
+                <TableRow className="border-b border-white/10">
                   <TableCell className="font-medium">SISTEMA DE GESTÃO</TableCell>
-                  <TableCell>{results.sistemaGestao.percentage}%</TableCell>
-                  <TableCell>100%</TableCell>
+                  <TableCell className="text-right">{results.sistemaGestao.percentage}%</TableCell>
+                  <TableCell className="text-right">100%</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">PESSOAS</TableCell>
-                  <TableCell>{results.pessoas.percentage}%</TableCell>
-                  <TableCell>100%</TableCell>
+                  <TableCell className="text-right">{results.pessoas.percentage}%</TableCell>
+                  <TableCell className="text-right">100%</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </div>
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center chart-container">
             <DiagnosticResultsChart data={results} />
           </div>
         </div>
