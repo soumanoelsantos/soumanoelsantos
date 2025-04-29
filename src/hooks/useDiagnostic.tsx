@@ -28,6 +28,7 @@ export const useDiagnostic = () => {
     sistemaGestao: { title: "", answers: [] },
     pessoas: { title: "", answers: [] }
   });
+  const [shouldGeneratePlan, setShouldGeneratePlan] = useState(false);
 
   // Check authentication and load saved data
   useEffect(() => {
@@ -68,10 +69,10 @@ export const useDiagnostic = () => {
     setIsLoading(false);
   }, [isAuthenticated, navigate, toast, userEmail]);
   
-  // Generate action plan when results change
+  // Generate action plan only when explicitly requested
   useEffect(() => {
     const generatePlan = async () => {
-      if (showResults && Object.values(results).some(area => area.score > 0)) {
+      if (shouldGeneratePlan && showResults && Object.values(results).some(area => area.score > 0)) {
         setIsGeneratingPlan(true);
         try {
           const plan = await generateActionPlan(results, answersData);
@@ -81,6 +82,9 @@ export const useDiagnostic = () => {
           if (userEmail) {
             localStorage.setItem(`action_plan_${userEmail}`, JSON.stringify(plan));
           }
+          
+          // Reset the flag after plan generation
+          setShouldGeneratePlan(false);
         } catch (error) {
           console.error("Error generating action plan:", error);
           toast({
@@ -95,9 +99,9 @@ export const useDiagnostic = () => {
     };
     
     generatePlan();
-  }, [showResults, results, answersData, userEmail, toast]);
+  }, [shouldGeneratePlan, showResults, results, answersData, userEmail, toast]);
 
-  // Save diagnostic results
+  // Save diagnostic results and trigger plan generation
   const handleSubmit = () => {
     if (userEmail) {
       const resultsKey = `diagnostic_results_${userEmail}`;
@@ -107,6 +111,8 @@ export const useDiagnostic = () => {
       localStorage.setItem(answersKey, JSON.stringify(answersData));
       
       setShowResults(true);
+      // Set the flag to trigger plan generation
+      setShouldGeneratePlan(true);
       
       toast({
         title: "Diagnóstico salvo!",
