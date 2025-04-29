@@ -36,16 +36,30 @@ const DiagnosticSection = ({ section, sectionKey, results, setResults }: Diagnos
   };
 
   useEffect(() => {
-    // Calculate the score based on answers
-    let satisfactoryCount = 0;
+    // Calculate the score based on answers with different point values
+    let score = 0;
     
-    Object.values(answers).forEach(answer => {
-      if (answer === 'satisfactory') {
-        satisfactoryCount += 1;
+    Object.entries(answers).forEach(([questionIndex, answer]) => {
+      // Different scoring for different sections
+      if (sectionKey === 'processos' || sectionKey === 'pessoas') {
+        // For Processos and Pessoas sections
+        if (answer === 'satisfactory') {
+          score += 10; // Existe e é satisfatório = 10 points
+        } else if (answer === 'unsatisfactory') {
+          score += 5; // Existe, mas não é satisfatório = 5 points
+        }
+        // Não existe = 0 points (no need to add anything)
+      } else {
+        // For Sistema de Gestão and Resultados sections
+        if (answer === 'satisfactory') {
+          score += 20; // Existe e é satisfatório = 20 points
+        } else if (answer === 'unsatisfactory') {
+          score += 10; // Existe, mas não é satisfatório = 10 points
+        }
+        // Não existe = 0 points (no need to add anything)
       }
     });
     
-    const score = satisfactoryCount * section.pointValue;
     const total = section.questions.length * section.pointValue;
     const percentage = Math.round((score / total) * 100) || 0;
 
@@ -108,7 +122,12 @@ const DiagnosticSection = ({ section, sectionKey, results, setResults }: Diagnos
           ))}
         </div>
         <div className="mt-6 p-4 bg-[#1d365c] text-white text-center">
-          Na dimensão <strong>{section.title}</strong>, para cada item assinalado "Existe e é satisfatório" atribua {section.pointValue} pontos
+          <p>Na dimensão <strong>{section.title}</strong>:</p>
+          {(sectionKey === 'processos' || sectionKey === 'pessoas') ? (
+            <p>"Existe e é satisfatório" = 10 pontos | "Existe, mas não é satisfatório" = 5 pontos | "Não existe" = 0 pontos</p>
+          ) : (
+            <p>"Existe e é satisfatório" = 20 pontos | "Existe, mas não é satisfatório" = 10 pontos | "Não existe" = 0 pontos</p>
+          )}
         </div>
       </CardContent>
     </Card>
