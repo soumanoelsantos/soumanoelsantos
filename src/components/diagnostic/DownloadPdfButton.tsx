@@ -23,10 +23,10 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
     const styleElement = document.createElement('style');
     styleElement.innerHTML = `
       .pdf-export {
-        color: #000000 !important;
+        color: #FFFFFF !important;
       }
       .pdf-export * {
-        color: #000000 !important;
+        color: #FFFFFF !important;
       }
       .pdf-export .bg-[#1d365c], 
       .pdf-export [class*="bg-[#1d365c]"] {
@@ -37,7 +37,7 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
         color: #FFFFFF !important;
       }
       .pdf-export .pdf-header {
-        color: #000000 !important;
+        color: #FFFFFF !important;
       }
       .pdf-export .recharts-layer {
         color: inherit !important;
@@ -54,7 +54,7 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
         bottom: -20px !important;
       }
       .pdf-export .answers-section ul li {
-        color: #000000 !important;
+        color: #FFFFFF !important;
       }
       .pdf-export .answers-section .answer-satisfactory {
         color: #22c55e !important;
@@ -76,7 +76,7 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       }
       .pdf-export table th,
       .pdf-export table td {
-        color: #000000 !important;
+        color: #FFFFFF !important;
       }
     `;
     document.head.appendChild(styleElement);
