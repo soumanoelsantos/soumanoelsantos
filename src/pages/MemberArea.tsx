@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import MemberContentList from "@/components/MemberContentList";
+import { ArrowRight, Calendar } from "lucide-react";
 
 const MemberArea = () => {
   const navigate = useNavigate();
@@ -43,6 +44,11 @@ const MemberArea = () => {
     
     navigate("/login");
   };
+  
+  const handleScheduleClick = () => {
+    const message = encodeURIComponent("Olá, Manoel! Gostaria de agendar meu diagnóstico gratuito com você!");
+    window.location.href = `https://wa.me/31986994906?text=${message}`;
+  };
 
   if (isLoading) {
     return (
@@ -55,6 +61,35 @@ const MemberArea = () => {
   return (
     <div className="min-h-screen bg-dark-background flex flex-col">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
+      
+      {/* Hero section identical to the image */}
+      <div className="w-full bg-black py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8">
+            Transforme sua empresa em<br />
+            uma <span className="text-[#D4AF37]">máquina de vendas</span>
+          </h1>
+          
+          <div className="max-w-4xl mx-auto bg-[#111111]/80 p-6 rounded-lg backdrop-blur-sm border border-white/10 mb-12">
+            <p className="text-lg md:text-xl text-white">
+              Em 45 minutos, farei um plano de ação <strong className="text-white">GRATUITO</strong> de vendas, marketing e gestão para a sua empresa <strong className="text-white">DOBRAR</strong> o faturamento em 90 dias.
+            </p>
+          </div>
+          
+          <Button 
+            onClick={handleScheduleClick}
+            className="bg-[#D4AF37] hover:bg-[#C4A030] text-black font-semibold rounded-full px-8 py-6 text-lg flex items-center mx-auto gap-2"
+          >
+            <Calendar className="h-5 w-5" />
+            Agendar diagnóstico gratuito
+            <ArrowRight className="h-5 w-5" />
+          </Button>
+          
+          <p className="text-white/70 mt-4">
+            Clique acima e agende agora – As vagas são limitadas!
+          </p>
+        </div>
+      </div>
       
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-dark-text mb-8 text-center">Área de Membros</h1>
