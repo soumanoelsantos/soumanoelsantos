@@ -5,7 +5,7 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-b from-[#0A0A0A] to-[#151515] text-white antialiased;
+    @apply bg-white text-gray-800 antialiased;
   }
 }
 
@@ -32,6 +32,11 @@
   
   .card-glow:hover::before {
     @apply opacity-100 blur-md;
+  }
+  
+  /* Dark specific styles for the index page */
+  .dark-page {
+    @apply bg-gradient-to-b from-[#0A0A0A] to-[#151515] text-white;
   }
 }
 

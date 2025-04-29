@@ -52,14 +52,14 @@ const MemberArea = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-dark-background flex items-center justify-center">
-        <div className="text-dark-text">Carregando...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-800">Carregando...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-background flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       {/* Hero section identical to the image */}
@@ -91,39 +91,39 @@ const MemberArea = () => {
         </div>
       </div>
       
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-dark-text mb-8 text-center">Área de Membros</h1>
+      <div className="container mx-auto px-4 py-8 bg-white">
+        <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Área de Membros</h1>
         
         <div className="grid grid-cols-1 gap-6">
-          <Card className="bg-dark-background/50 border-dark-primary/20 shadow-lg">
+          <Card className="bg-white border-gray-200 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-xl text-dark-text">Bem-vindo ao Programa Maximus</CardTitle>
-              <CardDescription className="text-dark-text/80">
+              <CardTitle className="text-xl text-gray-800">Bem-vindo ao Programa Maximus</CardTitle>
+              <CardDescription className="text-gray-600">
                 {/* Removed text as requested */}
               </CardDescription>
             </CardHeader>
-            <CardContent className="text-dark-text/90">
+            <CardContent className="text-gray-700">
               {/* Removed text as requested */}
             </CardContent>
           </Card>
           
           <MemberContentList />
           
-          <Card className="bg-dark-background/50 border-dark-primary/20 shadow-lg">
+          <Card className="bg-white border-gray-200 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-xl text-dark-text">Mentoria individual</CardTitle>
-              <CardDescription className="text-dark-text/80">
+              <CardTitle className="text-xl text-gray-800">Mentoria individual</CardTitle>
+              <CardDescription className="text-gray-600">
                 Agende sua próxima mentoria com o Manoel Santos
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-dark-text/90 mb-4">
+              <p className="text-gray-700 mb-4">
                 As mentorias individuais são realizadas semanalmente e são fundamentais para o seu sucesso no programa.
               </p>
             </CardContent>
             <CardFooter>
               <Button 
-                className="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background"
+                className="w-full bg-dark-primary hover:bg-dark-primary/90 text-white"
                 onClick={() => window.open("https://wa.me/31986994906", "_blank")}
               >
                 Agendar mentoria

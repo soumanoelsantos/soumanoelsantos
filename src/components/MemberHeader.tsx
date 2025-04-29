@@ -15,7 +15,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
   const { isAdmin } = useAuth();
   
   return (
-    <header className="bg-dark-background border-b border-dark-primary/20">
+    <header className="bg-white border-b border-gray-200">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/membros" className="text-2xl font-bold text-dark-primary">
@@ -23,7 +23,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
           </Link>
           
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-2 text-dark-text/80">
+            <div className="hidden md:flex items-center gap-2 text-gray-700">
               <UserIcon className="h-4 w-4" />
               <span>{userEmail}</span>
             </div>
