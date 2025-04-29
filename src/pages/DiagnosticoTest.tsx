@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import DiagnosticHeader from "@/components/DiagnosticHeader";
-import DiagnosticInstructions from "@/components/DiagnosticInstructions";
 import DiagnosticSection from "@/components/DiagnosticSection";
 import DiagnosticResultsChart from "@/components/DiagnosticResultsChart";
 import WhatsAppModal from "@/components/WhatsAppModal";
@@ -79,18 +77,12 @@ const DiagnosticoTest = () => {
   };
 
   const handleSubmit = () => {
-    // Open the WhatsApp modal first
     setShowModal(true);
   };
 
   const handleSendResults = (whatsappNumber: string) => {
-    // Close the modal
     setShowModal(false);
-    
-    // Then show the results
     setShowResults(true);
-    
-    // Show success toast
     toast({
       title: "Diagnóstico enviado!",
       description: `Os resultados foram enviados para o WhatsApp ${whatsappNumber}.`,
@@ -101,8 +93,6 @@ const DiagnosticoTest = () => {
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] to-[#151515] text-white">
       <div className="container mx-auto px-4 py-10">
         <DiagnosticHeader />
-        
-        <DiagnosticInstructions />
         
         <div className="space-y-8 my-8">
           {Object.entries(sections).map(([key, section]) => (
