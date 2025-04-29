@@ -3,6 +3,7 @@ import React from 'react';
 import ResultsCard from './ResultsCard';
 import ActionPlanCard from './ActionPlanCard';
 import DownloadPdfButton from './DownloadPdfButton';
+import ResetDiagnosticButton from './ResetDiagnosticButton';
 
 interface DiagnosticResultsProps {
   results: {
@@ -18,11 +19,18 @@ interface DiagnosticResultsProps {
 }
 
 const DiagnosticResults = ({ results, actionPlan, pdfRef }: DiagnosticResultsProps) => {
+  const handleReset = () => {
+    // This will be handled by the ResetDiagnosticButton component
+  };
+
   return (
     <div ref={pdfRef} className="mt-10 space-y-8">
       <ResultsCard results={results} />
       <ActionPlanCard actionPlan={actionPlan} />
-      <DownloadPdfButton pdfRef={pdfRef} />
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <DownloadPdfButton pdfRef={pdfRef} />
+        <ResetDiagnosticButton onReset={handleReset} />
+      </div>
     </div>
   );
 };

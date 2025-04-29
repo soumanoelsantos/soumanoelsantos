@@ -1,9 +1,8 @@
-
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import DiagnosticHeader from "@/components/DiagnosticHeader";
-import WhatsAppModal from "@/components/WhatsAppModal";
 import DiagnosticSections from "@/components/diagnostic/DiagnosticSections";
 import DiagnosticResults from "@/components/diagnostic/DiagnosticResults";
 import { generateActionPlan } from "@/utils/generateActionPlan";
@@ -11,6 +10,7 @@ import { DiagnosticResults as DiagnosticResultsType, AnswersDataType, Diagnostic
 
 const DiagnosticoTest = () => {
   const { toast } = useToast();
+  const { userEmail } = useAuth();
   const [results, setResults] = useState<DiagnosticResultsType>({
     processos: { score: 0, total: 100, percentage: 0 },
     resultados: { score: 0, total: 100, percentage: 0 },
@@ -18,7 +18,6 @@ const DiagnosticoTest = () => {
     pessoas: { score: 0, total: 100, percentage: 0 },
   });
   const [showResults, setShowResults] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [answersData, setAnswersData] = useState<AnswersDataType>({
     processos: { title: "", answers: [] },
     resultados: { title: "", answers: [] },
@@ -26,6 +25,26 @@ const DiagnosticoTest = () => {
     pessoas: { title: "", answers: [] }
   });
   const pdfRef = useRef<HTMLDivElement>(null);
+
+  // Load saved diagnostic results when the component mounts
+  useEffect(() => {
+    if (userEmail) {
+      const savedResultsKey = `diagnostic_results_${userEmail}`;
+      const savedAnswersKey = `diagnostic_answers_${userEmail}`;
+      
+      const savedResults = localStorage.getItem(savedResultsKey);
+      const savedAnswers = localStorage.getItem(savedAnswersKey);
+      
+      if (savedResults) {
+        setResults(JSON.parse(savedResults));
+        setShowResults(true);
+      }
+      
+      if (savedAnswers) {
+        setAnswersData(JSON.parse(savedAnswers));
+      }
+    }
+  }, [userEmail]);
 
   const sections: DiagnosticSectionsType = {
     processos: {
@@ -85,16 +104,27 @@ const DiagnosticoTest = () => {
   };
 
   const handleSubmit = () => {
-    setShowModal(true);
-  };
-
-  const handleSendResults = (whatsappNumber: string) => {
-    setShowModal(false);
-    setShowResults(true);
-    toast({
-      title: "Diagnóstico enviado!",
-      description: `Os resultados foram enviados para o WhatsApp ${whatsappNumber}.`,
-    });
+    // Save results to localStorage associated with the user
+    if (userEmail) {
+      const resultsKey = `diagnostic_results_${userEmail}`;
+      const answersKey = `diagnostic_answers_${userEmail}`;
+      
+      localStorage.setItem(resultsKey, JSON.stringify(results));
+      localStorage.setItem(answersKey, JSON.stringify(answersData));
+      
+      setShowResults(true);
+      
+      toast({
+        title: "Diagnóstico salvo!",
+        description: "Os resultados foram salvos e estão disponíveis na sua conta.",
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Você precisa estar logado para salvar seu diagnóstico.",
+      });
+    }
   };
 
   const actionPlan = generateActionPlan(results);
@@ -104,36 +134,32 @@ const DiagnosticoTest = () => {
       <div className="container mx-auto px-4 py-10">
         <DiagnosticHeader />
         
-        <DiagnosticSections 
-          sections={sections} 
-          results={results} 
-          setResults={setResults}
-          setAnswersData={setAnswersData}
-        />
+        {!showResults ? (
+          <>
+            <DiagnosticSections 
+              sections={sections} 
+              results={results} 
+              setResults={setResults}
+              setAnswersData={setAnswersData}
+            />
 
-        <div className="flex justify-center mt-8">
-          <Button 
-            onClick={handleSubmit} 
-            size="lg" 
-            className="bg-[#1d365c] hover:bg-[#1d365c]/90 text-white"
-          >
-            Finalizar Diagnóstico
-          </Button>
-        </div>
-
-        {showResults && (
+            <div className="flex justify-center mt-8">
+              <Button 
+                onClick={handleSubmit} 
+                size="lg" 
+                className="bg-[#1d365c] hover:bg-[#1d365c]/90 text-white"
+              >
+                Finalizar e Ver Resultados
+              </Button>
+            </div>
+          </>
+        ) : (
           <DiagnosticResults 
             results={results} 
             actionPlan={actionPlan}
             pdfRef={pdfRef}
           />
         )}
-        
-        <WhatsAppModal 
-          isOpen={showModal} 
-          onClose={() => setShowModal(false)} 
-          onSubmit={handleSendResults} 
-        />
       </div>
     </div>
   );
