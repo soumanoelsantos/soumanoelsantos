@@ -97,7 +97,7 @@ const MemberContentList = () => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-dark-text mb-4">Módulos do programa</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Módulos do programa</h2>
       
       <Accordion type="single" collapsible defaultValue="item-0" className="w-full">
         {programModules.map((module) => (
@@ -106,7 +106,7 @@ const MemberContentList = () => {
             value={`item-${module.id}`} 
             className="border-dark-primary/20"
           >
-            <AccordionTrigger className="text-dark-text hover:text-dark-primary">
+            <AccordionTrigger className="text-gray-800 hover:text-dark-primary">
               <div className="flex items-center justify-between w-full pr-4">
                 <span>{module.title}</span>
                 <div className="flex-shrink-0 ml-2">
@@ -117,7 +117,7 @@ const MemberContentList = () => {
             <AccordionContent>
               <Card className="bg-transparent border-0 shadow-none">
                 <CardHeader className="pt-0 px-0">
-                  <CardDescription className="text-dark-text/80">
+                  <CardDescription className="text-gray-600">
                     {module.description}
                   </CardDescription>
                 </CardHeader>
@@ -127,19 +127,19 @@ const MemberContentList = () => {
                       <li 
                         key={lesson.id}
                         className={`p-3 rounded-md border border-dark-primary/10 
-                        ${module.status === 'bloqueado' ? 'opacity-50' : 'bg-dark-background/30'}`}
+                        ${module.status === 'bloqueado' ? 'opacity-50' : 'bg-gray-50'}`}
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="text-dark-text font-medium">{lesson.title}</h4>
-                            <span className="text-sm text-dark-text/60">Duração: {lesson.duration}</span>
+                            <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
+                            <span className="text-sm text-gray-600">Duração: {lesson.duration}</span>
                           </div>
                           <Button 
                             size="sm" 
                             variant={module.status === 'bloqueado' ? "outline" : "default"}
                             className={module.status === 'bloqueado' 
-                              ? "cursor-not-allowed border-dark-primary/20 text-dark-text/40" 
-                              : "bg-dark-primary hover:bg-dark-primary/90 text-dark-background"}
+                              ? "cursor-not-allowed border-dark-primary/20 text-gray-400" 
+                              : "bg-dark-primary hover:bg-dark-primary/90 text-white"}
                             disabled={module.status === 'bloqueado'}
                             onClick={() => handleClickLesson(lesson)}
                           >

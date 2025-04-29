@@ -38,6 +38,11 @@
   .dark-page {
     @apply bg-gradient-to-b from-[#0A0A0A] to-[#151515] text-white;
   }
+
+  /* Improved contrast for text on light backgrounds */
+  .text-improved-contrast {
+    @apply text-gray-800;
+  }
 }
 
 /* Animations */
@@ -50,3 +55,4 @@
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
