@@ -2,8 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Calendar, Briefcase } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowRight, Calendar } from "lucide-react";
 
 const Hero = () => {
   const handleScheduleClick = () => {
@@ -56,17 +55,6 @@ const Hero = () => {
                   <Calendar className="mr-2 h-5 w-5" />
                   Agendar diagnóstico gratuito
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Button>
-                
-                <Button 
-                  size="lg"
-                  className="w-full sm:w-auto bg-transparent hover:bg-dark-primary/10 text-dark-primary border border-dark-primary/30 text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group"
-                  asChild
-                >
-                  <Link to="/teste">
-                    Fazer diagnóstico online
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </Link>
                 </Button>
               </div>
               
