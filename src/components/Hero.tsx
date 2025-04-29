@@ -29,7 +29,7 @@ const Hero = () => {
             <div className="space-y-3 lg:space-y-4 text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start space-x-2">
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                  Transformação Empresarial
+                  aceleração empresarial
                 </Badge>
               </div>
               
@@ -78,7 +78,7 @@ const Hero = () => {
                 <div className="relative z-10 rounded-2xl overflow-hidden">
                   <img
                     src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
-                    alt="Transformação Empresarial"
+                    alt="aceleração empresarial"
                     className="w-full h-[600px] object-cover object-center"
                   />
                   
