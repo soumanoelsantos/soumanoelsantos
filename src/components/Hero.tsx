@@ -38,7 +38,7 @@ const Hero = () => {
               </h1>
               
               <p className="text-xl sm:text-2xl text-dark-primary font-medium">
-                Diretor de receita - CRO
+                Transforme sua empresa em uma máquina de vendas
               </p>
               
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
