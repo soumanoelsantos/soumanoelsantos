@@ -29,17 +29,9 @@ const Hero = () => {
             <div className="space-y-3 lg:space-y-4 text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start space-x-2">
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                  Programa Maximus
+                  Transformação Empresarial
                 </Badge>
-                <div className="flex items-center space-x-2 bg-dark-primary/10 px-4 py-2 rounded-full">
-                  <Briefcase className="h-4 w-4 text-dark-primary" />
-                  <span className="text-sm text-dark-primary font-medium">Diretor de receita - CRO</span>
-                </div>
               </div>
-              
-              <h2 className="text-lg sm:text-xl font-medium text-dark-text/80 mb-2">
-                Manoel Santos
-              </h2>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 Transforme sua empresa em uma <span className="text-dark-primary">máquina de vendas</span>
@@ -86,7 +78,7 @@ const Hero = () => {
                 <div className="relative z-10 rounded-2xl overflow-hidden">
                   <img
                     src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
-                    alt="Manoel Santos"
+                    alt="Transformação Empresarial"
                     className="w-full h-[600px] object-cover object-center"
                   />
                   
