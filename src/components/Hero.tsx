@@ -48,11 +48,11 @@ const Hero = () => {
               </div>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Programa Maximus
+                Transforme sua empresa em uma
               </h1>
               
               <p className="text-xl sm:text-2xl text-dark-primary font-medium">
-                Transforme sua empresa em uma máquina de vendas
+                máquina de vendas
               </p>
               
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
@@ -61,7 +61,7 @@ const Hero = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col items-center w-full">
                 <Button 
                   size="lg"
                   className="w-full sm:w-auto bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group"
@@ -71,11 +71,11 @@ const Hero = () => {
                   Agendar diagnóstico gratuito
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
-              </div>
               
-              <p className="text-sm text-dark-text/70 mt-2">
-                Clique acima e agende agora – As vagas são limitadas!
-              </p>
+                <p className="text-sm text-dark-text/70 mt-2">
+                  Clique acima e agende agora – As vagas são limitadas!
+                </p>
+              </div>
             </div>
           </div>
 
