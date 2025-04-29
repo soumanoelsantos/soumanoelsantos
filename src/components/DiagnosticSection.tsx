@@ -95,15 +95,15 @@ const DiagnosticSection = ({ section, sectionKey, results, setResults, setAnswer
   }, [answers, section.pointValue, sectionKey, setResults, section.questions, section.title, setAnswersData]);
 
   return (
-    <Card className="bg-dark-primary/5 border-dark-primary/20">
+    <Card className="bg-white border-gray-200 shadow-sm">
       <CardHeader className="bg-[#1d365c] text-white">
         <CardTitle className="text-xl text-center">{section.title}</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="space-y-6">
           {section.questions.map((question, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center border-b border-white/10 pb-4">
-              <div className="md:col-span-6 text-white">
+            <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center border-b border-gray-200 pb-4">
+              <div className="md:col-span-6 text-gray-800">
                 <p>{question}</p>
               </div>
               <div className="md:col-span-6">
@@ -113,26 +113,26 @@ const DiagnosticSection = ({ section, sectionKey, results, setResults, setAnswer
                   onValueChange={(value) => handleAnswerChange(index, value)}
                 >
                   <div className="flex items-center space-x-2">
-                    <div className={`p-2 rounded-md ${answers[index] === 'satisfactory' ? 'bg-green-600/20' : ''}`}>
-                      <RadioGroupItem value="satisfactory" id={`${sectionKey}-q${index}-satisfactory`} className="text-green-500" />
+                    <div className={`p-2 rounded-md ${answers[index] === 'satisfactory' ? 'bg-green-100' : ''}`}>
+                      <RadioGroupItem value="satisfactory" id={`${sectionKey}-q${index}-satisfactory`} className="text-green-600" />
                     </div>
-                    <Label htmlFor={`${sectionKey}-q${index}-satisfactory`} className="text-white">
+                    <Label htmlFor={`${sectionKey}-q${index}-satisfactory`} className="text-gray-800">
                       Existe e é satisfatório
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className={`p-2 rounded-md ${answers[index] === 'unsatisfactory' ? 'bg-yellow-600/20' : ''}`}>
-                      <RadioGroupItem value="unsatisfactory" id={`${sectionKey}-q${index}-unsatisfactory`} className="text-yellow-500" />
+                    <div className={`p-2 rounded-md ${answers[index] === 'unsatisfactory' ? 'bg-yellow-100' : ''}`}>
+                      <RadioGroupItem value="unsatisfactory" id={`${sectionKey}-q${index}-unsatisfactory`} className="text-yellow-600" />
                     </div>
-                    <Label htmlFor={`${sectionKey}-q${index}-unsatisfactory`} className="text-white">
+                    <Label htmlFor={`${sectionKey}-q${index}-unsatisfactory`} className="text-gray-800">
                       Existe, mas não é satisfatório
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className={`p-2 rounded-md ${answers[index] === 'nonexistent' ? 'bg-red-600/20' : ''}`}>
-                      <RadioGroupItem value="nonexistent" id={`${sectionKey}-q${index}-nonexistent`} className="text-red-500" />
+                    <div className={`p-2 rounded-md ${answers[index] === 'nonexistent' ? 'bg-red-100' : ''}`}>
+                      <RadioGroupItem value="nonexistent" id={`${sectionKey}-q${index}-nonexistent`} className="text-red-600" />
                     </div>
-                    <Label htmlFor={`${sectionKey}-q${index}-nonexistent`} className="text-white">
+                    <Label htmlFor={`${sectionKey}-q${index}-nonexistent`} className="text-gray-800">
                       Não existe
                     </Label>
                   </div>
