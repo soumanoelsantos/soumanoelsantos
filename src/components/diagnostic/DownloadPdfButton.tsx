@@ -28,8 +28,13 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       .pdf-export * {
         color: #000000 !important;
       }
-      .pdf-export .bg-[#1d365c] *, .pdf-export [class*="bg-[#1d365c]"] * {
+      .pdf-export .bg-[#1d365c], 
+      .pdf-export [class*="bg-[#1d365c]"],
+      .pdf-export [class*="bg-[#1d365c]"] * {
         color: #FFFFFF !important;
+      }
+      .pdf-export .pdf-header {
+        color: #000000 !important;
       }
       .pdf-export .recharts-layer {
         color: inherit !important;

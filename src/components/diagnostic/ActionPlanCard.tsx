@@ -18,7 +18,7 @@ const ActionPlanCard = ({ actionPlan }: ActionPlanCardProps) => {
         <div className="space-y-6">
           {Object.entries(actionPlan).map(([key, actions]) => (
             <div key={key} className="border-b border-white/10 pb-4">
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="text-xl font-semibold mb-2 pdf-header">
                 {key === 'processos' ? 'PROCESSOS' : 
                  key === 'resultados' ? 'RESULTADOS' : 
                  key === 'sistemaGestao' ? 'SISTEMA DE GESTÃO' : 'PESSOAS'}
