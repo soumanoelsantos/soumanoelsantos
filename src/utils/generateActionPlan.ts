@@ -1,4 +1,6 @@
 
+import { generateEnhancedActionPlan } from './deepseekApi';
+
 interface DiagnosticResults {
   processos: { score: number; total: number; percentage: number };
   resultados: { score: number; total: number; percentage: number };
@@ -6,7 +8,16 @@ interface DiagnosticResults {
   pessoas: { score: number; total: number; percentage: number };
 }
 
-export const generateActionPlan = (results: DiagnosticResults) => {
+export const generateActionPlan = async (results: DiagnosticResults, answersData?: any) => {
+  // First try to get an enhanced plan from the DeepSeek API
+  const enhancedPlan = await generateEnhancedActionPlan(results, answersData);
+  
+  // If we got a successful response from the API, use it
+  if (enhancedPlan) {
+    return enhancedPlan;
+  }
+  
+  // Fallback to local generation if API fails
   let actionPlan: {
     [key: string]: string[];
   } = {};
