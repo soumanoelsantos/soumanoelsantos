@@ -79,7 +79,7 @@ const DiagnosticoTest = () => {
   };
 
   const handleSubmit = () => {
-    // Instead of immediately showing results, open the WhatsApp modal
+    // Open the WhatsApp modal first
     setShowModal(true);
   };
 
@@ -87,7 +87,7 @@ const DiagnosticoTest = () => {
     // Close the modal
     setShowModal(false);
     
-    // Show the results
+    // Then show the results
     setShowResults(true);
     
     // Show success toast
@@ -114,6 +114,16 @@ const DiagnosticoTest = () => {
               sectionKey={key}
             />
           ))}
+        </div>
+
+        <div className="flex justify-center mt-8">
+          <Button 
+            onClick={handleSubmit} 
+            size="lg" 
+            className="bg-[#1d365c] hover:bg-[#1d365c]/90 text-white"
+          >
+            Finalizar Diagnóstico
+          </Button>
         </div>
 
         {showResults && (
@@ -163,16 +173,6 @@ const DiagnosticoTest = () => {
             </CardContent>
           </Card>
         )}
-
-        <div className="flex justify-center mt-8">
-          <Button 
-            onClick={handleSubmit} 
-            size="lg" 
-            className="bg-dark-primary hover:bg-dark-primary/90 text-black"
-          >
-            Finalizar Diagnóstico
-          </Button>
-        </div>
         
         <WhatsAppModal 
           isOpen={showModal} 
