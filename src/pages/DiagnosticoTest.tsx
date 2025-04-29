@@ -29,14 +29,14 @@ const DiagnosticoTest = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-dark-background flex items-center justify-center">
-        <div className="text-dark-text">Carregando...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-800">Carregando...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] to-[#151515] text-white">
+    <div className="min-h-screen bg-white text-gray-800">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       <DiagnosticTestContent 
