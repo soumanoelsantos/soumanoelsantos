@@ -51,22 +51,22 @@ const DiagnosticResultsChart = ({ data }: DiagnosticResultsChartProps) => {
     <div className="w-full h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
-          <PolarGrid gridType="circle" stroke="rgba(255, 255, 255, 0.2)" />
-          <PolarAngleAxis dataKey="subject" tick={{ fill: 'white' }} />
-          <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: 'white' }} />
+          <PolarGrid gridType="circle" stroke="rgba(0, 0, 0, 0.2)" />
+          <PolarAngleAxis dataKey="subject" tick={{ fill: '#333333' }} />
+          <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#333333' }} />
           <Radar
             name="Desejado"
             dataKey="A"
-            stroke="#1EAEDB"
-            fill="#1EAEDB"
+            stroke="#0284c7"
+            fill="#0284c7"
             fillOpacity={0.3}
             strokeWidth={2}
           />
           <Radar
             name="Atual"
             dataKey="B"
-            stroke="#ed8936"
-            fill="#ed8936"
+            stroke="#d97706"
+            fill="#d97706"
             fillOpacity={0.5}
             strokeWidth={2}
           />
