@@ -15,7 +15,22 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
   const downloadPDF = () => {
     if (!pdfRef.current) return;
 
+    // Add a class to the content temporarily for PDF styling
     const element = pdfRef.current;
+    element.classList.add('pdf-export');
+
+    // Create a style element for PDF export styles
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = `
+      .pdf-export {
+        color: #000000 !important;
+      }
+      .pdf-export * {
+        color: #000000 !important;
+      }
+    `;
+    document.head.appendChild(styleElement);
+
     const opt = {
       margin: 10,
       filename: 'diagnostico-negocio.pdf',
@@ -24,7 +39,12 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(element).save();
+    // Generate the PDF
+    html2pdf().set(opt).from(element).save().then(() => {
+      // Remove the temporary class and styles after PDF generation
+      element.classList.remove('pdf-export');
+      document.head.removeChild(styleElement);
+    });
 
     toast({
       title: "Download iniciado!",

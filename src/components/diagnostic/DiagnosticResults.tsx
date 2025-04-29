@@ -4,6 +4,7 @@ import ResultsCard from './ResultsCard';
 import ActionPlanCard from './ActionPlanCard';
 import DownloadPdfButton from './DownloadPdfButton';
 import ResetDiagnosticButton from './ResetDiagnosticButton';
+import BackToMemberAreaButton from './BackToMemberAreaButton';
 
 interface DiagnosticResultsProps {
   results: {
@@ -29,6 +30,7 @@ const DiagnosticResults = ({ results, actionPlan, pdfRef }: DiagnosticResultsPro
       <ActionPlanCard actionPlan={actionPlan} />
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
         <DownloadPdfButton pdfRef={pdfRef} />
+        <BackToMemberAreaButton />
         <ResetDiagnosticButton onReset={handleReset} />
       </div>
     </div>
