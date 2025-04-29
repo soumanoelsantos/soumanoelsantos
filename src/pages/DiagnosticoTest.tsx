@@ -1,16 +1,20 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import DiagnosticHeader from "@/components/DiagnosticHeader";
 import DiagnosticSections from "@/components/diagnostic/DiagnosticSections";
 import DiagnosticResults from "@/components/diagnostic/DiagnosticResults";
+import MemberHeader from "@/components/MemberHeader";
 import { generateActionPlan } from "@/utils/generateActionPlan";
 import { DiagnosticResults as DiagnosticResultsType, AnswersDataType, DiagnosticSections as DiagnosticSectionsType } from "@/types/diagnostic";
 
 const DiagnosticoTest = () => {
   const { toast } = useToast();
-  const { userEmail } = useAuth();
+  const navigate = useNavigate();
+  const { isAuthenticated, userEmail, logout } = useAuth();
   const [results, setResults] = useState<DiagnosticResultsType>({
     processos: { score: 0, total: 100, percentage: 0 },
     resultados: { score: 0, total: 100, percentage: 0 },
@@ -18,6 +22,7 @@ const DiagnosticoTest = () => {
     pessoas: { score: 0, total: 100, percentage: 0 },
   });
   const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [answersData, setAnswersData] = useState<AnswersDataType>({
     processos: { title: "", answers: [] },
     resultados: { title: "", answers: [] },
@@ -26,8 +31,19 @@ const DiagnosticoTest = () => {
   });
   const pdfRef = useRef<HTMLDivElement>(null);
 
-  // Load saved diagnostic results when the component mounts
+  // Check authentication
   useEffect(() => {
+    if (!isAuthenticated) {
+      toast({
+        variant: "destructive",
+        title: "Acesso negado",
+        description: "Você precisa fazer login para acessar esta página",
+      });
+      navigate("/login");
+      return;
+    }
+
+    // Load saved diagnostic results when authenticated
     if (userEmail) {
       const savedResultsKey = `diagnostic_results_${userEmail}`;
       const savedAnswersKey = `diagnostic_answers_${userEmail}`;
@@ -44,7 +60,15 @@ const DiagnosticoTest = () => {
         setAnswersData(JSON.parse(savedAnswers));
       }
     }
-  }, [userEmail]);
+
+    setIsLoading(false);
+  }, [isAuthenticated, navigate, toast, userEmail]);
+
+  // Handle logout from this page
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const sections: DiagnosticSectionsType = {
     processos: {
@@ -129,8 +153,18 @@ const DiagnosticoTest = () => {
 
   const actionPlan = generateActionPlan(results);
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-dark-background flex items-center justify-center">
+        <div className="text-dark-text">Carregando...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A0A0A] to-[#151515] text-white">
+      <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
+      
       <div className="container mx-auto px-4 py-10">
         <DiagnosticHeader />
         
