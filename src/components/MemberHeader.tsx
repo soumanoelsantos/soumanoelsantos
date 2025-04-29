@@ -2,7 +2,8 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { UserIcon, LogOut } from "lucide-react";
+import { UserIcon, LogOut, Settings } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface MemberHeaderProps {
   userEmail: string | null;
@@ -10,6 +11,9 @@ interface MemberHeaderProps {
 }
 
 const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
+  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
+  
   return (
     <header className="bg-dark-background border-b border-dark-primary/20">
       <div className="container mx-auto px-4 py-4">
@@ -23,6 +27,18 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
               <UserIcon className="h-4 w-4" />
               <span>{userEmail}</span>
             </div>
+            
+            {isAdmin && (
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin")}
+                className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                Admin
+              </Button>
+            )}
             
             <Button 
               variant="outline"

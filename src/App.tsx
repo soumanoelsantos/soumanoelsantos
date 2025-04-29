@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MemberArea from "./pages/MemberArea";
+import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 import DiagnosticoTest from "./pages/DiagnosticoTest";
 import { AuthProvider } from "./hooks/useAuth";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Register />} />
             <Route path="/membros" element={<MemberArea />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="/teste" element={<DiagnosticoTest />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
