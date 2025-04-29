@@ -34,8 +34,12 @@ const Hero = () => {
               </div>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Transforme sua empresa em uma <span className="text-dark-primary">máquina de vendas</span>
+                Programa Maximus
               </h1>
+              
+              <p className="text-xl sm:text-2xl text-dark-primary font-medium">
+                Diretor de receita - CRO
+              </p>
               
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
                 <p className="text-base sm:text-lg text-dark-text/80">
