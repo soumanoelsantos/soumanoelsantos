@@ -15,7 +15,7 @@ const programModules = [
     description: "Ferramentas de diagnóstico e análise para sua empresa",
     status: "completo",
     lessons: [
-      { id: 1, title: "Diagnóstico empresarial completo", duration: "45 min", url: "/teste", isWhatsapp: true },
+      { id: 1, title: "Diagnóstico do Negócio", duration: "45 min", url: "/teste", isWhatsapp: false },
     ]
   },
   {
