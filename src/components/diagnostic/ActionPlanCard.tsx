@@ -41,7 +41,7 @@ const ActionPlanCard = ({ actionPlan, answersData }: ActionPlanCardProps) => {
 
   return (
     <Card className="bg-white border-dark-primary/20">
-      <CardHeader className="bg-[#1d365c] text-white">
+      <CardHeader className="bg-[#1d365c] text-white card-header">
         <CardTitle className="text-xl text-center text-white">Plano de Ação</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">

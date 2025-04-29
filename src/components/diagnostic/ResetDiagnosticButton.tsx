@@ -40,7 +40,7 @@ const ResetDiagnosticButton = ({ onReset }: ResetDiagnosticButtonProps) => {
       <Button
         onClick={handleReset}
         variant="outline"
-        className="border-[#1d365c] text-[#1d365c] bg-white hover:bg-[#1d365c]/10 flex items-center gap-2"
+        className="border-[#1d365c] text-white bg-[#1d365c] hover:bg-[#1d365c]/80 flex items-center gap-2"
       >
         <RefreshCw className="h-4 w-4" />
         Reiniciar Diagnóstico

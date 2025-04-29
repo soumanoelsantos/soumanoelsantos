@@ -29,7 +29,10 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
         color: #000000 !important;
       }
       .pdf-export .bg-[#1d365c], 
-      .pdf-export [class*="bg-[#1d365c]"],
+      .pdf-export [class*="bg-[#1d365c]"] {
+        background-color: #1d365c !important;
+      }
+      .pdf-export .bg-[#1d365c] *,
       .pdf-export [class*="bg-[#1d365c]"] * {
         color: #FFFFFF !important;
       }
@@ -64,6 +67,16 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       }
       .pdf-export .answers-section .question-text {
         font-weight: 600 !important;
+      }
+      .pdf-export .card-header {
+        background-color: #1d365c !important;
+      }
+      .pdf-export .card-header * {
+        color: #FFFFFF !important;
+      }
+      .pdf-export table th,
+      .pdf-export table td {
+        color: #000000 !important;
       }
     `;
     document.head.appendChild(styleElement);

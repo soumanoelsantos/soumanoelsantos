@@ -44,6 +44,7 @@ const DiagnosticTestContent = ({
         <DiagnosticResults 
           results={results} 
           actionPlan={actionPlan}
+          answersData={answersData}
           pdfRef={pdfRef}
         />
       )}
