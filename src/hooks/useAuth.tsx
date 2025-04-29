@@ -6,7 +6,7 @@ interface AuthContextType {
   userEmail: string | null;
   isNewUser: boolean;
   isAdmin: boolean;
-  login: (email: string, redirectPath?: string) => void;
+  login: (email: string, redirectPath: string | null) => void;
   logout: () => void;
   setUserAsAdmin: (value: boolean) => void;
   loginRedirectPath: string | null;
@@ -42,10 +42,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUserEmail(storedUserEmail);
     setIsNewUser(storedIsNewUser);
     setIsAdmin(storedIsAdmin);
-    setLoginRedirectPath(storedRedirectPath);
+    
+    // Only set the redirect path if we're authenticated
+    if (storedIsAuthenticated && storedRedirectPath) {
+      setLoginRedirectPath(storedRedirectPath);
+    }
   }, []);
 
-  const login = (email: string, redirectPath?: string) => {
+  const login = (email: string, redirectPath: string | null) => {
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('userEmail', email);
     localStorage.setItem('isNewUser', 'true');
@@ -54,6 +58,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (redirectPath) {
       localStorage.setItem('loginRedirectPath', redirectPath);
       setLoginRedirectPath(redirectPath);
+    } else {
+      localStorage.removeItem('loginRedirectPath');
+      setLoginRedirectPath(null);
     }
     
     // Check if this is an admin email

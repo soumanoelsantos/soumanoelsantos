@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -25,7 +26,7 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const { login, loginRedirectPath } = useAuth();
   
   // Get the redirect path from the search params
   const searchParams = new URLSearchParams(location.search);
@@ -46,21 +47,21 @@ const Login = () => {
       console.log("Login attempted with:", values);
       
       // Use the login function from useAuth hook
-      login(values.email, redirectPath);
+      login(values.email, redirectPath || null);
       
       toast({
         title: "Login bem-sucedido",
         description: "Redirecionando...",
       });
       
-      // Redirect based on the path (if any)
+      // Redirect based on the stored path in auth context
       setTimeout(() => {
-        if (redirectPath === '/admin') {
+        if (loginRedirectPath === '/admin') {
           navigate('/admin');
         } else {
           navigate('/membros');
         }
-      }, 1500);
+      }, 1000);
     } catch (error) {
       console.error("Login error:", error);
       toast({
