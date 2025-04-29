@@ -1,17 +1,16 @@
-
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ArrowRight, LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 // Form schema validation using Zod
 const formSchema = z.object({
@@ -23,8 +22,14 @@ type LoginFormValues = z.infer<typeof formSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+  
+  // Get the redirect path from the search params
+  const searchParams = new URLSearchParams(location.search);
+  const redirectPath = searchParams.get('from');
 
   // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({
@@ -40,19 +45,22 @@ const Login = () => {
     try {
       console.log("Login attempted with:", values);
       
-      // Here you would normally use a backend API to handle authentication
-      // For now, we'll simulate a successful login
+      // Use the login function from useAuth hook
+      login(values.email, redirectPath);
+      
       toast({
         title: "Login bem-sucedido",
-        description: "Redirecionando para a área de membros...",
+        description: "Redirecionando...",
       });
       
-      // Store user information in localStorage (for demo purposes only)
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", values.email);
-      
-      // Redirect to member area
-      setTimeout(() => navigate("/membros"), 1500);
+      // Redirect based on the path (if any)
+      setTimeout(() => {
+        if (redirectPath === '/admin') {
+          navigate('/admin');
+        } else {
+          navigate('/membros');
+        }
+      }, 1500);
     } catch (error) {
       console.error("Login error:", error);
       toast({

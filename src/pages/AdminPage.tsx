@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -35,17 +34,19 @@ const AdminPage = () => {
   ];
 
   useEffect(() => {
-    // Check if user is authenticated and is admin
+    // Check if user is authenticated
     if (!isAuthenticated) {
       toast({
         variant: "destructive",
         title: "Acesso negado",
         description: "Você precisa fazer login para acessar esta página",
       });
-      navigate("/login");
+      // Redirect to login with the current path as the redirect target
+      navigate("/login?from=/admin");
       return;
     }
 
+    // Check if user is admin
     if (!isAdmin) {
       toast({
         variant: "destructive",
