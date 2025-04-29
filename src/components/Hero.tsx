@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Calendar, UserIcon } from "lucide-react";
+import { ArrowRight, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
@@ -24,20 +24,6 @@ const Hero = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10 pt-12 lg:pt-20">
-        <div className="flex justify-end mb-4">
-          <Button 
-            variant="outline"
-            size="sm"
-            className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
-            asChild
-          >
-            <Link to="/login">
-              <UserIcon className="mr-2 h-4 w-4" />
-              Área de Membros
-            </Link>
-          </Button>
-        </div>
-        
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
           <div className="lg:w-1/2 space-y-4 lg:space-y-6">
             <div className="space-y-3 lg:space-y-4 text-center lg:text-left">
@@ -48,12 +34,8 @@ const Hero = () => {
               </div>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Transforme sua empresa em uma
+                Transforme sua empresa em uma máquina de vendas
               </h1>
-              
-              <p className="text-xl sm:text-2xl text-dark-primary font-medium">
-                máquina de vendas
-              </p>
               
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
                 <p className="text-base sm:text-lg text-dark-text/80">
