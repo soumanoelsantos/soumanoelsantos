@@ -11,6 +11,13 @@ import WhatsAppModal from "@/components/WhatsAppModal";
 import { Download } from "lucide-react";
 import html2pdf from 'html2pdf.js';
 
+interface AnswersDataType {
+  [key: string]: {
+    title: string;
+    answers: { question: string; answer: string }[];
+  };
+}
+
 const DiagnosticoTest = () => {
   const { toast } = useToast();
   const [results, setResults] = useState({
@@ -21,8 +28,13 @@ const DiagnosticoTest = () => {
   });
   const [showResults, setShowResults] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [answersData, setAnswersData] = useState({});
-  const pdfRef = useRef(null);
+  const [answersData, setAnswersData] = useState<AnswersDataType>({
+    processos: { title: "", answers: [] },
+    resultados: { title: "", answers: [] },
+    sistemaGestao: { title: "", answers: [] },
+    pessoas: { title: "", answers: [] }
+  });
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   const sections = {
     processos: {
@@ -95,7 +107,9 @@ const DiagnosticoTest = () => {
   };
 
   const generateActionPlan = () => {
-    let actionPlan = {};
+    let actionPlan: {
+      [key: string]: string[];
+    } = {};
     
     // Processos
     if (results.processos.percentage < 50) {

@@ -23,7 +23,12 @@ interface DiagnosticSectionProps {
     sistemaGestao: { score: number; total: number; percentage: number };
     pessoas: { score: number; total: number; percentage: number };
   }>>;
-  setAnswersData?: React.Dispatch<React.SetStateAction<any>>;
+  setAnswersData?: React.Dispatch<React.SetStateAction<{
+    [key: string]: {
+      title: string;
+      answers: { question: string; answer: string }[];
+    };
+  }>>;
 }
 
 const DiagnosticSection = ({ section, sectionKey, results, setResults, setAnswersData }: DiagnosticSectionProps) => {
