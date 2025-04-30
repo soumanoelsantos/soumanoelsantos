@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   email: string;
@@ -18,6 +19,7 @@ export function useAdminData(userEmail: string | null) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Mock modules for reference
   const modules: Module[] = [
@@ -157,6 +159,25 @@ export function useAdminData(userEmail: string | null) {
     });
   };
 
+  const viewAsUser = (email: string) => {
+    // Store the current admin email to restore it later
+    localStorage.setItem('adminOriginalEmail', userEmail || '');
+    
+    // Set the temporary user email
+    localStorage.setItem('userEmail', email);
+    
+    // Add a flag to indicate we're in admin-as-user mode
+    localStorage.setItem('adminViewingAsUser', 'true');
+    
+    toast({
+      title: "Visualizando como usuário",
+      description: `Agora você está visualizando como ${email}`,
+    });
+    
+    // Navigate to member area
+    navigate('/membros');
+  };
+
   const filteredUsers = users.filter(user => 
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -171,7 +192,7 @@ export function useAdminData(userEmail: string | null) {
     toggleModuleAccess,
     toggleNewUserStatus,
     deleteUser,
-    editUserEmail
+    editUserEmail,
+    viewAsUser
   };
 }
-

@@ -20,7 +20,8 @@ const AdminPage = () => {
     toggleModuleAccess, 
     toggleNewUserStatus,
     deleteUser,
-    editUserEmail
+    editUserEmail,
+    viewAsUser
   } = useAdminData(userEmail);
 
   const handleLogout = () => {
@@ -50,6 +51,7 @@ const AdminPage = () => {
           toggleModuleAccess={toggleModuleAccess}
           deleteUser={deleteUser}
           editUserEmail={editUserEmail}
+          viewAsUser={viewAsUser}
         />
 
         <AdminInfoCard />

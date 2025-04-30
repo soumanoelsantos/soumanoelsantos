@@ -21,6 +21,7 @@ interface UsersManagementProps {
   toggleModuleAccess: (email: string, moduleId: number) => void;
   deleteUser: (email: string) => void;
   editUserEmail: (oldEmail: string, newEmail: string) => void;
+  viewAsUser: (email: string) => void;
 }
 
 const UsersManagement: React.FC<UsersManagementProps> = ({
@@ -32,7 +33,8 @@ const UsersManagement: React.FC<UsersManagementProps> = ({
   toggleNewUserStatus,
   toggleModuleAccess,
   deleteUser,
-  editUserEmail
+  editUserEmail,
+  viewAsUser
 }) => {
   return (
     <Card className="bg-white border-dark-primary/20 shadow-lg mb-8">
@@ -51,6 +53,7 @@ const UsersManagement: React.FC<UsersManagementProps> = ({
           toggleModuleAccess={toggleModuleAccess}
           deleteUser={deleteUser}
           editUserEmail={editUserEmail}
+          viewAsUser={viewAsUser}
         />
       </CardContent>
       <CardFooter className="flex justify-between">

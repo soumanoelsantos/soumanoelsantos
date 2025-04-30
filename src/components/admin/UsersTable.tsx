@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { UserIcon, Edit, Trash2, X, Check } from "lucide-react";
+import { UserIcon, Edit, Trash2, X, Check, LogIn } from "lucide-react";
 import { Module } from "@/hooks/useAdminData";
 import { Input } from "@/components/ui/input";
 import { 
@@ -31,6 +31,7 @@ interface UsersTableProps {
   toggleModuleAccess: (email: string, moduleId: number) => void;
   deleteUser: (email: string) => void;
   editUserEmail: (oldEmail: string, newEmail: string) => void;
+  viewAsUser: (email: string) => void;
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({ 
@@ -39,7 +40,8 @@ const UsersTable: React.FC<UsersTableProps> = ({
   toggleNewUserStatus, 
   toggleModuleAccess,
   deleteUser,
-  editUserEmail
+  editUserEmail,
+  viewAsUser
 }) => {
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [newEmail, setNewEmail] = useState("");
@@ -140,6 +142,15 @@ const UsersTable: React.FC<UsersTableProps> = ({
                     </>
                   ) : (
                     <>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => viewAsUser(user.email)}
+                        className="h-8 px-2 border-green-200 hover:bg-green-50"
+                        title="Ver como usuário"
+                      >
+                        <LogIn className="h-4 w-4 text-green-600" />
+                      </Button>
                       <Button 
                         variant="outline" 
                         size="sm" 
