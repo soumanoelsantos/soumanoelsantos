@@ -60,17 +60,7 @@ const MemberArea = () => {
         <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Área de Membros</h1>
         
         <div className="grid grid-cols-1 gap-6">
-          <Card className="bg-white border-gray-200 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-800">Bem-vindo ao Programa Maximus</CardTitle>
-              <CardDescription className="text-gray-600">
-                {/* Removed text as requested */}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-gray-700">
-              {/* Removed text as requested */}
-            </CardContent>
-          </Card>
+          {/* Removed welcome card as requested */}
           
           <MemberContentList />
           
