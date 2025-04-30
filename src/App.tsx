@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import DiagnosticoTest from "./pages/DiagnosticoTest";
 import CheckListContratacao from "./pages/CheckListContratacao";
 import AnaliseSwot from "./pages/AnaliseSwot";
+import TesteFase from "./pages/TesteFase";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/teste" element={<DiagnosticoTest />} />
             <Route path="/checklist-contratacao" element={<CheckListContratacao />} />
             <Route path="/analise-swot" element={<AnaliseSwot />} />
+            <Route path="/teste-fase" element={<TesteFase />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
