@@ -43,13 +43,13 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
         <ActionPlanCard actionPlan={actionPlan} answersData={answersData} />
       </div>
       
-      {/* Marketing CTA Section */}
+      {/* Marketing CTA Section - Updated to white background with appropriate text colors */}
       <div className="bg-white p-6 border rounded-lg shadow-sm text-center mt-12 pdf-marketing-section">
-        <h2 className="text-3xl font-bold mb-4 text-black">
+        <h2 className="text-3xl font-bold mb-4 text-gray-800">
           Transforme sua empresa em <br />
           uma <span className="text-[#D4AF37]">máquina de vendas</span>
         </h2>
-        <p className="text-lg text-black mb-6">
+        <p className="text-lg text-gray-700 mb-6">
           Em 45 minutos, farei um plano de ação <strong>GRATUITO</strong> de vendas, marketing e gestão para a sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias.
         </p>
         
@@ -63,7 +63,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           </Button>
         </div>
         
-        <p className="text-sm text-gray-600 mt-2">
+        <p className="text-sm text-gray-500 mt-2">
           Clique acima e agende agora – As vagas são limitadas!
         </p>
       </div>

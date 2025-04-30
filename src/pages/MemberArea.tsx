@@ -62,17 +62,17 @@ const MemberArea = () => {
     <div className="min-h-screen bg-white flex flex-col">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
-      {/* Hero section identical to the image */}
-      <div className="w-full bg-black py-16">
+      {/* Hero section changed from black to white */}
+      <div className="w-full bg-white py-16 border-y border-gray-200">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-8">
             Transforme sua empresa em<br />
             uma <span className="text-[#D4AF37]">máquina de vendas</span>
           </h1>
           
-          <div className="max-w-4xl mx-auto bg-[#111111]/80 p-6 rounded-lg backdrop-blur-sm border border-white/10 mb-12">
-            <p className="text-lg md:text-xl text-white">
-              Em 45 minutos, farei um plano de ação <strong className="text-white">GRATUITO</strong> de vendas, marketing e gestão para a sua empresa <strong className="text-white">DOBRAR</strong> o faturamento em 90 dias.
+          <div className="max-w-4xl mx-auto bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 mb-12">
+            <p className="text-lg md:text-xl text-gray-700">
+              Em 45 minutos, farei um plano de ação <strong className="text-gray-900">GRATUITO</strong> de vendas, marketing e gestão para a sua empresa <strong className="text-gray-900">DOBRAR</strong> o faturamento em 90 dias.
             </p>
           </div>
           
@@ -85,7 +85,7 @@ const MemberArea = () => {
             <ArrowRight className="h-5 w-5" />
           </Button>
           
-          <p className="text-white/70 mt-4">
+          <p className="text-gray-500 mt-4">
             Clique acima e agende agora – As vagas são limitadas!
           </p>
         </div>
