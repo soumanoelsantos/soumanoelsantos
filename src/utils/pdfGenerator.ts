@@ -11,9 +11,21 @@ export const generatePDF = (element: HTMLDivElement, onComplete?: () => void) =>
   styleElement.innerHTML = getPdfStyles();
   document.head.appendChild(styleElement);
 
+  // Get PDF options and override for landscape orientation for Business Map
+  const pdfOptions = getPdfOptions();
+  if (element.classList.contains('business-map')) {
+    pdfOptions.filename = 'mapa-do-negocio.pdf';
+    pdfOptions.jsPDF = { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'landscape',
+      compress: true
+    };
+  }
+
   // Generate the PDF
   html2pdf()
-    .set(getPdfOptions())
+    .set(pdfOptions)
     .from(element)
     .save()
     .then(() => {

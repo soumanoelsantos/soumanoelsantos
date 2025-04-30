@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ const programModules = [
       { id: 2, title: "Check List de Contratação", url: "/checklist-contratacao", isWhatsapp: false },
       { id: 3, title: "Análise SWOT", url: "/analise-swot", isWhatsapp: false },
       { id: 4, title: "Teste Fase da Empresa", url: "/teste-fase", isWhatsapp: false },
+      { id: 5, title: "Mapa do Negócio", url: "/mapa-negocio", isWhatsapp: false },
     ]
   },
   {
