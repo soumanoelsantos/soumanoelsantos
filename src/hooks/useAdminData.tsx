@@ -29,36 +29,50 @@ export function useAdminData(userEmail: string | null) {
   ];
 
   useEffect(() => {
-    // Load mock users data
-    // In a real app, this would come from an API or database
-    const mockUsers = [
-      {
-        email: "usuario1@example.com",
-        isNewUser: true,
-        unlockedModules: [0]
-      },
-      {
-        email: "usuario2@example.com",
-        isNewUser: false,
-        unlockedModules: [0, 1, 2]
-      },
-      {
-        email: userEmail || "admin@example.com",
-        isNewUser: false,
-        unlockedModules: [0, 1, 2, 3, 4]
-      }
-    ];
-
-    // Simulate API delay
-    setTimeout(() => {
-      setUsers(mockUsers);
+    // Try to load users from localStorage first
+    const savedUsers = localStorage.getItem('adminUsers');
+    
+    if (savedUsers) {
+      setUsers(JSON.parse(savedUsers));
       setIsLoading(false);
-    }, 500);
+    } else {
+      // Load mock users data if nothing in localStorage
+      const mockUsers = [
+        {
+          email: "usuario1@example.com",
+          isNewUser: true,
+          unlockedModules: [0]
+        },
+        {
+          email: "usuario2@example.com",
+          isNewUser: false,
+          unlockedModules: [0, 1, 2]
+        },
+        {
+          email: userEmail || "admin@example.com",
+          isNewUser: false,
+          unlockedModules: [0, 1, 2, 3, 4]
+        }
+      ];
+
+      // Simulate API delay
+      setTimeout(() => {
+        setUsers(mockUsers);
+        // Save to localStorage
+        localStorage.setItem('adminUsers', JSON.stringify(mockUsers));
+        setIsLoading(false);
+      }, 500);
+    }
   }, [userEmail]);
 
+  // Helper function to save users to localStorage
+  const saveUsersToStorage = (updatedUsers: User[]) => {
+    localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+  };
+
   const toggleModuleAccess = (userEmail: string, moduleId: number) => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => {
+    setUsers(prevUsers => {
+      const updatedUsers = prevUsers.map(user => {
         if (user.email === userEmail) {
           const hasModule = user.unlockedModules.includes(moduleId);
           
@@ -76,13 +90,17 @@ export function useAdminData(userEmail: string | null) {
           return { ...user, unlockedModules: updatedModules };
         }
         return user;
-      })
-    );
+      });
+      
+      // Save to localStorage
+      saveUsersToStorage(updatedUsers);
+      return updatedUsers;
+    });
   };
 
   const toggleNewUserStatus = (userEmail: string) => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => {
+    setUsers(prevUsers => {
+      const updatedUsers = prevUsers.map(user => {
         if (user.email === userEmail) {
           const updatedStatus = !user.isNewUser;
           
@@ -94,22 +112,34 @@ export function useAdminData(userEmail: string | null) {
           return { ...user, isNewUser: updatedStatus };
         }
         return user;
-      })
-    );
+      });
+      
+      // Save to localStorage
+      saveUsersToStorage(updatedUsers);
+      return updatedUsers;
+    });
   };
 
   const deleteUser = (email: string) => {
-    setUsers(prevUsers => prevUsers.filter(user => user.email !== email));
-    
-    toast({
-      title: "Usuário excluído",
-      description: `${email} foi removido com sucesso`,
+    setUsers(prevUsers => {
+      // Filter out the deleted user
+      const updatedUsers = prevUsers.filter(user => user.email !== email);
+      
+      // Save to localStorage
+      saveUsersToStorage(updatedUsers);
+      
+      toast({
+        title: "Usuário excluído",
+        description: `${email} foi removido com sucesso`,
+      });
+      
+      return updatedUsers;
     });
   };
 
   const editUserEmail = (oldEmail: string, newEmail: string) => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => {
+    setUsers(prevUsers => {
+      const updatedUsers = prevUsers.map(user => {
         if (user.email === oldEmail) {
           toast({
             title: "Email atualizado",
@@ -119,8 +149,12 @@ export function useAdminData(userEmail: string | null) {
           return { ...user, email: newEmail };
         }
         return user;
-      })
-    );
+      });
+      
+      // Save to localStorage
+      saveUsersToStorage(updatedUsers);
+      return updatedUsers;
+    });
   };
 
   const filteredUsers = users.filter(user => 
@@ -140,3 +174,4 @@ export function useAdminData(userEmail: string | null) {
     editUserEmail
   };
 }
+

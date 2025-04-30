@@ -41,7 +41,7 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
         color: #000000 !important;
       }
       
-      /* Card headers */
+      /* Card headers - explicitly ensure white text in headers */
       .pdf-export .bg-[#1d365c], 
       .pdf-export [class*="bg-[#1d365c]"] {
         background-color: #1d365c !important;
@@ -59,7 +59,9 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       
       /* Specifically target the "Resultados do Diagnóstico" title */
       .pdf-export .card-header .text-center.text-white,
-      .pdf-export .card-header .text-xl.text-center.text-white {
+      .pdf-export .card-header .text-xl.text-center.text-white,
+      .pdf-export .card-header .text-xl,
+      .pdf-export .card-header CardTitle {
         color: #FFFFFF !important;
       }
       
@@ -262,3 +264,4 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
 };
 
 export default DownloadPdfButton;
+
