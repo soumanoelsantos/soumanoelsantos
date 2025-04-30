@@ -4,7 +4,7 @@
  * Contains options for PDF generation
  */
 
-export const getDefaultPdfOptions = () => {
+export const getDefaultPdfOptionsConfig = () => {
   return {
     margin: [10, 10, 10, 10],
     filename: 'diagnostico-negocio.pdf',
@@ -25,7 +25,7 @@ export const getDefaultPdfOptions = () => {
   };
 };
 
-export const getBusinessMapPdfOptions = () => {
+export const getBusinessMapPdfOptionsConfig = () => {
   return {
     margin: [5, 5, 5, 5], // Reduced margins for more space
     filename: 'mapa-do-negocio.pdf',

@@ -78,7 +78,7 @@ export const getMapaEquipeStyles = () => {
   `;
 };
 
-export const getMapaEquipePdfOptions = () => {
+export const getMapaEquipePdfOptionsConfig = () => {
   return {
     margin: [10, 10, 10, 10],
     filename: 'mapa-da-equipe.pdf',

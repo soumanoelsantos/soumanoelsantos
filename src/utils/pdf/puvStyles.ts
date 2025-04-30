@@ -63,7 +63,7 @@ export const getPUVPdfStyles = () => {
   `;
 };
 
-export const getPUVPdfOptions = () => {
+export const getPUVPdfOptionsConfig = () => {
   return {
     margin: [10, 10, 10, 10],
     filename: 'proposta-unica-valor.pdf',
