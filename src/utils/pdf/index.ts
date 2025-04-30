@@ -11,8 +11,9 @@ import { getLayoutPdfStyles } from './layoutStyles';
 import { getDiagnosticPdfStyles } from './diagnosticStyles';
 import { getMarketingPdfStyles } from './marketingStyles';
 import { getBusinessMapPdfStyles } from './businessMapStyles';
-import { getPUVPdfStyles, getPUVPdfOptions as getPUVOptions } from './puvStyles';
-import { getDefaultPdfOptions, getBusinessMapPdfOptions as getMapOptions } from './pdfOptions';
+import { getPUVPdfStyles, getPUVPdfOptions } from './puvStyles';
+import { getMapaEquipeStyles, getMapaEquipePdfOptions } from './mapaEquipeStyles';
+import { getDefaultPdfOptions, getBusinessMapPdfOptions } from './pdfOptions';
 
 export const getPdfStyles = (): string => {
   return [
@@ -24,17 +25,22 @@ export const getPdfStyles = (): string => {
     getMarketingPdfStyles(),
     getBusinessMapPdfStyles(),
     getPUVPdfStyles(),
+    getMapaEquipeStyles(),
   ].join('\n');
 };
 
-export const getPdfOptions = () => {
+export const getDefaultPdfOptions = () => {
   return getDefaultPdfOptions();
 };
 
 export const getBusinessMapPdfOptions = () => {
-  return getMapOptions();
+  return getBusinessMapPdfOptions();
 };
 
 export const getPUVPdfOptions = () => {
-  return getPUVOptions();
+  return getPUVPdfOptions();
+};
+
+export const getMapaEquipePdfOptions = () => {
+  return getMapaEquipePdfOptions();
 };

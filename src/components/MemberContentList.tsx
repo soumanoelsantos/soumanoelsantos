@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ const programModules = [
       { id: 4, title: "Teste Fase da Empresa", url: "/teste-fase", isWhatsapp: false },
       { id: 5, title: "Mapa do Negócio", url: "/mapa-negocio", isWhatsapp: false },
       { id: 6, title: "Proposta Única de Valor (PUV)", url: "/proposta-unica-valor", isWhatsapp: false },
+      { id: 7, title: "Mapa da Equipe", url: "/mapa-equipe", isWhatsapp: false },
     ]
   },
   {
