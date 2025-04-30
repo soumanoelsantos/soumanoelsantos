@@ -1,9 +1,10 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { PhaseTestResult } from "../../types/phaseTest";
+import ActionButton from "../ui/action-button";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 
 interface PhaseResultProps {
   result: PhaseTestResult | null;
@@ -41,13 +42,21 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
             </ul>
           </div>
           
-          <div className="pt-4 border-t border-gray-200">
-            <Button onClick={onResetTest} variant="outline" className="mr-4">
+          <div className="pt-4 border-t border-gray-200 flex gap-4 flex-wrap">
+            <ActionButton 
+              onClick={onResetTest} 
+              variant="outline"
+              icon={RefreshCw}
+            >
               Reiniciar Teste
-            </Button>
-            <Button onClick={() => navigate("/membros")}>
+            </ActionButton>
+            <ActionButton 
+              onClick={() => navigate("/membros")}
+              variant="secondary"
+              icon={ArrowLeft}
+            >
               Voltar para Área de Membros
-            </Button>
+            </ActionButton>
           </div>
         </div>
       </CardContent>

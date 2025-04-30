@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generatePDF } from '@/utils/pdfGenerator';
+import ActionButton from '../ui/action-button';
 
 interface DownloadPdfButtonProps {
   pdfRef: React.RefObject<HTMLDivElement>;
@@ -26,16 +26,13 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
   };
 
   return (
-    <div className="flex justify-center mt-4 print:hidden">
-      <Button 
-        onClick={downloadPDF} 
-        className="bg-green-600 hover:bg-green-700 text-white"
-        size="lg"
-      >
-        <Download className="mr-2" size={18} />
-        Baixar Diagnóstico em PDF
-      </Button>
-    </div>
+    <ActionButton 
+      onClick={downloadPDF}
+      variant="primary"
+      icon={Download}
+    >
+      Baixar Diagnóstico em PDF
+    </ActionButton>
   );
 };
 

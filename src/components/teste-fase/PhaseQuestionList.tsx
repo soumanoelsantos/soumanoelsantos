@@ -1,10 +1,11 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PhaseQuestion from "./PhaseQuestion";
 import { PhaseTest } from "../../types/phaseTest";
 import { useToast } from "@/hooks/use-toast";
+import ActionButton from "../ui/action-button";
+import { ArrowLeft } from "lucide-react";
 
 interface PhaseQuestionListProps {
   currentPhase: PhaseTest;
@@ -74,20 +75,22 @@ const PhaseQuestionList = ({
         </div>
         
         <div className="flex justify-between mt-8">
-          <Button
+          <ActionButton
             type="button"
             variant="outline"
             onClick={onPrevious}
             disabled={currentPhaseIndex === 0}
+            icon={ArrowLeft}
           >
             Anterior
-          </Button>
-          <Button 
+          </ActionButton>
+          <ActionButton 
             type="button"
+            variant={currentPhaseIndex < phaseTestLength - 1 ? "primary" : "secondary"}
             onClick={handleNext}
           >
             {currentPhaseIndex < phaseTestLength - 1 ? "Próximo" : "Ver Resultado"}
-          </Button>
+          </ActionButton>
         </div>
       </CardContent>
     </Card>

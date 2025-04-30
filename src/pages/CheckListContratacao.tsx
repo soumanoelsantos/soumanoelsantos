@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import MemberHeader from "@/components/MemberHeader";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import ActionButton from "@/components/ui/action-button";
 
 interface ChecklistItem {
   id: number;
@@ -208,14 +208,14 @@ const CheckListContratacao = () => {
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       <div className="container mx-auto px-4 py-8">
-        <Button 
-          variant="outline" 
+        <ActionButton 
+          variant="secondary"
           onClick={() => navigate('/membros')}
           className="mb-6"
+          icon={ArrowLeft}
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar para área de membros
-        </Button>
+        </ActionButton>
         
         <div className="max-w-4xl mx-auto">
           <Card className="border-dark-primary/20 mb-8">
@@ -254,12 +254,12 @@ const CheckListContratacao = () => {
                   </div>
                   
                   <div className="mt-8 text-center">
-                    <Button 
+                    <ActionButton 
                       onClick={calculateScore} 
-                      className="bg-[#D4AF37] hover:bg-[#C4A030] text-black font-semibold px-8 py-6 text-lg"
+                      className="px-8 py-6 text-lg"
                     >
                       Calcular Resultado
-                    </Button>
+                    </ActionButton>
                   </div>
                 </>
               ) : (
@@ -274,21 +274,22 @@ const CheckListContratacao = () => {
                     <p className={`mt-2 ${getResultMessage().textColor}`}>{getResultMessage().description}</p>
                   </div>
                   
-                  <div className="mt-8 text-center">
-                    <Button 
+                  <div className="mt-8 text-center flex flex-wrap justify-center gap-4">
+                    <ActionButton 
                       onClick={resetChecklist} 
                       variant="outline"
-                      className="border-dark-primary/20 text-gray-800 mr-4"
+                      icon={RefreshCw}
                     >
                       Reiniciar Check List
-                    </Button>
+                    </ActionButton>
                     
-                    <Button 
-                      onClick={() => navigate('/membros')} 
-                      className="bg-[#1d365c] hover:bg-[#1d365c]/90 text-white"
+                    <ActionButton 
+                      onClick={() => navigate('/membros')}
+                      variant="secondary"
+                      icon={ArrowLeft}
                     >
                       Voltar para Área de Membros
-                    </Button>
+                    </ActionButton>
                   </div>
                 </div>
               )}

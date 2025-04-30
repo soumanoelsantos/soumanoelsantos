@@ -6,8 +6,8 @@ import DownloadPdfButton from './DownloadPdfButton';
 import ResetDiagnosticButton from './ResetDiagnosticButton';
 import BackToMemberAreaButton from './BackToMemberAreaButton';
 import { AnswersDataType } from '@/types/diagnostic';
-import { Button } from '@/components/ui/button';
 import { Calendar } from 'lucide-react';
+import ActionButton from '../ui/action-button';
 
 interface DiagnosticResultsProps {
   results: {
@@ -54,13 +54,13 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
         </p>
         
         <div className="pdf-cta-button mb-2">
-          <Button 
+          <ActionButton 
             onClick={handleScheduleClick}
-            className="bg-[#D4AF37] hover:bg-[#C4A030] text-black font-semibold rounded-full px-8 py-6 text-lg mx-auto gap-2 inline-flex items-center"
+            className="px-8 py-6 text-lg mx-auto"
+            icon={Calendar}
           >
-            <Calendar className="h-5 w-5" />
             Agendar diagnóstico gratuito
-          </Button>
+          </ActionButton>
         </div>
         
         <p className="text-sm text-gray-500 mt-2">
