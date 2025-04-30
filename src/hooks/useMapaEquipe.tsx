@@ -155,6 +155,20 @@ export const useMapaEquipe = () => {
 
   const handlePreview = () => {
     if (validateForm()) {
+      // Explicitly save data before showing preview
+      if (userEmail) {
+        const dataToSave = {
+          empresaNome,
+          colaboradores,
+        };
+        localStorage.setItem(storageKey, JSON.stringify(dataToSave));
+        
+        toast({
+          title: "Dados salvos",
+          description: "Seus dados do Mapa da Equipe foram salvos com sucesso.",
+        });
+      }
+      
       setShowPreview(true);
     }
   };

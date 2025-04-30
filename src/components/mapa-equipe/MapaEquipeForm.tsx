@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useMapaEquipe, niveisMaturidadeOptions, estilosLiderancaOptions, perfisComportamentaisOptions, potenciaisOptions } from "@/hooks/useMapaEquipe";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash, Plus, FileText, RefreshCw } from "lucide-react";
+import { Trash, Plus, FileText, RefreshCw, Save } from "lucide-react";
 import MapaEquipePreview from "./MapaEquipePreview";
 
 const MapaEquipeForm = () => {
@@ -209,8 +209,8 @@ const MapaEquipeForm = () => {
                 className="bg-dark-primary hover:bg-dark-primary/90 text-white"
                 onClick={handlePreview}
               >
-                <FileText className="h-4 w-4 mr-2" />
-                Visualizar Mapa
+                <Save className="h-4 w-4 mr-2" />
+                Salvar e Visualizar Mapa
               </Button>
             </div>
           </div>
