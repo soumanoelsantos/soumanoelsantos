@@ -19,6 +19,7 @@ const programModules = [
       { id: 3, title: "Análise SWOT", url: "/analise-swot", isWhatsapp: false },
       { id: 4, title: "Teste Fase da Empresa", url: "/teste-fase", isWhatsapp: false },
       { id: 5, title: "Mapa do Negócio", url: "/mapa-negocio", isWhatsapp: false },
+      { id: 6, title: "Proposta Única de Valor (PUV)", url: "/proposta-unica-valor", isWhatsapp: false },
     ]
   },
   {

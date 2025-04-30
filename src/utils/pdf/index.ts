@@ -11,7 +11,9 @@ import { getLayoutPdfStyles } from './layoutStyles';
 import { getDiagnosticPdfStyles } from './diagnosticStyles';
 import { getMarketingPdfStyles } from './marketingStyles';
 import { getBusinessMapPdfStyles } from './businessMapStyles';
+import { getPUVPdfStyles } from './puvStyles';
 import { getDefaultPdfOptions, getBusinessMapPdfOptions as getMapOptions } from './pdfOptions';
+import { getPUVPdfOptions } from './puvStyles';
 
 export const getPdfStyles = (): string => {
   return [
@@ -22,6 +24,7 @@ export const getPdfStyles = (): string => {
     getDiagnosticPdfStyles(),
     getMarketingPdfStyles(),
     getBusinessMapPdfStyles(),
+    getPUVPdfStyles(),
   ].join('\n');
 };
 
@@ -31,4 +34,8 @@ export const getPdfOptions = () => {
 
 export const getBusinessMapPdfOptions = () => {
   return getMapOptions();
+};
+
+export const getPUVPdfOptions = () => {
+  return getPUVPdfOptions();
 };
