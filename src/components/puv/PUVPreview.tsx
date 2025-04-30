@@ -23,7 +23,7 @@ const PUVPreview = ({ data, previewRef, onEditClick }: PUVPreviewProps) => {
       description: "O PDF da sua Proposta Única de Valor está sendo gerado.",
     });
 
-    generatePDF(previewRef.current, "proposta-unica-valor.pdf");
+    generatePDF(previewRef.current);
   };
 
   // Função para formatar o texto da PUV
