@@ -1,504 +1,486 @@
 
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Download } from "lucide-react";
-import MemberHeader from "@/components/MemberHeader";
-import DiagnosticHeader from "@/components/DiagnosticHeader";
-import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import React, { useState, useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { ArrowLeft, ArrowRight, Check, Download, Home, Redo } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
 
-interface Question {
-  id: number;
-  text: string;
-  options: {
-    key: string;
-    text: string;
-    phase: number;
-  }[];
-}
-
-interface Phase {
-  id: number;
-  title: string;
-  description: string;
-  characteristics: string[];
-  skills: string[];
-}
-
-const questions: Question[] = [
+// Define the phases of business
+const businessPhases = [
   {
     id: 1,
-    text: "1. Sua empresa em relação ao lucro já se percebe?",
-    options: [
-      { key: "A", text: "Estabelecida e já tem uma reserva financeira e precisa se preocupar mais com os processos, organizar as atividades para continuar lucrando.", phase: 3 },
-      { key: "B", text: "Já consegue respirar e já se sente falta de aumentar o time para continuar lucrando.", phase: 2 },
-      { key: "C", text: "Está consolidada no mercado e pode focar e pensar em um planejamento a longo prazo.", phase: 4 },
-      { key: "D", text: "Precisa trabalhar focada em gerar lucro para consolidar o negócio.", phase: 1 }
-    ]
-  },
-  {
-    id: 2,
-    text: "2. Sua empresa hoje em relação a gestão de pessoas está?",
-    options: [
-      { key: "A", text: "Está focando em contratar pessoal para aumentar o quadro de funcionários para continuar lucrando e crescendo.", phase: 2 },
-      { key: "B", text: "Tem um bom quadro de funcionários, os processos já estão estabelecidos e aumentamos o lucro.", phase: 4 },
-      { key: "C", text: "Tem um bom quadro de funcionários mas enfrenta conflitos frequentes e falta de organização.", phase: 3 },
-      { key: "D", text: "Tem a mão de obra bem reduzida para dar conta do trabalho, todos (ou a maioria) acumulam várias funções para produzir resultado.", phase: 1 }
-    ]
-  },
-  {
-    id: 3,
-    text: "3. Em relação a gestão onde sua empresa está focada atualmente?",
-    options: [
-      { key: "A", text: "Está focada em organizar, estruturar as atividades e criar indicadores.", phase: 3 },
-      { key: "B", text: "A gestão está focada mais em pessoas, pra gerar engajamento na equipe.", phase: 2 },
-      { key: "C", text: "A gestão está focada em controlar gastos e gerar mais lucros.", phase: 1 },
-      { key: "D", text: "Está focada em acompanhar o planejamento estratégico.", phase: 4 }
-    ]
-  },
-  {
-    id: 4,
-    text: "4. Na questão formação de liderança como está sua empresa hoje?",
-    options: [
-      { key: "A", text: "A empresa já tem uma liderança estabelecida e em constante desenvolvimento para alcançar as metas do planejamento estratégico.", phase: 4 },
-      { key: "B", text: "Não a tanta necessidade de trabalhar liderança, pois todos estão bastante envolvidos e ocupados em fazer suas atividades, não sobra tempo para pensar em liderança.", phase: 1 },
-      { key: "C", text: "A empresa já tem um bom time e se faz necessário a liderança até para controlar os processos.", phase: 3 },
-      { key: "D", text: "Com o aumento da equipe percebe-se a necessidade de começar a estabelecer e trabalhar liderança.", phase: 2 }
-    ]
-  },
-  {
-    id: 5,
-    text: "5. Em relação aos processos como está sua empresa hoje?",
-    options: [
-      { key: "A", text: "Temos um quadro bem reduzido e todos sabem o que tem a fazer e focam em suas atividades.", phase: 1 },
-      { key: "B", text: "Nossos processos estão estabelecidos e controlamos os indicadores.", phase: 4 },
-      { key: "C", text: "Já estamos com o time formado e precisamos organizar as atividades, estabelecendo a melhor maneira de realiza-las, de acordo com a necessidade do negócio.", phase: 3 },
-      { key: "D", text: "Estamos ampliando o time de trabalho e com necessidade de redistribuir as atividades.", phase: 2 }
-    ]
-  },
-  {
-    id: 6,
-    text: "6. Qual você percebe que o foco de sua empresa no momento?",
-    options: [
-      { key: "A", text: "Já temos um lucro razoável e para crescer sentimos a necessidade de mais braços.", phase: 2 },
-      { key: "B", text: "Temos um time engajado, os conflitos internos diminuiram muito e aumentamos os lucros.", phase: 4 },
-      { key: "C", text: "Já temos um bom lucro e um time, mais estamos com reclamações de clientes e conflitos internos.", phase: 3 },
-      { key: "D", text: "Precisamos gerar lucro para continuar com a empresa e atingirmos mais lucratividade.", phase: 1 }
-    ]
-  },
-  {
-    id: 7,
-    text: "7. A direção da empresa hoje?",
-    options: [
-      { key: "A", text: "Está focada em cuidar do time e se percebe que precisa de novos talentos para a empresa crescer.", phase: 2 },
-      { key: "B", text: "Só tem tempo para fazer e não para planejar a longo prazo.", phase: 1 },
-      { key: "C", text: "Já temos bons talentos dentro da empresa mais ainda temos muitos conflitos internos.", phase: 3 },
-      { key: "D", text: "Nosso time é engajado e funciona bem mesmo na ausência dos gestores.", phase: 4 }
-    ]
-  },
-  {
-    id: 8,
-    text: "8. Já é possível descentralizar e delegar atividades?",
-    options: [
-      { key: "A", text: "Tenho uma boa equipe e já delego grande parte das atividades, ficando somente com as funções gerenciais para o alcance do planejamento estabelecido.", phase: 4 },
-      { key: "B", text: "Já delego as atividades necessárias para o meu time e consigo desenvolver mais o pessoal.", phase: 2 },
-      { key: "C", text: "Já sinto uma grande necessidade de dividir as atividades e delegar algumas tarefas.", phase: 3 },
-      { key: "D", text: "No momento tenho que ficar atendo a tudo que acontece e exercer diversas funções.", phase: 1 }
-    ]
-  },
-  {
-    id: 9,
-    text: "9. Como é a relação da empresa com os consumidores?",
-    options: [
-      { key: "A", text: "Temos uma equipe formada mais nossos clientes ainda reclamam muito de nosso atendimento e produto.", phase: 3 },
-      { key: "B", text: "Já estabelecemos nossa cultura, marca e nossos clientes já nos identificam no mercado, temos índice de reclamações bem baixos.", phase: 4 },
-      { key: "C", text: "Para atender a demanda que temos no momento se percebe que precisamos aumentar a equipe.", phase: 2 },
-      { key: "D", text: "Estamos focados em buscar mais clientes e entregar o que vendemos.", phase: 1 }
-    ]
-  },
-  {
-    id: 10,
-    text: "10. Como é a relação da empresa hoje com os funcionários?",
-    options: [
-      { key: "A", text: "Temos poucos funcionários um quadro bem reduzido, só para conseguir manter o negócio funcionando.", phase: 1 },
-      { key: "B", text: "Já conseguimos aumentar um pouco a equipe e dividir algumas atividades.", phase: 2 },
-      { key: "C", text: "Já temos um bom quadro de funcionários, que desempenham suas funções mais ainda com grande necessidade de intervenção da gerencia.", phase: 3 },
-      { key: "D", text: "Os funcionários já se mostram independentes e os líderes já tem pode decisório.", phase: 4 }
-    ]
-  },
-  {
-    id: 11,
-    text: "11. Qual é a estratégia da empresa no momento?",
-    options: [
-      { key: "A", text: "De aumentar o time para gerar mais lucros, já perdemos negócio por falta de pessoal.", phase: 2 },
-      { key: "B", text: "De gerar lucro para se manter no mercado.", phase: 1 },
-      { key: "C", text: "Focar no planejamento estratégico para que a empresa cresça mais.", phase: 4 },
-      { key: "D", text: "De diminuir o número de conflitos e reclamações.", phase: 3 }
-    ]
-  },
-  {
-    id: 12,
-    text: "12. Como está a cultura da empresa no momento?",
-    options: [
-      { key: "A", text: "Já temos uma equipe, mas ainda não conseguimos encontrar a melhor maneira de trabalhar para alcançar os resultados.", phase: 3 },
-      { key: "B", text: "Já contamos com uma equipe formada, mas a missão da empresa não é clara para todos.", phase: 2 },
-      { key: "C", text: "Não temos uma cultura estabelecida, ainda não temos um jeito de trabalhar, resolvemos os problemas conforme aparecem.", phase: 1 },
-      { key: "D", text: "A missão, visão e valores da empresa já são bem claros para todos.", phase: 4 }
-    ]
-  }
-];
-
-const phases: Phase[] = [
-  {
-    id: 1,
-    title: "Fase 1 – Sobrevivência e Confirmação / Foco em Resultados",
-    description: "Este é o estágio onde o empreendedor está focado em manter sua empresa viva, pagar as contas, honrar seus compromissos, captar novos recursos, ter capital de giro e fazer sua ideia se confirmar como um modelo de negócios possível de ser praticado.",
+    title: "Fase 1 – Sobrevivência / Foco no Caixa",
+    description: "Neste primeiro momento, o empreendedor está em uma verdadeira batalha pela sobrevivência do seu negócio. Nesta fase, a empresa precisa se firmar no mercado, mostrando o valor do produto/serviço e conquistando clientes.",
     characteristics: [
-      "Neste estágio inicial, o fundador ou dono da empresa é quem toma todas as decisões e também é quem geralmente banca os investimentos, muitas vezes, colocando seu patrimônio em risco.",
-      "Os objetivos e metas ainda são pensados em curto prazo e não são trabalhados de forma muito clara.",
-      "Aqui é importante o Empreendedor meter a mão na massa e fazer acontecer, sem se esquecer de que para fazer o negócio prosperar ele vai precisar de talentos (pessoas certas e comprometidas) para fazer a empresa crescer, com foco em gerar resultado, em ter caixa para fazer contratações e poder começar a investir em inovações."
-    ],
-    skills: [
-      "Geração de caixa (vendas e controle de custos)",
-      "Tolerância ao risco",
-      "Proatividade",
-      "Perfil executor",
-      "Capacidade de entregar o que foi vendido com qualidade"
+      "O foco está na sobrevivência, em gerar caixa para pagar as contas, os fornecedores e outros compromissos.",
+      "Existe grande sacrifício pessoal (principalmente financeiro) por parte do empreendedor.",
+      "Concentração no curto prazo, resolvendo problemas do dia-a-dia.",
+      "A empresa opera principalmente na base do improviso.",
+      "Geralmente, é o empresário quem cuida de todas as áreas do negócio.",
+      "Decisões são tomadas conforme a necessidade, sem planejamento.",
+      "Erro, acerto, tentativa."
     ]
   },
   {
     id: 2,
     title: "Fase 2 – Talentos / Foco em Pessoas",
-    description: "Neste segundo momento, o empreendedor já entende que não consegue dar conta de tudo sozinho, ele percebe que é necessário ter mais "braços" para o negócio crescer e, com isso, a importância de contratar talentos, "gente boa", profissionais especializados em determinadas áreas (Vendas, Financeiro, Gestão de Pessoas, Marketing, por exemplo) para lhe ajudar atender as crescentes demandas do seu empreendimento junto ao mercado, fornecedores, parceiros e seus clientes.",
+    description: "Neste segundo momento, o empreendedor já entende que não consegue dar conta de tudo sozinho, ele percebe que é necessário ter mais \"braços\" para o negócio crescer e, com isso, a importância de contratar talentos, \"gente boa\", profissionais especializados em determinadas áreas (Vendas, Financeiro, Gestão de Pessoas, Marketing, por exemplo) para lhe ajudar atender as crescentes demandas do seu empreendimento junto ao mercado, fornecedores, parceiros e seus clientes.",
     characteristics: [
       "É importante que o Empresário já tenha estabelecido suas diretrizes estratégicas (missão, visão e valores) para com isso começar a criar uma forma de trabalhar dentro da empresa, a cultura e a personalidade do negócio.",
-      "Um ponto de atenção são os aspectos legais relacionados a contratação de funcionários, é importante ter orientação contábil e jurídica para minimizar riscos trabalhistas e reduzir a carga tributária."
-    ],
-    skills: [
-      "Recrutamento e seleção de pessoas",
-      "Implantação da cultura (missão, visão e valores)",
-      "Liderança",
-      "Treinamento e desenvolvimento da equipe",
-      "Gestão jurídica, trabalhista e legal dos funcionários"
+      "Entende que é fundamental definir com clareza qual é o seu negócio, ou seja, qual é o real benefício que a sua empresa leva para o mercado.",
+      "Dá os primeiros passos para estruturar e organizar melhor o negócio.",
+      "Sabe que não é possível fazer tudo sozinho.",
+      "Esboça um planejamento, mas ainda com foco no curto prazo.",
+      "Começa a implementar algumas ferramentas básicas de administração.",
+      "Ainda se envolve em muitas questões operacionais."
     ]
   },
   {
     id: 3,
-    title: "Fase 3 – Organização / Foco em Processos",
-    description: "Nesta fase por melhores que sejam os profissionais contratados, a falta de processos se torna um gap importante do negócio e, portanto, deve virar um importante foco da atenção do empreendedor. Chega a hora, então, de evoluir as diretrizes da empresa e os procedimentos que devem ser seguidos por todos os departamentos e pessoas ao executar suas tarefas.",
+    title: "Fase 3 – Sistemas / Foco nos Processos",
+    description: "Neste terceiro momento, o empreendedor já contratou alguns talentos para atuarem em sua empresa de acordo com a sua especialidade técnica. É necessário aprender a trabalhar em conjunto e em sinergia para que o resultado do time seja maior que a soma dos resultados individuais. Para isso, é fundamental desenvolver sistemas de trabalho, com regras claras e processos bem definidos.",
     characteristics: [
-      "Este alinhamento é fundamental para que os processos sejam orientadores do trabalho a ser feito, independente de quem o faça. Digo isso porque em empresas sem processos é comum que ao sair de uma função, apenas aquele colaborador que fazia aquela atividade, saiba o que fazer. Isso atravanca demais os processos e prejudica a produtividade de modo geral.",
-      "Outro ponto - chave é o foco no desenvolvimento da maturidade da cultura organizacional, uma vez que ela é onipresente, ou seja, é o que as pessoas fazem quando você não está vendo. Portanto, se este conjunto de hábitos, valores, preceitos e crenças estão bem alinhados e incorporados às ações da sua equipe, os processos tendem a ser respeitados e seguidos felmente por todos estando você presente ou não na empresa."
-    ],
-    skills: [
-      "Orientação para processos",
-      "Reuniões efetivas",
-      "Diretrizes claras",
-      "Comunicação interna",
-      "Desenvolvimento da cultura organizacional",
-      "Indicadores de desempenho"
+      "Já possui talentos contratados, mas nem sempre consegue obter o melhor de cada um.",
+      "Identifica a necessidade de criar e implementar sistemas de trabalho.",
+      "Começa a entender a diferença entre ser eficaz (fazer o que precisa ser feito) e ser eficiente (fazer da melhor forma possível).",
+      "Percebe a importância da padronização e do controle de qualidade.",
+      "Inicia o processo de documentação dos procedimentos.",
+      "Começa a elaborar um planejamento com visão de médio prazo.",
+      "Sente necessidade de implementar indicadores de desempenho."
     ]
   },
   {
     id: 4,
-    title: "Fase 4 – Excelência / Processos, Pessoas e Resultados em excelência",
-    description: "Este é o momento onde todo empreendedor sonha em chegar, pois é quando todas as etapas anteriores estão funcionando perfeitamente e surtindo os resultados desejados. Para isso é essencial que haja o alinhamento entre Pessoas e Processos, conforme preconiza o modelo PPR, ou seja, processos claros e profissionais competentes e preparados para fazê-los, bem como para atender as demandas da empresa e ajudá-la a crescer cada vez mais.",
+    title: "Fase 4 – Expansão / Foco no Crescimento",
+    description: "Neste quarto momento, com talentos integrados às suas funções e sistemas de trabalho implementados, o empreendedor pode focar na expansão segura e sustentável do negócio. É o momento de ampliar a participação no mercado, diversificar os produtos/serviços e, possivelmente, considerar novas unidades ou filiais.",
     characteristics: [
-      "A empresa que está nessa fase precisa trabalhar a formação & desenvolvimento dos líderes e gestores para que o negócio possa se multiplicar cada vez mais. Os líderes são protagonistas dos resultados dentro de uma empresa e precisam ser muito bem preparados.",
-      "Outro aspecto importante é a descentralização da tomada de decisão através de políticas, indicadores e alçadas, nessa fase os líderes (e não só o empresário) tomam muitas decisões e fazem o negócio crescer.",
-      "Tudo deve ser amparado por um bom processo de planejamento estratégico, nesse processo se define as prioridades da organização, as diretrizes estratégicas são revisitadas e validadas, as alçadas são estabelecidas e principalmente as metas e os responsáveis por cada resultado são apontados."
-    ],
-    skills: [
-      "Estratégia de negócios",
-      "Formação de líderes",
-      "Governança (políticas, alçadas e regras)",
-      "Retenção dos talentos",
-      "Planejamento estratégico",
-      "Foco em melhoria contínua"
+      "Empresa já está madura e consolidada no mercado.",
+      "Possui uma equipe qualificada e bem treinada.",
+      "Sistemas de trabalho estão implementados e funcionando.",
+      "Planeja com visão de longo prazo.",
+      "Possui metas claras de crescimento.",
+      "Tem capital para investir na expansão.",
+      "Pensa estrategicamente no negócio."
     ]
   }
 ];
 
-const TesteFase: React.FC = () => {
+// Question model for the test
+const questions = [
+  {
+    id: 1,
+    text: "Qual é o principal foco de atenção do empresário no dia a dia?",
+    options: [
+      { id: 'a', text: "Gerar caixa para pagar as contas e manter o negócio funcionando", phase: 1 },
+      { id: 'b', text: "Encontrar e contratar bons profissionais para a equipe", phase: 2 },
+      { id: 'c', text: "Implementar sistemas e processos para melhorar a operação", phase: 3 },
+      { id: 'd', text: "Planejar a expansão do negócio e novas oportunidades de mercado", phase: 4 }
+    ]
+  },
+  {
+    id: 2,
+    text: "Como são tomadas as decisões na empresa?",
+    options: [
+      { id: 'a', text: "De forma improvisada e reativa, resolvendo problemas conforme aparecem", phase: 1 },
+      { id: 'b', text: "Começando a ser mais estruturadas, mas ainda centralizadas no dono", phase: 2 },
+      { id: 'c', text: "Com base em processos definidos e alguma análise de dados", phase: 3 },
+      { id: 'd', text: "De forma estratégica, com planejamento de longo prazo e análise aprofundada", phase: 4 }
+    ]
+  },
+  {
+    id: 3,
+    text: "Como está estruturada a equipe da empresa?",
+    options: [
+      { id: 'a', text: "O dono faz praticamente tudo ou tem ajudantes sem funções bem definidas", phase: 1 },
+      { id: 'b', text: "Começando a contratar profissionais especializados para áreas específicas", phase: 2 },
+      { id: 'c', text: "Equipe bem definida com funções claras e trabalhando com processos", phase: 3 },
+      { id: 'd', text: "Equipe completa, profissionalizada e preparada para escalar o negócio", phase: 4 }
+    ]
+  },
+  {
+    id: 4,
+    text: "Como é o planejamento financeiro da empresa?",
+    options: [
+      { id: 'a', text: "Praticamente inexistente, foco em pagar as contas do mês", phase: 1 },
+      { id: 'b', text: "Básico, com algum controle, mas ainda focado no curto prazo", phase: 2 },
+      { id: 'c', text: "Estruturado, com orçamentos e indicadores financeiros definidos", phase: 3 },
+      { id: 'd', text: "Completo, com planejamento de investimentos e expansão", phase: 4 }
+    ]
+  },
+  {
+    id: 5,
+    text: "Como estão documentados os processos da empresa?",
+    options: [
+      { id: 'a', text: "Não existem processos documentados, tudo está na cabeça do dono", phase: 1 },
+      { id: 'b', text: "Começando a criar algumas documentações básicas e instruções", phase: 2 },
+      { id: 'c', text: "Principais processos estão documentados e são seguidos pela equipe", phase: 3 },
+      { id: 'd', text: "Processos completamente documentados, otimizados e em constante melhoria", phase: 4 }
+    ]
+  },
+  {
+    id: 6,
+    text: "Qual é a visão de futuro para o negócio?",
+    options: [
+      { id: 'a', text: "Sobreviver e conseguir pagar as contas mês a mês", phase: 1 },
+      { id: 'b', text: "Estabilizar o negócio e formar uma boa equipe", phase: 2 },
+      { id: 'c', text: "Crescer com base em processos bem definidos e controlados", phase: 3 },
+      { id: 'd', text: "Expandir para novos mercados, produtos ou unidades de negócio", phase: 4 }
+    ]
+  },
+  {
+    id: 7,
+    text: "Como está a gestão do tempo do empresário?",
+    options: [
+      { id: 'a', text: "Totalmente operacional, \"apagando incêndios\" o tempo todo", phase: 1 },
+      { id: 'b', text: "Ainda muito operacional, mas começando a delegar algumas funções", phase: 2 },
+      { id: 'c', text: "Dividido entre operação e gestão, com tempo para pensar em melhorias", phase: 3 },
+      { id: 'd', text: "Principalmente estratégico, com foco no crescimento do negócio", phase: 4 }
+    ]
+  },
+  {
+    id: 8,
+    text: "Como é feito o controle de qualidade na empresa?",
+    options: [
+      { id: 'a', text: "Não existe um controle formal, apenas reação a reclamações", phase: 1 },
+      { id: 'b', text: "Começando a implementar alguns controles básicos", phase: 2 },
+      { id: 'c', text: "Processos de qualidade definidos e monitorados regularmente", phase: 3 },
+      { id: 'd', text: "Sistema completo de gestão da qualidade com melhorias contínuas", phase: 4 }
+    ]
+  },
+  {
+    id: 9,
+    text: "Como está a capacitação e desenvolvimento da equipe?",
+    options: [
+      { id: 'a', text: "Inexistente ou apenas treinamento básico para executar tarefas", phase: 1 },
+      { id: 'b', text: "Alguns treinamentos pontuais quando necessário", phase: 2 },
+      { id: 'c', text: "Programa de desenvolvimento estruturado para principais funções", phase: 3 },
+      { id: 'd', text: "Plano completo de desenvolvimento para toda a equipe, incluindo lideranças", phase: 4 }
+    ]
+  },
+  {
+    id: 10,
+    text: "Como é a gestão de marketing e vendas na empresa?",
+    options: [
+      { id: 'a', text: "Informal e baseada em oportunidades que surgem", phase: 1 },
+      { id: 'b', text: "Começando a estruturar ações mais planejadas", phase: 2 },
+      { id: 'c', text: "Processos definidos com metas e indicadores", phase: 3 },
+      { id: 'd', text: "Estratégia completa alinhada ao plano de expansão do negócio", phase: 4 }
+    ]
+  }
+];
+
+// Result explanations
+const phaseExplanations = {
+  1: [
+    "Sua empresa está na fase de sobrevivência, com foco principal na geração de caixa para manter as operações.",
+    "É comum nesta fase o empresário se envolver diretamente em todas as atividades do negócio.",
+    "Recomendamos começar a estruturar as bases para o crescimento, definindo funções e responsabilidades claras.",
+    "Desenvolva controles financeiros básicos para entender melhor o fluxo de caixa do seu negócio."
+  ],
+  2: [
+    "Sua empresa está na fase de formação de equipe, buscando atrair e reter talentos.",
+    "É importante nesta fase definir claramente a cultura e os valores da empresa.",
+    "Recomendamos formalizar descrições de cargos e começar a documentar processos básicos.",
+    "Comece a implementar reuniões regulares de acompanhamento com a equipe."
+  ],
+  3: [
+    "Sua empresa está na fase de implementação de sistemas e processos.",
+    "O foco agora deve ser na eficiência operacional e na padronização.",
+    "Recomendamos desenvolver indicadores de desempenho (KPIs) para as principais áreas.",
+    "Invista em ferramentas de gestão para automatizar e controlar os processos."
+  ],
+  4: [
+    "Sua empresa está na fase de expansão e crescimento acelerado.",
+    "O negócio está maduro e pronto para explorar novas oportunidades de mercado.",
+    "Recomendamos desenvolver um plano estratégico detalhado para os próximos anos.",
+    "Considere opções de financiamento para suportar a expansão planejada."
+  ]
+};
+
+const TesteFase = () => {
+  const [activeQuestion, setActiveQuestion] = useState(1);
+  const [answers, setAnswers] = useState<{[key: number]: string}>({});
+  const [showResults, setShowResults] = useState(false);
+  const [phaseCounts, setPhaseCounts] = useState<{[key: number]: number}>({1: 0, 2: 0, 3: 0, 4: 0});
+  const [dominantPhase, setDominantPhase] = useState<number>(0);
+  const [loaded, setLoaded] = useState(false);
+  const pdfRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-  const [showResults, setShowResults] = useState<boolean>(false);
-  const [results, setResults] = useState<Record<number, number>>({1: 0, 2: 0, 3: 0, 4: 0});
-  const [resultPhase, setResultPhase] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  
+
   useEffect(() => {
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-    const email = localStorage.getItem("userEmail");
-    
-    if (!isAuthenticated) {
-      toast({
-        variant: "destructive",
-        title: "Acesso negado",
-        description: "Você precisa fazer login para acessar esta página",
-      });
-      navigate("/login");
-      return;
-    }
-    
-    setUserEmail(email);
-    
-    // Try to load saved answers from localStorage
-    const savedData = localStorage.getItem(`testeFase_${email}`);
-    
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      setUserAnswers(parsedData.userAnswers || {});
-      setResults(parsedData.results || {1: 0, 2: 0, 3: 0, 4: 0});
-      setResultPhase(parsedData.resultPhase || null);
+    // Check for saved test
+    const savedTest = localStorage.getItem('testeFaseAnswers');
+    if (savedTest) {
+      const parsedData = JSON.parse(savedTest);
+      setAnswers(parsedData.answers);
+      setPhaseCounts(parsedData.phaseCounts);
+      setDominantPhase(parsedData.dominantPhase);
       setShowResults(true);
     }
+    setLoaded(true);
+  }, []);
+
+  const handleAnswerSelect = (questionId: number, optionPhase: number) => {
+    const newAnswers = { ...answers, [questionId]: optionPhase };
+    setAnswers(newAnswers);
     
-    setIsLoading(false);
-  }, [navigate, toast]);
-  
-  const handleAnswerChange = (questionId: number, value: string) => {
-    setUserAnswers(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
-  };
-  
-  const handleSubmit = () => {
-    // Check if all questions are answered
-    if (Object.keys(userAnswers).length < questions.length) {
-      toast({
-        variant: "destructive",
-        title: "Formulário incompleto",
-        description: "Por favor, responda todas as perguntas antes de enviar.",
-      });
-      return;
+    if (activeQuestion < questions.length) {
+      setActiveQuestion(activeQuestion + 1);
+    } else {
+      calculateResults(newAnswers);
     }
+  };
+
+  const calculateResults = (newAnswers: {[key: number]: string}) => {
+    const counts = {1: 0, 2: 0, 3: 0, 4: 0};
     
-    // Calculate results
-    const newResults = {1: 0, 2: 0, 3: 0, 4: 0};
-    
-    questions.forEach(question => {
-      const selectedOption = question.options.find(option => option.key === userAnswers[question.id]);
-      if (selectedOption) {
-        newResults[selectedOption.phase as keyof typeof newResults] += 1;
+    Object.values(newAnswers).forEach((phase) => {
+      if (typeof phase === 'number') {
+        counts[phase] += 1;
       }
     });
     
-    // Determine the dominant phase
-    let highestScore = 0;
-    let dominantPhase = 0;
+    setPhaseCounts(counts);
     
-    Object.entries(newResults).forEach(([phase, score]) => {
-      if (score > highestScore) {
-        highestScore = score;
-        dominantPhase = parseInt(phase);
+    // Find the dominant phase
+    let maxCount = 0;
+    let dominant = 0;
+    
+    Object.entries(counts).forEach(([phase, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        dominant = parseInt(phase);
       }
     });
     
-    setResults(newResults);
-    setResultPhase(dominantPhase);
+    setDominantPhase(dominant);
     setShowResults(true);
     
     // Save to localStorage
-    const email = localStorage.getItem("userEmail");
-    if (email) {
-      localStorage.setItem(`testeFase_${email}`, JSON.stringify({
-        userAnswers,
-        results: newResults,
-        resultPhase: dominantPhase
-      }));
-    }
+    localStorage.setItem('testeFaseAnswers', JSON.stringify({
+      answers: newAnswers,
+      phaseCounts: counts,
+      dominantPhase: dominant
+    }));
     
     toast({
       title: "Teste concluído",
-      description: "Os resultados do seu teste estão prontos!",
+      description: "Seus resultados estão prontos para visualização",
     });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    
-    toast({
-      title: "Logout realizado",
-      description: "Você saiu da sua conta com sucesso",
-    });
-    
-    navigate("/login");
+  const goToQuestion = (questionId: number) => {
+    setActiveQuestion(questionId);
   };
 
   const resetTest = () => {
-    setUserAnswers({});
-    setResults({1: 0, 2: 0, 3: 0, 4: 0});
-    setResultPhase(null);
+    setAnswers({});
+    setPhaseCounts({1: 0, 2: 0, 3: 0, 4: 0});
+    setDominantPhase(0);
+    setActiveQuestion(1);
     setShowResults(false);
-    
-    // Remove saved data from localStorage
-    const email = localStorage.getItem("userEmail");
-    if (email) {
-      localStorage.removeItem(`testeFase_${email}`);
-    }
+    localStorage.removeItem('testeFaseAnswers');
     
     toast({
-      title: "Teste reiniciado",
-      description: "Você pode realizar o teste novamente.",
+      title: "Teste resetado",
+      description: "Você pode iniciar o teste novamente",
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-800">Carregando...</div>
-      </div>
-    );
+  const downloadPDF = () => {
+    if (pdfRef.current) {
+      const element = pdfRef.current;
+      const opt = {
+        margin: 10,
+        filename: 'teste-fase-empresa-resultado.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+  
+      html2pdf().set(opt).from(element).save();
+      
+      toast({
+        title: "PDF gerado",
+        description: "Seu resultado foi baixado com sucesso",
+      });
+    }
+  };
+
+  if (!loaded) {
+    return <div className="flex justify-center items-center h-screen">Carregando...</div>;
   }
 
+  const currentProgress = (activeQuestion / questions.length) * 100;
+
+  const chartData = Object.entries(phaseCounts).map(([phase, count]) => ({
+    name: `Fase ${phase}`,
+    value: count
+  }));
+
+  const colors = ['#FF8042', '#00C49F', '#0088FE', '#FFBB28'];
+
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
-      
-      <DiagnosticHeader 
-        title="Teste Fase da Empresa"
-        description="Descubra em qual fase de desenvolvimento sua empresa se encontra"
-        logo="/lovable-uploads/c44e18a4-1484-475d-b95f-81ccfa62f3cc.png"
-      />
-      
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="mb-8">
-          <BackToMemberAreaButton />
+    <div className="min-h-screen bg-white">
+      <div className="bg-gray-100 p-4 border-b">
+        <div className="container mx-auto">
+          <h1 className="text-3xl font-bold text-gray-800">Teste da Fase da sua Empresa</h1>
+          <p className="text-gray-600">Descubra em qual estágio de desenvolvimento sua empresa se encontra</p>
         </div>
-        
-        {showResults ? (
-          <div className="space-y-8">
-            <Card className="bg-white border-gray-200 shadow-lg">
-              <CardHeader className="bg-dark-primary text-white">
-                <CardTitle className="text-2xl">Resultado do Teste</CardTitle>
-                <CardDescription className="text-gray-100">
-                  Com base nas suas respostas, sua empresa está na:
+      </div>
+
+      <div className="container mx-auto py-8 px-4">
+        {!showResults ? (
+          <div className="max-w-3xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle>Pergunta {activeQuestion} de {questions.length}</CardTitle>
+                <CardDescription>
+                  Responda com sinceridade para obter um resultado mais preciso
                 </CardDescription>
+                <Progress value={currentProgress} className="mt-2" />
               </CardHeader>
-              <CardContent className="p-6 space-y-6">
-                {resultPhase && (
-                  <>
-                    <div className="text-center mb-8">
-                      <h2 className="text-3xl font-bold text-dark-primary mb-4">{phases[resultPhase - 1].title}</h2>
-                      <p className="text-gray-700 text-lg">{phases[resultPhase - 1].description}</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="col-span-2 lg:col-span-1">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">Características desta fase:</h3>
-                        <ul className="list-disc pl-6 space-y-3">
-                          {phases[resultPhase - 1].characteristics.map((characteristic, index) => (
-                            <li key={index} className="text-gray-700">{characteristic}</li>
-                          ))}
-                        </ul>
+              <CardContent>
+                <div className="text-xl font-medium mb-6">
+                  {questions[activeQuestion - 1].text}
+                </div>
+                <RadioGroup onValueChange={(value) => handleAnswerSelect(activeQuestion, parseInt(value))}>
+                  <div className="space-y-4">
+                    {questions[activeQuestion - 1].options.map((option) => (
+                      <div 
+                        key={option.id}
+                        className="flex items-start space-x-2 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleAnswerSelect(activeQuestion, option.phase)}
+                      >
+                        <RadioGroupItem value={option.phase.toString()} id={`q${activeQuestion}-${option.id}`} />
+                        <Label htmlFor={`q${activeQuestion}-${option.id}`} className="flex-1 cursor-pointer">
+                          {option.text}
+                        </Label>
                       </div>
-                      <div className="col-span-2 lg:col-span-1">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">Habilidades necessárias:</h3>
-                        <ul className="list-disc pl-6 space-y-3">
-                          {phases[resultPhase - 1].skills.map((skill, index) => (
-                            <li key={index} className="text-gray-700">{skill}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-8">
-                      <h3 className="text-xl font-bold text-gray-800 mb-4">Distribuição de pontos por fase:</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {Object.entries(results).map(([phase, score]) => (
-                          <div key={phase} className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-center">
-                            <p className="text-sm text-gray-600 mb-1">Fase {phase}</p>
-                            <div className="text-3xl font-bold text-dark-primary">{score}</div>
-                            <p className="text-xs text-gray-500 mt-1">pontos</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
+                    ))}
+                  </div>
+                </RadioGroup>
               </CardContent>
-              <CardFooter className="flex flex-wrap gap-4 justify-center pb-6">
-                <Button 
-                  onClick={resetTest}
+              <CardFooter className="flex justify-between">
+                <Button
                   variant="outline"
-                  className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
+                  onClick={() => goToQuestion(Math.max(1, activeQuestion - 1))}
+                  disabled={activeQuestion === 1}
                 >
-                  Refazer o teste
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
                 </Button>
                 
-                <Button 
-                  onClick={() => navigate('/membros')}
-                  className="bg-dark-primary hover:bg-dark-primary/90 text-white"
-                >
-                  Voltar para área de membros
-                </Button>
+                {activeQuestion < questions.length && (
+                  <Button
+                    variant="outline"
+                    onClick={() => goToQuestion(activeQuestion + 1)}
+                    disabled={!answers[activeQuestion]}
+                  >
+                    Próxima <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+                
+                {activeQuestion === questions.length && (
+                  <Button 
+                    onClick={() => calculateResults(answers)}
+                    disabled={!answers[activeQuestion]}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Finalizar teste <Check className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           </div>
         ) : (
-          <div className="space-y-8">
-            <Card className="bg-white border-gray-200 shadow-lg">
-              <CardHeader className="bg-gray-50 border-b border-gray-200">
-                <CardTitle className="text-xl text-gray-800">Questionário - Fase da Empresa</CardTitle>
-                <CardDescription className="text-gray-600">
-                  Responda as 12 questões abaixo para identificar em qual fase sua empresa se encontra
+          <div className="space-y-8" ref={pdfRef}>
+            <Card className="max-w-5xl mx-auto">
+              <CardHeader>
+                <CardTitle className="text-2xl">Resultado: Sua empresa está na {businessPhases.find(p => p.id === dominantPhase)?.title}</CardTitle>
+                <CardDescription>
+                  Baseado nas suas respostas, identificamos que sua empresa está predominantemente na fase {dominantPhase}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="text-gray-700 mb-6">
-                  <p>Para cada questão, escolha <strong>apenas uma opção</strong> que melhor reflete a realidade atual da sua empresa.</p>
+              <CardContent className="space-y-6">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={130}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
                 
-                <div className="space-y-8">
-                  {questions.map((question) => (
-                    <div key={question.id} className="p-4 bg-gray-50 rounded-lg">
-                      <h3 className="text-lg font-medium text-gray-800 mb-4">{question.text}</h3>
-                      <RadioGroup
-                        value={userAnswers[question.id] || ""}
-                        onValueChange={(value) => handleAnswerChange(question.id, value)}
-                      >
-                        <div className="space-y-3">
-                          {question.options.map((option) => (
-                            <div 
-                              key={option.key} 
-                              className="flex items-start space-x-2 p-3 rounded-md bg-white border border-gray-200 hover:border-dark-primary/30"
-                            >
-                              <RadioGroupItem value={option.key} id={`q${question.id}-${option.key}`} />
-                              <Label 
-                                htmlFor={`q${question.id}-${option.key}`}
-                                className="text-gray-700 flex-1 cursor-pointer"
-                              >
-                                {option.text}
-                              </Label>
-                            </div>
-                          ))}
-                        </div>
-                      </RadioGroup>
-                    </div>
-                  ))}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-semibold">Sobre esta fase:</h3>
+                  <p className="text-gray-700">{businessPhases.find(p => p.id === dominantPhase)?.description}</p>
+                  
+                  <h3 className="text-xl font-semibold">Características principais:</h3>
+                  <ul className="list-disc pl-5 space-y-2">
+                    {businessPhases.find(p => p.id === dominantPhase)?.characteristics.map((char, idx) => (
+                      <li key={idx} className="text-gray-700">{char}</li>
+                    ))}
+                  </ul>
+                  
+                  <h3 className="text-xl font-semibold">Recomendações:</h3>
+                  <ul className="list-disc pl-5 space-y-2">
+                    {phaseExplanations[dominantPhase]?.map((rec, idx) => (
+                      <li key={idx} className="text-gray-700">{rec}</li>
+                    ))}
+                  </ul>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-center pb-6">
-                <Button 
-                  onClick={handleSubmit}
-                  className="bg-dark-primary hover:bg-dark-primary/90 text-white px-8"
-                >
-                  Enviar respostas
-                </Button>
-              </CardFooter>
             </Card>
+            
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/membros')}
+                className="flex items-center"
+              >
+                <Home className="mr-2 h-4 w-4" />
+                Voltar para área de membros
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={resetTest}
+                className="flex items-center"
+              >
+                <Redo className="mr-2 h-4 w-4" />
+                Refazer o teste
+              </Button>
+              
+              <Button 
+                onClick={downloadPDF}
+                className="bg-dark-primary hover:bg-dark-primary/90 flex items-center"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Baixar resultado em PDF
+              </Button>
+            </div>
           </div>
         )}
       </div>
