@@ -1,6 +1,7 @@
 
 import html2pdf from 'html2pdf.js';
-import { getPdfStyles, getPdfOptions } from './pdfStyles';
+import { getPdfStyles } from './pdf/index';
+import { getDefaultPdfOptions, getBusinessMapPdfOptions } from './pdf/pdfOptions';
 
 export const generatePDF = (element: HTMLDivElement, onComplete?: () => void) => {
   // Add classes to the content temporarily for PDF styling
@@ -11,16 +12,10 @@ export const generatePDF = (element: HTMLDivElement, onComplete?: () => void) =>
   styleElement.innerHTML = getPdfStyles();
   document.head.appendChild(styleElement);
 
-  // Get PDF options and override for landscape orientation for Business Map
-  const pdfOptions = getPdfOptions();
+  // Get PDF options based on element type
+  let pdfOptions = getDefaultPdfOptions();
   if (element.classList.contains('business-map')) {
-    pdfOptions.filename = 'mapa-do-negocio.pdf';
-    pdfOptions.jsPDF = { 
-      unit: 'mm', 
-      format: 'a4', 
-      orientation: 'landscape',
-      compress: true
-    };
+    pdfOptions = getBusinessMapPdfOptions();
   }
 
   // Generate the PDF
