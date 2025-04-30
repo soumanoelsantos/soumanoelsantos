@@ -28,6 +28,22 @@ const MapaNegocioPreview = ({ data, previewRef, onEditClick }: MapaNegocioPrevie
     generatePDF(previewRef.current);
   };
 
+  // Helper function to check if a field should be displayed
+  const shouldDisplayField = (value: string | undefined): boolean => {
+    return !!value && value.trim() !== "" && value !== "Não preenchido";
+  };
+
+  // Get filled fields count for grid layout calculations
+  const getFilledFieldsCount = (): number => {
+    let count = 0;
+    Object.values(data).forEach(value => {
+      if (shouldDisplayField(value)) count++;
+    });
+    return count;
+  };
+
+  const filledFieldsCount = getFilledFieldsCount();
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-4 justify-between mb-6">
@@ -53,123 +69,131 @@ const MapaNegocioPreview = ({ data, previewRef, onEditClick }: MapaNegocioPrevie
           <h2 className="text-2xl font-bold text-center text-gray-800">MAPA DO NEGÓCIO</h2>
           <p className="text-center text-gray-600">Business Model Canvas com Cultura e Clareza</p>
           
-          <div className="bg-gray-200 p-2 mt-4 text-center">
-            <strong className="text-gray-800">Empresa:</strong> {data.empresa || "Sua Empresa"}
-          </div>
+          {shouldDisplayField(data.empresa) && (
+            <div className="bg-gray-200 p-2 mt-4 text-center">
+              <strong className="text-gray-800">Empresa:</strong> {data.empresa}
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-7 gap-2 mb-2">
-          {/* Top Row */}
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Missão</h3>
-            <p className="text-xs">{data.missao || "Não preenchido"}</p>
-          </Card>
+        <div className="business-map-grid grid grid-cols-7 gap-2 mb-2">
+          {/* Top Row - Only render if data exists */}
+          {shouldDisplayField(data.missao) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Missão</h3>
+              <p className="text-xs">{data.missao}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Visão</h3>
-            <p className="text-xs">{data.visao || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.visao) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Visão</h3>
+              <p className="text-xs">{data.visao}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Parceiros Chave</h3>
-            <p className="text-xs">{data.parceirosChave || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.parceirosChave) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Parceiros Chave</h3>
+              <p className="text-xs">{data.parceirosChave}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Atividades Chaves</h3>
-            <p className="text-xs">{data.atividadesChaves || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.atividadesChaves) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Atividades Chaves</h3>
+              <p className="text-xs">{data.atividadesChaves}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Value Propositions</h3>
-            <p className="text-xs">{data.valuePropositions || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.valuePropositions) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Value Propositions</h3>
+              <p className="text-xs">{data.valuePropositions}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Relação com o Consumidor</h3>
-            <p className="text-xs">{data.relacaoConsumidor || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.relacaoConsumidor) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Relação com o Consumidor</h3>
+              <p className="text-xs">{data.relacaoConsumidor}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Segmento de Consumidores</h3>
-            <p className="text-xs">{data.segmentoConsumidores || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.segmentoConsumidores) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Segmento de Consumidores</h3>
+              <p className="text-xs">{data.segmentoConsumidores}</p>
+            </Card>
+          )}
         </div>
 
-        <div className="grid grid-cols-7 gap-2 mb-2">
+        <div className="business-map-grid grid grid-cols-7 gap-2 mb-2">
           {/* Middle Row */}
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Valores</h3>
-            <p className="text-xs">{data.valores || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.valores) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Valores</h3>
+              <p className="text-xs">{data.valores}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-2 p-2 bg-white border border-gray-300" style={{gridColumn: "span 2"}}>
-            {/* Empty cell for spacing */}
-          </Card>
+          {shouldDisplayField(data.recursosChave) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300" style={{gridColumn: shouldDisplayField(data.valores) ? "3 / 4" : "span 1"}}>
+              <h3 className="font-semibold text-sm mb-1">Recursos Chave</h3>
+              <p className="text-xs">{data.recursosChave}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Recursos Chave</h3>
-            <p className="text-xs">{data.recursosChave || "Não preenchido"}</p>
-          </Card>
-          
-          <Card className="col-span-2 p-2 bg-white border border-gray-300" style={{gridColumn: "span 2"}}>
-            {/* Empty cell for spacing */}
-          </Card>
-          
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Canais/Distribuição</h3>
-            <p className="text-xs">{data.canaisDistribuicao || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.canaisDistribuicao) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300" style={{gridColumn: "7 / 8"}}>
+              <h3 className="font-semibold text-sm mb-1">Canais/Distribuição</h3>
+              <p className="text-xs">{data.canaisDistribuicao}</p>
+            </Card>
+          )}
         </div>
 
-        <div className="grid grid-cols-7 gap-2 mb-2">
+        <div className="business-map-grid grid grid-cols-7 gap-2 mb-2">
           {/* Bottom Row 1 */}
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Posicionamento de Mercado</h3>
-            <p className="text-xs">{data.posicionamentoMercado || "Não preenchido"}</p>
-          </Card>
-          
-          <Card className="col-span-4 p-2 bg-white border border-gray-300" style={{gridColumn: "span 4"}}>
-            {/* Empty cell for spacing */}
-          </Card>
-          
-          <Card className="col-span-2 p-2 bg-white border border-gray-300" style={{gridColumn: "span 2"}}>
-            {/* Empty cell for spacing */}
-          </Card>
+          {shouldDisplayField(data.posicionamentoMercado) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Posicionamento de Mercado</h3>
+              <p className="text-xs">{data.posicionamentoMercado}</p>
+            </Card>
+          )}
         </div>
 
-        <div className="grid grid-cols-7 gap-2 mb-2">
+        <div className="business-map-grid grid grid-cols-7 gap-2">
           {/* Bottom Row 2 */}
-          <Card className="col-span-3 p-2 bg-white border border-gray-300" style={{gridColumn: "span 3"}}>
-            {/* Empty cell for spacing */}
-          </Card>
+          {shouldDisplayField(data.estruturaCustos) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300" style={{gridColumn: "4 / 5"}}>
+              <h3 className="font-semibold text-sm mb-1">Estrutura de Custos</h3>
+              <p className="text-xs">{data.estruturaCustos}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Estrutura de Custos</h3>
-            <p className="text-xs">{data.estruturaCustos || "Não preenchido"}</p>
-          </Card>
-          
-          <Card className="col-span-3 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Fontes de Receita</h3>
-            <p className="text-xs">{data.fontesReceita || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.fontesReceita) && (
+            <Card className="map-card col-span-3 p-2 bg-white border border-gray-300" style={{gridColumn: "5 / 8"}}>
+              <h3 className="font-semibold text-sm mb-1">Fontes de Receita</h3>
+              <p className="text-xs">{data.fontesReceita}</p>
+            </Card>
+          )}
         </div>
         
-        <div className="grid grid-cols-7 gap-2">
+        <div className="business-map-grid grid grid-cols-7 gap-2 mt-2">
           {/* Bottom Row 3 */}
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Vantagem Competitiva</h3>
-            <p className="text-xs">{data.vantagemCompetitiva || "Não preenchido"}</p>
-          </Card>
+          {shouldDisplayField(data.vantagemCompetitiva) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Vantagem Competitiva</h3>
+              <p className="text-xs">{data.vantagemCompetitiva}</p>
+            </Card>
+          )}
           
-          <Card className="col-span-1 p-2 bg-white border border-gray-300">
-            <h3 className="font-semibold text-sm mb-1">Competências Essenciais</h3>
-            <p className="text-xs">{data.competenciasEssenciais || "Não preenchido"}</p>
-          </Card>
-          
-          <Card className="col-span-5 p-2 bg-white border border-gray-300" style={{gridColumn: "span 5"}}>
-            {/* Empty cell for spacing */}
-          </Card>
+          {shouldDisplayField(data.competenciasEssenciais) && (
+            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
+              <h3 className="font-semibold text-sm mb-1">Competências Essenciais</h3>
+              <p className="text-xs">{data.competenciasEssenciais}</p>
+            </Card>
+          )}
         </div>
       </div>
     </div>

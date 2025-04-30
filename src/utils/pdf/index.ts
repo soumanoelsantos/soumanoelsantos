@@ -10,6 +10,7 @@ import { getChartPdfStyles } from './chartStyles';
 import { getLayoutPdfStyles } from './layoutStyles';
 import { getDiagnosticPdfStyles } from './diagnosticStyles';
 import { getMarketingPdfStyles } from './marketingStyles';
+import { getBusinessMapPdfStyles } from './businessMapStyles';
 import { getDefaultPdfOptions, getBusinessMapPdfOptions as getMapOptions } from './pdfOptions';
 
 export const getPdfStyles = (): string => {
@@ -20,6 +21,7 @@ export const getPdfStyles = (): string => {
     getLayoutPdfStyles(),
     getDiagnosticPdfStyles(),
     getMarketingPdfStyles(),
+    getBusinessMapPdfStyles(),
   ].join('\n');
 };
 
