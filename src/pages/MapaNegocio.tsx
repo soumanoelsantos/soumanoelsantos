@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +8,7 @@ import MapaNegocioPreview from "@/components/mapa-negocio/MapaNegocioPreview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BusinessMapData } from "@/types/businessMap";
 import { useAuth } from "@/hooks/useAuth";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 const MapaNegocio = () => {
   const { toast } = useToast();
@@ -94,6 +94,10 @@ const MapaNegocio = () => {
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       <div className="container mx-auto px-4 py-6 bg-white">
+        <div className="mb-6">
+          <BackToMemberAreaButton />
+        </div>
+
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Mapa do Negócio
         </h1>
