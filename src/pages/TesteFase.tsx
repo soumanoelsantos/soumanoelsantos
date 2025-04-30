@@ -1,10 +1,11 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 import { useNavigate } from "react-router-dom";
+import MemberHeader from "@/components/MemberHeader";
+import { useAuth } from "@/hooks/useAuth";
 
 // Test phases and questions
 const phaseTest = [
@@ -118,8 +119,21 @@ const TesteFase = () => {
     recommendations: string[];
   } | null>(null);
   const [completed, setCompleted] = useState(false);
+  const { userEmail, logout } = useAuth();
   
   useEffect(() => {
+    // Check if user is authenticated
+    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+    if (!isAuthenticated) {
+      toast({
+        variant: "destructive",
+        title: "Acesso negado",
+        description: "Você precisa fazer login para acessar esta página",
+      });
+      navigate("/login");
+      return;
+    }
+    
     // Check if there are saved results in localStorage
     const savedResult = localStorage.getItem("testeFaseResult");
     if (savedResult) {
@@ -132,14 +146,17 @@ const TesteFase = () => {
     // Initialize answers
     const initialAnswers: { [key: number]: number[] } = {};
     phaseTest.forEach((phase, index) => {
-      initialAnswers[index] = Array(phase.questions.length).fill(0);
+      initialAnswers[index] = new Array(phase.questions.length).fill(0);
     });
     setAnswers(initialAnswers);
-  }, []);
+  }, [navigate, toast]);
   
   const handleAnswer = (questionIndex: number, value: number) => {
     setAnswers(prev => {
       const newAnswers = { ...prev };
+      if (!newAnswers[currentPhaseIndex]) {
+        newAnswers[currentPhaseIndex] = new Array(phaseTest[currentPhaseIndex].questions.length).fill(0);
+      }
       newAnswers[currentPhaseIndex][questionIndex] = value;
       return newAnswers;
     });
@@ -148,6 +165,15 @@ const TesteFase = () => {
   const handleNext = () => {
     // Check if all questions in the current phase have been answered
     const currentPhaseAnswers = answers[currentPhaseIndex];
+    if (!currentPhaseAnswers) {
+      toast({
+        title: "Erro ao processar respostas",
+        description: "Houve um problema ao processar suas respostas. Por favor, tente novamente.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const allAnswered = currentPhaseAnswers.every(answer => answer !== 0);
     
     if (!allAnswered) {
@@ -216,7 +242,7 @@ const TesteFase = () => {
     // Reset state
     const initialAnswers: { [key: number]: number[] } = {};
     phaseTest.forEach((phase, index) => {
-      initialAnswers[index] = Array(phase.questions.length).fill(0);
+      initialAnswers[index] = new Array(phase.questions.length).fill(0);
     });
     
     setAnswers(initialAnswers);
@@ -231,14 +257,28 @@ const TesteFase = () => {
     });
   };
   
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userEmail");
+    
+    toast({
+      title: "Logout realizado",
+      description: "Você saiu da sua conta com sucesso",
+    });
+    
+    navigate("/login");
+  };
+  
   const currentPhase = phaseTest[currentPhaseIndex];
   
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="container mx-auto max-w-4xl">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
+      
+      <div className="container mx-auto max-w-4xl py-8 px-4">
         <BackToMemberAreaButton />
         
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8 mt-4">
           Teste: Em qual fase está sua empresa?
         </h1>
         
@@ -256,16 +296,18 @@ const TesteFase = () => {
                     <p className="mb-3 font-medium text-gray-700">{question}</p>
                     <div className="flex gap-4">
                       <Button
-                        variant={answers[currentPhaseIndex][qIndex] === 1 ? "default" : "outline"}
+                        type="button"
+                        variant={answers[currentPhaseIndex]?.[qIndex] === 1 ? "default" : "outline"}
                         onClick={() => handleAnswer(qIndex, 1)}
-                        className={answers[currentPhaseIndex][qIndex] === 1 ? "bg-green-600 hover:bg-green-700" : ""}
+                        className={answers[currentPhaseIndex]?.[qIndex] === 1 ? "bg-green-600 hover:bg-green-700" : ""}
                       >
                         Sim
                       </Button>
                       <Button
-                        variant={answers[currentPhaseIndex][qIndex] === 2 ? "default" : "outline"}
+                        type="button"
+                        variant={answers[currentPhaseIndex]?.[qIndex] === 2 ? "default" : "outline"}
                         onClick={() => handleAnswer(qIndex, 2)}
-                        className={answers[currentPhaseIndex][qIndex] === 2 ? "bg-red-600 hover:bg-red-700" : ""}
+                        className={answers[currentPhaseIndex]?.[qIndex] === 2 ? "bg-red-600 hover:bg-red-700" : ""}
                       >
                         Não
                       </Button>
@@ -276,13 +318,17 @@ const TesteFase = () => {
               
               <div className="flex justify-between mt-8">
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={handlePrevious}
                   disabled={currentPhaseIndex === 0}
                 >
                   Anterior
                 </Button>
-                <Button onClick={handleNext}>
+                <Button 
+                  type="button"
+                  onClick={handleNext}
+                >
                   {currentPhaseIndex < phaseTest.length - 1 ? "Próximo" : "Ver Resultado"}
                 </Button>
               </div>
