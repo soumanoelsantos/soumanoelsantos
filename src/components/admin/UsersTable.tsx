@@ -158,15 +158,15 @@ const UsersTable: React.FC<UsersTableProps> = ({
                             <Trash2 className="h-4 w-4 text-red-600" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="bg-white border-gray-200">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogTitle className="text-gray-900">Confirmar exclusão</AlertDialogTitle>
+                            <AlertDialogDescription className="text-gray-700">
                               Tem certeza que deseja excluir o usuário {user.email}? Esta ação não pode ser desfeita.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogCancel className="text-gray-700 hover:text-gray-900 border-gray-300 hover:bg-gray-100">Cancelar</AlertDialogCancel>
                             <AlertDialogAction 
                               onClick={() => deleteUser(user.email)}
                               className="bg-red-600 hover:bg-red-700"
