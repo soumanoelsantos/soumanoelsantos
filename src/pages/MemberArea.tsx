@@ -1,11 +1,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import MemberContentList from "@/components/MemberContentList";
+import { Button } from "@/components/ui/button";
 
 const MemberArea = () => {
   const navigate = useNavigate();
