@@ -2,8 +2,10 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface User {
+  id: string;
   email: string;
   isNewUser: boolean;
   unlockedModules: number[];
@@ -12,6 +14,7 @@ interface User {
 export interface Module {
   id: number;
   title: string;
+  description?: string;
 }
 
 export function useAdminData(userEmail: string | null) {
@@ -21,161 +24,254 @@ export function useAdminData(userEmail: string | null) {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Mock modules for reference
+  // Módulos fixos para referência
   const modules: Module[] = [
-    { id: 0, title: "Ferramentas" },
-    { id: 1, title: "Módulo 1 - Diagnóstico e Estratégia" },
-    { id: 2, title: "Módulo 2 - Sistema de Vendas" },
-    { id: 3, title: "Módulo 3 - Marketing Digital" },
-    { id: 4, title: "Módulo 4 - Gestão e Escalabilidade" }
+    { id: 0, title: "Ferramentas", description: "Ferramentas e utilitários" },
+    { id: 1, title: "Módulo 1 - Diagnóstico e Estratégia", description: "Diagnóstico e Estratégia" },
+    { id: 2, title: "Módulo 2 - Sistema de Vendas", description: "Sistema de Vendas" },
+    { id: 3, title: "Módulo 3 - Marketing Digital", description: "Marketing Digital" },
+    { id: 4, title: "Módulo 4 - Gestão e Escalabilidade", description: "Gestão e Escalabilidade" }
   ];
 
   useEffect(() => {
-    // Try to load users from localStorage first
-    const savedUsers = localStorage.getItem('adminUsers');
-    
-    if (savedUsers) {
-      setUsers(JSON.parse(savedUsers));
-      setIsLoading(false);
-    } else {
-      // Load mock users data if nothing in localStorage
-      const mockUsers = [
-        {
-          email: "usuario1@example.com",
-          isNewUser: true,
-          unlockedModules: [0]
-        },
-        {
-          email: "usuario2@example.com",
-          isNewUser: false,
-          unlockedModules: [0, 1, 2]
-        },
-        {
-          email: userEmail || "admin@example.com",
-          isNewUser: false,
-          unlockedModules: [0, 1, 2, 3, 4]
-        }
-      ];
+    const fetchUsers = async () => {
+      try {
+        // Buscar perfis de usuários
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('*');
 
-      // Simulate API delay
-      setTimeout(() => {
-        setUsers(mockUsers);
-        // Save to localStorage
-        localStorage.setItem('adminUsers', JSON.stringify(mockUsers));
+        if (profilesError) throw profilesError;
+
+        // Buscar módulos de usuário
+        const { data: userModules, error: modulesError } = await supabase
+          .from('user_modules')
+          .select('*');
+
+        if (modulesError) throw modulesError;
+
+        // Processar os dados para o formato esperado
+        const formattedUsers = profiles.map((profile: any) => {
+          const userModuleIds = userModules
+            .filter((module: any) => module.user_id === profile.id)
+            .map((module: any) => module.module_id);
+
+          return {
+            id: profile.id,
+            email: profile.email,
+            isNewUser: profile.is_new_user,
+            isAdmin: profile.is_admin,
+            unlockedModules: userModuleIds
+          };
+        });
+
+        setUsers(formattedUsers);
+      } catch (error) {
+        console.error("Erro ao buscar usuários:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar usuários",
+          description: "Não foi possível buscar a lista de usuários."
+        });
+      } finally {
         setIsLoading(false);
-      }, 500);
+      }
+    };
+
+    fetchUsers();
+  }, [toast]);
+
+  const toggleModuleAccess = async (userId: string, moduleId: number) => {
+    try {
+      const hasModule = users.find(u => u.id === userId)?.unlockedModules.includes(moduleId);
+      
+      if (hasModule) {
+        // Remover acesso ao módulo
+        const { error } = await supabase
+          .from('user_modules')
+          .delete()
+          .eq('user_id', userId)
+          .eq('module_id', moduleId);
+          
+        if (error) throw error;
+      } else {
+        // Adicionar acesso ao módulo
+        const { error } = await supabase
+          .from('user_modules')
+          .insert([{ user_id: userId, module_id: moduleId }]);
+          
+        if (error) throw error;
+      }
+      
+      // Atualizar o estado local
+      setUsers(prevUsers => {
+        return prevUsers.map(user => {
+          if (user.id === userId) {
+            const updatedModules = hasModule
+              ? user.unlockedModules.filter(id => id !== moduleId)
+              : [...user.unlockedModules, moduleId];
+              
+            toast({
+              title: `Módulo ${hasModule ? "bloqueado" : "desbloqueado"}`,
+              description: `${modules.find(m => m.id === moduleId)?.title} ${hasModule ? "bloqueado" : "desbloqueado"} para ${user.email}`,
+            });
+            
+            return { ...user, unlockedModules: updatedModules };
+          }
+          return user;
+        });
+      });
+    } catch (error: any) {
+      console.error("Erro ao alternar acesso ao módulo:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao modificar acesso",
+        description: error.message || "Não foi possível modificar o acesso ao módulo."
+      });
     }
-  }, [userEmail]);
-
-  // Helper function to save users to localStorage
-  const saveUsersToStorage = (updatedUsers: User[]) => {
-    localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
   };
 
-  const toggleModuleAccess = (userEmail: string, moduleId: number) => {
-    setUsers(prevUsers => {
-      const updatedUsers = prevUsers.map(user => {
-        if (user.email === userEmail) {
-          const hasModule = user.unlockedModules.includes(moduleId);
-          
-          // If module exists, remove it, otherwise add it
-          const updatedModules = hasModule
-            ? user.unlockedModules.filter(id => id !== moduleId)
-            : [...user.unlockedModules, moduleId];
-          
-          // Toast notification
-          toast({
-            title: `Módulo ${hasModule ? "bloqueado" : "desbloqueado"}`,
-            description: `${modules.find(m => m.id === moduleId)?.title} ${hasModule ? "bloqueado" : "desbloqueado"} para ${user.email}`,
-          });
-          
-          return { ...user, unlockedModules: updatedModules };
-        }
-        return user;
+  const toggleNewUserStatus = async (userId: string) => {
+    try {
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+      
+      const updatedStatus = !user.isNewUser;
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_new_user: updatedStatus })
+        .eq('id', userId);
+        
+      if (error) throw error;
+      
+      // Atualizar o estado local
+      setUsers(prevUsers => {
+        return prevUsers.map(u => {
+          if (u.id === userId) {
+            toast({
+              title: "Status atualizado",
+              description: `${u.email} agora ${updatedStatus ? "é" : "não é mais"} um novo usuário`,
+            });
+            
+            return { ...u, isNewUser: updatedStatus };
+          }
+          return u;
+        });
+      });
+    } catch (error: any) {
+      console.error("Erro ao alternar status de novo usuário:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar status",
+        description: error.message || "Não foi possível atualizar o status do usuário."
+      });
+    }
+  };
+
+  const deleteUser = async (userId: string) => {
+    try {
+      // Buscar e-mail do usuário antes de excluí-lo
+      const userToDelete = users.find(u => u.id === userId);
+      if (!userToDelete) return;
+      
+      // Excluir o usuário do Supabase Auth
+      const { error } = await supabase
+        .rpc('delete_user', { user_id_param: userId });
+        
+      if (error) throw error;
+      
+      // Atualizar o estado local
+      setUsers(prevUsers => {
+        const updatedUsers = prevUsers.filter(user => user.id !== userId);
+        
+        toast({
+          title: "Usuário excluído",
+          description: `${userToDelete.email} foi removido com sucesso`,
+        });
+        
+        return updatedUsers;
+      });
+    } catch (error: any) {
+      console.error("Erro ao excluir usuário:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir usuário",
+        description: error.message || "Não foi possível excluir o usuário."
+      });
+    }
+  };
+
+  const editUserEmail = async (userId: string, newEmail: string) => {
+    try {
+      const userToEdit = users.find(u => u.id === userId);
+      if (!userToEdit) return;
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ email: newEmail })
+        .eq('id', userId);
+        
+      if (error) throw error;
+      
+      // Atualizar o estado local
+      setUsers(prevUsers => {
+        const updatedUsers = prevUsers.map(user => {
+          if (user.id === userId) {
+            toast({
+              title: "Email atualizado",
+              description: `${user.email} foi alterado para ${newEmail}`,
+            });
+            
+            return { ...user, email: newEmail };
+          }
+          return user;
+        });
+        
+        return updatedUsers;
+      });
+    } catch (error: any) {
+      console.error("Erro ao editar e-mail do usuário:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar e-mail",
+        description: error.message || "Não foi possível atualizar o e-mail do usuário."
+      });
+    }
+  };
+
+  const viewAsUser = async (userId: string) => {
+    try {
+      const userToView = users.find(u => u.id === userId);
+      if (!userToView) return;
+      
+      // Armazenar o ID do administrador para restaurá-lo mais tarde
+      localStorage.setItem('adminViewingAsUser', 'true');
+      localStorage.setItem('adminOriginalEmail', userEmail || '');
+      
+      // Configurar a sessão para visualizar como o usuário selecionado
+      const { data, error } = await supabase.auth.setSession({
+        access_token: '', // Token vazio para forçar login como outro usuário
+        refresh_token: ''
       });
       
-      // Save to localStorage
-      saveUsersToStorage(updatedUsers);
-      return updatedUsers;
-    });
-  };
-
-  const toggleNewUserStatus = (userEmail: string) => {
-    setUsers(prevUsers => {
-      const updatedUsers = prevUsers.map(user => {
-        if (user.email === userEmail) {
-          const updatedStatus = !user.isNewUser;
-          
-          toast({
-            title: "Status atualizado",
-            description: `${user.email} agora ${updatedStatus ? "é" : "não é mais"} um novo usuário`,
-          });
-          
-          return { ...user, isNewUser: updatedStatus };
-        }
-        return user;
-      });
-      
-      // Save to localStorage
-      saveUsersToStorage(updatedUsers);
-      return updatedUsers;
-    });
-  };
-
-  const deleteUser = (email: string) => {
-    setUsers(prevUsers => {
-      // Filter out the deleted user
-      const updatedUsers = prevUsers.filter(user => user.email !== email);
-      
-      // Save to localStorage
-      saveUsersToStorage(updatedUsers);
+      if (error) throw error;
       
       toast({
-        title: "Usuário excluído",
-        description: `${email} foi removido com sucesso`,
+        title: "Visualizando como usuário",
+        description: `Agora você está visualizando como ${userToView.email}`,
       });
       
-      return updatedUsers;
-    });
-  };
-
-  const editUserEmail = (oldEmail: string, newEmail: string) => {
-    setUsers(prevUsers => {
-      const updatedUsers = prevUsers.map(user => {
-        if (user.email === oldEmail) {
-          toast({
-            title: "Email atualizado",
-            description: `${oldEmail} foi alterado para ${newEmail}`,
-          });
-          
-          return { ...user, email: newEmail };
-        }
-        return user;
+      // Navegar para área de membros
+      navigate('/membros');
+    } catch (error: any) {
+      console.error("Erro ao visualizar como usuário:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao trocar de usuário",
+        description: error.message || "Não foi possível visualizar como o usuário selecionado."
       });
-      
-      // Save to localStorage
-      saveUsersToStorage(updatedUsers);
-      return updatedUsers;
-    });
-  };
-
-  const viewAsUser = (email: string) => {
-    // Store the current admin email to restore it later
-    localStorage.setItem('adminOriginalEmail', userEmail || '');
-    
-    // Set the temporary user email
-    localStorage.setItem('userEmail', email);
-    
-    // Add a flag to indicate we're in admin-as-user mode
-    localStorage.setItem('adminViewingAsUser', 'true');
-    
-    toast({
-      title: "Visualizando como usuário",
-      description: `Agora você está visualizando como ${email}`,
-    });
-    
-    // Navigate to member area
-    navigate('/membros');
+    }
   };
 
   const filteredUsers = users.filter(user => 

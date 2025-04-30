@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 // Form schema validation using Zod
@@ -27,6 +26,7 @@ const Login = () => {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const { login, loginRedirectPath } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   
   // Get the redirect path from the search params
   const searchParams = new URLSearchParams(location.search);
@@ -44,17 +44,13 @@ const Login = () => {
   // Form submission handler
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      console.log("Login attempted with:", values);
+      setIsLoading(true);
+      console.log("Login attempted with:", values.email);
       
-      // Use the login function from useAuth hook
-      login(values.email, redirectPath || null);
+      // Usar a função de login do useAuth hook
+      await login(values.email, values.password, redirectPath || null);
       
-      toast({
-        title: "Login bem-sucedido",
-        description: "Redirecionando...",
-      });
-      
-      // Redirect based on the stored path in auth context
+      // Redirecionar baseado no caminho armazenado no contexto de autenticação
       setTimeout(() => {
         if (loginRedirectPath === '/admin') {
           navigate('/admin');
@@ -63,12 +59,10 @@ const Login = () => {
         }
       }, 1000);
     } catch (error) {
+      // O erro já foi tratado no hook useAuth
       console.error("Login error:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro no login",
-        description: "Email ou senha incorretos",
-      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -144,9 +138,16 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background"
+                disabled={isLoading}
               >
-                <LogIn className="mr-2 h-4 w-4" />
-                Entrar
+                {isLoading ? (
+                  "Autenticando..."
+                ) : (
+                  <>
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Entrar
+                  </>
+                )}
               </Button>
             </form>
           </Form>

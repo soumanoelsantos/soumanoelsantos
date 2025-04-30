@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { supabase } from "@/integrations/supabase/client";
 
 // Form schema validation using Zod
 const formSchema = z.object({
@@ -33,6 +34,7 @@ const Register = () => {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Initialize form with react-hook-form
   const form = useForm<RegisterFormValues>({
@@ -49,24 +51,37 @@ const Register = () => {
   // Form submission handler
   const onSubmit = async (values: RegisterFormValues) => {
     try {
-      console.log("Registration attempted with:", values);
+      setIsLoading(true);
       
-      // Here you would normally use a backend API to handle registration
-      // For now, we'll simulate a successful registration
-      toast({
-        title: "Cadastro bem-sucedido",
-        description: "Redirecionando para o login...",
+      // Registrar usuário usando Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            full_name: values.name,
+          }
+        }
       });
       
-      // Redirect to login page
+      if (error) throw error;
+      
+      toast({
+        title: "Cadastro bem-sucedido",
+        description: "Sua conta foi criada com sucesso. Redirecionando para o login...",
+      });
+      
+      // Redirecionar para a página de login
       setTimeout(() => navigate("/login"), 1500);
-    } catch (error) {
-      console.error("Registration error:", error);
+    } catch (error: any) {
+      console.error("Erro no cadastro:", error);
       toast({
         variant: "destructive",
         title: "Erro no cadastro",
-        description: "Não foi possível criar sua conta",
+        description: error.message || "Não foi possível criar sua conta",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -218,9 +233,16 @@ const Register = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background"
+                disabled={isLoading}
               >
-                <UserPlus className="mr-2 h-4 w-4" />
-                Criar conta
+                {isLoading ? (
+                  "Processando..."
+                ) : (
+                  <>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Criar conta
+                  </>
+                )}
               </Button>
             </form>
           </Form>

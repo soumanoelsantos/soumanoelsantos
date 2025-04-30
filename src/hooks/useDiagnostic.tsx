@@ -5,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { DiagnosticResults as DiagnosticResultsType, AnswersDataType } from "@/types/diagnostic";
 import { generateActionPlan } from "@/utils/generateActionPlan";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useDiagnostic = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAuthenticated, userEmail } = useAuth();
+  const { isAuthenticated, userId } = useAuth();
   
   const [results, setResults] = useState<DiagnosticResultsType>({
     processos: { score: 0, total: 100, percentage: 0 },
@@ -29,6 +30,7 @@ export const useDiagnostic = () => {
     pessoas: { title: "", answers: [] }
   });
   const [shouldGeneratePlan, setShouldGeneratePlan] = useState(false);
+  const [diagnosticId, setDiagnosticId] = useState<string | null>(null);
 
   // Check authentication and load saved data
   useEffect(() => {
@@ -43,46 +45,39 @@ export const useDiagnostic = () => {
     }
 
     // Load saved diagnostic results when authenticated
-    if (userEmail) {
-      const savedResultsKey = `diagnostic_results_${userEmail}`;
-      const savedAnswersKey = `diagnostic_answers_${userEmail}`;
-      const savedActionPlanKey = `action_plan_${userEmail}`;
-      
-      const savedResults = localStorage.getItem(savedResultsKey);
-      const savedAnswers = localStorage.getItem(savedAnswersKey);
-      const savedActionPlan = localStorage.getItem(savedActionPlanKey);
-      
-      if (savedResults) {
-        try {
-          const parsedResults = JSON.parse(savedResults);
-          setResults(parsedResults);
-          setShowResults(true);
-        } catch (error) {
-          console.error("Error parsing saved results:", error);
-        }
+    const loadDiagnosticData = async () => {
+      if (!userId) {
+        setIsLoading(false);
+        return;
       }
-      
-      if (savedAnswers) {
-        try {
-          const parsedAnswers = JSON.parse(savedAnswers);
-          setAnswersData(parsedAnswers);
-        } catch (error) {
-          console.error("Error parsing saved answers:", error);
-        }
-      }
-      
-      if (savedActionPlan) {
-        try {
-          const parsedActionPlan = JSON.parse(savedActionPlan);
-          setActionPlan(parsedActionPlan);
-        } catch (error) {
-          console.error("Error parsing saved action plan:", error);
-        }
-      }
-    }
 
-    setIsLoading(false);
-  }, [isAuthenticated, navigate, toast, userEmail]);
+      try {
+        const { data, error } = await supabase
+          .from('diagnostic_results')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 é o código para "nenhum resultado encontrado"
+          throw error;
+        }
+
+        if (data) {
+          setResults(data.results);
+          setAnswersData(data.answers_data);
+          setActionPlan(data.action_plan || {});
+          setShowResults(true);
+          setDiagnosticId(data.id);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar diagnóstico:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDiagnosticData();
+  }, [isAuthenticated, navigate, toast, userId]);
   
   // Generate action plan only when explicitly requested
   useEffect(() => {
@@ -102,9 +97,40 @@ export const useDiagnostic = () => {
           if (plan && Object.keys(plan).length > 0) {
             setActionPlan(plan);
             
-            // Save the action plan to localStorage
-            if (userEmail) {
-              localStorage.setItem(`action_plan_${userEmail}`, JSON.stringify(plan));
+            // Salvar o plano de ação no Supabase
+            if (userId) {
+              try {
+                let result;
+                
+                if (diagnosticId) {
+                  // Atualizar diagnóstico existente
+                  result = await supabase
+                    .from('diagnostic_results')
+                    .update({
+                      action_plan: plan
+                    })
+                    .eq('id', diagnosticId);
+                } else {
+                  // Inserir novo diagnóstico
+                  result = await supabase
+                    .from('diagnostic_results')
+                    .insert([{
+                      user_id: userId,
+                      results: results,
+                      answers_data: answersData,
+                      action_plan: plan
+                    }])
+                    .select();
+                    
+                  if (result.data && result.data[0]) {
+                    setDiagnosticId(result.data[0].id);
+                  }
+                }
+                
+                if (result.error) throw result.error;
+              } catch (error) {
+                console.error("Erro ao salvar plano de ação:", error);
+              }
             }
             
             toast({
@@ -131,40 +157,67 @@ export const useDiagnostic = () => {
     };
     
     generatePlan();
-  }, [shouldGeneratePlan, showResults, results, answersData, userEmail, toast]);
+  }, [shouldGeneratePlan, showResults, results, answersData, userId, toast, diagnosticId]);
 
   // Save diagnostic results and trigger plan generation
-  const handleSubmit = () => {
-    if (userEmail) {
-      try {
-        const resultsKey = `diagnostic_results_${userEmail}`;
-        const answersKey = `diagnostic_answers_${userEmail}`;
-        
-        localStorage.setItem(resultsKey, JSON.stringify(results));
-        localStorage.setItem(answersKey, JSON.stringify(answersData));
-        
-        setShowResults(true);
-        // Set the flag to trigger plan generation
-        setShouldGeneratePlan(true);
-        
-        toast({
-          title: "Diagnóstico salvo!",
-          description: "Gerando seu plano de ação personalizado...",
-        });
-      } catch (error) {
-        console.error("Error saving diagnostic:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao salvar",
-          description: "Ocorreu um erro ao salvar o diagnóstico.",
-        });
-      }
-    } else {
+  const handleSubmit = async () => {
+    if (!userId) {
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
         description: "Você precisa estar logado para salvar seu diagnóstico.",
       });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      
+      let result;
+      const diagnosticData = {
+        user_id: userId,
+        results: results,
+        answers_data: answersData,
+        action_plan: actionPlan
+      };
+      
+      if (diagnosticId) {
+        // Atualizar diagnóstico existente
+        result = await supabase
+          .from('diagnostic_results')
+          .update(diagnosticData)
+          .eq('id', diagnosticId);
+      } else {
+        // Inserir novo diagnóstico
+        result = await supabase
+          .from('diagnostic_results')
+          .insert([diagnosticData])
+          .select();
+          
+        if (result.data && result.data[0]) {
+          setDiagnosticId(result.data[0].id);
+        }
+      }
+      
+      if (result.error) throw result.error;
+      
+      setShowResults(true);
+      // Set the flag to trigger plan generation
+      setShouldGeneratePlan(true);
+      
+      toast({
+        title: "Diagnóstico salvo!",
+        description: "Gerando seu plano de ação personalizado...",
+      });
+    } catch (error: any) {
+      console.error("Erro ao salvar diagnóstico:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: error.message || "Ocorreu um erro ao salvar o diagnóstico.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 

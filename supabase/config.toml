@@ -1,1 +1,8 @@
+
 project_id = "wwnylounipjlxjxyopnf"
+
+[functions.delete-user]
+verify_jwt = true
+
+[functions.add-rpc-functions]
+verify_jwt = true

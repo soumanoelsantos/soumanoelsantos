@@ -1,9 +1,9 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Colaborador } from "@/types/mapaEquipe";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { supabase } from '@/integrations/supabase/client';
 import { useMapaEquipeValidation } from "@/hooks/useMapaEquipeValidation";
 import { 
   niveisMaturidadeOptions, 
@@ -23,13 +23,10 @@ export {
 // Hook personalizado
 export const useMapaEquipe = () => {
   const { toast } = useToast();
-  const { userEmail } = useAuth();
+  const { userId, isAuthenticated } = useAuth();
   const { validateForm } = useMapaEquipeValidation();
   
-  // Gerar uma chave única para armazenar os dados do usuário
-  const storageKey = `mapaEquipe_${userEmail || "guest"}`;
-  
-  // Estado local para trabalhar sem depender do localStorage durante a edição
+  // Estado local para trabalhar durante a edição
   const [empresaNome, setEmpresaNome] = useState<string>("");
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([
     {
@@ -42,27 +39,52 @@ export const useMapaEquipe = () => {
     }
   ]);
   const [showPreview, setShowPreview] = useState(false);
-  
-  // Utilizar o hook personalizado de localStorage
-  const [storedData, setStoredData, removeStoredData] = useLocalStorage(storageKey, {
-    empresaNome: "",
-    colaboradores: [] as Colaborador[]
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [mapaId, setMapaId] = useState<string | null>(null);
   
   // Carregar dados salvos quando o componente for montado
-  useState(() => {
-    if (userEmail && storedData) {
-      if (storedData.empresaNome) setEmpresaNome(storedData.empresaNome);
-      if (storedData.colaboradores && storedData.colaboradores.length > 0) {
-        setColaboradores(storedData.colaboradores);
+  useEffect(() => {
+    const loadMapaEquipe = async () => {
+      if (!isAuthenticated || !userId) {
+        setIsLoading(false);
+        return;
       }
-      
-      toast({
-        title: "Dados carregados",
-        description: "Seus dados do Mapa da Equipe foram carregados com sucesso.",
-      });
-    }
-  });
+
+      try {
+        const { data, error } = await supabase
+          .from('mapa_equipe')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 é o código para "nenhum resultado encontrado"
+          throw error;
+        }
+
+        if (data) {
+          setEmpresaNome(data.empresa_nome);
+          setColaboradores(data.colaboradores);
+          setMapaId(data.id);
+          
+          toast({
+            title: "Dados carregados",
+            description: "Seus dados do Mapa da Equipe foram carregados com sucesso.",
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados do Mapa da Equipe:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar seus dados do Mapa da Equipe.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadMapaEquipe();
+  }, [userId, isAuthenticated, toast]);
 
   const addColaborador = () => {
     setColaboradores([...colaboradores, {
@@ -96,23 +118,64 @@ export const useMapaEquipe = () => {
     setColaboradores(newColaboradores);
   };
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
+    if (!isAuthenticated || !userId) {
+      toast({
+        variant: "destructive",
+        title: "Erro de autenticação",
+        description: "Você precisa estar logado para salvar o mapa da equipe.",
+      });
+      return;
+    }
+
     if (validateForm(empresaNome, colaboradores)) {
-      // Explicitamente salvar dados antes de mostrar a visualização
-      if (userEmail) {
-        const dataToSave = {
-          empresaNome,
-          colaboradores,
+      try {
+        setIsLoading(true);
+        
+        const mapaData = {
+          user_id: userId,
+          empresa_nome: empresaNome,
+          colaboradores: colaboradores,
         };
-        setStoredData(dataToSave);
+        
+        let result;
+        
+        if (mapaId) {
+          // Atualizar mapa existente
+          result = await supabase
+            .from('mapa_equipe')
+            .update(mapaData)
+            .eq('id', mapaId);
+        } else {
+          // Inserir novo mapa
+          result = await supabase
+            .from('mapa_equipe')
+            .insert([mapaData])
+            .select();
+            
+          if (result.data && result.data[0]) {
+            setMapaId(result.data[0].id);
+          }
+        }
+        
+        if (result.error) throw result.error;
         
         toast({
           title: "Dados salvos",
           description: "Seus dados do Mapa da Equipe foram salvos com sucesso.",
         });
+        
+        setShowPreview(true);
+      } catch (error: any) {
+        console.error("Erro ao salvar mapa da equipe:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao salvar",
+          description: error.message || "Não foi possível salvar o mapa da equipe.",
+        });
+      } finally {
+        setIsLoading(false);
       }
-      
-      setShowPreview(true);
     }
   };
 
@@ -120,25 +183,57 @@ export const useMapaEquipe = () => {
     setShowPreview(false);
   };
 
-  const resetForm = () => {
-    setEmpresaNome("");
-    setColaboradores([{
-      nome: "",
-      nivelMaturidade: niveisMaturidadeOptions[0],
-      estiloLideranca: estilosLiderancaOptions[0],
-      perfilComportamental: perfisComportamentaisOptions[0],
-      futuro: "",
-      potencial: potenciaisOptions[0]
-    }]);
-    setShowPreview(false);
-    
-    // Também remove dados do localStorage
-    removeStoredData();
-    
-    toast({
-      title: "Dados limpos",
-      description: "O formulário foi resetado e os dados foram removidos.",
-    });
+  const resetForm = async () => {
+    if (mapaId && userId) {
+      try {
+        setIsLoading(true);
+        
+        const { error } = await supabase
+          .from('mapa_equipe')
+          .delete()
+          .eq('id', mapaId);
+        
+        if (error) throw error;
+        
+        setMapaId(null);
+        setEmpresaNome("");
+        setColaboradores([{
+          nome: "",
+          nivelMaturidade: niveisMaturidadeOptions[0],
+          estiloLideranca: estilosLiderancaOptions[0],
+          perfilComportamental: perfisComportamentaisOptions[0],
+          futuro: "",
+          potencial: potenciaisOptions[0]
+        }]);
+        setShowPreview(false);
+        
+        toast({
+          title: "Dados limpos",
+          description: "O formulário foi resetado e os dados foram removidos.",
+        });
+      } catch (error: any) {
+        console.error("Erro ao resetar formulário:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao limpar dados",
+          description: error.message || "Não foi possível limpar os dados.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // Se não houver dados salvos, apenas limpe o formulário
+      setEmpresaNome("");
+      setColaboradores([{
+        nome: "",
+        nivelMaturidade: niveisMaturidadeOptions[0],
+        estiloLideranca: estilosLiderancaOptions[0],
+        perfilComportamental: perfisComportamentaisOptions[0],
+        futuro: "",
+        potencial: potenciaisOptions[0]
+      }]);
+      setShowPreview(false);
+    }
   };
 
   return {
@@ -151,6 +246,7 @@ export const useMapaEquipe = () => {
     showPreview,
     handlePreview,
     closePreview,
-    resetForm
+    resetForm,
+    isLoading
   };
 };

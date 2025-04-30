@@ -3,32 +3,71 @@ import { useState, useEffect } from "react";
 import { phaseTestData } from "../data/phaseTestData";
 import { useToast } from "@/hooks/use-toast";
 import { PhaseTestResult } from "../types/phaseTest";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const usePhaseTest = () => {
   const { toast } = useToast();
+  const { userId, isAuthenticated } = useAuth();
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: number[] }>({});
   const [showResult, setShowResult] = useState(false);
   const [result, setResult] = useState<PhaseTestResult | null>(null);
   const [completed, setCompleted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if there are saved results in localStorage
-    const savedResult = localStorage.getItem("testeFaseResult");
-    if (savedResult) {
-      const parsedResult = JSON.parse(savedResult);
-      setResult(parsedResult);
-      setCompleted(true);
-      setShowResult(true);
-    }
-    
-    // Initialize answers
-    const initialAnswers: { [key: number]: number[] } = {};
-    phaseTestData.forEach((phase, index) => {
-      initialAnswers[index] = new Array(phase.questions.length).fill(0);
-    });
-    setAnswers(initialAnswers);
-  }, []);
+    const loadResults = async () => {
+      if (!isAuthenticated || !userId) {
+        // Inicializar respostas
+        const initialAnswers: { [key: number]: number[] } = {};
+        phaseTestData.forEach((phase, index) => {
+          initialAnswers[index] = new Array(phase.questions.length).fill(0);
+        });
+        setAnswers(initialAnswers);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Buscar resultados do teste de fase do Supabase
+        const { data, error } = await supabase
+          .from('fase_results')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 é o código para "nenhum resultado encontrado"
+          throw error;
+        }
+
+        if (data) {
+          const resultData = {
+            phaseName: data.phase_name,
+            score: data.score,
+            description: data.description,
+            recommendations: data.recommendations
+          };
+          
+          setResult(resultData);
+          setCompleted(true);
+          setShowResult(true);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar resultados do teste:", error);
+      } finally {
+        // Inicializar respostas
+        const initialAnswers: { [key: number]: number[] } = {};
+        phaseTestData.forEach((phase, index) => {
+          initialAnswers[index] = new Array(phase.questions.length).fill(0);
+        });
+        setAnswers(initialAnswers);
+        setIsLoading(false);
+      }
+    };
+
+    loadResults();
+  }, [userId, isAuthenticated]);
   
   const handleAnswer = (questionIndex: number, value: number) => {
     setAnswers(prev => {
@@ -55,7 +94,7 @@ export const usePhaseTest = () => {
     }
   };
   
-  const calculateResult = () => {
+  const calculateResult = async () => {
     const phaseScores: number[] = [];
     
     // Calculate score for each phase
@@ -84,17 +123,75 @@ export const usePhaseTest = () => {
       recommendations: phaseTestData[highestScoreIndex].recommendations
     };
     
-    // Save to localStorage
-    localStorage.setItem("testeFaseResult", JSON.stringify(resultData));
-    
     setResult(resultData);
     setCompleted(true);
     setShowResult(true);
+    
+    // Salvar resultado no Supabase se o usuário estiver autenticado
+    if (isAuthenticated && userId) {
+      try {
+        // Verificar se já existe um resultado para este usuário
+        const { data, error: selectError } = await supabase
+          .from('fase_results')
+          .select('id')
+          .eq('user_id', userId);
+        
+        if (selectError) throw selectError;
+        
+        const resultToSave = {
+          user_id: userId,
+          phase_name: resultData.phaseName,
+          score: resultData.score,
+          description: resultData.description,
+          recommendations: resultData.recommendations
+        };
+        
+        if (data && data.length > 0) {
+          // Atualizar resultado existente
+          const { error: updateError } = await supabase
+            .from('fase_results')
+            .update(resultToSave)
+            .eq('user_id', userId);
+          
+          if (updateError) throw updateError;
+        } else {
+          // Inserir novo resultado
+          const { error: insertError } = await supabase
+            .from('fase_results')
+            .insert([resultToSave]);
+          
+          if (insertError) throw insertError;
+        }
+        
+        toast({
+          title: "Resultado salvo",
+          description: "O resultado do teste foi salvo com sucesso."
+        });
+      } catch (error) {
+        console.error("Erro ao salvar resultado:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao salvar resultado",
+          description: "Não foi possível salvar o resultado do teste."
+        });
+      }
+    }
   };
   
-  const resetTest = () => {
-    // Clear localStorage
-    localStorage.removeItem("testeFaseResult");
+  const resetTest = async () => {
+    if (isAuthenticated && userId) {
+      try {
+        // Remover resultado do Supabase
+        const { error } = await supabase
+          .from('fase_results')
+          .delete()
+          .eq('user_id', userId);
+        
+        if (error) throw error;
+      } catch (error) {
+        console.error("Erro ao excluir resultado:", error);
+      }
+    }
     
     // Reset state
     const initialAnswers: { [key: number]: number[] } = {};
@@ -125,6 +222,7 @@ export const usePhaseTest = () => {
     handleNext,
     handlePrevious,
     resetTest,
-    phaseTestLength: phaseTestData.length
+    phaseTestLength: phaseTestData.length,
+    isLoading
   };
 };
