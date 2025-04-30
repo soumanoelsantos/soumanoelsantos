@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Colaborador,
   MapaEquipeData, 
@@ -9,6 +9,7 @@ import {
   Potencial
 } from "@/types/mapaEquipe";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 // Opções para os dropdowns
 export const niveisMaturidadeOptions: NivelMaturidade[] = [
@@ -44,6 +45,7 @@ export const potenciaisOptions: Potencial[] = [
 // Hook personalizado
 export const useMapaEquipe = () => {
   const { toast } = useToast();
+  const { userEmail } = useAuth();
   const [empresaNome, setEmpresaNome] = useState<string>("");
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([
     {
@@ -56,6 +58,42 @@ export const useMapaEquipe = () => {
     }
   ]);
   const [showPreview, setShowPreview] = useState(false);
+  
+  // Gerar uma chave única para armazenar os dados do usuário
+  const storageKey = `mapaEquipe_${userEmail || "guest"}`;
+
+  // Carregar dados salvos do localStorage quando o componente for montado
+  useEffect(() => {
+    if (userEmail) {
+      const savedData = localStorage.getItem(storageKey);
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          if (parsedData.empresaNome) setEmpresaNome(parsedData.empresaNome);
+          if (parsedData.colaboradores && parsedData.colaboradores.length > 0) {
+            setColaboradores(parsedData.colaboradores);
+          }
+          toast({
+            title: "Dados carregados",
+            description: "Seus dados do Mapa da Equipe foram carregados com sucesso.",
+          });
+        } catch (error) {
+          console.error("Erro ao carregar dados do mapa da equipe:", error);
+        }
+      }
+    }
+  }, [userEmail, storageKey, toast]);
+
+  // Salvar dados no localStorage sempre que houver alterações
+  useEffect(() => {
+    if (userEmail && (empresaNome !== "" || colaboradores.length > 1 || colaboradores[0].nome !== "")) {
+      const dataToSave = {
+        empresaNome,
+        colaboradores,
+      };
+      localStorage.setItem(storageKey, JSON.stringify(dataToSave));
+    }
+  }, [empresaNome, colaboradores, userEmail, storageKey]);
 
   const addColaborador = () => {
     setColaboradores([...colaboradores, {
@@ -136,6 +174,14 @@ export const useMapaEquipe = () => {
       potencial: potenciaisOptions[0]
     }]);
     setShowPreview(false);
+    
+    // Também remove dados do localStorage
+    localStorage.removeItem(storageKey);
+    
+    toast({
+      title: "Dados limpos",
+      description: "O formulário foi resetado e os dados foram removidos.",
+    });
   };
 
   return {

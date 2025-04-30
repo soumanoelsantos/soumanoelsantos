@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useMapaEquipe, niveisMaturidadeOptions, estilosLiderancaOptions, perfisComportamentaisOptions, potenciaisOptions } from "@/hooks/useMapaEquipe";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash, Plus, FileText } from "lucide-react";
+import { Trash, Plus, FileText, RefreshCw } from "lucide-react";
 import MapaEquipePreview from "./MapaEquipePreview";
 
 const MapaEquipeForm = () => {
@@ -20,7 +20,8 @@ const MapaEquipeForm = () => {
     updateColaborador,
     showPreview,
     handlePreview,
-    closePreview
+    closePreview,
+    resetForm
   } = useMapaEquipe();
 
   if (showPreview) {
@@ -65,6 +66,16 @@ const MapaEquipeForm = () => {
                   value={empresaNome}
                   onChange={(e) => setEmpresaNome(e.target.value)}
                 />
+              </div>
+              <div className="flex justify-end w-full md:w-1/2">
+                <Button
+                  variant="outline"
+                  onClick={resetForm}
+                  className="border-red-400 text-red-500 hover:bg-red-50"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Limpar Formulário
+                </Button>
               </div>
             </div>
           </div>
