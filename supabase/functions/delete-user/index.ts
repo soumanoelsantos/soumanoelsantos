@@ -1,6 +1,6 @@
 
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.43.2';
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,93 +8,79 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  // Handle CORS preflight request
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-    // Apenas administradores podem acessar esta função
-    const authorizationHeader = req.headers.get('Authorization');
-    if (!authorizationHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Não autorizado' }),
-        {
-          status: 401,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        }
-      );
-    }
-
-    const token = authorizationHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Não autorizado' }),
-        {
-          status: 401,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        }
-      );
-    }
-
-    // Verificar se o usuário é um administrador
-    const { data: adminCheck, error: adminError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (adminError || !adminCheck?.is_admin) {
-      return new Response(
-        JSON.stringify({ error: 'Permissão negada. Apenas administradores podem realizar esta operação.' }),
-        {
-          status: 403,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        }
-      );
-    }
-
-    // Obter o ID do usuário a ser excluído do corpo da solicitação
-    const { user_id } = await req.json();
-
-    if (!user_id) {
-      return new Response(
-        JSON.stringify({ error: 'ID de usuário não fornecido' }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        }
-      );
-    }
-
-    // Excluir o usuário usando a API Admin do Supabase
-    const { error: deleteError } = await supabase.auth.admin.deleteUser(user_id);
-
-    if (deleteError) {
-      throw deleteError;
-    }
-
-    return new Response(
-      JSON.stringify({ success: true, message: 'Usuário excluído com sucesso' }),
+    // Create a Supabase client with the Auth context of the logged in user
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
-        status: 200,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        global: {
+          headers: { Authorization: req.headers.get('Authorization')! },
+        },
       }
     );
-  } catch (error) {
-    console.error('Erro ao excluir usuário:', error);
+
+    // Get the JWT from the request header and verify authentication
+    const token = req.headers.get('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return new Response(
+        JSON.stringify({ error: 'Not authenticated' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    // Check if calling user is an admin
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: adminCheck, error: adminError } = await supabaseClient.rpc('is_admin');
+
+    if (adminError || !adminCheck) {
+      return new Response(
+        JSON.stringify({ error: 'Admin access required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
+    }
+
+    // Get the target user ID from the request
+    const { userId } = await req.json();
+
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: 'User ID is required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Use service role client for admin actions
+    const serviceClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
+    // Delete user from auth.users
+    const { error: deleteError } = await serviceClient.auth.admin.deleteUser(userId);
+
+    if (deleteError) {
+      console.error("Error deleting user:", deleteError);
+      return new Response(
+        JSON.stringify({ error: `Failed to delete user: ${deleteError.message}` }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ error: error.message || 'Falha ao excluir usuário' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders }
-      }
+      JSON.stringify({ success: true, message: 'User deleted successfully' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return new Response(
+      JSON.stringify({ error: error.message || 'An unknown error occurred' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
 });

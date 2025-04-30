@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { phaseTestData } from "../data/phaseTestData";
 import { useToast } from "@/hooks/use-toast";
 import { PhaseTestResult } from "../types/phaseTest";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/integrations/supabase/types";
 
 export const usePhaseTest = () => {
   const { toast } = useToast();
@@ -150,12 +150,15 @@ export const usePhaseTest = () => {
         
         if (selectError) throw selectError;
         
+        // We need to join the recommendations array into a string for storage
+        const recommendationsString = resultData.recommendations.join('|');
+        
         const resultToSave = {
           user_id: userId,
           phase_name: resultData.phaseName,
           score: resultData.score,
           description: resultData.description,
-          recommendations: resultData.recommendations.join('|') // Converte array para string
+          recommendations: recommendationsString
         };
         
         if (data && data.length > 0) {

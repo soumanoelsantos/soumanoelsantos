@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Colaborador } from "@/types/mapaEquipe";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from '@/integrations/supabase/client';
 import { useMapaEquipeValidation } from "@/hooks/useMapaEquipeValidation";
+import { Json } from "@/integrations/supabase/types";
 import { 
   niveisMaturidadeOptions, 
   estilosLiderancaOptions, 
@@ -65,28 +65,22 @@ export const useMapaEquipe = () => {
           setEmpresaNome(data.empresa_nome);
           
           if (data.colaboradores && typeof data.colaboradores === 'object') {
+            // Cast JSON to array and validate
+            const jsonData = data.colaboradores as Json;
+            
             // Garantir que os colaboradores tenham a estrutura correta
-            const processedColaboradores = Array.isArray(data.colaboradores) 
-              ? data.colaboradores.map((col: any) => ({
-                  nome: col.nome || "",
-                  nivelMaturidade: col.nivelMaturidade || niveisMaturidadeOptions[0],
-                  estiloLideranca: col.estiloLideranca || estilosLiderancaOptions[0],
-                  perfilComportamental: col.perfilComportamental || perfisComportamentaisOptions[0],
-                  futuro: col.futuro || "",
-                  potencial: col.potencial || potenciaisOptions[0]
-                }))
-              : [
-                  {
-                    nome: "",
-                    nivelMaturidade: niveisMaturidadeOptions[0],
-                    estiloLideranca: estilosLiderancaOptions[0],
-                    perfilComportamental: perfisComportamentaisOptions[0],
-                    futuro: "",
-                    potencial: potenciaisOptions[0]
-                  }
-                ];
-                
-            setColaboradores(processedColaboradores);
+            if (Array.isArray(jsonData)) {
+              const processedColaboradores = jsonData.map((col: any) => ({
+                nome: col.nome || "",
+                nivelMaturidade: col.nivelMaturidade || niveisMaturidadeOptions[0],
+                estiloLideranca: col.estiloLideranca || estilosLiderancaOptions[0],
+                perfilComportamental: col.perfilComportamental || perfisComportamentaisOptions[0],
+                futuro: col.futuro || "",
+                potencial: col.potencial || potenciaisOptions[0]
+              }));
+              
+              setColaboradores(processedColaboradores);
+            }
           }
           
           setMapaId(data.id);
@@ -157,29 +151,29 @@ export const useMapaEquipe = () => {
       try {
         setIsLoading(true);
         
-        const mapaData = {
-          user_id: userId,
-          empresa_nome: empresaNome,
-          colaboradores: colaboradores
-        };
-        
-        let result;
-        
         if (mapaId) {
           // Atualizar mapa existente
-          result = await supabase
+          const { error } = await supabase
             .from('mapa_equipe')
             .update({
-              empresa_nome: mapaData.empresa_nome,
-              colaboradores: mapaData.colaboradores
+              empresa_nome: empresaNome,
+              colaboradores: colaboradores as unknown as Json
             })
             .eq('id', mapaId);
+            
+          if (error) throw error;
         } else {
           // Inserir novo mapa
-          result = await supabase
+          const { error } = await supabase
             .from('mapa_equipe')
-            .insert(mapaData);
+            .insert([{
+              user_id: userId,
+              empresa_nome: empresaNome,
+              colaboradores: colaboradores as unknown as Json
+            }]);
             
+          if (error) throw error;
+          
           // Buscar o ID do novo registro
           const { data: newData, error: fetchError } = await supabase
             .from('mapa_equipe')
@@ -191,8 +185,6 @@ export const useMapaEquipe = () => {
             setMapaId(newData.id);
           }
         }
-        
-        if (result?.error) throw result.error;
         
         toast({
           title: "Dados salvos",

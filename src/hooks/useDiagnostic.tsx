@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { DiagnosticResults as DiagnosticResultsType, AnswersDataType } from "@/types/diagnostic";
 import { generateActionPlan } from "@/utils/generateActionPlan";
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/integrations/supabase/types";
 
 export const useDiagnostic = () => {
   const { toast } = useToast();
@@ -64,15 +65,41 @@ export const useDiagnostic = () => {
 
         if (data) {
           if (data.results && typeof data.results === 'object') {
-            setResults(data.results as DiagnosticResultsType);
+            // Cast to the correct type with proper validation
+            const loadedResults = data.results as Json;
+            if (
+              loadedResults && 
+              typeof loadedResults === 'object' && 
+              'processos' in loadedResults && 
+              'resultados' in loadedResults && 
+              'sistemaGestao' in loadedResults && 
+              'pessoas' in loadedResults
+            ) {
+              setResults(loadedResults as DiagnosticResultsType);
+            }
           }
           
           if (data.answers_data && typeof data.answers_data === 'object') {
-            setAnswersData(data.answers_data as AnswersDataType);
+            // Cast to the correct type with proper validation
+            const loadedAnswersData = data.answers_data as Json;
+            if (
+              loadedAnswersData && 
+              typeof loadedAnswersData === 'object' && 
+              'processos' in loadedAnswersData && 
+              'resultados' in loadedAnswersData && 
+              'sistemaGestao' in loadedAnswersData && 
+              'pessoas' in loadedAnswersData
+            ) {
+              setAnswersData(loadedAnswersData as AnswersDataType);
+            }
           }
           
           if (data.action_plan && typeof data.action_plan === 'object') {
-            setActionPlan(data.action_plan as {[key: string]: string[]});
+            // Cast to the correct type with proper validation
+            const loadedActionPlan = data.action_plan as Json;
+            if (loadedActionPlan && typeof loadedActionPlan === 'object') {
+              setActionPlan(loadedActionPlan as {[key: string]: string[]});
+            }
           }
           
           setShowResults(true);
@@ -116,7 +143,7 @@ export const useDiagnostic = () => {
                   result = await supabase
                     .from('diagnostic_results')
                     .update({
-                      action_plan: plan
+                      action_plan: plan as Json
                     })
                     .eq('id', diagnosticId);
                 } else {
@@ -125,9 +152,9 @@ export const useDiagnostic = () => {
                     .from('diagnostic_results')
                     .insert({
                       user_id: userId,
-                      results: results,
-                      answers_data: answersData,
-                      action_plan: plan
+                      results: results as unknown as Json,
+                      answers_data: answersData as unknown as Json,
+                      action_plan: plan as unknown as Json
                     });
                     
                   const { data, error } = await supabase
@@ -189,9 +216,9 @@ export const useDiagnostic = () => {
       
       const diagnosticData = {
         user_id: userId,
-        results: results,
-        answers_data: answersData,
-        action_plan: actionPlan
+        results: results as unknown as Json,
+        answers_data: answersData as unknown as Json,
+        action_plan: actionPlan as unknown as Json
       };
       
       let result;
@@ -200,13 +227,22 @@ export const useDiagnostic = () => {
         // Atualizar diagnóstico existente
         result = await supabase
           .from('diagnostic_results')
-          .update(diagnosticData)
+          .update({
+            results: diagnosticData.results,
+            answers_data: diagnosticData.answers_data,
+            action_plan: diagnosticData.action_plan
+          })
           .eq('id', diagnosticId);
       } else {
         // Inserir novo diagnóstico
         result = await supabase
           .from('diagnostic_results')
-          .insert(diagnosticData);
+          .insert([{
+            user_id: userId,
+            results: diagnosticData.results,
+            answers_data: diagnosticData.answers_data,
+            action_plan: diagnosticData.action_plan
+          }]);
           
         const { data, error } = await supabase
           .from('diagnostic_results')
