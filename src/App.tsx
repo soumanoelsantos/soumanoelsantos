@@ -11,6 +11,7 @@ import MemberArea from "./pages/MemberArea";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 import DiagnosticoTest from "./pages/DiagnosticoTest";
+import CheckListContratacao from "./pages/CheckListContratacao";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/membros" element={<MemberArea />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/teste" element={<DiagnosticoTest />} />
+            <Route path="/checklist-contratacao" element={<CheckListContratacao />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

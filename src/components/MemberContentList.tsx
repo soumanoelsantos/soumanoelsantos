@@ -16,6 +16,7 @@ const programModules = [
     status: "disponível",
     lessons: [
       { id: 1, title: "Diagnóstico do Negócio", url: "/teste", isWhatsapp: false },
+      { id: 2, title: "Check List de Contratação", url: "/checklist-contratacao", isWhatsapp: false },
     ]
   },
   {
