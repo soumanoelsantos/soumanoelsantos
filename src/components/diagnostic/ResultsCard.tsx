@@ -32,13 +32,13 @@ const ResultsCard = ({ results }: ResultsCardProps) => {
 
   const overallPercentage = calculateOverallPercentage();
 
-  // Prepare chart data
-  const chartData = [
-    { name: 'Processos', value: results.processos.percentage },
-    { name: 'Resultados', value: results.resultados.percentage },
-    { name: 'Sistema de Gestão', value: results.sistemaGestao.percentage },
-    { name: 'Pessoas', value: results.pessoas.percentage },
-  ];
+  // Prepare chart data - fixed to match the expected data structure in DiagnosticResultsChart
+  const chartData = {
+    processos: { percentage: results.processos.percentage },
+    resultados: { percentage: results.resultados.percentage },
+    sistemaGestao: { percentage: results.sistemaGestao.percentage },
+    pessoas: { percentage: results.pessoas.percentage }
+  };
 
   return (
     <Card className="bg-white border-dark-primary/20">
@@ -87,4 +87,3 @@ const ResultsCard = ({ results }: ResultsCardProps) => {
 };
 
 export default ResultsCard;
-
