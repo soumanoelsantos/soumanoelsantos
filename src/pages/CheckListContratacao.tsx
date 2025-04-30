@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import MemberHeader from "@/components/MemberHeader";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ChecklistItem {
   id: number;
@@ -18,9 +18,10 @@ interface ChecklistItem {
 const CheckListContratacao = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [userEmail, setUserEmail] = useState<string | null>(localStorage.getItem("userEmail"));
+  const { userEmail } = useAuth();
   const [score, setScore] = useState<number>(0);
   const [showResults, setShowResults] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([
     {
@@ -85,6 +86,29 @@ const CheckListContratacao = () => {
     }
   ]);
 
+  // Load saved results when component mounts
+  useEffect(() => {
+    if (userEmail) {
+      const resultsKey = `checklist_results_${userEmail}`;
+      const savedData = localStorage.getItem(resultsKey);
+      
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          setChecklistItems(parsedData.checklistItems);
+          setScore(parsedData.score);
+          setShowResults(true);
+        } catch (error) {
+          console.error("Error parsing saved checklist data:", error);
+        }
+      }
+      
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+    }
+  }, [userEmail]);
+
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userEmail");
@@ -109,6 +133,17 @@ const CheckListContratacao = () => {
     const checkedCount = checklistItems.filter(item => item.checked).length;
     setScore(checkedCount);
     setShowResults(true);
+    
+    // Save results to localStorage
+    if (userEmail) {
+      const resultsKey = `checklist_results_${userEmail}`;
+      const dataToSave = {
+        checklistItems,
+        score: checkedCount
+      };
+      
+      localStorage.setItem(resultsKey, JSON.stringify(dataToSave));
+    }
     
     toast({
       title: "Pontuação calculada",
@@ -147,7 +182,26 @@ const CheckListContratacao = () => {
     );
     setScore(0);
     setShowResults(false);
+    
+    // Remove saved results from localStorage
+    if (userEmail) {
+      const resultsKey = `checklist_results_${userEmail}`;
+      localStorage.removeItem(resultsKey);
+      
+      toast({
+        title: "Checklist reiniciado",
+        description: "Suas respostas foram apagadas com sucesso.",
+      });
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-800">Carregando...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
