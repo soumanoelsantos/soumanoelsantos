@@ -67,6 +67,8 @@ export const useDiagnostic = () => {
           if (data.results && typeof data.results === 'object') {
             // Cast to the correct type with proper validation
             const loadedResults = data.results as Json;
+            
+            // Check if the loaded result has all required properties
             if (
               loadedResults && 
               typeof loadedResults === 'object' && 
@@ -75,13 +77,38 @@ export const useDiagnostic = () => {
               'sistemaGestao' in loadedResults && 
               'pessoas' in loadedResults
             ) {
-              setResults(loadedResults as DiagnosticResultsType);
+              // Type assertion with validation
+              const typedResults = loadedResults as unknown as DiagnosticResultsType;
+              
+              // Verify the structure is complete before setting
+              if (
+                typeof typedResults.processos === 'object' && 
+                'score' in typedResults.processos &&
+                'total' in typedResults.processos &&
+                'percentage' in typedResults.processos &&
+                typeof typedResults.resultados === 'object' && 
+                'score' in typedResults.resultados &&
+                'total' in typedResults.resultados &&
+                'percentage' in typedResults.resultados &&
+                typeof typedResults.sistemaGestao === 'object' && 
+                'score' in typedResults.sistemaGestao &&
+                'total' in typedResults.sistemaGestao &&
+                'percentage' in typedResults.sistemaGestao &&
+                typeof typedResults.pessoas === 'object' && 
+                'score' in typedResults.pessoas &&
+                'total' in typedResults.pessoas &&
+                'percentage' in typedResults.pessoas
+              ) {
+                setResults(typedResults);
+              }
             }
           }
           
           if (data.answers_data && typeof data.answers_data === 'object') {
             // Cast to the correct type with proper validation
             const loadedAnswersData = data.answers_data as Json;
+            
+            // Check if the loaded data has all required sections
             if (
               loadedAnswersData && 
               typeof loadedAnswersData === 'object' && 
@@ -90,15 +117,52 @@ export const useDiagnostic = () => {
               'sistemaGestao' in loadedAnswersData && 
               'pessoas' in loadedAnswersData
             ) {
-              setAnswersData(loadedAnswersData as AnswersDataType);
+              // Type assertion with validation
+              const typedAnswersData = loadedAnswersData as unknown as AnswersDataType;
+              
+              // Verify each section has the correct structure
+              if (
+                typeof typedAnswersData.processos === 'object' &&
+                'title' in typedAnswersData.processos &&
+                'answers' in typedAnswersData.processos &&
+                Array.isArray(typedAnswersData.processos.answers) &&
+                typeof typedAnswersData.resultados === 'object' &&
+                'title' in typedAnswersData.resultados &&
+                'answers' in typedAnswersData.resultados &&
+                Array.isArray(typedAnswersData.resultados.answers) &&
+                typeof typedAnswersData.sistemaGestao === 'object' &&
+                'title' in typedAnswersData.sistemaGestao &&
+                'answers' in typedAnswersData.sistemaGestao &&
+                Array.isArray(typedAnswersData.sistemaGestao.answers) &&
+                typeof typedAnswersData.pessoas === 'object' &&
+                'title' in typedAnswersData.pessoas &&
+                'answers' in typedAnswersData.pessoas &&
+                Array.isArray(typedAnswersData.pessoas.answers)
+              ) {
+                setAnswersData(typedAnswersData);
+              }
             }
           }
           
           if (data.action_plan && typeof data.action_plan === 'object') {
             // Cast to the correct type with proper validation
             const loadedActionPlan = data.action_plan as Json;
+            
             if (loadedActionPlan && typeof loadedActionPlan === 'object') {
-              setActionPlan(loadedActionPlan as {[key: string]: string[]});
+              // Type assertion with validation
+              const typedActionPlan = loadedActionPlan as unknown as {[key: string]: string[]};
+              
+              // Check if it's a valid action plan structure
+              let isValid = true;
+              Object.entries(typedActionPlan).forEach(([key, value]) => {
+                if (!Array.isArray(value)) {
+                  isValid = false;
+                }
+              });
+              
+              if (isValid) {
+                setActionPlan(typedActionPlan);
+              }
             }
           }
           
@@ -143,7 +207,7 @@ export const useDiagnostic = () => {
                   result = await supabase
                     .from('diagnostic_results')
                     .update({
-                      action_plan: plan as Json
+                      action_plan: plan as unknown as Json
                     })
                     .eq('id', diagnosticId);
                 } else {
@@ -237,12 +301,12 @@ export const useDiagnostic = () => {
         // Inserir novo diagnóstico
         result = await supabase
           .from('diagnostic_results')
-          .insert([{
+          .insert({
             user_id: userId,
             results: diagnosticData.results,
             answers_data: diagnosticData.answers_data,
             action_plan: diagnosticData.action_plan
-          }]);
+          });
           
         const { data, error } = await supabase
           .from('diagnostic_results')
