@@ -73,6 +73,7 @@ export const useDiagnosticData = () => {
     showResults,
     setShowResults,
     isLoading,
+    setIsLoading, // Make sure to include setIsLoading in the returned object
     diagnosticId,
     setDiagnosticId,
   };

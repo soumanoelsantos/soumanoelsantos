@@ -19,6 +19,7 @@ export const useDiagnostic = () => {
     showResults,
     setShowResults,
     isLoading,
+    setIsLoading,  // Make sure we're getting setIsLoading from useDiagnosticData
     diagnosticId,
     setDiagnosticId,
   } = useDiagnosticData();
@@ -50,7 +51,7 @@ export const useDiagnostic = () => {
     }
 
     try {
-      setIsLoading(true);
+      setIsLoading(true); // Now we have access to setIsLoading
       
       const { result, diagnosticId: newDiagnosticId } = await saveDiagnosticToSupabase(
         userId,
@@ -82,7 +83,7 @@ export const useDiagnostic = () => {
         description: error.message || "Ocorreu um erro ao salvar o diagnóstico.",
       });
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Now we have access to setIsLoading
     }
   };
 
