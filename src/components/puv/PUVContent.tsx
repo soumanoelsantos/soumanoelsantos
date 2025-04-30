@@ -7,19 +7,56 @@ interface PUVContentProps {
 }
 
 const PUVContent = ({ data }: PUVContentProps) => {
-  // Função para formatar o texto da PUV
+  // Função para formatar o texto da PUV de forma mais coesa e discursiva
   const formatPUVText = () => {
-    // Apenas inclui os campos que foram preenchidos
-    const parts = [];
-    if (data.meus) parts.push(`Meus ${data.meus}`);
-    if (data.ajudam) parts.push(`ajudam ${data.ajudam}`);
-    if (data.queDesejam) parts.push(`que desejam ${data.queDesejam}`);
-    if (data.para) parts.push(`para ${data.para}`);
-    if (data.dor) parts.push(`${data.dor}`);
-    if (data.e) parts.push(`e ${data.e}`);
-    if (data.ganho) parts.push(`${data.ganho}`);
+    if (!data.meus && !data.ajudam) return "";
     
-    return parts.join(' ');
+    let text = "";
+    
+    // Começamos com "Meus [produtos]"
+    if (data.meus) {
+      text = `Meus ${data.meus}`;
+    }
+    
+    // Adicionamos "ajudam [segmento]"
+    if (data.ajudam) {
+      text += text ? ` ajudam ${data.ajudam}` : `Ajudam ${data.ajudam}`;
+    }
+    
+    // Adicionamos "que desejam [necessidades]"
+    if (data.queDesejam) {
+      text += ` que desejam ${data.queDesejam}`;
+    }
+    
+    // Adicionamos "para [verbo]"
+    if (data.para) {
+      text += ` para ${data.para}`;
+    }
+    
+    // Adicionamos a dor do cliente
+    if (data.dor) {
+      text += ` ${data.dor}`;
+    }
+    
+    // Adicionamos "e [verbo]"
+    if (data.e) {
+      text += ` e ${data.e}`;
+    }
+    
+    // Adicionamos o ganho do cliente
+    if (data.ganho) {
+      text += ` ${data.ganho}`;
+    }
+    
+    // Garantimos que a primeira letra esteja em maiúsculo e que terminamos com um ponto
+    if (text) {
+      text = text.charAt(0).toUpperCase() + text.slice(1);
+      if (!text.endsWith('.')) {
+        text += '.';
+      }
+    }
+    
+    return text;
   };
 
   return (

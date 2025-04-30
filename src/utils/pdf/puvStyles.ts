@@ -18,12 +18,25 @@ export const getPUVPdfStyles = () => {
       margin-bottom: 10px;
     }
 
+    /* Ensure headers in the background color have white text */
     .puv-preview h3 {
-      color: #fff;
-      background-color: #1d365c;
+      color: #fff !important;
+      background-color: #1d365c !important;
       padding: 8px 10px;
       font-size: 18px;
       margin: 15px 0;
+    }
+
+    .puv-preview .bg-\\[\\#1d365c\\] {
+      background-color: #1d365c !important;
+    }
+
+    .puv-preview .bg-\\[\\#1d365c\\] * {
+      color: #fff !important;
+    }
+
+    .puv-preview .text-white {
+      color: #fff !important;
     }
 
     .puv-preview .font-bold {
@@ -33,6 +46,18 @@ export const getPUVPdfStyles = () => {
     @media print {
       .puv-preview {
         padding: 20px;
+      }
+      
+      /* Ensure headers remain white in PDF */
+      .puv-preview h3.bg-\\[\\#1d365c\\],
+      .puv-preview .bg-\\[\\#1d365c\\] {
+        background-color: #1d365c !important;
+        -webkit-print-color-adjust: exact;
+      }
+      
+      .puv-preview h3.bg-\\[\\#1d365c\\] *,
+      .puv-preview .bg-\\[\\#1d365c\\] * {
+        color: #fff !important;
       }
     }
   `;

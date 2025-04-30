@@ -1,7 +1,7 @@
 
 import html2pdf from 'html2pdf.js';
 import { getPdfStyles } from './pdf/index';
-import { getDefaultPdfOptions, getBusinessMapPdfOptions } from './pdf/pdfOptions';
+import { getDefaultPdfOptions, getBusinessMapPdfOptions, getPUVPdfOptions } from './pdf/index';
 
 export const generatePDF = (element: HTMLDivElement, onComplete?: () => void) => {
   // Add classes to the content temporarily for PDF styling
@@ -16,6 +16,8 @@ export const generatePDF = (element: HTMLDivElement, onComplete?: () => void) =>
   let pdfOptions = getDefaultPdfOptions();
   if (element.classList.contains('business-map')) {
     pdfOptions = getBusinessMapPdfOptions();
+  } else if (element.classList.contains('puv-preview')) {
+    pdfOptions = getPUVPdfOptions();
   }
 
   // Generate the PDF
