@@ -45,6 +45,14 @@
   }
 }
 
+/* PDF specific styles */
+.pdf-export .text-gray-800,
+.pdf-export li,
+.pdf-export p,
+.pdf-export div:not(.card-header):not(.bg-[#1d365c]) {
+  color: #000000 !important;
+}
+
 /* Animations */
 @keyframes float {
   0% { transform: translateY(0px); }
@@ -55,4 +63,3 @@
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
-

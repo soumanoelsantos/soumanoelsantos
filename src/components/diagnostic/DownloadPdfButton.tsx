@@ -23,10 +23,16 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
     const styleElement = document.createElement('style');
     styleElement.innerHTML = `
       .pdf-export {
-        color: #FFFFFF !important;
+        color: #000000 !important;
       }
       .pdf-export * {
-        color: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      .pdf-export p, 
+      .pdf-export li, 
+      .pdf-export span, 
+      .pdf-export div {
+        color: #000000 !important;
       }
       .pdf-export .bg-[#1d365c], 
       .pdf-export [class*="bg-[#1d365c]"] {
@@ -36,8 +42,14 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       .pdf-export [class*="bg-[#1d365c]"] * {
         color: #FFFFFF !important;
       }
-      .pdf-export .pdf-header {
+      .pdf-export .card-header {
+        background-color: #1d365c !important;
+      }
+      .pdf-export .card-header * {
         color: #FFFFFF !important;
+      }
+      .pdf-export .pdf-header {
+        color: #000000 !important;
       }
       .pdf-export .recharts-layer {
         color: inherit !important;
@@ -54,7 +66,11 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
         bottom: -20px !important;
       }
       .pdf-export .answers-section ul li {
-        color: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      .pdf-export .answers-section .question-text {
+        font-weight: 600 !important;
+        color: #000000 !important;
       }
       .pdf-export .answers-section .answer-satisfactory {
         color: #22c55e !important;
@@ -65,18 +81,18 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       .pdf-export .answers-section .answer-nonexistent {
         color: #ef4444 !important;
       }
-      .pdf-export .answers-section .question-text {
-        font-weight: 600 !important;
+      .pdf-export table {
+        width: 100%;
       }
-      .pdf-export .card-header {
-        background-color: #1d365c !important;
+      .pdf-export table th {
+        color: #000000 !important;
+        font-weight: bold !important;
       }
-      .pdf-export .card-header * {
-        color: #FFFFFF !important;
-      }
-      .pdf-export table th,
       .pdf-export table td {
-        color: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      .pdf-export ul li {
+        color: #000000 !important;
       }
     `;
     document.head.appendChild(styleElement);
