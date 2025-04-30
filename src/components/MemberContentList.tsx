@@ -13,9 +13,9 @@ const programModules = [
     id: 0,
     title: "Ferramentas",
     description: "Ferramentas de diagnóstico e análise para sua empresa",
-    status: "completo",
+    status: "disponível",
     lessons: [
-      { id: 1, title: "Diagnóstico do Negócio", duration: "45 min", url: "/teste", isWhatsapp: false },
+      { id: 1, title: "Diagnóstico do Negócio", url: "/teste", isWhatsapp: false },
     ]
   },
   {
@@ -24,10 +24,10 @@ const programModules = [
     description: "Entendendo seu negócio e traçando o plano de 90 dias",
     status: "bloqueado",
     lessons: [
-      { id: 101, title: "Diagnóstico empresarial completo", duration: "45 min", url: "#", isWhatsapp: false },
-      { id: 102, title: "Definindo metas SMART para 90 dias", duration: "32 min", url: "#", isWhatsapp: false },
-      { id: 103, title: "Criando seu plano de ação", duration: "51 min", url: "#", isWhatsapp: false },
-      { id: 104, title: "Workshop: Análise SWOT da sua empresa", duration: "38 min", url: "#", isWhatsapp: false },
+      { id: 101, title: "Diagnóstico empresarial completo", url: "#", isWhatsapp: false },
+      { id: 102, title: "Definindo metas SMART para 90 dias", url: "#", isWhatsapp: false },
+      { id: 103, title: "Criando seu plano de ação", url: "#", isWhatsapp: false },
+      { id: 104, title: "Workshop: Análise SWOT da sua empresa", url: "#", isWhatsapp: false },
     ]
   },
   {
@@ -36,10 +36,10 @@ const programModules = [
     description: "Implementando um funil de vendas eficiente",
     status: "bloqueado",
     lessons: [
-      { id: 201, title: "Estruturando seu funil de vendas", duration: "47 min", url: "#", isWhatsapp: false },
-      { id: 202, title: "Script de vendas de alto impacto", duration: "39 min", url: "#", isWhatsapp: false },
-      { id: 203, title: "Técnicas de fechamento avançadas", duration: "43 min", url: "#", isWhatsapp: false },
-      { id: 204, title: "Objeções: como transformá-las em vendas", duration: "36 min", url: "#", isWhatsapp: false },
+      { id: 201, title: "Estruturando seu funil de vendas", url: "#", isWhatsapp: false },
+      { id: 202, title: "Script de vendas de alto impacto", url: "#", isWhatsapp: false },
+      { id: 203, title: "Técnicas de fechamento avançadas", url: "#", isWhatsapp: false },
+      { id: 204, title: "Objeções: como transformá-las em vendas", url: "#", isWhatsapp: false },
     ]
   },
   {
@@ -48,10 +48,10 @@ const programModules = [
     description: "Atraindo leads qualificados para seu negócio",
     status: "bloqueado",
     lessons: [
-      { id: 301, title: "Estratégia de marketing de conteúdo", duration: "40 min", url: "#", isWhatsapp: false },
-      { id: 302, title: "Tráfego pago: Facebook e Instagram Ads", duration: "55 min", url: "#", isWhatsapp: false },
-      { id: 303, title: "Copywriting para conversão", duration: "48 min", url: "#", isWhatsapp: false },
-      { id: 304, title: "Automação de marketing", duration: "41 min", url: "#", isWhatsapp: false },
+      { id: 301, title: "Estratégia de marketing de conteúdo", url: "#", isWhatsapp: false },
+      { id: 302, title: "Tráfego pago: Facebook e Instagram Ads", url: "#", isWhatsapp: false },
+      { id: 303, title: "Copywriting para conversão", url: "#", isWhatsapp: false },
+      { id: 304, title: "Automação de marketing", url: "#", isWhatsapp: false },
     ]
   },
   {
@@ -60,10 +60,10 @@ const programModules = [
     description: "Estruturando sua empresa para crescer",
     status: "bloqueado",
     lessons: [
-      { id: 401, title: "KPIs essenciais para seu negócio", duration: "37 min", url: "#", isWhatsapp: false },
-      { id: 402, title: "Processos e operações eficientes", duration: "49 min", url: "#", isWhatsapp: false },
-      { id: 403, title: "Recrutamento e gestão de equipe", duration: "44 min", url: "#", isWhatsapp: false },
-      { id: 404, title: "Plano de crescimento sustentável", duration: "51 min", url: "#", isWhatsapp: false },
+      { id: 401, title: "KPIs essenciais para seu negócio", url: "#", isWhatsapp: false },
+      { id: 402, title: "Processos e operações eficientes", url: "#", isWhatsapp: false },
+      { id: 403, title: "Recrutamento e gestão de equipe", url: "#", isWhatsapp: false },
+      { id: 404, title: "Plano de crescimento sustentável", url: "#", isWhatsapp: false },
     ]
   }
 ];
@@ -90,6 +90,8 @@ const MemberContentList = () => {
         return <Badge className="bg-amber-500">Em andamento</Badge>;
       case "bloqueado":
         return <Badge className="bg-gray-500">Bloqueado</Badge>;
+      case "disponível":
+        return <Badge className="bg-blue-600">Disponível</Badge>;
       default:
         return null;
     }
@@ -132,7 +134,6 @@ const MemberContentList = () => {
                         <div className="flex items-center justify-between">
                           <div>
                             <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
-                            <span className="text-sm text-gray-600">Duração: {lesson.duration}</span>
                           </div>
                           <Button 
                             size="sm" 
