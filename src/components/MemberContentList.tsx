@@ -17,6 +17,7 @@ const programModules = [
     lessons: [
       { id: 1, title: "Diagnóstico do Negócio", url: "/teste", isWhatsapp: false },
       { id: 2, title: "Check List de Contratação", url: "/checklist-contratacao", isWhatsapp: false },
+      { id: 3, title: "Análise SWOT", url: "/analise-swot", isWhatsapp: false },
     ]
   },
   {

@@ -12,6 +12,7 @@ import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 import DiagnosticoTest from "./pages/DiagnosticoTest";
 import CheckListContratacao from "./pages/CheckListContratacao";
+import AnaliseSwot from "./pages/AnaliseSwot";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/teste" element={<DiagnosticoTest />} />
             <Route path="/checklist-contratacao" element={<CheckListContratacao />} />
+            <Route path="/analise-swot" element={<AnaliseSwot />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
