@@ -25,11 +25,21 @@ const MapaEquipePreview = ({ empresaNome, colaboradores, onClose }: MapaEquipePr
         description: "Seu PDF está sendo gerado...",
       });
       
+      // Add a temporary class to identify the component for PDF generation
+      if (mapRef.current) {
+        mapRef.current.classList.add('mapa-equipe-preview');
+      }
+      
       generatePDF(mapRef.current, () => {
         toast({
           title: "Download concluído",
           description: "Seu PDF foi baixado com sucesso!",
         });
+        
+        // Clean up the temporary class
+        if (mapRef.current) {
+          mapRef.current.classList.remove('mapa-equipe-preview');
+        }
       });
     }
   };

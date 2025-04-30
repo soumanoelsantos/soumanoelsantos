@@ -74,6 +74,15 @@ export const getMapaEquipeStyles = () => {
       .mapa-equipe-preview .bg-\\[\\#1d365c\\] * {
         color: #fff !important;
       }
+
+      .mapa-equipe-preview .card-header {
+        background-color: #1d365c !important;
+        -webkit-print-color-adjust: exact;
+      }
+      
+      .mapa-equipe-preview .card-header * {
+        color: #fff !important;
+      }
     }
   `;
 };

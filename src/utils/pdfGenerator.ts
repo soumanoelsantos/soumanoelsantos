@@ -14,11 +14,14 @@ export const generatePDF = (element: HTMLDivElement, onComplete?: () => void) =>
 
   // Get PDF options based on element type
   let pdfOptions = getDefaultPdfOptions();
+  
+  // Check element classes to determine which PDF options to use
   if (element.classList.contains('business-map')) {
     pdfOptions = getBusinessMapPdfOptions();
   } else if (element.classList.contains('puv-preview')) {
     pdfOptions = getPUVPdfOptions();
   } else if (element.classList.contains('mapa-equipe-preview')) {
+    console.log('Using Mapa Equipe PDF options');
     pdfOptions = getMapaEquipePdfOptions();
   }
 
@@ -35,5 +38,10 @@ export const generatePDF = (element: HTMLDivElement, onComplete?: () => void) =>
       if (onComplete) {
         onComplete();
       }
+    })
+    .catch((error) => {
+      console.error('Error generating PDF:', error);
+      element.classList.remove('pdf-export');
+      document.head.removeChild(styleElement);
     });
 };
