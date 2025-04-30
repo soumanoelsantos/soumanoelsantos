@@ -63,7 +63,32 @@ export const useMapaEquipe = () => {
 
         if (data) {
           setEmpresaNome(data.empresa_nome);
-          setColaboradores(data.colaboradores);
+          
+          if (data.colaboradores && typeof data.colaboradores === 'object') {
+            // Garantir que os colaboradores tenham a estrutura correta
+            const processedColaboradores = Array.isArray(data.colaboradores) 
+              ? data.colaboradores.map((col: any) => ({
+                  nome: col.nome || "",
+                  nivelMaturidade: col.nivelMaturidade || niveisMaturidadeOptions[0],
+                  estiloLideranca: col.estiloLideranca || estilosLiderancaOptions[0],
+                  perfilComportamental: col.perfilComportamental || perfisComportamentaisOptions[0],
+                  futuro: col.futuro || "",
+                  potencial: col.potencial || potenciaisOptions[0]
+                }))
+              : [
+                  {
+                    nome: "",
+                    nivelMaturidade: niveisMaturidadeOptions[0],
+                    estiloLideranca: estilosLiderancaOptions[0],
+                    perfilComportamental: perfisComportamentaisOptions[0],
+                    futuro: "",
+                    potencial: potenciaisOptions[0]
+                  }
+                ];
+                
+            setColaboradores(processedColaboradores);
+          }
+          
           setMapaId(data.id);
           
           toast({
@@ -135,7 +160,7 @@ export const useMapaEquipe = () => {
         const mapaData = {
           user_id: userId,
           empresa_nome: empresaNome,
-          colaboradores: colaboradores,
+          colaboradores: colaboradores
         };
         
         let result;
@@ -144,21 +169,30 @@ export const useMapaEquipe = () => {
           // Atualizar mapa existente
           result = await supabase
             .from('mapa_equipe')
-            .update(mapaData)
+            .update({
+              empresa_nome: mapaData.empresa_nome,
+              colaboradores: mapaData.colaboradores
+            })
             .eq('id', mapaId);
         } else {
           // Inserir novo mapa
           result = await supabase
             .from('mapa_equipe')
-            .insert([mapaData])
-            .select();
+            .insert(mapaData);
             
-          if (result.data && result.data[0]) {
-            setMapaId(result.data[0].id);
+          // Buscar o ID do novo registro
+          const { data: newData, error: fetchError } = await supabase
+            .from('mapa_equipe')
+            .select('id')
+            .eq('user_id', userId)
+            .single();
+            
+          if (!fetchError && newData) {
+            setMapaId(newData.id);
           }
         }
         
-        if (result.error) throw result.error;
+        if (result?.error) throw result.error;
         
         toast({
           title: "Dados salvos",

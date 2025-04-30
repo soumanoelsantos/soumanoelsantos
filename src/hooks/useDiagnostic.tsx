@@ -63,9 +63,18 @@ export const useDiagnostic = () => {
         }
 
         if (data) {
-          setResults(data.results);
-          setAnswersData(data.answers_data);
-          setActionPlan(data.action_plan || {});
+          if (data.results && typeof data.results === 'object') {
+            setResults(data.results as DiagnosticResultsType);
+          }
+          
+          if (data.answers_data && typeof data.answers_data === 'object') {
+            setAnswersData(data.answers_data as AnswersDataType);
+          }
+          
+          if (data.action_plan && typeof data.action_plan === 'object') {
+            setActionPlan(data.action_plan as {[key: string]: string[]});
+          }
+          
           setShowResults(true);
           setDiagnosticId(data.id);
         }
@@ -114,20 +123,25 @@ export const useDiagnostic = () => {
                   // Inserir novo diagnóstico
                   result = await supabase
                     .from('diagnostic_results')
-                    .insert([{
+                    .insert({
                       user_id: userId,
                       results: results,
                       answers_data: answersData,
                       action_plan: plan
-                    }])
-                    .select();
+                    });
                     
-                  if (result.data && result.data[0]) {
-                    setDiagnosticId(result.data[0].id);
+                  const { data, error } = await supabase
+                    .from('diagnostic_results')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .single();
+                    
+                  if (!error && data) {
+                    setDiagnosticId(data.id);
                   }
                 }
                 
-                if (result.error) throw result.error;
+                if (result?.error) throw result.error;
               } catch (error) {
                 console.error("Erro ao salvar plano de ação:", error);
               }
@@ -173,13 +187,14 @@ export const useDiagnostic = () => {
     try {
       setIsLoading(true);
       
-      let result;
       const diagnosticData = {
         user_id: userId,
         results: results,
         answers_data: answersData,
         action_plan: actionPlan
       };
+      
+      let result;
       
       if (diagnosticId) {
         // Atualizar diagnóstico existente
@@ -191,15 +206,20 @@ export const useDiagnostic = () => {
         // Inserir novo diagnóstico
         result = await supabase
           .from('diagnostic_results')
-          .insert([diagnosticData])
-          .select();
+          .insert(diagnosticData);
           
-        if (result.data && result.data[0]) {
-          setDiagnosticId(result.data[0].id);
+        const { data, error } = await supabase
+          .from('diagnostic_results')
+          .select('id')
+          .eq('user_id', userId)
+          .single();
+          
+        if (!error && data) {
+          setDiagnosticId(data.id);
         }
       }
       
-      if (result.error) throw result.error;
+      if (result?.error) throw result.error;
       
       setShowResults(true);
       // Set the flag to trigger plan generation

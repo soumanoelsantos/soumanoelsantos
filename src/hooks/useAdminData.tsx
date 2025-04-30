@@ -175,9 +175,10 @@ export function useAdminData(userEmail: string | null) {
       const userToDelete = users.find(u => u.id === userId);
       if (!userToDelete) return;
       
-      // Excluir o usuário do Supabase Auth
-      const { error } = await supabase
-        .rpc('delete_user', { user_id_param: userId });
+      // Chamar a edge function para excluir o usuário
+      const { error } = await supabase.functions.invoke('delete-user', {
+        body: { user_id: userId }
+      });
         
       if (error) throw error;
       

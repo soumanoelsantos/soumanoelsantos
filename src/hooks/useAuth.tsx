@@ -111,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const login = async (email: string, password: string, redirectPath: string | null) => {
+  const login = async (email: string, password: string, redirectPath: string | null): Promise<void> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -134,8 +134,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: "Login bem-sucedido",
         description: "Bem-vindo de volta!",
       });
-      
-      return data;
     } catch (error: any) {
       console.error('Erro no login:', error);
       toast({

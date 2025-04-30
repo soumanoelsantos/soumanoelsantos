@@ -42,11 +42,23 @@ export const usePhaseTest = () => {
         }
 
         if (data) {
-          const resultData = {
+          // Converta a string de recommendations para array se necessário
+          let recommendations: string[] = [];
+          if (data.recommendations) {
+            if (typeof data.recommendations === 'string') {
+              // Se for uma string, transforme em um array
+              recommendations = [data.recommendations];
+            } else if (Array.isArray(data.recommendations)) {
+              // Se já for um array, use-o diretamente
+              recommendations = data.recommendations;
+            }
+          }
+          
+          const resultData: PhaseTestResult = {
             phaseName: data.phase_name,
             score: data.score,
-            description: data.description,
-            recommendations: data.recommendations
+            description: data.description || "",
+            recommendations: recommendations
           };
           
           setResult(resultData);
@@ -116,7 +128,7 @@ export const usePhaseTest = () => {
       }
     }
     
-    const resultData = {
+    const resultData: PhaseTestResult = {
       phaseName: phaseTestData[highestScoreIndex].phase,
       score: highestScore,
       description: phaseTestData[highestScoreIndex].description,
@@ -143,7 +155,7 @@ export const usePhaseTest = () => {
           phase_name: resultData.phaseName,
           score: resultData.score,
           description: resultData.description,
-          recommendations: resultData.recommendations
+          recommendations: resultData.recommendations.join('|') // Converte array para string
         };
         
         if (data && data.length > 0) {
