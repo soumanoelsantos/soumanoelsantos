@@ -34,9 +34,14 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
   };
 
   return (
-    <div ref={pdfRef} className="mt-10 space-y-8">
-      <ResultsCard results={results} />
-      <ActionPlanCard actionPlan={actionPlan} answersData={answersData} />
+    <div ref={pdfRef} className="mt-10 space-y-8 pdf-container">
+      <div className="pdf-results-card">
+        <ResultsCard results={results} />
+      </div>
+      
+      <div className="pdf-action-plan">
+        <ActionPlanCard actionPlan={actionPlan} answersData={answersData} />
+      </div>
       
       {/* Marketing CTA Section */}
       <div className="bg-white p-6 border rounded-lg shadow-sm text-center mt-12 pdf-marketing-section">

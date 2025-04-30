@@ -53,6 +53,34 @@
   color: #000000 !important;
 }
 
+/* PDF layout optimization */
+@media print {
+  .pdf-container {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .pdf-results-card,
+  .pdf-action-plan {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .answers-section {
+    break-before: page;
+    page-break-before: always;
+  }
+  
+  .pdf-marketing-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .print\:hidden {
+    display: none !important;
+  }
+}
+
 /* Animations */
 @keyframes float {
   0% { transform: translateY(0px); }

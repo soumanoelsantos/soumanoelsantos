@@ -44,16 +44,16 @@ const ActionPlanCard = ({ actionPlan, answersData }: ActionPlanCardProps) => {
       <CardHeader className="bg-[#1d365c] text-white card-header">
         <CardTitle className="text-xl text-center text-white">Plano de Ação</CardTitle>
       </CardHeader>
-      <CardContent className="pt-6">
+      <CardContent className="pt-6 pdf-action-plan-content">
         <div className="space-y-6">
           {Object.entries(actionPlan).map(([key, actions]) => (
-            <div key={key} className="border-b border-gray-300 pb-4">
+            <div key={key} className="border-b border-gray-300 pb-4 pdf-action-plan-section">
               <h3 className="text-xl font-semibold mb-2 pdf-header text-gray-800">
                 {key === 'processos' ? 'PROCESSOS' : 
                  key === 'resultados' ? 'RESULTADOS' : 
                  key === 'sistemaGestao' ? 'SISTEMA DE GESTÃO' : 'PESSOAS'}
               </h3>
-              <ul className="list-disc list-inside space-y-1">
+              <ul className="list-disc list-inside space-y-1 pdf-action-items">
                 {Array.isArray(actions) && actions.map((action, index) => (
                   <li key={index} className="text-gray-800">{action}</li>
                 ))}
@@ -64,15 +64,15 @@ const ActionPlanCard = ({ actionPlan, answersData }: ActionPlanCardProps) => {
         
         {answersData && (
           <div className="mt-8 answers-section">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Respostas do Diagnóstico</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-800 pdf-answers-title">Respostas do Diagnóstico</h2>
             {Object.entries(answersData).map(([sectionKey, section]) => (
-              <div key={sectionKey} className="mb-8 border-b border-gray-300 pb-6">
+              <div key={sectionKey} className="mb-8 border-b border-gray-300 pb-6 pdf-answers-section">
                 <h3 className="text-xl font-semibold mb-4 text-gray-800">
                   {section.title}
                 </h3>
-                <ul className="space-y-4">
+                <ul className="space-y-4 pdf-answers-list">
                   {section.answers.map((item, index) => (
-                    <li key={index} className="text-gray-800">
+                    <li key={index} className="text-gray-800 pdf-answer-item">
                       <span className="question-text">Pergunta: </span> 
                       {item.question}
                       <br />
