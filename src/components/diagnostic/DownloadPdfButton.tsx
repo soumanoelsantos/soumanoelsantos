@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
@@ -92,6 +91,29 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
         color: #000000 !important;
       }
       .pdf-export ul li {
+        color: #000000 !important;
+      }
+      .pdf-export .pdf-marketing-section h2,
+      .pdf-export .pdf-marketing-section p {
+        color: #000000 !important;
+      }
+      .pdf-export .pdf-marketing-section h2 span {
+        color: #D4AF37 !important;
+      }
+      .pdf-export .pdf-marketing-section strong {
+        font-weight: bold !important;
+        color: #000000 !important;
+      }
+      .pdf-export .pdf-cta-button button {
+        background-color: #D4AF37 !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+        padding: 10px 20px !important;
+        border-radius: 9999px !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+      }
+      .pdf-export .pdf-cta-button svg {
         color: #000000 !important;
       }
     `;
