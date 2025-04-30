@@ -37,7 +37,7 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
       .pdf-export p, 
       .pdf-export li, 
       .pdf-export span, 
-      .pdf-export div {
+      .pdf-export div:not(.card-header):not(.bg-[#1d365c]) {
         color: #000000 !important;
       }
       
@@ -54,6 +54,12 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
         background-color: #1d365c !important;
       }
       .pdf-export .card-header * {
+        color: #FFFFFF !important;
+      }
+      
+      /* Specifically target the "Resultados do Diagnóstico" title */
+      .pdf-export .card-header .text-center.text-white,
+      .pdf-export .card-header .text-xl.text-center.text-white {
         color: #FFFFFF !important;
       }
       
