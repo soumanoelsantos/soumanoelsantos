@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 
 // Form schema validation using Zod
 const formSchema = z.object({
@@ -26,7 +25,7 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, loginRedirectPath, isAuthenticated } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   
@@ -37,9 +36,9 @@ const Login = () => {
   // Redirect authenticated users
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(loginRedirectPath || '/membros');
+      navigate('/membros');
     }
-  }, [isAuthenticated, navigate, loginRedirectPath]);
+  }, [isAuthenticated, navigate]);
 
   // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({
@@ -57,24 +56,12 @@ const Login = () => {
       setLoginError(null);
       console.log("Login attempted with:", values.email);
       
-      // Direct Supabase login for debugging
-      const { error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
-      });
-      
-      if (error) {
-        throw error;
-      }
+      await login(values.email, values.password, redirectPath);
       
       toast({
         title: "Login bem-sucedido",
         description: "Redirecionando para a área de membros...",
       });
-      
-      setTimeout(() => {
-        navigate('/membros');
-      }, 1000);
       
     } catch (error: any) {
       console.error("Login error:", error);

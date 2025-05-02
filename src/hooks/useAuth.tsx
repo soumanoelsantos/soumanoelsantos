@@ -14,7 +14,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isNewUser, setIsNewUser] = useState<boolean>(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loginRedirectPath, setLoginRedirectPath] = useState<string | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Inicialização
@@ -27,19 +26,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Configurar listener para mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        console.log("Auth state changed:", event, currentSession?.user?.email);
-        const isAuth = !!currentSession;
+      async (event, session) => {
+        console.log("Auth state changed:", event, session?.user?.email);
+        const isAuth = !!session;
         setIsAuthenticated(isAuth);
-        setSession(currentSession);
         
-        if (currentSession?.user) {
-          setUserEmail(currentSession.user.email);
-          setUserId(currentSession.user.id);
+        if (session?.user) {
+          setUserEmail(session.user.email);
+          setUserId(session.user.id);
           
           // Usar setTimeout para evitar problemas de recursão
           setTimeout(() => {
-            loadUserProfile(currentSession.user.id);
+            loadUserProfile(session.user.id);
           }, 0);
         } else {
           resetUserState();
@@ -48,16 +46,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // Verificar sessão existente
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      console.log("Current session:", currentSession?.user?.email);
-      const isAuth = !!currentSession;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Current session:", session?.user?.email);
+      const isAuth = !!session;
       setIsAuthenticated(isAuth);
-      setSession(currentSession);
       
-      if (currentSession?.user) {
-        setUserEmail(currentSession.user.email);
-        setUserId(currentSession.user.id);
-        loadUserProfile(currentSession.user.id);
+      if (session?.user) {
+        setUserEmail(session.user.email);
+        setUserId(session.user.id);
+        loadUserProfile(session.user.id);
       }
       
       setIsLoading(false);
@@ -168,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: "Erro no logout",
         description: error.message || "Não foi possível sair da conta",
       });
+      throw error;
     }
   };
 
