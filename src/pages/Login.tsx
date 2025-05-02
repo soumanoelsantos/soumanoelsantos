@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 // Form schema validation using Zod
 const formSchema = z.object({
@@ -25,12 +26,20 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, loginRedirectPath } = useAuth();
+  const { login, loginRedirectPath, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   
   // Get the redirect path from the search params
   const searchParams = new URLSearchParams(location.search);
   const redirectPath = searchParams.get('from');
+
+  // Redirect authenticated users
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(loginRedirectPath || '/membros');
+    }
+  }, [isAuthenticated, navigate, loginRedirectPath]);
 
   // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({
@@ -45,22 +54,37 @@ const Login = () => {
   const onSubmit = async (values: LoginFormValues) => {
     try {
       setIsLoading(true);
+      setLoginError(null);
       console.log("Login attempted with:", values.email);
       
-      // Usar a função de login do useAuth hook
-      await login(values.email, values.password, redirectPath || null);
+      // Direct Supabase login for debugging
+      const { error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password
+      });
       
-      // Redirecionar baseado no caminho armazenado no contexto de autenticação
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Login bem-sucedido",
+        description: "Redirecionando para a área de membros...",
+      });
+      
       setTimeout(() => {
-        if (loginRedirectPath === '/admin') {
-          navigate('/admin');
-        } else {
-          navigate('/membros');
-        }
+        navigate('/membros');
       }, 1000);
-    } catch (error) {
-      // O erro já foi tratado no hook useAuth
+      
+    } catch (error: any) {
       console.error("Login error:", error);
+      setLoginError(error?.message || "Erro ao fazer login");
+      
+      toast({
+        variant: "destructive",
+        title: "Erro no login",
+        description: error?.message || "Credenciais inválidas. Verifique seu email e senha.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +102,11 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {loginError && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-sm">
+              {loginError}
+            </div>
+          )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
