@@ -1,32 +1,10 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  userEmail: string | null;
-  isNewUser: boolean;
-  isAdmin: boolean;
-  login: (email: string, password: string, redirectPath: string | null) => Promise<void>;
-  logout: () => Promise<void>;
-  setUserAsAdmin: (value: boolean) => Promise<void>;
-  loginRedirectPath: string | null;
-  userId: string | null;
-}
-
-const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  userEmail: null,
-  isNewUser: true,
-  isAdmin: false,
-  login: async () => {},
-  logout: async () => {},
-  setUserAsAdmin: async () => {},
-  loginRedirectPath: null,
-  userId: null,
-});
+import AuthContext from '@/contexts/AuthContext';
+import { fetchUserProfile } from '@/utils/authUtils';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { toast } = useToast();
@@ -38,26 +16,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loginRedirectPath, setLoginRedirectPath] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Função para buscar os detalhes do perfil do usuário
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-
-      if (data) {
-        setIsNewUser(data.is_new_user);
-        setIsAdmin(data.is_admin);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar perfil do usuário:', error);
-    }
-  };
 
   // Inicialização
   useEffect(() => {
@@ -81,13 +39,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           // Usar setTimeout para evitar problemas de recursão
           setTimeout(() => {
-            fetchUserProfile(currentSession.user.id);
+            loadUserProfile(currentSession.user.id);
           }, 0);
         } else {
-          setUserEmail(null);
-          setUserId(null);
-          setIsNewUser(true);
-          setIsAdmin(false);
+          resetUserState();
         }
       }
     );
@@ -102,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (currentSession?.user) {
         setUserEmail(currentSession.user.email);
         setUserId(currentSession.user.id);
-        fetchUserProfile(currentSession.user.id);
+        loadUserProfile(currentSession.user.id);
       }
       
       setIsLoading(false);
@@ -113,6 +68,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  // Load user profile
+  const loadUserProfile = async (userId: string) => {
+    const profile = await fetchUserProfile(userId);
+    if (profile) {
+      setIsNewUser(profile.is_new_user);
+      setIsAdmin(profile.is_admin);
+    }
+  };
+
+  // Reset user state
+  const resetUserState = () => {
+    setUserEmail(null);
+    setUserId(null);
+    setIsNewUser(true);
+    setIsAdmin(false);
+  };
+
   const login = async (email: string, password: string, redirectPath: string | null): Promise<void> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -122,16 +94,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error;
 
-      // Armazenar caminho de redirecionamento no localStorage
-      if (redirectPath) {
-        localStorage.setItem('loginRedirectPath', redirectPath);
-        setLoginRedirectPath(redirectPath);
-      } else {
-        localStorage.removeItem('loginRedirectPath');
-        setLoginRedirectPath(null);
-      }
+      // Store redirect path in localStorage
+      handleRedirectPath(redirectPath);
 
-      // Os estados serão atualizados pelo listener onAuthStateChange
       toast({
         title: "Login bem-sucedido",
         description: "Bem-vindo de volta!",
@@ -144,6 +109,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: error.message || "Falha na autenticação",
       });
       throw error;
+    }
+  };
+
+  const handleRedirectPath = (redirectPath: string | null) => {
+    if (redirectPath) {
+      localStorage.setItem('loginRedirectPath', redirectPath);
+      setLoginRedirectPath(redirectPath);
+    } else {
+      localStorage.removeItem('loginRedirectPath');
+      setLoginRedirectPath(null);
     }
   };
 
@@ -179,10 +154,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Limpar dados do localStorage
+      // Clear localStorage data
       localStorage.removeItem('loginRedirectPath');
       
-      // Os estados serão atualizados pelo listener onAuthStateChange
       toast({
         title: "Logout realizado",
         description: "Você saiu da sua conta com sucesso",
