@@ -6,18 +6,16 @@ import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import MemberContentList from "@/components/MemberContentList";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const MemberArea = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const { isAuthenticated, userEmail, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-    const email = localStorage.getItem("userEmail");
-    
+    // Check if user is authenticated using the useAuth hook
     if (!isAuthenticated) {
       toast({
         variant: "destructive",
@@ -28,20 +26,21 @@ const MemberArea = () => {
       return;
     }
     
-    setUserEmail(email);
     setIsLoading(false);
-  }, [navigate, toast]);
+  }, [isAuthenticated, navigate, toast]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    
-    toast({
-      title: "Logout realizado",
-      description: "Você saiu da sua conta com sucesso",
-    });
-    
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro no logout",
+        description: "Não foi possível sair da sua conta",
+      });
+    }
   };
 
   if (isLoading) {
