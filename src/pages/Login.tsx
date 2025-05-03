@@ -15,7 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 // Form schema validation using Zod
 const formSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
-  password: z.string().min(6, { message: "A senha precisa ter pelo menos 6 caracteres" }),
+  password: z.string().min(1, { message: "A senha é obrigatória" }),
 });
 
 type LoginFormValues = z.infer<typeof formSchema>;
@@ -25,7 +25,7 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, loginRedirectPath } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   
@@ -36,9 +36,9 @@ const Login = () => {
   // Redirect authenticated users
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(redirectPath || '/membros');
+      navigate(loginRedirectPath || redirectPath || '/membros');
     }
-  }, [isAuthenticated, navigate, redirectPath]);
+  }, [isAuthenticated, navigate, redirectPath, loginRedirectPath]);
 
   // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({
@@ -65,12 +65,21 @@ const Login = () => {
       
     } catch (error: any) {
       console.error("Login error:", error);
-      setLoginError(error?.message || "Erro ao fazer login");
+      
+      let errorMessage = "Credenciais inválidas. Verifique seu email e senha.";
+      
+      if (error.message === "Invalid login credentials") {
+        errorMessage = "Email ou senha incorretos. Verifique suas credenciais.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setLoginError(errorMessage);
       
       toast({
         variant: "destructive",
         title: "Erro no login",
-        description: error?.message || "Credenciais inválidas. Verifique seu email e senha.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);

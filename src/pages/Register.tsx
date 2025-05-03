@@ -33,10 +33,11 @@ type RegisterFormValues = z.infer<typeof formSchema>;
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [registerError, setRegisterError] = useState<string | null>(null);
 
   // Redirect authenticated users
   useEffect(() => {
@@ -61,9 +62,10 @@ const Register = () => {
   const onSubmit = async (values: RegisterFormValues) => {
     try {
       setIsLoading(true);
+      setRegisterError(null);
       
-      // Registrar usuário usando Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
+      // Register user using Supabase Auth
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
@@ -73,7 +75,7 @@ const Register = () => {
         }
       });
       
-      if (error) throw error;
+      if (signUpError) throw signUpError;
       
       toast({
         title: "Cadastro bem-sucedido",
@@ -81,32 +83,40 @@ const Register = () => {
       });
       
       // Log the user in automatically
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
-      });
-      
-      if (loginError) {
-        // If auto-login fails, redirect to login page
+      try {
+        await login(values.email, values.password, null);
+        
+        toast({
+          title: "Login bem-sucedido",
+          description: "Bem-vindo à área de membros!",
+        });
+        
+        navigate('/membros');
+      } catch (loginError: any) {
+        console.error("Erro ao fazer login automático:", loginError);
         toast({
           title: "Login necessário",
           description: "Por favor, faça login com suas novas credenciais.",
         });
         navigate('/login');
-      } else {
-        // Auto-login succeeded, redirect to members area
-        toast({
-          title: "Login bem-sucedido",
-          description: "Bem-vindo à área de membros!",
-        });
-        navigate('/membros');
       }
     } catch (error: any) {
       console.error("Erro no cadastro:", error);
+      
+      let errorMessage = "Não foi possível criar sua conta";
+      
+      if (error.message === "User already registered") {
+        errorMessage = "Este email já está cadastrado. Por favor, tente fazer login.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setRegisterError(errorMessage);
+      
       toast({
         variant: "destructive",
         title: "Erro no cadastro",
-        description: error.message || "Não foi possível criar sua conta",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -126,6 +136,12 @@ const Register = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {registerError && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-sm">
+              {registerError}
+            </div>
+          )}
+          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -148,6 +164,7 @@ const Register = () => {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="email"
@@ -168,6 +185,7 @@ const Register = () => {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="password"
@@ -203,6 +221,7 @@ const Register = () => {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="confirmPassword"
@@ -238,6 +257,7 @@ const Register = () => {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="acceptTerms"
@@ -258,6 +278,7 @@ const Register = () => {
                   </FormItem>
                 )}
               />
+              
               <Button 
                 type="submit" 
                 className="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background"

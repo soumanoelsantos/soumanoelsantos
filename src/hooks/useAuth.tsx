@@ -66,10 +66,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Load user profile
   const loadUserProfile = async (userId: string) => {
-    const profile = await fetchUserProfile(userId);
-    if (profile) {
-      setIsNewUser(profile.is_new_user);
-      setIsAdmin(profile.is_admin);
+    try {
+      const profile = await fetchUserProfile(userId);
+      if (profile) {
+        setIsNewUser(profile.is_new_user);
+        setIsAdmin(profile.is_admin);
+      } else {
+        console.log("No profile found for user:", userId);
+      }
+    } catch (error) {
+      console.error("Error loading user profile:", error);
     }
   };
 
