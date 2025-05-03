@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -14,15 +14,15 @@ const MemberArea = () => {
   const { isAuthenticated, userEmail, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is authenticated using the useAuth hook
+  // Check authentication status
+  React.useEffect(() => {
     if (!isAuthenticated) {
       toast({
         variant: "destructive",
         title: "Acesso negado",
         description: "Você precisa fazer login para acessar esta página",
       });
-      navigate("/login");
+      navigate("/login", { state: { from: "/membros" } });
       return;
     }
     

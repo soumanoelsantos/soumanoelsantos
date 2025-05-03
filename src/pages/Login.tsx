@@ -29,16 +29,16 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   
-  // Get the redirect path from the search params
+  // Get the redirect path from the search params or state
   const searchParams = new URLSearchParams(location.search);
-  const redirectPath = searchParams.get('from');
+  const redirectPath = searchParams.get('from') || (location.state as any)?.from || null;
 
   // Redirect authenticated users
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/membros');
+      navigate(redirectPath || '/membros');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, redirectPath]);
 
   // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({

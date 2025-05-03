@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 // Form schema validation using Zod
 const formSchema = z.object({
@@ -32,9 +33,17 @@ type RegisterFormValues = z.infer<typeof formSchema>;
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect authenticated users
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/membros');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Initialize form with react-hook-form
   const form = useForm<RegisterFormValues>({
@@ -68,11 +77,30 @@ const Register = () => {
       
       toast({
         title: "Cadastro bem-sucedido",
-        description: "Sua conta foi criada com sucesso. Redirecionando para o login...",
+        description: "Sua conta foi criada com sucesso!",
       });
       
-      // Redirecionar para a página de login
-      setTimeout(() => navigate("/login"), 1500);
+      // Log the user in automatically
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password
+      });
+      
+      if (loginError) {
+        // If auto-login fails, redirect to login page
+        toast({
+          title: "Login necessário",
+          description: "Por favor, faça login com suas novas credenciais.",
+        });
+        navigate('/login');
+      } else {
+        // Auto-login succeeded, redirect to members area
+        toast({
+          title: "Login bem-sucedido",
+          description: "Bem-vindo à área de membros!",
+        });
+        navigate('/membros');
+      }
     } catch (error: any) {
       console.error("Erro no cadastro:", error);
       toast({

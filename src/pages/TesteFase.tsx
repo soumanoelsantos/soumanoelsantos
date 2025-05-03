@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +11,7 @@ import { usePhaseTest } from "@/hooks/usePhaseTest";
 const TesteFase = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { userEmail, logout } = useAuth();
+  const { isAuthenticated, userEmail, logout } = useAuth();
   
   const {
     currentPhaseIndex,
@@ -28,28 +27,29 @@ const TesteFase = () => {
   } = usePhaseTest();
   
   useEffect(() => {
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+    // Check if user is authenticated using the useAuth hook
     if (!isAuthenticated) {
       toast({
         variant: "destructive",
         title: "Acesso negado",
         description: "Você precisa fazer login para acessar esta página",
       });
-      navigate("/login");
+      navigate("/login", { state: { from: "/teste-fase" } });
     }
-  }, [navigate, toast]);
+  }, [isAuthenticated, navigate, toast]);
   
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    
-    toast({
-      title: "Logout realizado",
-      description: "Você saiu da sua conta com sucesso",
-    });
-    
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro no logout",
+        description: "Não foi possível sair da sua conta",
+      });
+    }
   };
   
   return (
