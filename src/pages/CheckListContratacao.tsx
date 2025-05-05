@@ -7,6 +7,7 @@ import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import ActionButton from "@/components/ui/action-button";
+import { saveChecklistData, loadChecklistData } from "@/utils/savingUtils";
 
 interface ChecklistItem {
   id: number;
@@ -18,7 +19,7 @@ interface ChecklistItem {
 const CheckListContratacao = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { userEmail } = useAuth();
+  const { userEmail, userId, isAuthenticated } = useAuth();
   const [score, setScore] = useState<number>(0);
   const [showResults, setShowResults] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -88,26 +89,34 @@ const CheckListContratacao = () => {
 
   // Load saved results when component mounts
   useEffect(() => {
-    if (userEmail) {
-      const resultsKey = `checklist_results_${userEmail}`;
-      const savedData = localStorage.getItem(resultsKey);
-      
-      if (savedData) {
-        try {
-          const parsedData = JSON.parse(savedData);
-          setChecklistItems(parsedData.checklistItems);
-          setScore(parsedData.score);
-          setShowResults(true);
-        } catch (error) {
-          console.error("Error parsing saved checklist data:", error);
-        }
+    const loadSavedData = async () => {
+      if (!isAuthenticated || !userId) {
+        console.log("User not authenticated, redirecting to login");
+        navigate("/login");
+        return;
       }
-      
-      setIsLoading(false);
-    } else {
-      setIsLoading(false);
-    }
-  }, [userEmail]);
+
+      try {
+        setIsLoading(true);
+        const savedData = await loadChecklistData(userId);
+        
+        if (savedData) {
+          setChecklistItems(savedData.checklistItems);
+          setScore(savedData.score);
+          setShowResults(true);
+          console.log("Loaded checklist data from Supabase:", savedData);
+        } else {
+          console.log("No saved checklist data found in Supabase");
+        }
+      } catch (error) {
+        console.error("Error loading checklist data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSavedData();
+  }, [userId, isAuthenticated, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
@@ -129,26 +138,42 @@ const CheckListContratacao = () => {
     );
   };
   
-  const calculateScore = () => {
+  const calculateScore = async () => {
     const checkedCount = checklistItems.filter(item => item.checked).length;
     setScore(checkedCount);
     setShowResults(true);
     
-    // Save results to localStorage
-    if (userEmail) {
-      const resultsKey = `checklist_results_${userEmail}`;
-      const dataToSave = {
-        checklistItems,
-        score: checkedCount
-      };
+    // Save results to Supabase
+    if (userId) {
+      setIsLoading(true);
       
-      localStorage.setItem(resultsKey, JSON.stringify(dataToSave));
+      try {
+        const dataToSave = {
+          checklistItems,
+          score: checkedCount
+        };
+        
+        const success = await saveChecklistData(userId, dataToSave);
+        
+        if (success) {
+          toast({
+            title: "Pontuação calculada",
+            description: `Você marcou ${checkedCount} de 10 itens. Resultado salvo com sucesso.`,
+          });
+        } else {
+          throw new Error("Falha ao salvar dados");
+        }
+      } catch (error) {
+        console.error("Error saving checklist data:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao salvar",
+          description: "Não foi possível salvar seus resultados. Tente novamente.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
-    
-    toast({
-      title: "Pontuação calculada",
-      description: `Você marcou ${checkedCount} de 10 itens.`,
-    });
   };
   
   const getResultMessage = () => {
@@ -176,22 +201,43 @@ const CheckListContratacao = () => {
     }
   };
   
-  const resetChecklist = () => {
-    setChecklistItems(prevItems => 
-      prevItems.map(item => ({ ...item, checked: false }))
-    );
+  const resetChecklist = async () => {
+    const resetItems = checklistItems.map(item => ({ ...item, checked: false }));
+    setChecklistItems(resetItems);
     setScore(0);
     setShowResults(false);
     
-    // Remove saved results from localStorage
-    if (userEmail) {
-      const resultsKey = `checklist_results_${userEmail}`;
-      localStorage.removeItem(resultsKey);
+    // Remove saved results from Supabase
+    if (userId) {
+      setIsLoading(true);
       
-      toast({
-        title: "Checklist reiniciado",
-        description: "Suas respostas foram apagadas com sucesso.",
-      });
+      try {
+        // Save reset data to overwrite existing data
+        const dataToSave = {
+          checklistItems: resetItems,
+          score: 0
+        };
+        
+        const success = await saveChecklistData(userId, dataToSave);
+        
+        if (success) {
+          toast({
+            title: "Checklist reiniciado",
+            description: "Suas respostas foram apagadas com sucesso.",
+          });
+        } else {
+          throw new Error("Falha ao resetar dados");
+        }
+      } catch (error) {
+        console.error("Error resetting checklist data:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao resetar",
+          description: "Não foi possível resetar seu checklist. Tente novamente.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

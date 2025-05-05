@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -10,12 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PUVFormData } from "@/types/puv";
 import { useAuth } from "@/hooks/useAuth";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import { savePuvData, loadPuvData } from "@/utils/savingUtils";
 
 const PropostaUnicaValor = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const { userEmail, isAuthenticated } = useAuth();
+  const { userEmail, userId, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState("form");
   const previewRef = useRef<HTMLDivElement>(null);
   
@@ -32,35 +32,70 @@ const PropostaUnicaValor = () => {
   });
 
   useEffect(() => {
-    // Check authentication
-    if (!isAuthenticated) {
-      toast({
-        variant: "destructive",
-        title: "Acesso negado",
-        description: "Você precisa fazer login para acessar esta página",
-      });
-      navigate("/login");
-      return;
-    }
-    
-    // Load saved data if available
-    const savedData = localStorage.getItem("puvData");
-    if (savedData) {
+    const loadSavedData = async () => {
+      // Check authentication
+      if (!isAuthenticated || !userId) {
+        console.log("User not authenticated, redirecting to login");
+        toast({
+          variant: "destructive",
+          title: "Acesso negado",
+          description: "Você precisa fazer login para acessar esta página",
+        });
+        navigate("/login");
+        return;
+      }
+      
       try {
-        const parsedData = JSON.parse(savedData);
-        setPuvData(parsedData);
+        setIsLoading(true);
+        // Load saved data from Supabase
+        const savedData = await loadPuvData(userId);
+        
+        if (savedData) {
+          setPuvData(savedData);
+          console.log("Loaded PUV data from Supabase:", savedData);
+        } else {
+          console.log("No saved PUV data found in Supabase");
+          
+          // Load from localStorage as fallback (for transition period)
+          const localData = localStorage.getItem("puvData");
+          if (localData) {
+            try {
+              const parsedData = JSON.parse(localData);
+              setPuvData(parsedData);
+              
+              // Automatically save to Supabase
+              await savePuvData(userId, parsedData);
+              console.log("Migrated local PUV data to Supabase");
+            } catch (error) {
+              console.error("Error parsing saved local data:", error);
+            }
+          }
+        }
       } catch (error) {
-        console.error("Error parsing saved data:", error);
+        console.error("Error loading PUV data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSavedData();
+  }, [isAuthenticated, userId, navigate, toast]);
+
+  const handleDataChange = async (data: PUVFormData) => {
+    setPuvData(data);
+    
+    // Save to localStorage for backward compatibility
+    localStorage.setItem("puvData", JSON.stringify(data));
+    
+    // Save to Supabase
+    if (userId) {
+      try {
+        await savePuvData(userId, data);
+        console.log("PUV data saved to Supabase");
+      } catch (error) {
+        console.error("Error saving PUV data to Supabase:", error);
       }
     }
-    
-    setIsLoading(false);
-  }, [isAuthenticated, navigate, toast]);
-
-  const handleDataChange = (data: PUVFormData) => {
-    setPuvData(data);
-    // Save to localStorage
-    localStorage.setItem("puvData", JSON.stringify(data));
   };
 
   const handleLogout = () => {

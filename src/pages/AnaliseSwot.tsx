@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import ActionButton from "@/components/ui/action-button";
 import { Button } from "@/components/ui/button";
+import { saveSwotData, loadSwotData } from "@/utils/savingUtils";
 
 interface SwotItem {
   id: string;
@@ -24,7 +25,7 @@ interface SwotData {
 const AnaliseSwot = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { userEmail } = useAuth();
+  const { userEmail, userId, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasSavedData, setHasSavedData] = useState<boolean>(false);
 
@@ -55,25 +56,33 @@ const AnaliseSwot = () => {
 
   // Load saved results when component mounts
   useEffect(() => {
-    if (userEmail) {
-      const resultsKey = `swot_analysis_${userEmail}`;
-      const savedData = localStorage.getItem(resultsKey);
-      
-      if (savedData) {
-        try {
-          const parsedData = JSON.parse(savedData);
-          setSwotData(parsedData);
-          setHasSavedData(true);
-        } catch (error) {
-          console.error("Error parsing saved SWOT data:", error);
-        }
+    const loadSavedData = async () => {
+      if (!isAuthenticated || !userId) {
+        console.log("User not authenticated, redirecting to login");
+        navigate("/login");
+        return;
       }
-      
-      setIsLoading(false);
-    } else {
-      setIsLoading(false);
-    }
-  }, [userEmail]);
+
+      try {
+        setIsLoading(true);
+        const savedData = await loadSwotData(userId);
+        
+        if (savedData) {
+          setSwotData(savedData);
+          setHasSavedData(true);
+          console.log("Loaded SWOT data from Supabase:", savedData);
+        } else {
+          console.log("No saved SWOT data found in Supabase");
+        }
+      } catch (error) {
+        console.error("Error loading SWOT data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSavedData();
+  }, [userId, isAuthenticated, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
@@ -120,39 +129,73 @@ const AnaliseSwot = () => {
     }));
   };
 
-  const handleSaveAnalysis = () => {
-    if (userEmail) {
-      const resultsKey = `swot_analysis_${userEmail}`;
-      localStorage.setItem(resultsKey, JSON.stringify(swotData));
-      
-      toast({
-        title: "Análise SWOT salva",
-        description: "Seus dados foram salvos com sucesso",
-      });
-      
-      setHasSavedData(true);
-    } else {
+  const handleSaveAnalysis = async () => {
+    if (!userId) {
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
         description: "Você precisa estar logado para salvar sua análise",
       });
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      const success = await saveSwotData(userId, swotData);
+      
+      if (success) {
+        toast({
+          title: "Análise SWOT salva",
+          description: "Seus dados foram salvos com sucesso no banco de dados",
+        });
+        
+        setHasSavedData(true);
+      } else {
+        throw new Error("Falha ao salvar dados");
+      }
+    } catch (error) {
+      console.error("Error saving SWOT data:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar sua análise. Tente novamente.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleResetAnalysis = () => {
+  const handleResetAnalysis = async () => {
     setSwotData(defaultSwotData);
     
-    if (userEmail) {
-      const resultsKey = `swot_analysis_${userEmail}`;
-      localStorage.removeItem(resultsKey);
+    if (userId && hasSavedData) {
+      setIsLoading(true);
       
-      toast({
-        title: "Análise SWOT reiniciada",
-        description: "Sua análise foi apagada com sucesso",
-      });
-      
-      setHasSavedData(false);
+      try {
+        // Save empty data to overwrite existing data
+        const success = await saveSwotData(userId, defaultSwotData);
+        
+        if (success) {
+          toast({
+            title: "Análise SWOT reiniciada",
+            description: "Sua análise foi apagada com sucesso",
+          });
+          
+          setHasSavedData(false);
+        } else {
+          throw new Error("Falha ao resetar dados");
+        }
+      } catch (error) {
+        console.error("Error resetting SWOT data:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao resetar",
+          description: "Não foi possível resetar sua análise. Tente novamente.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

@@ -9,12 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BusinessMapData } from "@/types/businessMap";
 import { useAuth } from "@/hooks/useAuth";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import { saveBusinessMapData, loadBusinessMapData } from "@/utils/savingUtils";
 
 const MapaNegocio = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const { userEmail, isAuthenticated } = useAuth();
+  const { userEmail, userId, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState("form");
   const previewRef = useRef<HTMLDivElement>(null);
   
@@ -38,35 +39,70 @@ const MapaNegocio = () => {
   });
 
   useEffect(() => {
-    // Check authentication
-    if (!isAuthenticated) {
-      toast({
-        variant: "destructive",
-        title: "Acesso negado",
-        description: "Você precisa fazer login para acessar esta página",
-      });
-      navigate("/login");
-      return;
-    }
-    
-    // Load saved data if available
-    const savedData = localStorage.getItem("businessMapData");
-    if (savedData) {
+    const loadSavedData = async () => {
+      // Check authentication
+      if (!isAuthenticated || !userId) {
+        console.log("User not authenticated, redirecting to login");
+        toast({
+          variant: "destructive",
+          title: "Acesso negado",
+          description: "Você precisa fazer login para acessar esta página",
+        });
+        navigate("/login");
+        return;
+      }
+      
       try {
-        const parsedData = JSON.parse(savedData);
-        setBusinessData(parsedData);
+        setIsLoading(true);
+        // Load saved data from Supabase
+        const savedData = await loadBusinessMapData(userId);
+        
+        if (savedData) {
+          setBusinessData(savedData);
+          console.log("Loaded business map data from Supabase:", savedData);
+        } else {
+          console.log("No saved business map data found in Supabase");
+          
+          // Load from localStorage as fallback (for transition period)
+          const localData = localStorage.getItem("businessMapData");
+          if (localData) {
+            try {
+              const parsedData = JSON.parse(localData);
+              setBusinessData(parsedData);
+              
+              // Automatically save to Supabase
+              await saveBusinessMapData(userId, parsedData);
+              console.log("Migrated local business map data to Supabase");
+            } catch (error) {
+              console.error("Error parsing saved local data:", error);
+            }
+          }
+        }
       } catch (error) {
-        console.error("Error parsing saved data:", error);
+        console.error("Error loading business map data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSavedData();
+  }, [isAuthenticated, userId, navigate, toast]);
+
+  const handleDataChange = async (data: BusinessMapData) => {
+    setBusinessData(data);
+    
+    // Save to localStorage for backward compatibility
+    localStorage.setItem("businessMapData", JSON.stringify(data));
+    
+    // Save to Supabase
+    if (userId) {
+      try {
+        await saveBusinessMapData(userId, data);
+        console.log("Business map data saved to Supabase");
+      } catch (error) {
+        console.error("Error saving business map data to Supabase:", error);
       }
     }
-    
-    setIsLoading(false);
-  }, [isAuthenticated, navigate, toast]);
-
-  const handleDataChange = (data: BusinessMapData) => {
-    setBusinessData(data);
-    // Save to localStorage
-    localStorage.setItem("businessMapData", JSON.stringify(data));
   };
 
   const handleLogout = () => {
