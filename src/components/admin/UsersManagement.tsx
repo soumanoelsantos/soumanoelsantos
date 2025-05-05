@@ -6,6 +6,7 @@ import UsersTable from "./UsersTable";
 import { Module } from "@/hooks/useAdminData";
 
 interface User {
+  id: string;
   email: string;
   isNewUser: boolean;
   unlockedModules: number[];
@@ -17,11 +18,11 @@ interface UsersManagementProps {
   filteredUsers: User[];
   totalUsers: number;
   modules: Module[];
-  toggleNewUserStatus: (email: string) => void;
-  toggleModuleAccess: (email: string, moduleId: number) => void;
-  deleteUser: (email: string) => void;
-  editUserEmail: (oldEmail: string, newEmail: string) => void;
-  viewAsUser: (email: string) => void;
+  toggleNewUserStatus: (userId: string) => void;
+  toggleModuleAccess: (userId: string, moduleId: number) => void;
+  deleteUser: (userId: string) => void;
+  editUserEmail: (userId: string, newEmail: string) => void;
+  viewAsUser: (userId: string) => void;
 }
 
 const UsersManagement: React.FC<UsersManagementProps> = ({
@@ -58,7 +59,7 @@ const UsersManagement: React.FC<UsersManagementProps> = ({
       </CardContent>
       <CardFooter className="flex justify-between">
         <p className="text-sm text-gray-600">
-          Exibindo {filteredUsers.length} de {totalUsers} usuários
+          Exibindo {filteredUsers?.length || 0} de {totalUsers || 0} usuários
         </p>
       </CardFooter>
     </Card>

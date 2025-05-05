@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface User {
+  id: string;
   email: string;
   isNewUser: boolean;
   unlockedModules: number[];
@@ -27,11 +28,11 @@ interface User {
 interface UsersTableProps {
   filteredUsers: User[];
   modules: Module[];
-  toggleNewUserStatus: (email: string) => void;
-  toggleModuleAccess: (email: string, moduleId: number) => void;
-  deleteUser: (email: string) => void;
-  editUserEmail: (oldEmail: string, newEmail: string) => void;
-  viewAsUser: (email: string) => void;
+  toggleNewUserStatus: (userId: string) => void;
+  toggleModuleAccess: (userId: string, moduleId: number) => void;
+  deleteUser: (userId: string) => void;
+  editUserEmail: (userId: string, newEmail: string) => void;
+  viewAsUser: (userId: string) => void;
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({ 
@@ -46,8 +47,8 @@ const UsersTable: React.FC<UsersTableProps> = ({
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [newEmail, setNewEmail] = useState("");
 
-  const handleEditClick = (email: string) => {
-    setEditingUser(email);
+  const handleEditClick = (userId: string, email: string) => {
+    setEditingUser(userId);
     setNewEmail(email);
   };
 
@@ -56,12 +57,20 @@ const UsersTable: React.FC<UsersTableProps> = ({
     setNewEmail("");
   };
 
-  const handleSaveEdit = (oldEmail: string) => {
-    if (newEmail && newEmail !== oldEmail) {
-      editUserEmail(oldEmail, newEmail);
+  const handleSaveEdit = (userId: string) => {
+    if (newEmail && newEmail !== userId) {
+      editUserEmail(userId, newEmail);
     }
     setEditingUser(null);
   };
+
+  if (!filteredUsers || filteredUsers.length === 0) {
+    return (
+      <div className="rounded-md border border-gray-200 p-8 text-center text-gray-500">
+        Nenhum usuário encontrado com este termo de pesquisa
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-md border border-gray-200 overflow-hidden">
@@ -81,124 +90,116 @@ const UsersTable: React.FC<UsersTableProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
-              <TableRow key={user.email} className="hover:bg-gray-50 border-gray-200">
-                <TableCell className="font-medium text-gray-700">
-                  {editingUser === user.email ? (
-                    <div className="flex items-center gap-2">
-                      <UserIcon className="h-4 w-4 text-dark-primary" />
-                      <Input 
-                        value={newEmail} 
-                        onChange={(e) => setNewEmail(e.target.value)}
-                        className="py-1 h-8" 
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <UserIcon className="h-4 w-4 text-dark-primary" />
-                      {user.email}
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell>
+          {filteredUsers.map((user) => (
+            <TableRow key={user.id} className="hover:bg-gray-50 border-gray-200">
+              <TableCell className="font-medium text-gray-700">
+                {editingUser === user.id ? (
                   <div className="flex items-center gap-2">
-                    <Switch
-                      checked={user.isNewUser}
-                      onCheckedChange={() => toggleNewUserStatus(user.email)}
+                    <UserIcon className="h-4 w-4 text-dark-primary" />
+                    <Input 
+                      value={newEmail} 
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      className="py-1 h-8" 
                     />
-                    <span className="text-gray-700">
-                      {user.isNewUser ? "Sim" : "Não"}
-                    </span>
                   </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <UserIcon className="h-4 w-4 text-dark-primary" />
+                    {user.email}
+                  </div>
+                )}
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={user.isNewUser}
+                    onCheckedChange={() => toggleNewUserStatus(user.id)}
+                  />
+                  <span className="text-gray-700">
+                    {user.isNewUser ? "Sim" : "Não"}
+                  </span>
+                </div>
+              </TableCell>
+              {modules.map(module => (
+                <TableCell key={module.id} className="text-center">
+                  <Switch
+                    checked={user.unlockedModules.includes(module.id)}
+                    onCheckedChange={() => toggleModuleAccess(user.id, module.id)}
+                  />
                 </TableCell>
-                {modules.map(module => (
-                  <TableCell key={module.id} className="text-center">
-                    <Switch
-                      checked={user.unlockedModules.includes(module.id)}
-                      onCheckedChange={() => toggleModuleAccess(user.email, module.id)}
-                    />
-                  </TableCell>
-                ))}
-                <TableCell className="flex justify-end gap-2">
-                  {editingUser === user.email ? (
-                    <>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleSaveEdit(user.email)}
-                        className="h-8 px-2"
-                      >
-                        <Check className="h-4 w-4 text-green-600" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={handleCancelEdit}
-                        className="h-8 px-2"
-                      >
-                        <X className="h-4 w-4 text-red-600" />
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => viewAsUser(user.email)}
-                        className="h-8 px-2 border-green-200 hover:bg-green-50"
-                        title="Ver como usuário"
-                      >
-                        <LogIn className="h-4 w-4 text-green-600" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleEditClick(user.email)}
-                        className="h-8 px-2"
-                      >
-                        <Edit className="h-4 w-4 text-blue-600" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="h-8 px-2 border-red-200 hover:bg-red-50"
+              ))}
+              <TableCell className="flex justify-end gap-2">
+                {editingUser === user.id ? (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleSaveEdit(user.id)}
+                      className="h-8 px-2"
+                    >
+                      <Check className="h-4 w-4 text-green-600" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleCancelEdit}
+                      className="h-8 px-2"
+                    >
+                      <X className="h-4 w-4 text-red-600" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => viewAsUser(user.id)}
+                      className="h-8 px-2 border-green-200 hover:bg-green-50"
+                      title="Ver como usuário"
+                    >
+                      <LogIn className="h-4 w-4 text-green-600" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleEditClick(user.id, user.email)}
+                      className="h-8 px-2"
+                    >
+                      <Edit className="h-4 w-4 text-blue-600" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="h-8 px-2 border-red-200 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-600" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-white border-gray-200">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-gray-900">Confirmar exclusão</AlertDialogTitle>
+                          <AlertDialogDescription className="text-gray-700">
+                            Tem certeza que deseja excluir o usuário {user.email}? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="text-gray-700 hover:text-gray-900 border-gray-300 hover:bg-gray-100">Cancelar</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => deleteUser(user.id)}
+                            className="bg-red-600 hover:bg-red-700"
                           >
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="bg-white border-gray-200">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="text-gray-900">Confirmar exclusão</AlertDialogTitle>
-                            <AlertDialogDescription className="text-gray-700">
-                              Tem certeza que deseja excluir o usuário {user.email}? Esta ação não pode ser desfeita.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="text-gray-700 hover:text-gray-900 border-gray-300 hover:bg-gray-100">Cancelar</AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => deleteUser(user.email)}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              Excluir
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={modules.length + 3} className="text-center py-8 text-gray-500">
-                Nenhum usuário encontrado com este termo de pesquisa
+                            Excluir
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
+                )}
               </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
     </div>

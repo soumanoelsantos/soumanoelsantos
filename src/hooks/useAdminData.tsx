@@ -36,19 +36,37 @@ export function useAdminData(userEmail: string | null) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        console.log("Iniciando busca de perfis de usuários");
+        
         // Buscar perfis de usuários
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
           .select('*');
 
-        if (profilesError) throw profilesError;
+        if (profilesError) {
+          console.error("Erro ao buscar perfis:", profilesError);
+          throw profilesError;
+        }
+
+        console.log("Perfis encontrados:", profiles?.length || 0);
+        
+        if (!profiles || profiles.length === 0) {
+          setUsers([]);
+          setIsLoading(false);
+          return;
+        }
 
         // Buscar módulos de usuário
         const { data: userModules, error: modulesError } = await supabase
           .from('user_modules')
           .select('*');
 
-        if (modulesError) throw modulesError;
+        if (modulesError) {
+          console.error("Erro ao buscar módulos de usuário:", modulesError);
+          throw modulesError;
+        }
+
+        console.log("Módulos de usuário encontrados:", userModules?.length || 0);
 
         // Processar os dados para o formato esperado
         const formattedUsers = profiles.map((profile: any) => {
@@ -65,6 +83,7 @@ export function useAdminData(userEmail: string | null) {
           };
         });
 
+        console.log("Usuários formatados:", formattedUsers.length);
         setUsers(formattedUsers);
       } catch (error) {
         console.error("Erro ao buscar usuários:", error);
