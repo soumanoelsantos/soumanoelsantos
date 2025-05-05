@@ -1,14 +1,15 @@
+
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import UserSearchBox from "./UserSearchBox";
 import UsersTable from "./UsersTable";
-import { User } from "@/types/admin";
+import { AdminUser } from "@/types/adminTypes";
 import { Module } from "@/hooks/useAdminData";
 
 interface UsersManagementProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  filteredUsers: User[];
+  filteredUsers: AdminUser[];
   totalUsers: number;
   modules: Module[];
   toggleNewUserStatus: (userId: string) => void;

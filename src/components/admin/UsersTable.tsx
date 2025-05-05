@@ -1,9 +1,10 @@
+
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { UserIcon, Edit, Trash2, X, Check, LogIn } from "lucide-react";
-import { User } from "@/types/admin";
+import { AdminUser } from "@/types/adminTypes";
 import { Module } from "@/hooks/useAdminData";
 import { Input } from "@/components/ui/input";
 import { 
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface UsersTableProps {
-  filteredUsers: User[];
+  filteredUsers: AdminUser[];
   modules: Module[];
   toggleNewUserStatus: (userId: string) => void;
   toggleModuleAccess: (userId: string, moduleId: number) => void;
@@ -65,6 +66,11 @@ const UsersTable: React.FC<UsersTableProps> = ({
     );
   }
 
+  // Helper function to check if a module is unlocked for a user
+  const hasModule = (user: AdminUser, moduleId: number) => {
+    return user.modules.some(m => m.id === moduleId);
+  };
+
   return (
     <div className="rounded-md border border-gray-200 overflow-hidden">
       <Table>
@@ -105,18 +111,18 @@ const UsersTable: React.FC<UsersTableProps> = ({
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Switch
-                    checked={user.isNewUser}
+                    checked={user.is_new_user}
                     onCheckedChange={() => toggleNewUserStatus(user.id)}
                   />
                   <span className="text-gray-700">
-                    {user.isNewUser ? "Sim" : "Não"}
+                    {user.is_new_user ? "Sim" : "Não"}
                   </span>
                 </div>
               </TableCell>
               {modules.map(module => (
                 <TableCell key={module.id} className="text-center">
                   <Switch
-                    checked={user.unlockedModules.includes(module.id)}
+                    checked={hasModule(user, module.id)}
                     onCheckedChange={() => toggleModuleAccess(user.id, module.id)}
                   />
                 </TableCell>
