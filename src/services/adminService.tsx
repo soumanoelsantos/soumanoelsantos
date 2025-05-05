@@ -155,3 +155,7 @@ export const impersonateUser = async (userId: string, adminEmail: string | null)
     throw error;
   }
 };
+
+// Add compatibility with the old function names for backward compatibility
+export const toggleModuleAccess = toggleUserModuleAccess;
+export const updateUserStatus = updateUserNewStatus;

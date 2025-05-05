@@ -10,7 +10,7 @@ import ActionButton from "../ui/action-button";
 
 interface MapaNegocioFormProps {
   data: BusinessMapData;
-  onDataChange: (data: BusinessMapData) => void;
+  onDataChange: (field: keyof BusinessMapData, value: string) => void;
   onPreviewClick: () => void;
 }
 
@@ -19,10 +19,7 @@ const MapaNegocioForm = ({ data, onDataChange, onPreviewClick }: MapaNegocioForm
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    onDataChange({
-      ...data,
-      [name]: value,
-    });
+    onDataChange(name as keyof BusinessMapData, value);
   };
 
   return (

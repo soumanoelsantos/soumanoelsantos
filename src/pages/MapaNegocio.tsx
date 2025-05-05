@@ -59,15 +59,15 @@ const MapaNegocio = () => {
 
         {showPreview ? (
           <MapaNegocioPreview 
-            businessMap={businessMap} 
+            data={businessMap} 
             previewRef={previewRef} 
             onEditClick={handleEditClick} 
           />
         ) : (
           <MapaNegocioForm
-            businessMap={businessMap}
-            onChange={handleBusinessMapChange}
-            onPreview={handleShowPreview}
+            data={businessMap}
+            onDataChange={handleBusinessMapChange}
+            onPreviewClick={handleShowPreview}
           />
         )}
       </div>

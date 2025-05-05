@@ -8,15 +8,21 @@ import { saveBusinessMapData, loadBusinessMapData } from '@/utils/savingUtils';
 // Default empty state for the business map
 const defaultBusinessMap: BusinessMapData = {
   empresa: '',
-  problema: '',
-  solucao: '',
-  metricas: '',
-  valorUnico: '',
-  canais: '',
-  segmentos: '',
+  missao: '',
+  visao: '',
+  valores: '',
+  parceirosChave: '',
+  atividadesChaves: '',
+  recursosChave: '',
+  valuePropositions: '',
+  relacaoConsumidor: '',
+  canaisDistribuicao: '',
+  segmentoConsumidores: '',
   estruturaCustos: '',
-  receitas: '',
-  vantagemCompetitiva: ''
+  fontesReceita: '',
+  vantagemCompetitiva: '',
+  competenciasEssenciais: '',
+  posicionamentoMercado: ''
 };
 
 export const useMapaNegocio = () => {
