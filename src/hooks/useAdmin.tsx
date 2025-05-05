@@ -28,8 +28,13 @@ export const useAdminData = (currentUserEmail?: string | null) => {
     toggleNewUserStatus,
     deleteUser,
     editUserEmail,
-    viewAsUser
+    viewAsUser: handleViewAsUser
   } = useAdminActions(state.users, setUsers);
+
+  // Wrapper function to pass the current user email
+  const viewAsUser = (userId: string) => {
+    return handleViewAsUser(userId, currentUserEmail);
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {

@@ -1,7 +1,7 @@
 
 import { useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { fetchAdminData } from "@/services/adminService";
+import { fetchAdminData } from "@/services/adminService.tsx";
 
 export const useAdminLoader = (
   setIsLoading: (isLoading: boolean) => void,

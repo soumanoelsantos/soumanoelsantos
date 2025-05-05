@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { AdminState, AdminUser } from "@/types/adminTypes";
-import { filterAdminUsers } from "@/utils/adminUtils";
+import { filterAdminUsers } from "@/utils/adminUtils.tsx";
 
 export const useAdminState = () => {
   const [state, setState] = useState<AdminState>({

@@ -6,7 +6,7 @@ import {
   deleteUserById,
   updateUserEmail,
   impersonateUser
-} from "@/services/adminService";
+} from "@/services/adminService.tsx";
 import { AdminUser } from "@/types/adminTypes";
 
 export const useAdminActions = (users: AdminUser[], setUsers: (users: AdminUser[]) => void) => {
@@ -128,7 +128,7 @@ export const useAdminActions = (users: AdminUser[], setUsers: (users: AdminUser[
   const handleViewAsUser = async (userId: string, currentUserEmail: string | null | undefined) => {
     try {
       const user = users.find(u => u.id === userId);
-      if (!user) return;
+      if (!user) return false;
       
       await impersonateUser(userId, currentUserEmail);
       

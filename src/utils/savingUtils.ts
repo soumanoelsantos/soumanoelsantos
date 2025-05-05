@@ -43,10 +43,7 @@ export const saveDataToSupabase = async (
       // Insert new entry
       result = await supabase
         .from('user_tools_data')
-        .insert([{
-          ...updateObject,
-          created_at: new Date().toISOString()
-        }]);
+        .insert([updateObject]);
     }
 
     if (result.error) {
