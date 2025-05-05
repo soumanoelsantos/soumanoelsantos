@@ -1,21 +1,24 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { User, AdminModule, UseAdminDataReturn } from "@/types/admin";
+import { 
+  fetchUserProfiles, 
+  fetchUserModules,
+  toggleModuleAccess as apiToggleModuleAccess,
+  updateUserStatus,
+  deleteUserAccount,
+  updateUserEmail
+} from "@/services/adminService";
+import { 
+  getDefaultModules, 
+  formatUsersData,
+  filterUsers
+} from "@/utils/adminUtils";
 
-interface User {
-  id: string;
-  email: string;
-  isNewUser: boolean;
-  unlockedModules: number[];
-}
-
-export interface Module {
-  id: number;
-  title: string;
-  description?: string;
-}
+// Export types for backward compatibility
+export interface Module extends AdminModule {}
 
 export function useAdminData(userEmail: string | null) {
   const [users, setUsers] = useState<User[]>([]);

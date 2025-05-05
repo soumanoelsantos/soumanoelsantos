@@ -1,9 +1,9 @@
-
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { UserIcon, Edit, Trash2, X, Check, LogIn } from "lucide-react";
+import { User } from "@/types/admin";
 import { Module } from "@/hooks/useAdminData";
 import { Input } from "@/components/ui/input";
 import { 
@@ -17,13 +17,6 @@ import {
   AlertDialogTitle, 
   AlertDialogTrigger 
 } from "@/components/ui/alert-dialog";
-
-interface User {
-  id: string;
-  email: string;
-  isNewUser: boolean;
-  unlockedModules: number[];
-}
 
 interface UsersTableProps {
   filteredUsers: User[];

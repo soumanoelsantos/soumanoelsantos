@@ -1,16 +1,9 @@
-
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import UserSearchBox from "./UserSearchBox";
 import UsersTable from "./UsersTable";
+import { User } from "@/types/admin";
 import { Module } from "@/hooks/useAdminData";
-
-interface User {
-  id: string;
-  email: string;
-  isNewUser: boolean;
-  unlockedModules: number[];
-}
 
 interface UsersManagementProps {
   searchTerm: string;
