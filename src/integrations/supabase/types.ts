@@ -465,6 +465,39 @@ export type Database = {
           },
         ]
       }
+      user_tools_data: {
+        Row: {
+          business_map_data: Json | null
+          checklist_data: Json | null
+          created_at: string
+          id: string
+          puv_data: Json | null
+          swot_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_map_data?: Json | null
+          checklist_data?: Json | null
+          created_at?: string
+          id?: string
+          puv_data?: Json | null
+          swot_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_map_data?: Json | null
+          checklist_data?: Json | null
+          created_at?: string
+          id?: string
+          puv_data?: Json | null
+          swot_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

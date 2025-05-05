@@ -53,9 +53,19 @@ export const saveDataToSupabase = async (
       throw result.error;
     }
 
+    toast({
+      title: "Dados salvos!",
+      description: "Seus dados foram salvos com sucesso.",
+    });
+
     return true;
   } catch (error) {
     console.error(`Error saving user_tools_data:`, error);
+    toast({
+      variant: "destructive",
+      title: "Erro ao salvar",
+      description: "Não foi possível salvar os dados. Tente novamente.",
+    });
     return false;
   }
 };
@@ -68,7 +78,7 @@ export const loadDataFromSupabase = async (
   try {
     const { data, error } = await supabase
       .from('user_tools_data')
-      .select('*')
+      .select(`${dataKey}`)
       .eq('user_id', userId)
       .single();
     
