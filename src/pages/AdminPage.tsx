@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminData } from "@/hooks/useAdminData";
@@ -7,10 +7,15 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import UsersManagement from "@/components/admin/UsersManagement";
 import AdminInfoCard from "@/components/admin/AdminInfoCard";
 import { transformUsersToAdminUsers } from "@/services/adminService";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DatabaseAdmin from "@/components/admin/DatabaseAdmin";
 
 const AdminPage = () => {
   const navigate = useNavigate();
   const { userEmail } = useAuth();
+  const [activeTab, setActiveTab] = useState("users");
+  
   const { 
     users, 
     modules, 
@@ -32,7 +37,7 @@ const AdminPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-800">Carregando...</div>
+        <div className="text-gray-800">Carregando administração...</div>
       </div>
     );
   }
@@ -46,20 +51,45 @@ const AdminPage = () => {
       <AdminHeader userEmail={userEmail} onLogout={handleLogout} />
 
       <div className="container mx-auto px-4 pb-8">
-        <UsersManagement 
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filteredUsers={filteredAdminUsers}
-          totalUsers={users.length}
-          modules={modules}
-          toggleNewUserStatus={toggleNewUserStatus}
-          toggleModuleAccess={toggleModuleAccess}
-          deleteUser={deleteUser}
-          editUserEmail={editUserEmail}
-          viewAsUser={viewAsUser}
-        />
+        <div className="mb-6">
+          <Card className="bg-white border-dark-primary/20 shadow-lg">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-2xl text-gray-800">Painel de Administração Completo</CardTitle>
+              <CardDescription className="text-gray-600">
+                Acesso total ao banco de dados e gerenciamento de usuários
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="users" className="w-full" onValueChange={setActiveTab}>
+                <TabsList className="grid grid-cols-2 mb-4">
+                  <TabsTrigger value="users">Gerenciar Usuários</TabsTrigger>
+                  <TabsTrigger value="database">Banco de Dados</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="users" className="pt-2">
+                  <UsersManagement 
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    filteredUsers={filteredAdminUsers}
+                    totalUsers={users.length}
+                    modules={modules}
+                    toggleNewUserStatus={toggleNewUserStatus}
+                    toggleModuleAccess={toggleModuleAccess}
+                    deleteUser={deleteUser}
+                    editUserEmail={editUserEmail}
+                    viewAsUser={viewAsUser}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="database" className="pt-2">
+                  <DatabaseAdmin />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
 
-        <AdminInfoCard />
+        {activeTab === "users" && <AdminInfoCard />}
       </div>
     </div>
   );

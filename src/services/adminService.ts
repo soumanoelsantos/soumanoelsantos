@@ -3,77 +3,72 @@ import { supabase } from "@/integrations/supabase/client";
 import { User, AdminModule } from "@/types/admin";
 import { AdminUser } from "@/types/adminTypes";
 
-// -------------------------------------------
-// User Profile Management
-// -------------------------------------------
-
-// Fetch profiles with a reliable method
-export const fetchProfiles = async () => {
+// Direct Database Access Functions
+export const fetchProfiles = async (): Promise<{ data: User[], error: any }> => {
   try {
-    // Tentar buscar perfis através do método direto
+    console.log("Fetching profiles directly from database...");
+    
     const { data, error } = await supabase
       .from('profiles')
       .select('*');
       
     if (error) {
-      console.error("Erro ao buscar perfis diretamente:", error);
+      console.error("Error fetching profiles directly:", error);
       
-      // Tentar com edge function como backup
       try {
+        console.log("Attempting to fetch profiles using edge function...");
         const { data: edgeData, error: edgeError } = await supabase.functions.invoke('admin-helpers', {
           body: { action: 'listProfiles' }
         });
         
         if (edgeError) throw edgeError;
-        return { data: formatProfiles(edgeData || []), error: null };
+        return { data: edgeData || [], error: null };
       } catch (edgeCallError) {
-        console.error("Edge function falhou:", edgeCallError);
+        console.error("Edge function failed:", edgeCallError);
         throw edgeCallError;
       }
     }
     
-    // Se conseguimos buscar perfis diretamente, processar
     if (data) {
-      return { data: formatProfiles(data), error: null };
+      // Format the profiles to match our User interface
+      const formattedUsers = data.map(profile => ({
+        id: profile.id,
+        email: profile.email || '',
+        isNewUser: profile.is_new_user || false,
+        isAdmin: profile.is_admin || false,
+        unlockedModules: [] // Will populate this next
+      }));
+      
+      // Get unlocked modules for all users
+      try {
+        const userIds = formattedUsers.map(u => u.id);
+        const { data: userModules, error: modulesError } = await supabase
+          .from('user_modules')
+          .select('*')
+          .in('user_id', userIds);
+          
+        if (!modulesError && userModules) {
+          // Populate unlockedModules for each user
+          userModules.forEach(module => {
+            const user = formattedUsers.find(u => u.id === module.user_id);
+            if (user) {
+              user.unlockedModules.push(module.module_id);
+            }
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching user modules:", err);
+      }
+      
+      return { data: formattedUsers, error: null };
     }
     
-    return { data: [] as User[], error: new Error("Nenhum dado retornado") };
+    return { data: [], error: new Error("No data returned") };
   } catch (error) {
-    console.error("Erro ao buscar perfis:", error);
-    return { data: [] as User[], error };
+    console.error("Error fetching profiles:", error);
+    return { data: [], error };
   }
 };
-
-// Helper para formatar dados de perfis
-const formatProfiles = (profiles: any[]): User[] => {
-  return profiles.map((profile) => ({
-    id: profile.id,
-    email: profile.email || '',
-    isNewUser: profile.is_new_user || false,
-    isAdmin: profile.is_admin || false,
-    unlockedModules: profile.unlockedModules || [] 
-  }));
-};
-
-// Buscar módulos de usuário e mesclar com os perfis
-export const fetchUserModules = async (userIds: string[]) => {
-  try {
-    const { data, error } = await supabase
-      .from('user_modules')
-      .select('*')
-      .in('user_id', userIds);
-      
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error("Erro ao buscar módulos de usuário:", error);
-    return { data: [] as any[], error };
-  }
-};
-
-// -------------------------------------------
-// Module Management
-// -------------------------------------------
 
 // Fetch available modules
 export const fetchModules = async (): Promise<{ data: AdminModule[], error: any }> => {
@@ -84,16 +79,48 @@ export const fetchModules = async (): Promise<{ data: AdminModule[], error: any 
       
     if (error) throw error;
     
-    return { data: (data || []) as AdminModule[], error: null };
+    // Ensure returned data conforms to AdminModule type
+    const formattedModules = (data || []).map(module => ({
+      id: module.id,
+      title: module.title,
+      description: module.description || undefined
+    }));
+    
+    return { data: formattedModules, error: null };
   } catch (error) {
-    console.error("Erro ao buscar módulos:", error);
-    return { data: [] as AdminModule[], error };
+    console.error("Error fetching modules:", error);
+    return { data: [], error };
   }
 };
 
-// -------------------------------------------
-// Admin Data Transformation
-// -------------------------------------------
+// Direct table management - for full admin access
+export const executeRawQuery = async (query: string, params?: any[]): Promise<{ data: any, error: any }> => {
+  try {
+    const { data, error } = await supabase.rpc('execute_sql', {
+      query_text: query,
+      query_params: params || []
+    });
+    
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error("Error executing raw query:", error);
+    return { data: null, error };
+  }
+};
+
+// Direct access to profiles table
+export const fetchAllTables = async (): Promise<{ data: string[], error: any }> => {
+  try {
+    const { data, error } = await supabase.rpc('list_tables');
+    
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error("Error fetching tables:", error);
+    return { data: [], error };
+  }
+};
 
 // Transform User[] to AdminUser[] for compatibility
 export const transformUsersToAdminUsers = (users: User[]): AdminUser[] => {

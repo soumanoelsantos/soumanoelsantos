@@ -71,13 +71,11 @@ serve(async (req) => {
             .map(m => m.module_id)
             
           return {
-            ...profile,
-            unlockedModules: userModules,
-            // Ensure property names match the expected format
             id: profile.id,
             email: profile.email || '',
             isNewUser: profile.is_new_user || false,
-            isAdmin: profile.is_admin || false
+            isAdmin: profile.is_admin || false,
+            unlockedModules: userModules
           }
         })
         break
@@ -92,9 +90,40 @@ serve(async (req) => {
             
         result = users
         break
+      
+      case 'listTables':
+        // Get all tables in the database
+        const { data: tables, error: tablesError } = await adminClient.rpc('list_tables')
+        
+        if (tablesError) {
+          throw tablesError
+        }
+        
+        result = tables
+        break
+        
+      case 'executeQuery':
+        // Execute a raw SQL query - WITH EXTREME CAUTION
+        const { query, params } = requestBody;
+        
+        if (!query) {
+          throw new Error('Query is required')
+        }
+        
+        const { data: queryResult, error: queryError } = await adminClient.rpc(
+          'execute_sql', 
+          { query_text: query, query_params: params || [] }
+        )
+        
+        if (queryError) {
+          throw queryError
+        }
+        
+        result = queryResult
+        break
         
       default:
-        throw new Error('Ação inválida')
+        throw new Error('Invalid action')
     }
 
     // Return the result

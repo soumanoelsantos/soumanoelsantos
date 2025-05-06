@@ -23,46 +23,39 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
         setIsLoading(true);
         
         try {
-          // Attempt to fetch profiles using new method
           const profilesResult = await fetchProfiles();
-          if (profilesResult.error) throw profilesResult.error;
           
-          // Fix: Only set the data array to the state
+          if (profilesResult.error) {
+            throw profilesResult.error;
+          }
+          
           setUsers(profilesResult.data || []);
-          console.log("Profiles loaded successfully:", profilesResult.data ? profilesResult.data.length : 0);
+          console.log("Users loaded successfully:", profilesResult.data?.length || 0);
         } catch (profileError) {
-          console.error("Error fetching profiles:", profileError);
-          
-          // Fall back to empty array if profiles can't be loaded
+          console.error("Error loading users:", profileError);
           setUsers([]);
           toast({
             variant: "destructive",
             title: "Error loading users",
-            description: "Using backup data. Try again later."
+            description: "Could not load user data. Please try again."
           });
         }
         
         try {
-          // Attempt to fetch modules from the database
           const modulesResult = await fetchModules();
-          if (modulesResult.error) throw modulesResult.error;
           
-          // Fix: Only set the data array to the state
+          if (modulesResult.error) {
+            throw modulesResult.error;
+          }
+          
           setModules(modulesResult.data || defaultModules);
-          console.log("Modules loaded successfully:", modulesResult.data ? modulesResult.data.length : 0);
+          console.log("Modules loaded successfully:", modulesResult.data?.length || 0);
         } catch (modulesError) {
-          console.error("Error fetching modules:", modulesError);
-          
-          // Fall back to default modules if they can't be loaded
+          console.error("Error loading modules:", modulesError);
           setModules(defaultModules);
         }
       } catch (error: any) {
         console.error("Error loading admin data:", error);
-        toast({
-          variant: "destructive",
-          title: "Error loading data",
-          description: "Could not fetch user and module data."
-        });
       } finally {
         setIsLoading(false);
       }
