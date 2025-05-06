@@ -43,7 +43,7 @@ export const saveDataToSupabase = async (
       // Insert new entry - ensure user_id is present
       result = await supabase
         .from('user_tools_data')
-        .insert(updateObject);  // Changed from array to single object
+        .insert(updateObject);  // Pass the object directly, not wrapped in an array
     }
 
     if (result.error) {
