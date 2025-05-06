@@ -6,19 +6,7 @@ import { useAdminData } from "@/hooks/useAdmin";
 import AdminHeader from "@/components/admin/AdminHeader";
 import UsersManagement from "@/components/admin/UsersManagement";
 import AdminInfoCard from "@/components/admin/AdminInfoCard";
-import { User } from "@/types/admin";
-import { AdminUser } from "@/types/adminTypes";
-
-// Helper function to transform User to AdminUser
-const transformUsersToAdminUsers = (users: User[]): AdminUser[] => {
-  return users.map(user => ({
-    id: user.id,
-    email: user.email,
-    is_new_user: user.isNewUser,
-    is_admin: user.isAdmin || false,
-    unlockedModules: user.unlockedModules,
-  }));
-};
+import { transformUsersToAdminUsers } from "@/services/adminService";
 
 const AdminPage = () => {
   const navigate = useNavigate();

@@ -12,11 +12,11 @@ import { UserDeleteDialog } from "./UserDeleteDialog";
 interface UserRowProps {
   user: AdminUser;
   modules: AdminModule[];
-  toggleNewUserStatus: (userId: string) => void;
-  toggleModuleAccess: (userId: string, moduleId: number) => void;
-  deleteUser: (userId: string) => void;
-  editUserEmail: (userId: string, newEmail: string) => void;
-  viewAsUser: (userId: string) => void;
+  toggleNewUserStatus: (userId: string) => Promise<boolean>;
+  toggleModuleAccess: (userId: string, moduleId: number) => Promise<boolean>;
+  deleteUser: (userId: string) => Promise<boolean>;
+  editUserEmail: (userId: string, newEmail: string) => Promise<boolean>;
+  viewAsUser: (userId: string) => Promise<boolean>;
 }
 
 const UserRow: React.FC<UserRowProps> = ({
@@ -146,8 +146,8 @@ interface UserRowActionsProps {
   userId: string;
   userEmail: string;
   onEdit: () => void;
-  onDelete: (userId: string) => void;
-  onView: (userId: string) => void;
+  onDelete: (userId: string) => Promise<boolean>;
+  onView: (userId: string) => Promise<boolean>;
 }
 
 const UserRowActions: React.FC<UserRowActionsProps> = ({ 

@@ -9,11 +9,11 @@ import EmptyUsersList from "./EmptyUsersList";
 interface UsersTableProps {
   filteredUsers: AdminUser[];
   modules: AdminModule[];
-  toggleNewUserStatus: (userId: string) => void;
-  toggleModuleAccess: (userId: string, moduleId: number) => void;
-  deleteUser: (userId: string) => void;
-  editUserEmail: (userId: string, newEmail: string) => void;
-  viewAsUser: (userId: string) => void;
+  toggleNewUserStatus: (userId: string) => Promise<boolean>;
+  toggleModuleAccess: (userId: string, moduleId: number) => Promise<boolean>;
+  deleteUser: (userId: string) => Promise<boolean>;
+  editUserEmail: (userId: string, newEmail: string) => Promise<boolean>;
+  viewAsUser: (userId: string) => Promise<boolean>;
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({ 
