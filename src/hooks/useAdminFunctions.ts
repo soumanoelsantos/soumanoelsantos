@@ -7,7 +7,7 @@ import { User } from "@/types/admin";
 export const useAdminFunctions = (userEmail: string | null) => {
   const { toast } = useToast();
 
-  const toggleModuleAccess = async (userId: string, moduleId: number) => {
+  const toggleModuleAccess = async (userId: string, moduleId: number, users: User[]) => {
     try {
       const hasModule = users.find(u => u.id === userId)?.unlockedModules.includes(moduleId);
       

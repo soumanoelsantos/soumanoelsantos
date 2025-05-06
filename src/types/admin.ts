@@ -1,6 +1,4 @@
 
-import { Module } from "@/hooks/useAdminData";
-
 export interface User {
   id: string;
   email: string;
@@ -28,3 +26,5 @@ export interface UseAdminDataReturn {
   editUserEmail: (userId: string, newEmail: string) => Promise<void>;
   viewAsUser: (userId: string) => Promise<void>;
 }
+
+export type Module = AdminModule;

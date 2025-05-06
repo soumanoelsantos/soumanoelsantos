@@ -4,14 +4,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import UserSearchBox from "./UserSearchBox";
 import UsersTable from "./UsersTable";
 import { AdminUser } from "@/types/adminTypes";
-import { Module } from "@/hooks/useAdminData";
+import { AdminModule } from "@/types/admin";
 
 interface UsersManagementProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   filteredUsers: AdminUser[];
   totalUsers: number;
-  modules: Module[];
+  modules: AdminModule[];
   toggleNewUserStatus: (userId: string) => void;
   toggleModuleAccess: (userId: string, moduleId: number) => void;
   deleteUser: (userId: string) => void;
