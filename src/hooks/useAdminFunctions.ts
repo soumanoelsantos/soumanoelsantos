@@ -1,23 +1,12 @@
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useAdminUsers } from "@/hooks/useAdminUsers";
-import { useAdminSearch } from "@/hooks/useAdminSearch";
-import { useAdminModules } from "@/hooks/useAdminModules";
 import { supabase } from "@/integrations/supabase/client";
+import { User } from "@/types/admin";
 
-export const useAdminData = (currentUserEmail?: string | null) => {
+export const useAdminFunctions = (userEmail: string | null) => {
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  
-  const { users, setUsers, isLoading } = useAdminUsers(isAuthenticated);
-  const { searchTerm, setSearchTerm, filteredUsers } = useAdminSearch(users);
-  const { modules } = useAdminModules();
 
-  // Actions for user management
   const toggleModuleAccess = async (userId: string, moduleId: number) => {
     try {
       const hasModule = users.find(u => u.id === userId)?.unlockedModules.includes(moduleId);
@@ -40,24 +29,7 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         if (error) throw error;
       }
       
-      // Atualizar o estado local
-      setUsers(prevUsers => {
-        return prevUsers.map(user => {
-          if (user.id === userId) {
-            const updatedModules = hasModule
-              ? user.unlockedModules.filter(id => id !== moduleId)
-              : [...user.unlockedModules, moduleId];
-              
-            toast({
-              title: `Módulo ${hasModule ? "bloqueado" : "desbloqueado"}`,
-              description: `${modules.find(m => m.id === moduleId)?.title} ${hasModule ? "bloqueado" : "desbloqueado"} para ${user.email}`,
-            });
-            
-            return { ...user, unlockedModules: updatedModules };
-          }
-          return user;
-        });
-      });
+      return { success: true, hasModule };
     } catch (error: any) {
       console.error("Erro ao alternar acesso ao módulo:", error);
       toast({
@@ -65,13 +37,14 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         title: "Erro ao modificar acesso",
         description: error.message || "Não foi possível modificar o acesso ao módulo."
       });
+      return { success: false };
     }
   };
 
-  const toggleNewUserStatus = async (userId: string) => {
+  const toggleNewUserStatus = async (userId: string, users: User[], setUsers: (users: User[]) => void) => {
     try {
       const user = users.find(u => u.id === userId);
-      if (!user) return;
+      if (!user) return { success: false };
       
       const updatedStatus = !user.isNewUser;
       
@@ -82,20 +55,12 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         
       if (error) throw error;
       
-      // Atualizar o estado local
-      setUsers(prevUsers => {
-        return prevUsers.map(u => {
-          if (u.id === userId) {
-            toast({
-              title: "Status atualizado",
-              description: `${u.email} agora ${updatedStatus ? "é" : "não é mais"} um novo usuário`,
-            });
-            
-            return { ...u, isNewUser: updatedStatus };
-          }
-          return u;
-        });
+      toast({
+        title: "Status atualizado",
+        description: `${user.email} agora ${updatedStatus ? "é" : "não é mais"} um novo usuário`,
       });
+      
+      return { success: true, updatedStatus };
     } catch (error: any) {
       console.error("Erro ao alternar status de novo usuário:", error);
       toast({
@@ -103,14 +68,15 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         title: "Erro ao atualizar status",
         description: error.message || "Não foi possível atualizar o status do usuário."
       });
+      return { success: false };
     }
   };
 
-  const deleteUser = async (userId: string) => {
+  const deleteUser = async (userId: string, users: User[]) => {
     try {
       // Buscar e-mail do usuário antes de excluí-lo
       const userToDelete = users.find(u => u.id === userId);
-      if (!userToDelete) return;
+      if (!userToDelete) return { success: false };
       
       // Chamar a edge function para excluir o usuário
       const { error } = await supabase.functions.invoke('delete-user', {
@@ -119,17 +85,12 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         
       if (error) throw error;
       
-      // Atualizar o estado local
-      setUsers(prevUsers => {
-        const updatedUsers = prevUsers.filter(user => user.id !== userId);
-        
-        toast({
-          title: "Usuário excluído",
-          description: `${userToDelete.email} foi removido com sucesso`,
-        });
-        
-        return updatedUsers;
+      toast({
+        title: "Usuário excluído",
+        description: `${userToDelete.email} foi removido com sucesso`,
       });
+      
+      return { success: true };
     } catch (error: any) {
       console.error("Erro ao excluir usuário:", error);
       toast({
@@ -137,13 +98,14 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         title: "Erro ao excluir usuário",
         description: error.message || "Não foi possível excluir o usuário."
       });
+      return { success: false };
     }
   };
 
-  const editUserEmail = async (userId: string, newEmail: string) => {
+  const editUserEmail = async (userId: string, newEmail: string, users: User[]) => {
     try {
       const userToEdit = users.find(u => u.id === userId);
-      if (!userToEdit) return;
+      if (!userToEdit) return { success: false };
       
       const { error } = await supabase
         .from('profiles')
@@ -152,22 +114,12 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         
       if (error) throw error;
       
-      // Atualizar o estado local
-      setUsers(prevUsers => {
-        const updatedUsers = prevUsers.map(user => {
-          if (user.id === userId) {
-            toast({
-              title: "Email atualizado",
-              description: `${user.email} foi alterado para ${newEmail}`,
-            });
-            
-            return { ...user, email: newEmail };
-          }
-          return user;
-        });
-        
-        return updatedUsers;
+      toast({
+        title: "Email atualizado",
+        description: `${userToEdit.email} foi alterado para ${newEmail}`,
       });
+      
+      return { success: true, oldEmail: userToEdit.email };
     } catch (error: any) {
       console.error("Erro ao editar e-mail do usuário:", error);
       toast({
@@ -175,17 +127,18 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         title: "Erro ao atualizar e-mail",
         description: error.message || "Não foi possível atualizar o e-mail do usuário."
       });
+      return { success: false };
     }
   };
 
-  const viewAsUser = async (userId: string) => {
+  const viewAsUser = async (userId: string, users: User[], adminEmail: string | null) => {
     try {
       const userToView = users.find(u => u.id === userId);
-      if (!userToView) return;
+      if (!userToView) return { success: false };
       
       // Armazenar o ID do administrador para restaurá-lo mais tarde
       localStorage.setItem('adminViewingAsUser', 'true');
-      localStorage.setItem('adminOriginalEmail', currentUserEmail || '');
+      localStorage.setItem('adminOriginalEmail', adminEmail || '');
       
       // Configurar a sessão para visualizar como o usuário selecionado
       const { data, error } = await supabase.auth.setSession({
@@ -200,8 +153,7 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         description: `Agora você está visualizando como ${userToView.email}`,
       });
       
-      // Navegar para área de membros
-      navigate('/membros');
+      return { success: true, userEmail: userToView.email };
     } catch (error: any) {
       console.error("Erro ao visualizar como usuário:", error);
       toast({
@@ -209,16 +161,11 @@ export const useAdminData = (currentUserEmail?: string | null) => {
         title: "Erro ao trocar de usuário",
         description: error.message || "Não foi possível visualizar como o usuário selecionado."
       });
+      return { success: false };
     }
   };
 
   return {
-    users,
-    modules,
-    searchTerm,
-    setSearchTerm,
-    isLoading,
-    filteredUsers,
     toggleModuleAccess,
     toggleNewUserStatus,
     deleteUser,
