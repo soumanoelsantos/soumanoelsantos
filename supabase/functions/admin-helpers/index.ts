@@ -25,39 +25,6 @@ serve(async (req) => {
       }
     )
 
-    // Get the session of the authenticated user
-    const {
-      data: { session },
-    } = await supabaseClient.auth.getSession()
-
-    // If no session or not an admin, return 401
-    if (!session) {
-      return new Response(
-        JSON.stringify({ error: 'Não autorizado' }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 401,
-        }
-      )
-    }
-
-    // Check if the user is an admin
-    const { data: profileData, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', session.user.id)
-      .single()
-
-    if (profileError || !profileData.is_admin) {
-      return new Response(
-        JSON.stringify({ error: 'Acesso negado. Apenas administradores podem realizar esta ação.' }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 403,
-        }
-      )
-    }
-
     // Parse the request body as JSON
     const { action } = await req.json()
 
