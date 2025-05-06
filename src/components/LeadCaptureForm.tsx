@@ -21,7 +21,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface LeadCaptureFormProps {
   source?: string;
-  buttonText?: string;
+  buttonText?: React.ReactNode; // Changed from string to ReactNode to accept JSX elements
   buttonClassName?: string;
   onSuccess?: () => void;
 }
