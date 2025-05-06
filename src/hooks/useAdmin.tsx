@@ -18,7 +18,7 @@ export interface AdminState {
 
 export const useAdminData = (currentUserEmail?: string | null) => {
   const { toast } = useToast();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, userEmail, isAdmin } = useAuth();
   const navigate = useNavigate();
   
   // Usar o hook useAdminModules para obter a lista de módulos
@@ -43,7 +43,7 @@ export const useAdminData = (currentUserEmail?: string | null) => {
 
       try {
         // Verificar se o usuário é admin
-        if (!user?.isAdmin) {
+        if (!isAdmin) {
           toast({
             variant: "destructive",
             title: "Acesso negado",
@@ -66,7 +66,7 @@ export const useAdminData = (currentUserEmail?: string | null) => {
     };
 
     loadData();
-  }, [isAuthenticated, navigate, toast, user]);
+  }, [isAuthenticated, navigate, toast, isAdmin]);
 
   // Função para carregar dados administrativos
   const loadAdminData = async () => {

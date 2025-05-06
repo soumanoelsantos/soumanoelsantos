@@ -36,43 +36,48 @@ export const fetchProfiles = async (): Promise<User[]> => {
     // Fallback to profiles table
     console.log("Fallback: buscando perfis da tabela profiles");
     const { data: profiles, error: profilesError } = await supabase
-      .rpc('get_admin_profiles');
+      .from('profiles')
+      .select('*');
       
     if (profilesError) {
-      // If RPC fails, try direct query with admin auth
-      console.log("RPC falhou, tentando query direta");
-      const { data: directProfiles, error: directError } = await supabase
-        .from('profiles')
-        .select('*');
-        
-      if (directError) throw directError;
-      
-      // Get user modules
-      const { data: userModules, error: modulesError } = await supabase
-        .from('user_modules')
-        .select('*');
-        
-      if (modulesError) throw modulesError;
-      
-      // Format profiles from direct query
-      return directProfiles.map((profile: any) => {
-        const userModuleIds = userModules
-          ? userModules
-              .filter((module: any) => module.user_id === profile.id)
-              .map((module: any) => module.module_id)
-          : [];
-              
-        return {
-          id: profile.id,
-          email: profile.email,
-          isNewUser: profile.is_new_user,
-          isAdmin: profile.is_admin,
-          unlockedModules: userModuleIds
-        };
+      // If direct query fails, try using the admin helper function
+      console.log("Query direta falhou, tentando função admin-helpers");
+      const { data: adminData, error: adminError } = await supabase.functions.invoke('admin-helpers', {
+        body: { action: 'listProfiles' }
       });
+      
+      if (adminError) throw adminError;
+      
+      if (adminData) {
+        // Get user modules
+        const { data: userModules, error: modulesError } = await supabase
+          .from('user_modules')
+          .select('*');
+          
+        if (modulesError) throw modulesError;
+        
+        // Format profiles from admin function
+        return adminData.map((profile: any) => {
+          const userModuleIds = userModules
+            ? userModules
+                .filter((module: any) => module.user_id === profile.id)
+                .map((module: any) => module.module_id)
+            : [];
+                
+          return {
+            id: profile.id,
+            email: profile.email,
+            isNewUser: profile.is_new_user,
+            isAdmin: profile.is_admin,
+            unlockedModules: userModuleIds
+          };
+        });
+      }
+      
+      throw new Error("Não foi possível obter os perfis de usuários");
     }
     
-    // Format profiles from RPC
+    // Format profiles from direct query
     if (profiles) {
       const { data: userModules, error: modulesError } = await supabase
         .from('user_modules')
