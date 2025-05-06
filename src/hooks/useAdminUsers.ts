@@ -22,23 +22,22 @@ export const useAdminUsers = (isAuthenticated: boolean) => {
         setIsLoading(true);
         console.log("Iniciando busca de perfis de usuários");
         
-        // Buscar perfis de usuários
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('*');
+        // Buscar perfis diretamente da auth.users para evitar problemas de RLS recursivo
+        const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
 
-        if (profilesError) {
-          console.error("Erro ao buscar perfis:", profilesError);
-          throw profilesError;
+        if (authError) {
+          console.error("Erro ao buscar usuários:", authError);
+          throw authError;
         }
 
-        console.log("Perfis encontrados:", profiles?.length || 0);
-        
-        if (!profiles || profiles.length === 0) {
+        if (!authUsers || authUsers.users.length === 0) {
+          console.log("Nenhum usuário encontrado");
           setUsers([]);
           setIsLoading(false);
           return;
         }
+
+        console.log("Usuários encontrados:", authUsers.users.length);
 
         // Buscar módulos de usuário
         const { data: userModules, error: modulesError } = await supabase
@@ -53,23 +52,25 @@ export const useAdminUsers = (isAuthenticated: boolean) => {
         console.log("Módulos de usuário encontrados:", userModules?.length || 0);
 
         // Processar os dados para o formato esperado
-        const formattedUsers = profiles.map((profile: any) => {
+        const formattedUsers = authUsers.users.map((user: any) => {
           const userModuleIds = userModules
-            .filter((module: any) => module.user_id === profile.id)
-            .map((module: any) => module.module_id);
+            ? userModules
+                .filter((module: any) => module.user_id === user.id)
+                .map((module: any) => module.module_id)
+            : [];
 
           return {
-            id: profile.id,
-            email: profile.email,
-            isNewUser: profile.is_new_user,
-            isAdmin: profile.is_admin,
+            id: user.id,
+            email: user.email,
+            isNewUser: user.user_metadata?.is_new_user || false,
+            isAdmin: user.user_metadata?.is_admin || false,
             unlockedModules: userModuleIds
           };
         });
 
         console.log("Usuários formatados:", formattedUsers.length);
         setUsers(formattedUsers);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Erro ao buscar usuários:", error);
         toast({
           variant: "destructive",

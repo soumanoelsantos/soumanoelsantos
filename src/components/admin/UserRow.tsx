@@ -50,7 +50,12 @@ const UserRow: React.FC<UserRowProps> = ({
 
   // Helper function to check if a module is unlocked for a user
   const hasModule = (user: AdminUser, moduleId: number) => {
-    return user.modules.some(m => m.id === moduleId);
+    if (user.modules) {
+      return user.modules.some(m => m.id === moduleId);
+    } else if (user.unlockedModules) {
+      return user.unlockedModules.includes(moduleId);
+    }
+    return false;
   };
 
   return (

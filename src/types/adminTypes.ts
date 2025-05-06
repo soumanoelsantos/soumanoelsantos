@@ -5,8 +5,9 @@ export interface AdminUser {
   id: string;
   email: string;
   is_new_user: boolean;
-  is_admin: boolean;
-  modules: AdminModule[];
+  is_admin?: boolean;
+  unlockedModules?: number[];
+  modules?: AdminModule[];
 }
 
 export interface AdminState {
