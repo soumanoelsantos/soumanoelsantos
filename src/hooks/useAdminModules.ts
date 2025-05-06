@@ -2,7 +2,7 @@
 import { AdminModule } from "@/types/admin";
 
 export const useAdminModules = () => {
-  // Módulos fixos para referência
+  // Default modules for reference
   const modules: AdminModule[] = [
     { id: 0, title: "Ferramentas", description: "Ferramentas e utilitários" },
     { id: 1, title: "Módulo 1 - Diagnóstico e Estratégia", description: "Diagnóstico e Estratégia" },

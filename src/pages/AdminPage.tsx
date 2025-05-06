@@ -2,7 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useAdminData } from "@/hooks/useAdmin";
+import { useAdminData } from "@/hooks/useAdminData";
 import AdminHeader from "@/components/admin/AdminHeader";
 import UsersManagement from "@/components/admin/UsersManagement";
 import AdminInfoCard from "@/components/admin/AdminInfoCard";
