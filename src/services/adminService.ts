@@ -132,3 +132,20 @@ export const transformUsersToAdminUsers = (users: User[]): AdminUser[] => {
     unlockedModules: user.unlockedModules,
   }));
 };
+
+// Fetch leads from the database for CRM
+export const fetchLeadsFromDb = async (): Promise<{ data: any[], error: any }> => {
+  try {
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    
+    return { data: data || [], error: null };
+  } catch (error) {
+    console.error("Error fetching leads:", error);
+    return { data: [], error };
+  }
+};

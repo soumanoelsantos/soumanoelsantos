@@ -21,7 +21,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface LeadCaptureFormProps {
   source?: string;
-  buttonText?: React.ReactNode; // Changed from string to ReactNode to accept JSX elements
+  buttonText?: React.ReactNode;
   buttonClassName?: string;
   onSuccess?: () => void;
 }
@@ -48,11 +48,13 @@ const LeadCaptureForm = ({
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
+      // Insert lead with the default status "Novo"
       const { error } = await supabase.from("leads").insert({
         name: values.name,
         email: values.email,
         phone: values.phone,
         source: source,
+        status: "Novo" // Explicitly set status to "Novo"
       });
       
       if (error) throw error;

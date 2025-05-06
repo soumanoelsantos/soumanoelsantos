@@ -27,6 +27,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { User, Phone, Mail, Calendar, Edit, Trash2, Plus } from "lucide-react";
+import { fetchLeadsFromDb } from "@/services/adminService";
 
 interface Lead {
   id: string;
@@ -63,10 +64,8 @@ const KanbanBoard = () => {
   const fetchLeads = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
+      // Use the fetchLeadsFromDb function from adminService
+      const { data, error } = await fetchLeadsFromDb();
 
       if (error) throw error;
 
@@ -96,7 +95,8 @@ const KanbanBoard = () => {
           schema: 'public',
           table: 'leads',
         },
-        () => {
+        (payload) => {
+          console.log('Realtime update received:', payload);
           fetchLeads();
         }
       )
