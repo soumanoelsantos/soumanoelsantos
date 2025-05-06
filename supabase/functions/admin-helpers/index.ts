@@ -54,7 +54,26 @@ serve(async (req) => {
           throw profilesError
         }
             
-        result = profiles
+        // Get user modules to include in the response
+        const { data: modules, error: modulesError } = await adminClient
+          .from('user_modules')
+          .select('*')
+            
+        if (modulesError) {
+          throw modulesError
+        }
+            
+        // Format profiles with module access
+        result = profiles.map(profile => {
+          const userModules = modules
+            .filter(m => m.user_id === profile.id)
+            .map(m => m.module_id)
+            
+          return {
+            ...profile,
+            unlockedModules: userModules
+          }
+        })
         break
             
       case 'listUsers':

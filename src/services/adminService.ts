@@ -8,46 +8,66 @@ import { AdminUser } from "@/types/adminTypes";
 // -------------------------------------------
 
 // Fetch profiles with a reliable method
-export const fetchProfiles = async (): Promise<User[]> => {
+export const fetchProfiles = async () => {
   try {
-    // Try to get users directly from profiles table
-    const { data: profiles, error: profilesError } = await supabase
+    // Tentar buscar perfis através do método direto
+    const { data, error } = await supabase
       .from('profiles')
       .select('*');
       
-    if (profilesError) throw profilesError;
-    
-    // Get user modules
-    const { data: userModules, error: modulesError } = await supabase
-      .from('user_modules')
-      .select('*');
+    if (error) {
+      console.error("Erro ao buscar perfis diretamente:", error);
       
-    if (modulesError) throw modulesError;
-    
-    // Format profiles from direct query
-    if (profiles) {
-      return profiles.map((profile: any) => {
-        const userModuleIds = userModules
-          ? userModules
-              .filter((module: any) => module.user_id === profile.id)
-              .map((module: any) => module.module_id)
-          : [];
-              
-        return {
-          id: profile.id,
-          email: profile.email,
-          isNewUser: profile.is_new_user,
-          isAdmin: profile.is_admin,
-          unlockedModules: userModuleIds
-        };
-      });
+      // Tentar com edge function como backup
+      try {
+        const { data: edgeData, error: edgeError } = await supabase.functions.invoke('admin-helpers', {
+          body: { action: 'listProfiles' }
+        });
+        
+        if (edgeError) throw edgeError;
+        return { data: formatProfiles(edgeData), error: null };
+      } catch (edgeCallError) {
+        console.error("Edge function falhou:", edgeCallError);
+        throw edgeCallError;
+      }
     }
     
-    // Fallback if no profiles are found
-    return [];
+    // Se conseguimos buscar perfis diretamente, processar
+    if (data) {
+      return { data: formatProfiles(data), error: null };
+    }
+    
+    return { data: [], error: new Error("Nenhum dado retornado") };
   } catch (error) {
-    console.error("Error fetching profiles:", error);
-    return []; // Return empty array on error instead of throwing
+    console.error("Erro ao buscar perfis:", error);
+    return { data: [], error };
+  }
+};
+
+// Helper para formatar dados de perfis
+const formatProfiles = (profiles: any[]): User[] => {
+  return profiles.map((profile) => ({
+    id: profile.id,
+    email: profile.email || '',
+    isNewUser: profile.is_new_user || false,
+    isAdmin: profile.is_admin || false,
+    unlockedModules: [] // Os módulos serão preenchidos posteriormente
+  }));
+};
+
+// Buscar módulos de usuário e mesclar com os perfis
+export const fetchUserModules = async (userIds: string[]) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_modules')
+      .select('*')
+      .in('user_id', userIds);
+      
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error("Erro ao buscar módulos de usuário:", error);
+    return { data: [], error };
   }
 };
 
@@ -56,7 +76,7 @@ export const fetchProfiles = async (): Promise<User[]> => {
 // -------------------------------------------
 
 // Fetch available modules
-export const fetchModules = async (): Promise<AdminModule[]> => {
+export const fetchModules = async () => {
   try {
     const { data, error } = await supabase
       .from('modules')
@@ -64,10 +84,10 @@ export const fetchModules = async (): Promise<AdminModule[]> => {
       
     if (error) throw error;
     
-    return data || [];
+    return { data: data || [], error: null };
   } catch (error) {
-    console.error("Error fetching modules:", error);
-    return []; // Return empty array on error
+    console.error("Erro ao buscar módulos:", error);
+    return { data: [], error };
   }
 };
 

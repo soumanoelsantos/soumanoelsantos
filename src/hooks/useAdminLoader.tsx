@@ -14,44 +14,50 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
 
   useEffect(() => {
     const loadData = async () => {
+      if (!isAuthenticated) {
+        navigate('/login');
+        return;
+      }
+
       try {
         setIsLoading(true);
         
+        // Tentar buscar usuários através da edge function
         try {
-          // Attempt to fetch profiles using new method
-          const profilesData = await fetchProfiles();
-          setUsers(profilesData);
-          console.log("Profiles loaded successfully:", profilesData.length);
-        } catch (profileError) {
-          console.error("Error fetching profiles:", profileError);
+          const { data, error } = await fetchProfiles();
           
-          // Fall back to empty array if profiles can't be loaded
+          if (error) throw error;
+          
+          setUsers(data || []);
+          console.log("Perfis carregados com sucesso:", data?.length || 0);
+        } catch (profileError) {
+          console.error("Erro ao buscar perfis:", profileError);
+          
+          // Mostrar erro sem interromper o carregamento da página
           setUsers([]);
           toast({
             variant: "destructive",
-            title: "Error loading users",
-            description: "Using backup data. Try again later."
+            title: "Erro ao carregar usuários",
+            description: "Não foi possível buscar a lista de usuários."
           });
         }
         
+        // Buscar módulos
         try {
-          // Attempt to fetch modules from the database
-          const modulesData = await fetchModules();
-          setModules(modulesData);
-          console.log("Modules loaded successfully:", modulesData.length);
-        } catch (modulesError) {
-          console.error("Error fetching modules:", modulesError);
+          const { data, error } = await fetchModules();
           
-          // Fall back to default modules if they can't be loaded
+          if (error) throw error;
+          
+          setModules(data || defaultModules);
+          console.log("Módulos carregados com sucesso:", data?.length || 0);
+        } catch (modulesError) {
+          console.error("Erro ao buscar módulos:", modulesError);
+          
+          // Usar módulos padrão como fallback
           setModules(defaultModules);
         }
       } catch (error: any) {
-        console.error("Error loading admin data:", error);
-        toast({
-          variant: "destructive",
-          title: "Error loading data",
-          description: "Could not fetch user and module data."
-        });
+        console.error("Erro ao carregar dados:", error);
       } finally {
         setIsLoading(false);
       }
