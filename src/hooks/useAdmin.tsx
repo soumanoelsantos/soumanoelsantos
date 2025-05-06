@@ -9,7 +9,7 @@ import { useAdminLoader } from "@/hooks/useAdminLoader";
 
 export const useAdminData = (currentUserEmail?: string | null) => {
   const { toast } = useToast();
-  const { isAdmin, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
   const { 
@@ -42,18 +42,9 @@ export const useAdminData = (currentUserEmail?: string | null) => {
       return;
     }
 
-    if (!isAdmin) {
-      toast({
-        variant: "destructive",
-        title: "Acesso negado",
-        description: "Somente administradores podem acessar esta página.",
-      });
-      navigate('/membros');
-      return;
-    }
-
-    loadUsers(isAuthenticated, isAdmin);
-  }, [isAuthenticated, isAdmin, navigate, loadUsers, toast]);
+    // Removida a verificação de isAdmin
+    loadUsers(isAuthenticated, true); // Passando true no lugar de isAdmin
+  }, [isAuthenticated, navigate, loadUsers, toast]);
 
   return {
     users: state.users,

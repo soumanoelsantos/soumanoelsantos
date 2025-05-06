@@ -10,7 +10,7 @@ export const useAdminLoader = (
   const { toast } = useToast();
 
   const loadUsers = useCallback(async (isAuthenticated: boolean, isAdmin: boolean) => {
-    if (!isAuthenticated || !isAdmin) {
+    if (!isAuthenticated) {
       return;
     }
 
