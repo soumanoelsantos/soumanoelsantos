@@ -40,10 +40,10 @@ export const saveDataToSupabase = async (
         .update(updateObject)
         .eq('id', existingData.id);
     } else {
-      // Insert new entry
+      // Insert new entry - ensure user_id is present
       result = await supabase
         .from('user_tools_data')
-        .insert([updateObject]);
+        .insert(updateObject);  // Changed from array to single object
     }
 
     if (result.error) {
