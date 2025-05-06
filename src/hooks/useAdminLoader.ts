@@ -1,7 +1,7 @@
 
 import { useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { fetchAdminData } from "@/services/adminService.tsx";
+import { fetchProfiles, fetchModules } from "@/services/adminService";
 
 export const useAdminLoader = (
   setIsLoading: (isLoading: boolean) => void,
@@ -16,8 +16,9 @@ export const useAdminLoader = (
 
     try {
       setIsLoading(true);
-      const data = await fetchAdminData();
-      setData(data);
+      const profiles = await fetchProfiles();
+      const modules = await fetchModules();
+      setData({ users: profiles, modules });
     } catch (error) {
       console.error("Error loading admin data:", error);
       toast({
@@ -25,6 +26,7 @@ export const useAdminLoader = (
         title: "Erro ao carregar dados",
         description: "Não foi possível carregar os dados de usuários e módulos.",
       });
+    } finally {
       setIsLoading(false);
     }
   }, [setIsLoading, setData, toast]);
