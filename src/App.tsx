@@ -17,6 +17,7 @@ import TesteFase from "./pages/TesteFase";
 import MapaNegocio from "./pages/MapaNegocio";
 import PropostaUnicaValor from "./pages/PropostaUnicaValor";
 import MapaEquipe from "./pages/MapaEquipe";
+import CrmPage from "./pages/CrmPage";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/cadastro" element={<Register />} />
             <Route path="/membros" element={<MemberArea />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/crm" element={<CrmPage />} />
             <Route path="/teste" element={<DiagnosticoTest />} />
             <Route path="/checklist-contratacao" element={<CheckListContratacao />} />
             <Route path="/analise-swot" element={<AnaliseSwot />} />

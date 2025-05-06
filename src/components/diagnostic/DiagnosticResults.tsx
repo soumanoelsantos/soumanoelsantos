@@ -8,6 +8,7 @@ import BackToMemberAreaButton from './BackToMemberAreaButton';
 import { AnswersDataType } from '@/types/diagnostic';
 import { Calendar } from 'lucide-react';
 import ActionButton from '../ui/action-button';
+import LeadCaptureForm from '../LeadCaptureForm';
 
 interface DiagnosticResultsProps {
   results: {
@@ -26,11 +27,6 @@ interface DiagnosticResultsProps {
 const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: DiagnosticResultsProps) => {
   const handleReset = () => {
     // This will be handled by the ResetDiagnosticButton component
-  };
-
-  const handleScheduleClick = () => {
-    const message = encodeURIComponent("Olá, Manoel! Gostaria de agendar meu diagnóstico gratuito com você!");
-    window.location.href = `https://wa.me/31986994906?text=${message}`;
   };
 
   return (
@@ -54,13 +50,16 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
         </p>
         
         <div className="pdf-cta-button mb-2">
-          <ActionButton 
-            onClick={handleScheduleClick}
-            className="px-8 py-6 text-lg mx-auto"
-            icon={Calendar}
-          >
-            Agendar diagnóstico gratuito
-          </ActionButton>
+          <LeadCaptureForm 
+            source="diagnostic_results"
+            buttonClassName="px-8 py-6 text-lg mx-auto bg-dark-primary hover:bg-dark-primary/90 text-black font-medium flex items-center gap-2"
+            buttonText={
+              <>
+                <Calendar className="h-4 w-4" />
+                Agendar diagnóstico gratuito
+              </>
+            }
+          />
         </div>
         
         <p className="text-sm text-gray-500 mt-2">

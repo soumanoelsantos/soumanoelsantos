@@ -5,9 +5,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import MemberContentList from "@/components/MemberContentList";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { checkUserToolCompletion, loadDiagnosticCompletion, loadPhaseTestCompletion } from "@/utils/savingUtils";
+import LeadCaptureForm from "@/components/LeadCaptureForm";
 
 const MemberArea = () => {
   const navigate = useNavigate();
@@ -143,12 +143,11 @@ const MemberArea = () => {
               </p>
             </CardContent>
             <CardFooter>
-              <Button 
-                className="w-full bg-dark-primary hover:bg-dark-primary/90 text-white"
-                onClick={() => window.open("https://wa.me/31986994906", "_blank")}
-              >
-                Agendar mentoria
-              </Button>
+              <LeadCaptureForm 
+                source="member_area"
+                buttonClassName="w-full bg-dark-primary hover:bg-dark-primary/90 text-black font-medium"
+                buttonText="Agendar mentoria"
+              />
             </CardFooter>
           </Card>
         </div>

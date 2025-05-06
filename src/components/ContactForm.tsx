@@ -1,12 +1,8 @@
-import { Button } from "@/components/ui/button";
+
 import { Calendar } from "lucide-react";
+import LeadCaptureForm from "./LeadCaptureForm";
 
 const ContactForm = () => {
-  const handleWhatsAppClick = () => {
-    const message = encodeURIComponent("Olá, Manoel! Gostaria de agendar meu diagnóstico gratuito com você!");
-    window.location.href = `https://wa.me/31986994906?text=${message}`;
-  };
-
   return (
     <div className="relative py-32 bg-gradient-to-b from-dark-background to-black" id="contato">
       <div className="absolute inset-0 overflow-hidden">
@@ -27,14 +23,16 @@ const ContactForm = () => {
         </div>
         
         <div className="max-w-md mx-auto text-center">
-          <Button 
-            size="lg"
-            className="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-7 rounded-full shadow-gold transform hover:scale-105 transition-all duration-300"
-            onClick={handleWhatsAppClick}
-          >
-            <Calendar className="mr-2 h-6 w-6" />
-            Agendar diagnóstico gratuito
-          </Button>
+          <LeadCaptureForm 
+            source="landing_page"
+            buttonClassName="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-7 rounded-full shadow-gold transform hover:scale-105 transition-all duration-300 flex items-center justify-center"
+            buttonText={
+              <>
+                <Calendar className="mr-2 h-6 w-6" />
+                Agendar diagnóstico gratuito
+              </>
+            }
+          />
           
           <div className="mt-8 space-y-4 text-dark-text/60">
             <p className="text-lg font-medium">Seu investimento: GRATUITO</p>

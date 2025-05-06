@@ -4,13 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import LeadCaptureForm from "./LeadCaptureForm";
 
 const Hero = () => {
-  const handleScheduleClick = () => {
-    const message = encodeURIComponent("Olá, Manoel! Gostaria de agendar meu diagnóstico gratuito com você!");
-    window.location.href = `https://wa.me/31986994906?text=${message}`;
-  };
-
   return (
     <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
       <div className="bg-dark-primary text-black text-center py-2 text-sm font-medium px-4">
@@ -44,15 +40,17 @@ const Hero = () => {
               </div>
 
               <div className="flex flex-col items-center w-full">
-                <Button 
-                  size="lg"
-                  className="w-full sm:w-auto bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group"
-                  onClick={handleScheduleClick}
-                >
-                  <Calendar className="mr-2 h-5 w-5" />
-                  Agendar diagnóstico gratuito
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Button>
+                <LeadCaptureForm 
+                  source="hero_section"
+                  buttonClassName="w-full sm:w-auto bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-base sm:text-lg py-6 px-6 sm:px-8 rounded-full shadow-gold group flex items-center"
+                  buttonText={
+                    <>
+                      <Calendar className="mr-2 h-5 w-5" />
+                      Agendar diagnóstico gratuito
+                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </>
+                  }
+                />
               
                 <p className="text-sm text-dark-text/70 mt-2">
                   Clique acima e agende agora – As vagas são limitadas!
