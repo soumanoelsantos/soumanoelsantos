@@ -28,8 +28,9 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
           
           if (error) throw error;
           
+          // Fix: Correctly set the users state with the data array
           setUsers(data || []);
-          console.log("Perfis carregados com sucesso:", data?.length || 0);
+          console.log("Perfis carregados com sucesso:", data ? data.length : 0);
         } catch (profileError) {
           console.error("Erro ao buscar perfis:", profileError);
           
@@ -48,8 +49,9 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
           
           if (error) throw error;
           
+          // Fix: Correctly set the modules state with the data array
           setModules(data || defaultModules);
-          console.log("Módulos carregados com sucesso:", data?.length || 0);
+          console.log("Módulos carregados com sucesso:", data ? data.length : 0);
         } catch (modulesError) {
           console.error("Erro ao buscar módulos:", modulesError);
           
