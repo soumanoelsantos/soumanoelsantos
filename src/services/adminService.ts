@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { User, AdminModule } from "@/types/admin";
 import { AdminUser } from "@/types/adminTypes";
+import { LeadData } from "@/types/crm";
 
 // Direct Database Access Functions
 export const fetchProfiles = async (): Promise<{ data: User[], error: any }> => {
@@ -96,9 +97,9 @@ export const fetchModules = async (): Promise<{ data: AdminModule[], error: any 
 // Direct table management - for full admin access
 export const executeRawQuery = async (query: string, params?: any[]): Promise<{ data: any, error: any }> => {
   try {
-    const { data, error } = await supabase.rpc('execute_sql', {
-      query_text: query,
-      query_params: params || []
+    // Instead of using rpc with execute_sql, call the edge function
+    const { data, error } = await supabase.functions.invoke('admin-helpers', {
+      body: { action: 'executeQuery', query, params: params || [] }
     });
     
     if (error) throw error;
@@ -109,13 +110,18 @@ export const executeRawQuery = async (query: string, params?: any[]): Promise<{ 
   }
 };
 
-// Direct access to profiles table
+// Direct access to get list of tables
 export const fetchAllTables = async (): Promise<{ data: string[], error: any }> => {
   try {
-    const { data, error } = await supabase.rpc('list_tables');
+    // Use edge function to fetch tables instead of direct rpc
+    const { data, error } = await supabase.functions.invoke('admin-helpers', {
+      body: { action: 'listTables' }
+    });
     
     if (error) throw error;
-    return { data, error: null };
+    
+    // Ensure we return an array of strings
+    return { data: Array.isArray(data) ? data : [], error: null };
   } catch (error) {
     console.error("Error fetching tables:", error);
     return { data: [], error };
@@ -134,7 +140,7 @@ export const transformUsersToAdminUsers = (users: User[]): AdminUser[] => {
 };
 
 // Fetch leads from the database for CRM
-export const fetchLeadsFromDb = async (): Promise<{ data: any[], error: any }> => {
+export const fetchLeadsFromDb = async (): Promise<{ data: LeadData[], error: any }> => {
   try {
     const { data, error } = await supabase
       .from("leads")

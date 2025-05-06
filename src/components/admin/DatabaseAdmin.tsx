@@ -31,7 +31,7 @@ const DatabaseAdmin = () => {
   const fetchTables = async () => {
     setIsLoadingTables(true);
     try {
-      // First try using RPC
+      // Use our updated fetchAllTables function that calls the edge function
       const { data, error } = await fetchAllTables();
       if (error) throw error;
       setTables(data || []);
@@ -43,17 +43,15 @@ const DatabaseAdmin = () => {
         description: "Não foi possível buscar as tabelas do banco."
       });
       
-      // Try a more direct approach
+      // Try a more direct approach using the edge function
       try {
-        const { data, error } = await supabase
-          .from('information_schema.tables')
-          .select('table_name')
-          .eq('table_schema', 'public');
-          
+        const { data, error } = await supabase.functions.invoke('admin-helpers', {
+          body: { action: 'listTables' }
+        });
+        
         if (error) throw error;
         if (data) {
-          const tableNames = data.map(t => t.table_name);
-          setTables(tableNames);
+          setTables(Array.isArray(data) ? data : []);
         }
       } catch (secondError) {
         console.error("Second error fetching tables:", secondError);
@@ -71,11 +69,9 @@ const DatabaseAdmin = () => {
     setSqlQuery(`SELECT * FROM ${table} LIMIT 100;`);
     
     try {
-      const { data, error } = await supabase
-        .from(table)
-        .select('*')
-        .limit(100);
-        
+      // Use executeRawQuery since we can't directly use .from with dynamic table name
+      const { data, error } = await executeRawQuery(`SELECT * FROM ${table} LIMIT 100;`);
+      
       if (error) throw error;
       
       if (data && data.length > 0) {
@@ -114,33 +110,12 @@ const DatabaseAdmin = () => {
     setIsExecutingQuery(true);
     
     try {
-      // First try direct supabase query
-      if (sqlQuery.trim().toLowerCase().startsWith('select')) {
-        try {
-          const { data, error } = await supabase.rpc('run_sql_query', { sql_query: sqlQuery });
-          if (!error) {
-            setQueryResult(data);
-            toast({
-              title: "Query executada",
-              description: "A query foi executada com sucesso."
-            });
-            setIsExecutingQuery(false);
-            return;
-          }
-        } catch (e) {
-          console.error("Error with direct query:", e);
-          // Fall through to try with edge function
-        }
-      }
+      // Use our updated executeRawQuery function
+      const { data, error } = await executeRawQuery(sqlQuery);
       
-      // Try with edge function
-      const { data: fnResult, error: fnError } = await supabase.functions.invoke('admin-helpers', {
-        body: { action: 'executeQuery', query: sqlQuery }
-      });
+      if (error) throw error;
       
-      if (fnError) throw fnError;
-      
-      setQueryResult(fnResult);
+      setQueryResult(data);
       toast({
         title: "Query executada",
         description: "A query foi executada com sucesso."

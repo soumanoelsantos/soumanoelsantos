@@ -92,14 +92,20 @@ serve(async (req) => {
         break
       
       case 'listTables':
-        // Get all tables in the database
-        const { data: tables, error: tablesError } = await adminClient.rpc('list_tables')
+        // Get all tables in the database using PostgreSQL's information_schema
+        // This is safer than using custom functions that might not exist
+        const { data: tables, error: tablesError } = await adminClient
+          .from('pg_catalog.pg_tables')
+          .select('tablename')
+          .eq('schemaname', 'public')
         
         if (tablesError) {
+          console.error('Error fetching tables:', tablesError)
           throw tablesError
         }
         
-        result = tables
+        // Extract table names from result
+        result = tables.map(t => t.tablename)
         break
         
       case 'executeQuery':
@@ -110,12 +116,14 @@ serve(async (req) => {
           throw new Error('Query is required')
         }
         
+        // Execute the query directly since we have admin privileges
         const { data: queryResult, error: queryError } = await adminClient.rpc(
           'execute_sql', 
           { query_text: query, query_params: params || [] }
         )
         
         if (queryError) {
+          console.error('Error executing query:', queryError)
           throw queryError
         }
         
@@ -135,6 +143,7 @@ serve(async (req) => {
       }
     )
   } catch (error) {
+    console.error('Error in admin-helpers edge function:', error)
     // Return error with appropriate status code
     return new Response(
       JSON.stringify({ error: error.message }),
