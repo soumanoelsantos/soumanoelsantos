@@ -9,7 +9,7 @@ import MemberHeader from "@/components/MemberHeader";
 const CrmPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAuthenticated, isAdmin, userEmail, logout } = useAuth();
+  const { isAuthenticated, userEmail, logout } = useAuth();
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -23,18 +23,8 @@ const CrmPage = () => {
       return;
     }
 
-    if (!isAdmin) {
-      toast({
-        variant: "destructive",
-        title: "Acesso restrito",
-        description: "Apenas administradores podem acessar esta página",
-      });
-      navigate("/membros");
-      return;
-    }
-
     setIsLoading(false);
-  }, [isAuthenticated, isAdmin, navigate, toast]);
+  }, [isAuthenticated, navigate, toast]);
 
   const handleLogout = async () => {
     try {

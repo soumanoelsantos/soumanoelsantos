@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useToast } from "@/hooks/use-toast";
@@ -51,7 +50,7 @@ const leadSchema = z.object({
 type LeadFormValues = z.infer<typeof leadSchema>;
 
 const KanbanBoard = () => {
-  const { isAdmin } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -278,7 +277,7 @@ const KanbanBoard = () => {
     }
   };
 
-  if (!isAdmin) {
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">

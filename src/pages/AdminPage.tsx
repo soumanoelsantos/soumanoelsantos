@@ -9,7 +9,7 @@ import AdminInfoCard from "@/components/admin/AdminInfoCard";
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const { userEmail } = useAuth();
+  const { userEmail, isAuthenticated } = useAuth();
   const { 
     users, 
     modules, 
@@ -27,6 +27,13 @@ const AdminPage = () => {
   const handleLogout = () => {
     navigate("/membros");
   };
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: "/admin" } });
+      return;
+    }
+  }, [isAuthenticated, navigate]);
 
   if (isLoading) {
     return (
