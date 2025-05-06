@@ -72,7 +72,12 @@ serve(async (req) => {
             
           return {
             ...profile,
-            unlockedModules: userModules
+            unlockedModules: userModules,
+            // Ensure property names match the expected format
+            id: profile.id,
+            email: profile.email || '',
+            isNewUser: profile.is_new_user || false,
+            isAdmin: profile.is_admin || false
           }
         })
         break

@@ -76,7 +76,7 @@ export const fetchUserModules = async (userIds: string[]) => {
 // -------------------------------------------
 
 // Fetch available modules
-export const fetchModules = async () => {
+export const fetchModules = async (): Promise<{ data: AdminModule[], error: any }> => {
   try {
     const { data, error } = await supabase
       .from('modules')
@@ -84,7 +84,7 @@ export const fetchModules = async () => {
       
     if (error) throw error;
     
-    return { data: data as AdminModule[] || [], error: null };
+    return { data: (data || []) as AdminModule[], error: null };
   } catch (error) {
     console.error("Erro ao buscar módulos:", error);
     return { data: [] as AdminModule[], error };
