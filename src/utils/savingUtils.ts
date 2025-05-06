@@ -3,6 +3,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { Json } from '@/integrations/supabase/types';
 import { toast } from '@/hooks/use-toast';
 
+// Define the type for user_tools_data table
+interface UserToolsData {
+  user_id: string;
+  business_map_data?: Json;
+  checklist_data?: Json;
+  puv_data?: Json;
+  swot_data?: Json;
+  created_at?: string;
+  updated_at?: string;
+  id?: string;
+  [key: string]: any; // Allow dynamic keys for specific data fields
+}
+
 // General function to save data to the user_tools_data table
 export const saveDataToSupabase = async (
   userId: string,
@@ -23,7 +36,7 @@ export const saveDataToSupabase = async (
     }
 
     // Prepare data object with the correct format
-    const updateObject: Record<string, any> = {
+    const updateObject: UserToolsData = {
       user_id: userId,
       updated_at: new Date().toISOString()
     };
