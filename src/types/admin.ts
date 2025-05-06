@@ -20,11 +20,11 @@ export interface UseAdminDataReturn {
   setSearchTerm: (term: string) => void;
   isLoading: boolean;
   filteredUsers: User[];
-  toggleModuleAccess: (userId: string, moduleId: number) => Promise<void>;
-  toggleNewUserStatus: (userId: string) => Promise<void>;
-  deleteUser: (userId: string) => Promise<void>;
-  editUserEmail: (userId: string, newEmail: string) => Promise<void>;
-  viewAsUser: (userId: string) => Promise<void>;
+  toggleModuleAccess: (userId: string, moduleId: number) => Promise<boolean>;
+  toggleNewUserStatus: (userId: string) => Promise<boolean>;
+  deleteUser: (userId: string) => Promise<boolean>;
+  editUserEmail: (userId: string, newEmail: string) => Promise<boolean>;
+  viewAsUser: (userId: string) => Promise<boolean>;
 }
 
 export type Module = AdminModule;

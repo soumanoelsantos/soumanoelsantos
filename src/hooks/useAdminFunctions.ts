@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@/types/admin";
 
-export const useAdminFunctions = (userEmail: string | null) => {
+export const useAdminFunctions = (userEmail: string | null | undefined) => {
   const { toast } = useToast();
 
   const toggleModuleAccess = async (userId: string, moduleId: number, users: User[]) => {
