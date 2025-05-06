@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -7,15 +7,17 @@ import MemberHeader from "@/components/MemberHeader";
 import MemberContentList from "@/components/MemberContentList";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { checkUserToolCompletion, loadDiagnosticCompletion, loadPhaseTestCompletion } from "@/utils/savingUtils";
 
 const MemberArea = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAuthenticated, userEmail, logout } = useAuth();
+  const { isAuthenticated, userEmail, userId, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
+  const [completionPercent, setCompletionPercent] = useState(0);
 
   // Check authentication status
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
       toast({
         variant: "destructive",
@@ -26,8 +28,51 @@ const MemberArea = () => {
       return;
     }
     
-    setIsLoading(false);
-  }, [isAuthenticated, navigate, toast]);
+    // Calculate completion percentage
+    const calculateCompletionPercentage = async () => {
+      if (!userId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Check regular tools saved in user_tools_data
+        const toolsData = await checkUserToolCompletion(userId, [
+          'swot_data',
+          'checklist_data',
+          'business_map_data',
+          'puv_data',
+          'mapa_equipe'
+        ]);
+        
+        // Check diagnostic completion (separate table)
+        const diagnosticCompleted = await loadDiagnosticCompletion(userId);
+        
+        // Check phase test completion (separate table)
+        const phaseTestCompleted = await loadPhaseTestCompletion(userId);
+        
+        const completed = [
+          diagnosticCompleted,
+          !!toolsData.swot_data,
+          !!toolsData.checklist_data,
+          phaseTestCompleted,
+          !!toolsData.business_map_data,
+          !!toolsData.puv_data,
+          !!toolsData.mapa_equipe
+        ].filter(Boolean).length;
+        
+        // 7 tools total
+        const percent = Math.floor((completed / 7) * 100);
+        setCompletionPercent(percent);
+      } catch (error) {
+        console.error("Error calculating completion percentage:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    calculateCompletionPercentage();
+  }, [isAuthenticated, navigate, toast, userId]);
 
   const handleLogout = async () => {
     try {
@@ -59,7 +104,29 @@ const MemberArea = () => {
         <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Área de Membros</h1>
         
         <div className="grid grid-cols-1 gap-6">
-          {/* Removed welcome card as requested */}
+          {/* Progress Card */}
+          <Card className="bg-white border border-gray-200 shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl text-gray-800">Seu progresso</CardTitle>
+              <CardDescription className="text-gray-600">
+                Acompanhe seu avanço nas ferramentas disponíveis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm">
+                  <span>Ferramentas completadas</span>
+                  <span className="font-medium">{completionPercent}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-dark-primary h-2.5 rounded-full transition-all duration-500 ease-in-out" 
+                    style={{ width: `${completionPercent}%` }}
+                  ></div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           
           <MemberContentList />
           

@@ -106,6 +106,98 @@ export const loadDataFromSupabase = async (
   }
 };
 
+// Check if user has data for specific tool
+export const checkUserToolCompletion = async (
+  userId: string,
+  dataKeys: string[]
+): Promise<Record<string, boolean>> => {
+  try {
+    if (!userId) {
+      return {};
+    }
+
+    const { data, error } = await supabase
+      .from('user_tools_data')
+      .select(dataKeys.join(','))
+      .eq('user_id', userId)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') { // "No rows found"
+        return dataKeys.reduce((acc, key) => {
+          acc[key] = false;
+          return acc;
+        }, {} as Record<string, boolean>);
+      }
+      throw error;
+    }
+    
+    // Check which tools have data
+    return dataKeys.reduce((acc, key) => {
+      acc[key] = data[key] !== null && data[key] !== undefined;
+      return acc;
+    }, {} as Record<string, boolean>);
+    
+  } catch (error) {
+    console.error(`Error checking tool completion:`, error);
+    return {};
+  }
+};
+
+// Load diagnostic completion status
+export const loadDiagnosticCompletion = async (userId: string): Promise<boolean> => {
+  try {
+    if (!userId) {
+      return false;
+    }
+
+    const { data, error } = await supabase
+      .from('diagnostic_results')
+      .select('id')
+      .eq('user_id', userId)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') { // "No rows found"
+        return false;
+      }
+      throw error;
+    }
+    
+    return !!data;
+  } catch (error) {
+    console.error(`Error checking diagnostic completion:`, error);
+    return false;
+  }
+};
+
+// Load phase test completion status
+export const loadPhaseTestCompletion = async (userId: string): Promise<boolean> => {
+  try {
+    if (!userId) {
+      return false;
+    }
+
+    const { data, error } = await supabase
+      .from('fase_results')
+      .select('id')
+      .eq('user_id', userId)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') { // "No rows found"
+        return false;
+      }
+      throw error;
+    }
+    
+    return !!data;
+  } catch (error) {
+    console.error(`Error checking phase test completion:`, error);
+    return false;
+  }
+};
+
 // Specific functions for each tool
 export const saveSwotData = async (userId: string, swotData: any): Promise<boolean> => {
   return saveDataToSupabase(userId, 'swot_data', swotData);

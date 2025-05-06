@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { 
+  checkUserToolCompletion, 
+  loadDiagnosticCompletion,
+  loadPhaseTestCompletion
+} from "@/utils/savingUtils";
+import { CheckCheck } from "lucide-react";
 
 // Sample program modules and content
 const programModules = [
@@ -15,13 +20,13 @@ const programModules = [
     description: "Ferramentas de diagnóstico e análise para sua empresa",
     status: "disponível",
     lessons: [
-      { id: 1, title: "Diagnóstico do Negócio", url: "/teste", isWhatsapp: false },
-      { id: 2, title: "Check List de Contratação", url: "/checklist-contratacao", isWhatsapp: false },
-      { id: 3, title: "Análise SWOT", url: "/analise-swot", isWhatsapp: false },
-      { id: 4, title: "Teste Fase da Empresa", url: "/teste-fase", isWhatsapp: false },
-      { id: 5, title: "Mapa do Negócio", url: "/mapa-negocio", isWhatsapp: false },
-      { id: 6, title: "Proposta Única de Valor (PUV)", url: "/proposta-unica-valor", isWhatsapp: false },
-      { id: 7, title: "Mapa da Equipe", url: "/mapa-equipe", isWhatsapp: false },
+      { id: 1, title: "Diagnóstico do Negócio", url: "/teste", isWhatsapp: false, dataKey: "diagnostic_results" },
+      { id: 2, title: "Check List de Contratação", url: "/checklist-contratacao", isWhatsapp: false, dataKey: "checklist_data" },
+      { id: 3, title: "Análise SWOT", url: "/analise-swot", isWhatsapp: false, dataKey: "swot_data" },
+      { id: 4, title: "Teste Fase da Empresa", url: "/teste-fase", isWhatsapp: false, dataKey: "fase_results" },
+      { id: 5, title: "Mapa do Negócio", url: "/mapa-negocio", isWhatsapp: false, dataKey: "business_map_data" },
+      { id: 6, title: "Proposta Única de Valor (PUV)", url: "/proposta-unica-valor", isWhatsapp: false, dataKey: "puv_data" },
+      { id: 7, title: "Mapa da Equipe", url: "/mapa-equipe", isWhatsapp: false, dataKey: "mapa_equipe" },
     ]
   },
   {
@@ -76,8 +81,49 @@ const programModules = [
 
 const MemberContentList = () => {
   const [expandedModule, setExpandedModule] = useState<string>("item-0");
+  const [completedTools, setCompletedTools] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const { isNewUser } = useAuth();
+  const { isNewUser, userId } = useAuth();
+
+  // Check which tools the user has already completed
+  useEffect(() => {
+    const checkCompletedTools = async () => {
+      if (!userId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Check regular tools saved in user_tools_data
+        const toolsData = await checkUserToolCompletion(userId, [
+          'swot_data',
+          'checklist_data',
+          'business_map_data',
+          'puv_data',
+          'mapa_equipe'
+        ]);
+        
+        // Check diagnostic completion (separate table)
+        const diagnosticCompleted = await loadDiagnosticCompletion(userId);
+        
+        // Check phase test completion (separate table)
+        const phaseTestCompleted = await loadPhaseTestCompletion(userId);
+        
+        setCompletedTools({
+          ...toolsData,
+          diagnostic_results: diagnosticCompleted,
+          fase_results: phaseTestCompleted
+        });
+      } catch (error) {
+        console.error("Error checking completed tools:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkCompletedTools();
+  }, [userId]);
 
   const handleClickLesson = (lesson: { url: string, isWhatsapp: boolean }) => {
     if (lesson.isWhatsapp) {
@@ -101,6 +147,18 @@ const MemberContentList = () => {
       default:
         return null;
     }
+  };
+
+  // Renders a completion indicator for tools that have been completed
+  const renderCompletionStatus = (dataKey: string) => {
+    if (isLoading) return null;
+    
+    return completedTools[dataKey] ? (
+      <Badge className="ml-2 bg-green-500 text-white">
+        <CheckCheck className="h-3 w-3 mr-1" />
+        <span className="text-xs">Preenchido</span>
+      </Badge>
+    ) : null;
   };
 
   return (
@@ -138,8 +196,9 @@ const MemberContentList = () => {
                         ${module.status === 'bloqueado' ? 'opacity-50' : 'bg-gray-50'}`}
                       >
                         <div className="flex items-center justify-between">
-                          <div>
+                          <div className="flex items-center">
                             <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
+                            {renderCompletionStatus(lesson.dataKey)}
                           </div>
                           <Button 
                             size="sm" 
