@@ -24,13 +24,13 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
         
         // Tentar buscar usuários através da edge function
         try {
-          const { data, error } = await fetchProfiles();
+          const profilesResult = await fetchProfiles();
           
-          if (error) throw error;
+          if (profilesResult.error) throw profilesResult.error;
           
           // Fix: Correctly set the users state with the data array
-          setUsers(data || []);
-          console.log("Perfis carregados com sucesso:", data ? data.length : 0);
+          setUsers(profilesResult.data || []);
+          console.log("Perfis carregados com sucesso:", profilesResult.data ? profilesResult.data.length : 0);
         } catch (profileError) {
           console.error("Erro ao buscar perfis:", profileError);
           
@@ -45,13 +45,13 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
         
         // Buscar módulos
         try {
-          const { data, error } = await fetchModules();
+          const modulesResult = await fetchModules();
           
-          if (error) throw error;
+          if (modulesResult.error) throw modulesResult.error;
           
           // Fix: Correctly set the modules state with the data array
-          setModules(data || defaultModules);
-          console.log("Módulos carregados com sucesso:", data ? data.length : 0);
+          setModules(modulesResult.data || defaultModules);
+          console.log("Módulos carregados com sucesso:", modulesResult.data ? modulesResult.data.length : 0);
         } catch (modulesError) {
           console.error("Erro ao buscar módulos:", modulesError);
           

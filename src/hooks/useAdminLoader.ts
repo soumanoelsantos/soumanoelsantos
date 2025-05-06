@@ -24,9 +24,11 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
         
         try {
           // Attempt to fetch profiles using new method
-          const profilesData = await fetchProfiles();
-          setUsers(profilesData);
-          console.log("Profiles loaded successfully:", profilesData.length);
+          const profilesResult = await fetchProfiles();
+          if (profilesResult.error) throw profilesResult.error;
+          
+          setUsers(profilesResult.data);
+          console.log("Profiles loaded successfully:", profilesResult.data.length);
         } catch (profileError) {
           console.error("Error fetching profiles:", profileError);
           
@@ -41,9 +43,11 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
         
         try {
           // Attempt to fetch modules from the database
-          const modulesData = await fetchModules();
-          setModules(modulesData);
-          console.log("Modules loaded successfully:", modulesData.length);
+          const modulesResult = await fetchModules();
+          if (modulesResult.error) throw modulesResult.error;
+          
+          setModules(modulesResult.data);
+          console.log("Modules loaded successfully:", modulesResult.data.length);
         } catch (modulesError) {
           console.error("Error fetching modules:", modulesError);
           

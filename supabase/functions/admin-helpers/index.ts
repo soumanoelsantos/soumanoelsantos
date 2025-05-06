@@ -26,7 +26,8 @@ serve(async (req) => {
     )
 
     // Parse the request body as JSON
-    const { action } = await req.json()
+    const requestBody = await req.json();
+    const { action } = requestBody || { action: '' };
 
     // Create a Supabase client with service role key for admin operations
     // This bypasses RLS and directly accesses the database
@@ -40,7 +41,7 @@ serve(async (req) => {
       }
     )
 
-    let result
+    let result;
     
     // Handle different admin functions based on the action parameter
     switch (action) {

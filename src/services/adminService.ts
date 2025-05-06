@@ -25,7 +25,7 @@ export const fetchProfiles = async () => {
         });
         
         if (edgeError) throw edgeError;
-        return { data: formatProfiles(edgeData), error: null };
+        return { data: formatProfiles(edgeData || []), error: null };
       } catch (edgeCallError) {
         console.error("Edge function falhou:", edgeCallError);
         throw edgeCallError;
@@ -37,10 +37,10 @@ export const fetchProfiles = async () => {
       return { data: formatProfiles(data), error: null };
     }
     
-    return { data: [], error: new Error("Nenhum dado retornado") };
+    return { data: [] as User[], error: new Error("Nenhum dado retornado") };
   } catch (error) {
     console.error("Erro ao buscar perfis:", error);
-    return { data: [], error };
+    return { data: [] as User[], error };
   }
 };
 
@@ -51,7 +51,7 @@ const formatProfiles = (profiles: any[]): User[] => {
     email: profile.email || '',
     isNewUser: profile.is_new_user || false,
     isAdmin: profile.is_admin || false,
-    unlockedModules: [] // Os módulos serão preenchidos posteriormente
+    unlockedModules: profile.unlockedModules || [] 
   }));
 };
 
@@ -67,7 +67,7 @@ export const fetchUserModules = async (userIds: string[]) => {
     return { data, error: null };
   } catch (error) {
     console.error("Erro ao buscar módulos de usuário:", error);
-    return { data: [], error };
+    return { data: [] as any[], error };
   }
 };
 
@@ -84,10 +84,10 @@ export const fetchModules = async () => {
       
     if (error) throw error;
     
-    return { data: data || [], error: null };
+    return { data: data as AdminModule[] || [], error: null };
   } catch (error) {
     console.error("Erro ao buscar módulos:", error);
-    return { data: [], error };
+    return { data: [] as AdminModule[], error };
   }
 };
 
