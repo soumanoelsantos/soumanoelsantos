@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminData } from "@/hooks/useAdminData";
@@ -12,7 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DatabaseAdmin from "@/components/admin/DatabaseAdmin";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, ArrowLeft } from "lucide-react";
-import ActionButton from "@/components/ui/action-button";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 const AdminPage = () => {
@@ -31,16 +30,17 @@ const AdminPage = () => {
     toggleNewUserStatus,
     deleteUser,
     editUserEmail,
-    viewAsUser
+    viewAsUser,
+    refreshData
   } = useAdminData(userEmail);
 
   const handleLogout = () => {
     navigate("/membros");
   };
 
-  const handleRefresh = () => {
-    window.location.reload();
-  };
+  const handleRefresh = useCallback(() => {
+    refreshData();
+  }, [refreshData]);
 
   if (isLoading) {
     return (
@@ -58,8 +58,8 @@ const AdminPage = () => {
   }
 
   // Transform users to match AdminUser type
-  const adminUsers = transformUsersToAdminUsers(users);
-  const filteredAdminUsers = transformUsersToAdminUsers(filteredUsers);
+  const adminUsers = users.length ? transformUsersToAdminUsers(users) : [];
+  const filteredAdminUsers = filteredUsers.length ? transformUsersToAdminUsers(filteredUsers) : [];
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

@@ -4,67 +4,38 @@ import { User, AdminModule } from "@/types/admin";
 import { AdminUser } from "@/types/adminTypes";
 import { LeadData } from "@/types/crm";
 
+// Cache for edge function responses
+const responseCache = {
+  profiles: null as { data: User[], timestamp: number } | null,
+  modules: null as { data: AdminModule[], timestamp: number } | null,
+  cacheTTL: 60000 // 60 seconds cache TTL
+};
+
 // Direct Database Access Functions
 export const fetchProfiles = async (): Promise<{ data: User[], error: any }> => {
   try {
-    console.log("Fetching profiles directly from database...");
+    // Check cache first
+    if (responseCache.profiles && Date.now() - responseCache.profiles.timestamp < responseCache.cacheTTL) {
+      return { data: responseCache.profiles.data, error: null };
+    }
+
+    console.log("Cache miss or expired - fetching profiles from edge function");
     
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*');
-      
-    if (error) {
-      console.error("Error fetching profiles directly:", error);
-      
-      try {
-        console.log("Attempting to fetch profiles using edge function...");
-        const { data: edgeData, error: edgeError } = await supabase.functions.invoke('admin-helpers', {
-          body: { action: 'listProfiles' }
-        });
-        
-        if (edgeError) throw edgeError;
-        return { data: edgeData || [], error: null };
-      } catch (edgeCallError) {
-        console.error("Edge function failed:", edgeCallError);
-        throw edgeCallError;
-      }
+    const { data: edgeData, error: edgeError } = await supabase.functions.invoke('admin-helpers', {
+      body: { action: 'listProfiles' }
+    });
+    
+    if (edgeError) throw edgeError;
+    
+    // Update cache
+    if (edgeData) {
+      responseCache.profiles = {
+        data: edgeData,
+        timestamp: Date.now()
+      };
     }
     
-    if (data) {
-      // Format the profiles to match our User interface
-      const formattedUsers = data.map(profile => ({
-        id: profile.id,
-        email: profile.email || '',
-        isNewUser: profile.is_new_user || false,
-        isAdmin: profile.is_admin || false,
-        unlockedModules: [] // Will populate this next
-      }));
-      
-      // Get unlocked modules for all users
-      try {
-        const userIds = formattedUsers.map(u => u.id);
-        const { data: userModules, error: modulesError } = await supabase
-          .from('user_modules')
-          .select('*')
-          .in('user_id', userIds);
-          
-        if (!modulesError && userModules) {
-          // Populate unlockedModules for each user
-          userModules.forEach(module => {
-            const user = formattedUsers.find(u => u.id === module.user_id);
-            if (user) {
-              user.unlockedModules.push(module.module_id);
-            }
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching user modules:", err);
-      }
-      
-      return { data: formattedUsers, error: null };
-    }
-    
-    return { data: [], error: new Error("No data returned") };
+    return { data: edgeData || [], error: null };
   } catch (error) {
     console.error("Error fetching profiles:", error);
     return { data: [], error };
@@ -74,6 +45,11 @@ export const fetchProfiles = async (): Promise<{ data: User[], error: any }> => 
 // Fetch available modules
 export const fetchModules = async (): Promise<{ data: AdminModule[], error: any }> => {
   try {
+    // Check cache first
+    if (responseCache.modules && Date.now() - responseCache.modules.timestamp < responseCache.cacheTTL) {
+      return { data: responseCache.modules.data, error: null };
+    }
+    
     const { data, error } = await supabase
       .from('modules')
       .select('*');
@@ -86,6 +62,14 @@ export const fetchModules = async (): Promise<{ data: AdminModule[], error: any 
       title: module.title,
       description: module.description || undefined
     }));
+    
+    // Update cache
+    if (formattedModules) {
+      responseCache.modules = {
+        data: formattedModules,
+        timestamp: Date.now()
+      };
+    }
     
     return { data: formattedModules, error: null };
   } catch (error) {

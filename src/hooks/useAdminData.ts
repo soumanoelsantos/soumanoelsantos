@@ -4,15 +4,16 @@ import { useAdminSearch } from "@/hooks/useAdminSearch";
 import { useAdminModules } from "@/hooks/useAdminModules";
 import { useAdminLoader } from "@/hooks/useAdminLoader";
 import { useAdminActions } from "@/hooks/useAdminActions";
+import { useMemo } from "react";
 
 export const useAdminData = (currentUserEmail?: string | null) => {
   const { isAuthenticated } = useAuth();
   const { modules: defaultModules } = useAdminModules();
   
-  // Load admin data
-  const { users, setUsers, modules, isLoading } = useAdminLoader(isAuthenticated, defaultModules);
+  // Load admin data with caching
+  const { users, setUsers, modules, isLoading, refreshData } = useAdminLoader(isAuthenticated, defaultModules);
   
-  // Search functionality
+  // Search functionality - memoized to avoid unnecessary recalculations
   const { searchTerm, setSearchTerm, filteredUsers } = useAdminSearch(users);
   
   // User actions
@@ -35,6 +36,7 @@ export const useAdminData = (currentUserEmail?: string | null) => {
     toggleNewUserStatus,
     deleteUser,
     editUserEmail,
-    viewAsUser
+    viewAsUser,
+    refreshData
   };
 };
