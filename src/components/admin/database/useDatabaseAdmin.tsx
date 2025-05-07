@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from "react";
-import { executeRawQuery, fetchAllTables } from "@/services/adminService";
 import { useToast } from "@/hooks/use-toast";
+import { fetchAllTables, fetchTableData, executeRawQuery, prepareDataForDownload } from "@/services/databaseService";
 
 export function useDatabaseAdmin() {
   const { toast } = useToast();
@@ -33,7 +33,7 @@ export function useDatabaseAdmin() {
     }
   }, [toast]);
 
-  const fetchTableData = useCallback(async (table: string) => {
+  const handleFetchTableData = useCallback(async (table: string) => {
     if (!table) return;
     
     setIsLoadingData(true);
@@ -41,16 +41,14 @@ export function useDatabaseAdmin() {
     setSqlQuery(`SELECT * FROM ${table} LIMIT 100;`);
     
     try {
-      const { data, error } = await executeRawQuery(`SELECT * FROM ${table} LIMIT 100;`);
+      const { data, columns, error } = await fetchTableData(table, 100);
       
       if (error) throw error;
       
-      if (data && data.length > 0) {
-        setTableData(data);
-        setColumns(Object.keys(data[0]));
-      } else {
-        setTableData([]);
-        setColumns([]);
+      setTableData(data);
+      setColumns(columns);
+      
+      if (data.length === 0) {
         toast({
           title: "Tabela vazia",
           description: `A tabela ${table} não possui registros.`
@@ -112,7 +110,7 @@ export function useDatabaseAdmin() {
       return;
     }
     
-    const jsonString = JSON.stringify(tableData, null, 2);
+    const jsonString = prepareDataForDownload(tableData);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     
@@ -137,7 +135,7 @@ export function useDatabaseAdmin() {
     queryResult,
     isExecutingQuery,
     fetchTables,
-    fetchTableData,
+    fetchTableData: handleFetchTableData,
     executeQuery,
     downloadTableData,
     setSqlQuery
