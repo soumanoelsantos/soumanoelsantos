@@ -30,7 +30,8 @@ const AdminPage = () => {
     toggleNewUserStatus,
     deleteUser,
     editUserEmail,
-    viewAsUser
+    viewAsUser,
+    refreshData
   } = useAdminData(userEmail);
 
   const handleLogout = () => {
@@ -38,9 +39,13 @@ const AdminPage = () => {
   };
 
   const handleRefresh = useCallback(() => {
-    // Since refreshData was removed, we'll reload the page as a simple alternative
-    window.location.reload();
-  }, []);
+    if (refreshData) {
+      refreshData();
+    } else {
+      // Fallback para quando refreshData não estiver disponível
+      window.location.reload();
+    }
+  }, [refreshData]);
 
   if (isLoading) {
     return (
@@ -86,6 +91,17 @@ const AdminPage = () => {
                 </TabsList>
                 
                 <TabsContent value="users" className="pt-2">
+                  <div className="flex justify-end mb-4">
+                    <Button 
+                      onClick={handleRefresh} 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex items-center gap-2"
+                    >
+                      <RefreshCcw className="h-4 w-4" />
+                      Atualizar dados
+                    </Button>
+                  </div>
                   <UsersManagement 
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}

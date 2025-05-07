@@ -4,22 +4,23 @@ import { User, AdminModule } from "@/types/admin";
 import { AdminUser } from "@/types/adminTypes";
 import { LeadData } from "@/types/crm";
 
-// Cache for edge function responses
+// Cache para respostas da edge function com TTL prolongado
 const responseCache = {
   profiles: null as { data: User[], timestamp: number } | null,
   modules: null as { data: AdminModule[], timestamp: number } | null,
-  cacheTTL: 60000 // 60 seconds cache TTL
+  cacheTTL: 120000 // 2 minutos de TTL para o cache (aumentado para reduzir chamadas à API)
 };
 
 // Direct Database Access Functions
 export const fetchProfiles = async (): Promise<{ data: User[], error: any }> => {
   try {
-    // Check cache first
+    // Verificar cache primeiro
     if (responseCache.profiles && Date.now() - responseCache.profiles.timestamp < responseCache.cacheTTL) {
+      console.log("Usando cache para perfis de usuários");
       return { data: responseCache.profiles.data, error: null };
     }
 
-    console.log("Cache miss or expired - fetching profiles from edge function");
+    console.log("Cache expirado ou não encontrado - buscando perfis via edge function");
     
     const { data: edgeData, error: edgeError } = await supabase.functions.invoke('admin-helpers', {
       body: { action: 'listProfiles' }
@@ -27,7 +28,7 @@ export const fetchProfiles = async (): Promise<{ data: User[], error: any }> => 
     
     if (edgeError) throw edgeError;
     
-    // Update cache
+    // Atualizar cache
     if (edgeData) {
       responseCache.profiles = {
         data: edgeData,
@@ -38,6 +39,13 @@ export const fetchProfiles = async (): Promise<{ data: User[], error: any }> => 
     return { data: edgeData || [], error: null };
   } catch (error) {
     console.error("Error fetching profiles:", error);
+    
+    // Em caso de erro, retornar o cache mesmo que expirado (se disponível)
+    if (responseCache.profiles) {
+      console.log("Usando cache expirado devido a erro na requisição");
+      return { data: responseCache.profiles.data, error };
+    }
+    
     return { data: [], error };
   }
 };
@@ -45,10 +53,13 @@ export const fetchProfiles = async (): Promise<{ data: User[], error: any }> => 
 // Fetch available modules
 export const fetchModules = async (): Promise<{ data: AdminModule[], error: any }> => {
   try {
-    // Check cache first
+    // Verificar cache primeiro
     if (responseCache.modules && Date.now() - responseCache.modules.timestamp < responseCache.cacheTTL) {
+      console.log("Usando cache para módulos");
       return { data: responseCache.modules.data, error: null };
     }
+    
+    console.log("Cache expirado ou não encontrado - buscando módulos");
     
     const { data, error } = await supabase
       .from('modules')
@@ -56,14 +67,14 @@ export const fetchModules = async (): Promise<{ data: AdminModule[], error: any 
       
     if (error) throw error;
     
-    // Ensure returned data conforms to AdminModule type
+    // Garantir que os dados retornados estejam em conformidade com o tipo AdminModule
     const formattedModules = (data || []).map(module => ({
       id: module.id,
       title: module.title,
       description: module.description || undefined
     }));
     
-    // Update cache
+    // Atualizar cache
     if (formattedModules) {
       responseCache.modules = {
         data: formattedModules,
@@ -74,6 +85,13 @@ export const fetchModules = async (): Promise<{ data: AdminModule[], error: any 
     return { data: formattedModules, error: null };
   } catch (error) {
     console.error("Error fetching modules:", error);
+    
+    // Em caso de erro, retornar o cache mesmo que expirado (se disponível)
+    if (responseCache.modules) {
+      console.log("Usando cache expirado devido a erro na requisição");
+      return { data: responseCache.modules.data, error };
+    }
+    
     return { data: [], error };
   }
 };
