@@ -11,7 +11,7 @@ export const useAdminData = (currentUserEmail?: string | null) => {
   const { modules: defaultModules } = useAdminModules();
   
   // Load admin data with caching
-  const { users, setUsers, modules, isLoading, refreshData } = useAdminLoader(isAuthenticated, defaultModules);
+  const { users, setUsers, modules, isLoading } = useAdminLoader(isAuthenticated, defaultModules);
   
   // Search functionality - memoized to avoid unnecessary recalculations
   const { searchTerm, setSearchTerm, filteredUsers } = useAdminSearch(users);
@@ -36,7 +36,6 @@ export const useAdminData = (currentUserEmail?: string | null) => {
     toggleNewUserStatus,
     deleteUser,
     editUserEmail,
-    viewAsUser,
-    refreshData
+    viewAsUser
   };
 };

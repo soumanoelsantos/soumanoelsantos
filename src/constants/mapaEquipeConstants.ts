@@ -6,7 +6,7 @@ import {
   Potencial
 } from "@/types/mapaEquipe";
 
-// Opções para os dropdowns
+// Options for dropdowns
 export const niveisMaturidadeOptions: NivelMaturidade[] = [
   "M1 (Bebê)",
   "M2 (Criança)",

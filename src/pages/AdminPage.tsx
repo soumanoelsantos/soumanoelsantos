@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -30,8 +29,7 @@ const AdminPage = () => {
     toggleNewUserStatus,
     deleteUser,
     editUserEmail,
-    viewAsUser,
-    refreshData
+    viewAsUser
   } = useAdminData(userEmail);
 
   const handleLogout = () => {
@@ -39,8 +37,9 @@ const AdminPage = () => {
   };
 
   const handleRefresh = useCallback(() => {
-    refreshData();
-  }, [refreshData]);
+    // Since refreshData was removed, we'll reload the page as a simple alternative
+    window.location.reload();
+  }, []);
 
   if (isLoading) {
     return (
