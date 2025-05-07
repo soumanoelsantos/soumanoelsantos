@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Colaborador, MapaEquipeData } from "@/types/mapaEquipe";
 import { useToast } from "@/hooks/use-toast";
@@ -51,12 +50,12 @@ export const useMapaEquipe = () => {
       }
 
       try {
+        setIsLoading(true);
         const data = await loadMapaEquipeData(userId);
         
         if (data) {
           setEmpresaNome(data.empresaNome);
           setColaboradores(data.colaboradores);
-          setMapaId(data.id || null);
           
           toast({
             title: "Dados carregados",

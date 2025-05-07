@@ -1,7 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
 import { useStorage } from '@/hooks/useStorage';
 
 // Default empty state for SWOT analysis
@@ -16,7 +14,7 @@ export const useSwot = () => {
   const [swotData, setSwotData] = useState(defaultSwotData);
   const [showPreview, setShowPreview] = useState(false);
   
-  // Use our new storage hook
+  // Use our storage hook
   const storage = useStorage({
     dataKey: 'swot_data',
     successMessage: "Análise SWOT salva com sucesso!",
@@ -34,7 +32,7 @@ export const useSwot = () => {
     };
 
     loadSavedSwotData();
-  }, []);
+  }, [storage]);
 
   // Update a specific SWOT field
   const updateField = (

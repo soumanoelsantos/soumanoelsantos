@@ -1,7 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
 import { PUVFormData } from '@/types/puv';
 import { useStorage } from '@/hooks/useStorage';
 
@@ -21,9 +19,8 @@ const initialPUVState: PUVFormData = {
 export const usePUV = () => {
   const [puvData, setPuvData] = useState<PUVFormData>(initialPUVState);
   const [showPreview, setShowPreview] = useState(false);
-  const { toast } = useToast();
   
-  // Use our new storage hook
+  // Use our storage hook
   const storage = useStorage<PUVFormData>({
     dataKey: 'puv_data',
     successMessage: "Proposta Única de Valor salva com sucesso!",
@@ -41,7 +38,7 @@ export const usePUV = () => {
     };
 
     loadSavedPUVData();
-  }, []);
+  }, [storage]);
 
   // Handle data changes in the form
   const handleDataChange = (newData: PUVFormData) => {

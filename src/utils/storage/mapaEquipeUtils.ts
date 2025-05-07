@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { MapaEquipeData } from '@/types/mapaEquipe';
+import { MapaEquipeData, Colaborador } from '@/types/mapaEquipe';
 import { Json } from '@/integrations/supabase/types';
 
 // Load user's mapa equipe data
