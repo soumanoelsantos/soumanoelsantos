@@ -6,6 +6,7 @@ import { useMapaNegocio } from "@/hooks/useMapaNegocio";
 import MemberHeader from "@/components/MemberHeader";
 import MapaNegocioForm from "@/components/mapa-negocio/MapaNegocioForm";
 import MapaNegocioPreview from "@/components/mapa-negocio/MapaNegocioPreview";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 const MapaNegocio = () => {
   const navigate = useNavigate();
@@ -50,6 +51,10 @@ const MapaNegocio = () => {
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-6 mt-6">
+          <BackToMemberAreaButton />
+        </div>
+        
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-center">Mapa de Negócio</h1>
           <p className="text-gray-600 text-center mt-2">

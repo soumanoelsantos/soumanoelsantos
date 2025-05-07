@@ -6,6 +6,7 @@ import { usePUV } from "@/hooks/usePUV";
 import MemberHeader from "@/components/MemberHeader";
 import PUVForm from "@/components/puv/PUVForm";
 import PUVPreview from "@/components/puv/PUVPreview";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 const PropostaUnicaValor = () => {
   const navigate = useNavigate();
@@ -50,6 +51,10 @@ const PropostaUnicaValor = () => {
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-6 mt-6">
+          <BackToMemberAreaButton />
+        </div>
+        
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-center">Proposta Única de Valor</h1>
           <p className="text-gray-600 text-center mt-2">

@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import ActionButton from "@/components/ui/action-button";
 import { saveChecklistData, loadChecklistData } from "@/utils/savingUtils";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 interface ChecklistItem {
   id: number;
@@ -254,14 +255,9 @@ const CheckListContratacao = () => {
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       <div className="container mx-auto px-4 py-8">
-        <ActionButton 
-          variant="secondary"
-          onClick={() => navigate('/membros')}
-          className="mb-6"
-          icon={ArrowLeft}
-        >
-          Voltar para área de membros
-        </ActionButton>
+        <div className="mb-6 mt-6">
+          <BackToMemberAreaButton />
+        </div>
         
         <div className="max-w-4xl mx-auto">
           <Card className="border-dark-primary/20 mb-8">

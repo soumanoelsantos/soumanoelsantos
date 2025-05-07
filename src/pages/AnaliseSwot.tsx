@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import ActionButton from "@/components/ui/action-button";
 import { Button } from "@/components/ui/button";
 import { saveSwotData, loadSwotData } from "@/utils/savingUtils";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 interface SwotItem {
   id: string;
@@ -212,16 +213,8 @@ const AnaliseSwot = () => {
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center mb-8">
-          <Button 
-            variant="outline" 
-            className="mr-4" 
-            onClick={() => navigate("/membros")}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-          <h1 className="text-3xl font-bold text-gray-800">Análise SWOT</h1>
+        <div className="mb-6 mt-6">
+          <BackToMemberAreaButton />
         </div>
         
         <Card className="mb-6">

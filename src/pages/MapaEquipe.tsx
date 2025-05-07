@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import MemberHeader from "@/components/MemberHeader";
 import MapaEquipeForm from "@/components/mapa-equipe/MapaEquipeForm";
 import { useToast } from "@/hooks/use-toast";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 const MapaEquipe = () => {
   const navigate = useNavigate();
@@ -32,14 +33,15 @@ const MapaEquipe = () => {
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Mapa da Equipe</h1>
-          <button 
-            onClick={() => navigate("/membros")}
-            className="text-sm text-blue-600 hover:underline flex items-center"
-          >
-            &larr; Voltar para Área de Membros
-          </button>
+        <div className="mb-6 mt-6">
+          <BackToMemberAreaButton />
+        </div>
+        
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-center">Mapa da Equipe</h1>
+          <p className="text-gray-600 text-center mt-2">
+            Organize e visualize sua equipe
+          </p>
         </div>
         
         <MapaEquipeForm />

@@ -6,6 +6,7 @@ import MemberHeader from "@/components/MemberHeader";
 import DiagnosticTestContent from "@/components/diagnostic/DiagnosticTestContent";
 import { useDiagnostic } from "@/hooks/useDiagnostic";
 import { diagnosticSectionsData } from "@/data/diagnosticSections";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 const DiagnosticoTest = () => {
   const navigate = useNavigate();
@@ -40,17 +41,23 @@ const DiagnosticoTest = () => {
     <div className="min-h-screen bg-white text-gray-800">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
-      <DiagnosticTestContent 
-        sections={diagnosticSectionsData}
-        results={results}
-        setResults={setResults}
-        showResults={showResults}
-        answersData={answersData}
-        setAnswersData={setAnswersData}
-        actionPlan={actionPlan}
-        handleSubmit={handleSubmit}
-        isGeneratingPlan={isGeneratingPlan}
-      />
+      <div className="container mx-auto px-4 py-8">
+        <div className="mt-6 mb-6">
+          <BackToMemberAreaButton />
+        </div>
+        
+        <DiagnosticTestContent 
+          sections={diagnosticSectionsData}
+          results={results}
+          setResults={setResults}
+          showResults={showResults}
+          answersData={answersData}
+          setAnswersData={setAnswersData}
+          actionPlan={actionPlan}
+          handleSubmit={handleSubmit}
+          isGeneratingPlan={isGeneratingPlan}
+        />
+      </div>
     </div>
   );
 };

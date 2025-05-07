@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 const CrmPage = () => {
   const navigate = useNavigate();
@@ -51,7 +52,14 @@ const CrmPage = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
-      <KanbanBoard />
+      
+      <div className="container mx-auto px-4 py-4">
+        <div className="mt-6 mb-6">
+          <BackToMemberAreaButton />
+        </div>
+        
+        <KanbanBoard />
+      </div>
     </div>
   );
 };
