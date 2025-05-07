@@ -11,7 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DatabaseAdmin from "@/components/admin/DatabaseAdmin";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, ArrowLeft } from "lucide-react";
+import ActionButton from "@/components/ui/action-button";
+import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -64,6 +66,10 @@ const AdminPage = () => {
       <AdminHeader userEmail={userEmail} onLogout={handleLogout} />
 
       <div className="container mx-auto px-4 pb-8">
+        <div className="mt-6 mb-6">
+          <BackToMemberAreaButton />
+        </div>
+
         <div className="mb-6">
           <Card className="bg-white border-dark-primary/20 shadow-lg">
             <CardHeader className="pb-2">
