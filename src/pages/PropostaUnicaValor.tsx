@@ -7,6 +7,7 @@ import MemberHeader from "@/components/MemberHeader";
 import PUVForm from "@/components/puv/PUVForm";
 import PUVPreview from "@/components/puv/PUVPreview";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import { Loader2 } from "lucide-react";
 
 const PropostaUnicaValor = () => {
   const navigate = useNavigate();
@@ -41,7 +42,10 @@ const PropostaUnicaValor = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-800">Carregando...</div>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="text-gray-800">Carregando...</div>
+        </div>
       </div>
     );
   }

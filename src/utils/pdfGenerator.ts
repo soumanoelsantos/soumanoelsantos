@@ -1,47 +1,57 @@
 
 import html2pdf from 'html2pdf.js';
-import { getPdfStyles } from './pdf/index';
-import { getDefaultPdfOptions, getBusinessMapPdfOptions, getPUVPdfOptions, getMapaEquipePdfOptions } from './pdf/index';
+import { getPDFOptionsConfig } from './pdf/pdfOptions';
+import { getPUVPdfOptionsConfig, getPUVPdfStyles } from './pdf/puvStyles';
 
-export const generatePDF = (element: HTMLDivElement, onComplete?: () => void) => {
-  // Add classes to the content temporarily for PDF styling
-  element.classList.add('pdf-export');
-
-  // Create a style element for PDF export styles
-  const styleElement = document.createElement('style');
-  styleElement.innerHTML = getPdfStyles();
-  document.head.appendChild(styleElement);
-
-  // Get PDF options based on element type
-  let pdfOptions = getDefaultPdfOptions();
-  
-  // Check element classes to determine which PDF options to use
-  if (element.classList.contains('business-map')) {
-    pdfOptions = getBusinessMapPdfOptions();
-  } else if (element.classList.contains('puv-preview')) {
-    pdfOptions = getPUVPdfOptions();
-  } else if (element.classList.contains('mapa-equipe-preview')) {
-    console.log('Using Mapa Equipe PDF options');
-    pdfOptions = getMapaEquipePdfOptions();
-  }
-
-  // Generate the PDF
-  html2pdf()
-    .set(pdfOptions)
-    .from(element)
-    .save()
-    .then(() => {
-      // Remove the temporary class and styles after PDF generation
-      element.classList.remove('pdf-export');
-      document.head.removeChild(styleElement);
+/**
+ * Generates a PDF from a given HTML element
+ * @param element The HTML element to convert to PDF
+ * @param fileName Optional custom filename
+ */
+export const generatePDF = (element: HTMLElement, fileName?: string) => {
+  try {
+    // Default options
+    let options = getPDFOptionsConfig();
+    
+    // Check if the element has PUV specific class
+    if (element.classList.contains('puv-preview')) {
+      // Add PUV specific styles
+      const styleElement = document.createElement('style');
+      styleElement.textContent = getPUVPdfStyles();
+      element.appendChild(styleElement);
       
-      if (onComplete) {
-        onComplete();
+      // Use PUV specific options if available
+      options = getPUVPdfOptionsConfig();
+      
+      // Override filename if provided
+      if (fileName) {
+        options.filename = fileName;
       }
-    })
-    .catch((error) => {
-      console.error('Error generating PDF:', error);
-      element.classList.remove('pdf-export');
-      document.head.removeChild(styleElement);
-    });
+    } else {
+      // Override filename if provided
+      if (fileName) {
+        options.filename = fileName;
+      }
+    }
+
+    // Generate PDF
+    html2pdf().from(element).set(options).save();
+    
+    // Remove any temporary style elements after a delay
+    setTimeout(() => {
+      if (element.classList.contains('puv-preview')) {
+        const styleElements = element.querySelectorAll('style');
+        styleElements.forEach(el => {
+          if (el.textContent?.includes('puv-preview')) {
+            el.remove();
+          }
+        });
+      }
+    }, 1000);
+    
+    return true;
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    return false;
+  }
 };

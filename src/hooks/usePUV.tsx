@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { PUVFormData } from '@/types/puv';
 import { useStorage } from '@/hooks/useStorage';
+import { useToast } from '@/hooks/use-toast';
 
 // Initial empty state for the PUV form
 const initialPUVState: PUVFormData = {
@@ -19,6 +20,7 @@ const initialPUVState: PUVFormData = {
 export const usePUV = () => {
   const [puvData, setPuvData] = useState<PUVFormData>(initialPUVState);
   const [showPreview, setShowPreview] = useState(false);
+  const { toast } = useToast();
   
   // Use our storage hook
   const storage = useStorage<PUVFormData>({
@@ -30,15 +32,24 @@ export const usePUV = () => {
   // Load saved PUV data when component mounts
   useEffect(() => {
     const loadSavedPUVData = async () => {
-      const savedData = await storage.loadData();
-      if (savedData) {
-        console.log("Loaded PUV data:", savedData);
-        setPuvData(savedData);
+      try {
+        const savedData = await storage.loadData();
+        if (savedData) {
+          console.log("Loaded PUV data:", savedData);
+          setPuvData(savedData);
+        }
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar os dados da Proposta Única de Valor."
+        });
+        console.error("Error loading PUV data:", error);
       }
     };
 
     loadSavedPUVData();
-  }, [storage]);
+  }, [storage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle data changes in the form
   const handleDataChange = (newData: PUVFormData) => {
@@ -52,7 +63,17 @@ export const usePUV = () => {
 
   // Save PUV data to Supabase
   const savePUV = async () => {
-    return await storage.saveData(puvData);
+    try {
+      return await storage.saveData(puvData);
+    } catch (error) {
+      console.error("Error saving PUV data:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar a Proposta Única de Valor."
+      });
+      return false;
+    }
   };
 
   return {
