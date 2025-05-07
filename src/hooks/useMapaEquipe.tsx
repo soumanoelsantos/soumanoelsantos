@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { Colaborador, MapaEquipeData } from "@/types/mapaEquipe";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useMapaEquipeValidation } from "@/hooks/useMapaEquipeValidation";
 import { loadMapaEquipeData, saveMapaEquipeData, deleteMapaEquipeData } from "@/utils/storage";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   niveisMaturidadeOptions, 
   estilosLiderancaOptions, 
@@ -56,6 +58,17 @@ export const useMapaEquipe = () => {
         if (data) {
           setEmpresaNome(data.empresaNome);
           setColaboradores(data.colaboradores);
+          
+          // Need to query for the mapa ID separately as it's not included in the MapaEquipeData
+          const { data: mapaData } = await supabase
+            .from('mapa_equipe')
+            .select('id')
+            .eq('user_id', userId)
+            .single();
+            
+          if (mapaData) {
+            setMapaId(mapaData.id);
+          }
           
           toast({
             title: "Dados carregados",

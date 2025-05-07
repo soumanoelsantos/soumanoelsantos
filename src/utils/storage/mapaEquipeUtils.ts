@@ -21,9 +21,21 @@ export const loadMapaEquipeData = async (userId: string): Promise<MapaEquipeData
 
     if (!data) return null;
 
+    // Proper type casting with validation to ensure we're getting the right structure
+    const colaboradores = Array.isArray(data.colaboradores) 
+      ? data.colaboradores.map((colab: any) => ({
+          nome: colab.nome || "",
+          nivelMaturidade: colab.nivelMaturidade || "",
+          estiloLideranca: colab.estiloLideranca || "",
+          perfilComportamental: colab.perfilComportamental || "",
+          futuro: colab.futuro || "",
+          potencial: colab.potencial || ""
+        })) as Colaborador[]
+      : [];
+
     return {
       empresaNome: data.empresa_nome,
-      colaboradores: data.colaboradores as Colaborador[]
+      colaboradores
     };
   } catch (error) {
     console.error('Error loading mapa equipe data:', error);
@@ -36,7 +48,7 @@ export const saveMapaEquipeData = async (
   userId: string,
   mapaId: string | null,
   empresaNome: string,
-  colaboradores: any[]
+  colaboradores: Colaborador[]
 ): Promise<{ success: boolean, id: string | null }> => {
   try {
     if (mapaId) {
