@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { BusinessMapData } from '@/types/businessMap';
-import { saveBusinessMapData, loadBusinessMapData } from '@/utils/storage/businessMapUtils';
+import { useStorage } from '@/hooks/useStorage';
 
 // Default empty state for the business map
 const defaultBusinessMap: BusinessMapData = {
@@ -28,39 +28,26 @@ const defaultBusinessMap: BusinessMapData = {
 export const useMapaNegocio = () => {
   const [businessMap, setBusinessMap] = useState<BusinessMapData>(defaultBusinessMap);
   const [showPreview, setShowPreview] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { userId } = useAuth();
-  const { toast } = useToast();
+  
+  // Use our new storage hook
+  const storage = useStorage<BusinessMapData>({
+    dataKey: 'business_map_data',
+    successMessage: "Mapa de Negócio salvo com sucesso!",
+    errorMessage: "Não foi possível salvar seu Mapa de Negócio."
+  });
 
   // Load saved business map data when component mounts
   useEffect(() => {
     const loadSavedBusinessMap = async () => {
-      if (!userId) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const savedData = await loadBusinessMapData(userId);
-        
-        if (savedData) {
-          console.log("Loaded business map data:", savedData);
-          setBusinessMap(savedData);
-        }
-      } catch (error) {
-        console.error("Error loading business map data:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao carregar dados",
-          description: "Não foi possível carregar os dados salvos anteriormente."
-        });
-      } finally {
-        setIsLoading(false);
+      const savedData = await storage.loadData();
+      if (savedData) {
+        console.log("Loaded business map data:", savedData);
+        setBusinessMap(savedData);
       }
     };
 
     loadSavedBusinessMap();
-  }, [userId, toast]);
+  }, []);
 
   // Handle changes to the business map form fields
   const handleBusinessMapChange = (field: keyof BusinessMapData, value: string) => {
@@ -77,30 +64,7 @@ export const useMapaNegocio = () => {
 
   // Save business map data to Supabase
   const saveBusinessMap = async () => {
-    if (!userId) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Você precisa estar logado para salvar os dados."
-      });
-      return false;
-    }
-
-    try {
-      setIsLoading(true);
-      const success = await saveBusinessMapData(userId, businessMap);
-      return success;
-    } catch (error) {
-      console.error("Error saving business map data:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar os dados. Tente novamente."
-      });
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
+    return await storage.saveData(businessMap);
   };
 
   return {
@@ -109,6 +73,6 @@ export const useMapaNegocio = () => {
     showPreview,
     togglePreview,
     saveBusinessMap,
-    isLoading
+    isLoading: storage.isLoading
   };
 };

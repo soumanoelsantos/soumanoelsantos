@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { PUVFormData } from '@/types/puv';
-import { savePuvData, loadPuvData } from '@/utils/storage/puvUtils';
+import { useStorage } from '@/hooks/useStorage';
 
 // Initial empty state for the PUV form
 const initialPUVState: PUVFormData = {
@@ -21,39 +21,27 @@ const initialPUVState: PUVFormData = {
 export const usePUV = () => {
   const [puvData, setPuvData] = useState<PUVFormData>(initialPUVState);
   const [showPreview, setShowPreview] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { userId } = useAuth();
   const { toast } = useToast();
+  
+  // Use our new storage hook
+  const storage = useStorage<PUVFormData>({
+    dataKey: 'puv_data',
+    successMessage: "Proposta Única de Valor salva com sucesso!",
+    errorMessage: "Não foi possível salvar sua Proposta Única de Valor."
+  });
 
   // Load saved PUV data when component mounts
   useEffect(() => {
     const loadSavedPUVData = async () => {
-      if (!userId) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const savedData = await loadPuvData(userId);
-        
-        if (savedData) {
-          console.log("Loaded PUV data:", savedData);
-          setPuvData(savedData);
-        }
-      } catch (error) {
-        console.error("Error loading PUV data:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao carregar dados",
-          description: "Não foi possível carregar os dados salvos anteriormente."
-        });
-      } finally {
-        setIsLoading(false);
+      const savedData = await storage.loadData();
+      if (savedData) {
+        console.log("Loaded PUV data:", savedData);
+        setPuvData(savedData);
       }
     };
 
     loadSavedPUVData();
-  }, [userId, toast]);
+  }, []);
 
   // Handle data changes in the form
   const handleDataChange = (newData: PUVFormData) => {
@@ -67,30 +55,7 @@ export const usePUV = () => {
 
   // Save PUV data to Supabase
   const savePUV = async () => {
-    if (!userId) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Você precisa estar logado para salvar os dados."
-      });
-      return false;
-    }
-
-    try {
-      setIsLoading(true);
-      const success = await savePuvData(userId, puvData);
-      return success;
-    } catch (error) {
-      console.error("Error saving PUV data:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar os dados. Tente novamente."
-      });
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
+    return await storage.saveData(puvData);
   };
 
   return {
@@ -99,6 +64,6 @@ export const usePUV = () => {
     showPreview,
     togglePreview,
     savePUV,
-    isLoading
+    isLoading: storage.isLoading
   };
 };

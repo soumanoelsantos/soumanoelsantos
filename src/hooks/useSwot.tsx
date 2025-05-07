@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { saveSwotData, loadSwotData } from '@/utils/storage/swotUtils';
+import { useStorage } from '@/hooks/useStorage';
 
 // Default empty state for SWOT analysis
 const defaultSwotData = {
@@ -15,39 +15,26 @@ const defaultSwotData = {
 export const useSwot = () => {
   const [swotData, setSwotData] = useState(defaultSwotData);
   const [showPreview, setShowPreview] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { userId } = useAuth();
-  const { toast } = useToast();
+  
+  // Use our new storage hook
+  const storage = useStorage({
+    dataKey: 'swot_data',
+    successMessage: "Análise SWOT salva com sucesso!",
+    errorMessage: "Não foi possível salvar sua Análise SWOT."
+  });
 
   // Load saved SWOT data when component mounts
   useEffect(() => {
     const loadSavedSwotData = async () => {
-      if (!userId) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const savedData = await loadSwotData(userId);
-        
-        if (savedData) {
-          console.log("Loaded SWOT data:", savedData);
-          setSwotData(savedData);
-        }
-      } catch (error) {
-        console.error("Error loading SWOT data:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao carregar dados",
-          description: "Não foi possível carregar os dados salvos anteriormente."
-        });
-      } finally {
-        setIsLoading(false);
+      const savedData = await storage.loadData();
+      if (savedData) {
+        console.log("Loaded SWOT data:", savedData);
+        setSwotData(savedData);
       }
     };
 
     loadSavedSwotData();
-  }, [userId, toast]);
+  }, []);
 
   // Update a specific SWOT field
   const updateField = (
@@ -90,30 +77,7 @@ export const useSwot = () => {
 
   // Save SWOT data to Supabase
   const saveSwot = async () => {
-    if (!userId) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Você precisa estar logado para salvar os dados."
-      });
-      return false;
-    }
-
-    try {
-      setIsLoading(true);
-      const success = await saveSwotData(userId, swotData);
-      return success;
-    } catch (error) {
-      console.error("Error saving SWOT data:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar os dados. Tente novamente."
-      });
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
+    return await storage.saveData(swotData);
   };
 
   return {
@@ -124,6 +88,6 @@ export const useSwot = () => {
     showPreview,
     togglePreview,
     saveSwot,
-    isLoading
+    isLoading: storage.isLoading
   };
 };

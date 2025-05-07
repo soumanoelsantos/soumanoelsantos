@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import {
   checkUserToolCompletion, 
   loadDiagnosticCompletion,
   loadPhaseTestCompletion
-} from "@/utils/savingUtils";
+} from "@/utils/storage";
 import { CheckCheck } from "lucide-react";
 
 // Sample program modules and content
