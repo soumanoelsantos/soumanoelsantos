@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { saveSwotData, loadSwotData } from '@/utils/savingUtils';
+import { saveSwotData, loadSwotData } from '@/utils/storage/swotUtils';
 
 // Default empty state for SWOT analysis
 const defaultSwotData = {

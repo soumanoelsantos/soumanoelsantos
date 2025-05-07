@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { BusinessMapData } from '@/types/businessMap';
-import { saveBusinessMapData, loadBusinessMapData } from '@/utils/savingUtils';
+import { saveBusinessMapData, loadBusinessMapData } from '@/utils/storage/businessMapUtils';
 
 // Default empty state for the business map
 const defaultBusinessMap: BusinessMapData = {

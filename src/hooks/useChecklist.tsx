@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { ChecklistItem, defaultChecklistItems } from "@/types/checklist";
-import { saveChecklistData, loadChecklistData } from "@/utils/savingUtils";
+import { saveChecklistData, loadChecklistData } from "@/utils/storage/checklistUtils";
 
 export const useChecklist = () => {
   const navigate = useNavigate();

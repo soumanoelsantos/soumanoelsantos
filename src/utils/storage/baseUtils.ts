@@ -56,7 +56,7 @@ export const saveDataToSupabase = async (
       // Insert new entry - ensure user_id is present
       result = await supabase
         .from('user_tools_data')
-        .insert(updateObject);  // Pass the object directly, not wrapped in an array
+        .insert(updateObject);
     }
 
     if (result.error) {
@@ -142,91 +142,4 @@ export const checkUserToolCompletion = async (
     console.error(`Error checking tool completion:`, error);
     return {};
   }
-};
-
-// Load diagnostic completion status
-export const loadDiagnosticCompletion = async (userId: string): Promise<boolean> => {
-  try {
-    if (!userId) {
-      return false;
-    }
-
-    const { data, error } = await supabase
-      .from('diagnostic_results')
-      .select('id')
-      .eq('user_id', userId)
-      .single();
-    
-    if (error) {
-      if (error.code === 'PGRST116') { // "No rows found"
-        return false;
-      }
-      throw error;
-    }
-    
-    return !!data;
-  } catch (error) {
-    console.error(`Error checking diagnostic completion:`, error);
-    return false;
-  }
-};
-
-// Load phase test completion status
-export const loadPhaseTestCompletion = async (userId: string): Promise<boolean> => {
-  try {
-    if (!userId) {
-      return false;
-    }
-
-    const { data, error } = await supabase
-      .from('fase_results')
-      .select('id')
-      .eq('user_id', userId)
-      .single();
-    
-    if (error) {
-      if (error.code === 'PGRST116') { // "No rows found"
-        return false;
-      }
-      throw error;
-    }
-    
-    return !!data;
-  } catch (error) {
-    console.error(`Error checking phase test completion:`, error);
-    return false;
-  }
-};
-
-// Specific functions for each tool
-export const saveSwotData = async (userId: string, swotData: any): Promise<boolean> => {
-  return saveDataToSupabase(userId, 'swot_data', swotData);
-};
-
-export const loadSwotData = async (userId: string): Promise<any | null> => {
-  return loadDataFromSupabase(userId, 'swot_data');
-};
-
-export const saveChecklistData = async (userId: string, checklistData: any): Promise<boolean> => {
-  return saveDataToSupabase(userId, 'checklist_data', checklistData);
-};
-
-export const loadChecklistData = async (userId: string): Promise<any | null> => {
-  return loadDataFromSupabase(userId, 'checklist_data');
-};
-
-export const saveBusinessMapData = async (userId: string, businessMapData: any): Promise<boolean> => {
-  return saveDataToSupabase(userId, 'business_map_data', businessMapData);
-};
-
-export const loadBusinessMapData = async (userId: string): Promise<any | null> => {
-  return loadDataFromSupabase(userId, 'business_map_data');
-};
-
-export const savePuvData = async (userId: string, puvData: any): Promise<boolean> => {
-  return saveDataToSupabase(userId, 'puv_data', puvData);
-};
-
-export const loadPuvData = async (userId: string): Promise<any | null> => {
-  return loadDataFromSupabase(userId, 'puv_data');
 };

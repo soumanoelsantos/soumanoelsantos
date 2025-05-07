@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { PUVFormData } from '@/types/puv';
-import { savePuvData, loadPuvData } from '@/utils/savingUtils';
+import { savePuvData, loadPuvData } from '@/utils/storage/puvUtils';
 
 // Initial empty state for the PUV form
 const initialPUVState: PUVFormData = {

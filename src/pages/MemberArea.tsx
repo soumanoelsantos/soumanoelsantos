@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import MemberContentList from "@/components/MemberContentList";
 import { useAuth } from "@/hooks/useAuth";
-import { checkUserToolCompletion, loadDiagnosticCompletion, loadPhaseTestCompletion } from "@/utils/savingUtils";
+import { checkUserToolCompletion, loadDiagnosticCompletion, loadPhaseTestCompletion } from "@/utils/storage";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 
 const MemberArea = () => {
