@@ -29,7 +29,7 @@ export const useSwot = () => {
       const savedData = await storage.loadData();
       if (savedData) {
         console.log("Loaded SWOT data:", savedData);
-        setSwotData(savedData);
+        setSwotData(savedData as typeof defaultSwotData);
       }
     };
 

@@ -6,3 +6,4 @@ export * from './storage/checklistUtils';
 export * from './storage/businessMapUtils';
 export * from './storage/puvUtils';
 export * from './storage/diagnosticUtils';
+export * from './storage/mapaEquipeUtils';

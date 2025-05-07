@@ -1,10 +1,10 @@
+
 import { useState, useEffect } from "react";
-import { Colaborador } from "@/types/mapaEquipe";
+import { Colaborador, MapaEquipeData } from "@/types/mapaEquipe";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from '@/integrations/supabase/client';
 import { useMapaEquipeValidation } from "@/hooks/useMapaEquipeValidation";
-import { Json } from "@/integrations/supabase/types";
+import { loadMapaEquipeData, saveMapaEquipeData, deleteMapaEquipeData } from "@/utils/storage";
 import { 
   niveisMaturidadeOptions, 
   estilosLiderancaOptions, 
@@ -51,39 +51,12 @@ export const useMapaEquipe = () => {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('mapa_equipe')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-
-        if (error && error.code !== 'PGRST116') { // PGRST116 é o código para "nenhum resultado encontrado"
-          throw error;
-        }
-
+        const data = await loadMapaEquipeData(userId);
+        
         if (data) {
-          setEmpresaNome(data.empresa_nome);
-          
-          if (data.colaboradores && typeof data.colaboradores === 'object') {
-            // Cast JSON to array and validate
-            const jsonData = data.colaboradores as Json;
-            
-            // Garantir que os colaboradores tenham a estrutura correta
-            if (Array.isArray(jsonData)) {
-              const processedColaboradores = jsonData.map((col: any) => ({
-                nome: col.nome || "",
-                nivelMaturidade: col.nivelMaturidade || niveisMaturidadeOptions[0],
-                estiloLideranca: col.estiloLideranca || estilosLiderancaOptions[0],
-                perfilComportamental: col.perfilComportamental || perfisComportamentaisOptions[0],
-                futuro: col.futuro || "",
-                potencial: col.potencial || potenciaisOptions[0]
-              }));
-              
-              setColaboradores(processedColaboradores);
-            }
-          }
-          
-          setMapaId(data.id);
+          setEmpresaNome(data.empresaNome);
+          setColaboradores(data.colaboradores);
+          setMapaId(data.id || null);
           
           toast({
             title: "Dados carregados",
@@ -151,47 +124,25 @@ export const useMapaEquipe = () => {
       try {
         setIsLoading(true);
         
-        if (mapaId) {
-          // Atualizar mapa existente
-          const { error } = await supabase
-            .from('mapa_equipe')
-            .update({
-              empresa_nome: empresaNome,
-              colaboradores: colaboradores as unknown as Json
-            })
-            .eq('id', mapaId);
-            
-          if (error) throw error;
-        } else {
-          // Inserir novo mapa
-          const { error } = await supabase
-            .from('mapa_equipe')
-            .insert([{
-              user_id: userId,
-              empresa_nome: empresaNome,
-              colaboradores: colaboradores as unknown as Json
-            }]);
-            
-          if (error) throw error;
+        const result = await saveMapaEquipeData(
+          userId,
+          mapaId,
+          empresaNome,
+          colaboradores
+        );
+        
+        if (result.success) {
+          if (result.id) setMapaId(result.id);
           
-          // Buscar o ID do novo registro
-          const { data: newData, error: fetchError } = await supabase
-            .from('mapa_equipe')
-            .select('id')
-            .eq('user_id', userId)
-            .single();
-            
-          if (!fetchError && newData) {
-            setMapaId(newData.id);
-          }
+          toast({
+            title: "Dados salvos",
+            description: "Seus dados do Mapa da Equipe foram salvos com sucesso.",
+          });
+          
+          setShowPreview(true);
+        } else {
+          throw new Error("Falha ao salvar dados");
         }
-        
-        toast({
-          title: "Dados salvos",
-          description: "Seus dados do Mapa da Equipe foram salvos com sucesso.",
-        });
-        
-        setShowPreview(true);
       } catch (error: any) {
         console.error("Erro ao salvar mapa da equipe:", error);
         toast({
@@ -214,29 +165,28 @@ export const useMapaEquipe = () => {
       try {
         setIsLoading(true);
         
-        const { error } = await supabase
-          .from('mapa_equipe')
-          .delete()
-          .eq('id', mapaId);
+        const success = await deleteMapaEquipeData(mapaId);
         
-        if (error) throw error;
-        
-        setMapaId(null);
-        setEmpresaNome("");
-        setColaboradores([{
-          nome: "",
-          nivelMaturidade: niveisMaturidadeOptions[0],
-          estiloLideranca: estilosLiderancaOptions[0],
-          perfilComportamental: perfisComportamentaisOptions[0],
-          futuro: "",
-          potencial: potenciaisOptions[0]
-        }]);
-        setShowPreview(false);
-        
-        toast({
-          title: "Dados limpos",
-          description: "O formulário foi resetado e os dados foram removidos.",
-        });
+        if (success) {
+          setMapaId(null);
+          setEmpresaNome("");
+          setColaboradores([{
+            nome: "",
+            nivelMaturidade: niveisMaturidadeOptions[0],
+            estiloLideranca: estilosLiderancaOptions[0],
+            perfilComportamental: perfisComportamentaisOptions[0],
+            futuro: "",
+            potencial: potenciaisOptions[0]
+          }]);
+          setShowPreview(false);
+          
+          toast({
+            title: "Dados limpos",
+            description: "O formulário foi resetado e os dados foram removidos.",
+          });
+        } else {
+          throw new Error("Falha ao remover dados");
+        }
       } catch (error: any) {
         console.error("Erro ao resetar formulário:", error);
         toast({
