@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { fetchAllTables, fetchTableData, executeRawQuery, prepareDataForDownload } from "@/services/databaseService";
 
@@ -14,24 +14,54 @@ export function useDatabaseAdmin() {
   const [sqlQuery, setSqlQuery] = useState("");
   const [queryResult, setQueryResult] = useState<any>(null);
   const [isExecutingQuery, setIsExecutingQuery] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 3;
 
   const fetchTables = useCallback(async () => {
+    if (connectionError && retryCount >= maxRetries) {
+      return; // Não tente mais se já atingiu o máximo de tentativas
+    }
+    
     setIsLoadingTables(true);
     try {
       const { data, error } = await fetchAllTables();
-      if (error) throw error;
-      setTables(data || []);
+      
+      if (error) {
+        console.error("Error fetching tables:", error);
+        if (retryCount < maxRetries) {
+          setRetryCount(prev => prev + 1);
+        } else {
+          setConnectionError(true);
+          throw error;
+        }
+      } else {
+        setTables(data || []);
+        setConnectionError(false);
+        setRetryCount(0);
+      }
     } catch (error) {
       console.error("Error fetching tables:", error);
       toast({
         variant: "destructive",
         title: "Erro ao buscar tabelas",
-        description: "Não foi possível buscar as tabelas do banco."
+        description: "Não foi possível conectar ao banco de dados. Verifique sua conexão."
       });
     } finally {
       setIsLoadingTables(false);
     }
-  }, [toast]);
+  }, [toast, connectionError, retryCount]);
+
+  // Efeito para lidar com retry automático com backoff exponencial
+  useEffect(() => {
+    if (connectionError && retryCount < maxRetries) {
+      const timeout = setTimeout(() => {
+        fetchTables();
+      }, Math.pow(2, retryCount) * 1000); // Backoff exponencial
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [connectionError, retryCount, fetchTables]);
 
   const handleFetchTableData = useCallback(async (table: string) => {
     if (!table) return;
@@ -134,6 +164,7 @@ export function useDatabaseAdmin() {
     sqlQuery,
     queryResult,
     isExecutingQuery,
+    connectionError,
     fetchTables,
     fetchTableData: handleFetchTableData,
     executeQuery,

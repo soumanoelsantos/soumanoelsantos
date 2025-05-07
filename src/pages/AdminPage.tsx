@@ -10,6 +10,8 @@ import { transformUsersToAdminUsers } from "@/services/adminService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DatabaseAdmin from "@/components/admin/DatabaseAdmin";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
 
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -34,10 +36,21 @@ const AdminPage = () => {
     navigate("/membros");
   };
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-800">Carregando administração...</div>
+      <div className="min-h-screen bg-white flex flex-col">
+        <AdminHeader userEmail={userEmail} onLogout={handleLogout} />
+        <div className="flex-1 flex items-center justify-center flex-col gap-4">
+          <div className="text-gray-800 text-xl">Carregando administração...</div>
+          <Button onClick={handleRefresh} variant="outline" size="sm" className="flex items-center gap-2">
+            <RefreshCcw className="h-4 w-4" />
+            Recarregar
+          </Button>
+        </div>
       </div>
     );
   }

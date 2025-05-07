@@ -9,8 +9,9 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
   const { toast } = useToast();
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
-  const [modules, setModules] = useState<AdminModule[]>([]);
+  const [modules, setModules] = useState<AdminModule[]>(defaultModules);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadAttempted, setLoadAttempted] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -52,22 +53,25 @@ export const useAdminLoader = (isAuthenticated: boolean, defaultModules: AdminMo
           console.log("Modules loaded successfully:", modulesResult.data?.length || 0);
         } catch (modulesError) {
           console.error("Error loading modules:", modulesError);
-          setModules(defaultModules);
+          // Mantenha os módulos padrão em caso de erro
         }
       } catch (error: any) {
         console.error("Error loading admin data:", error);
       } finally {
         setIsLoading(false);
+        setLoadAttempted(true);
       }
     };
 
-    loadData();
-  }, [isAuthenticated, navigate, toast, defaultModules]);
+    if (!loadAttempted) {
+      loadData();
+    }
+  }, [isAuthenticated, navigate, toast, defaultModules, loadAttempted]);
 
   return {
     users,
     setUsers,
     modules,
-    isLoading
+    isLoading: isLoading && !loadAttempted // Considere não estar carregando após a primeira tentativa
   };
 };
