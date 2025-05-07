@@ -30,17 +30,20 @@ const MapaEquipePreview = ({ empresaNome, colaboradores, onClose }: MapaEquipePr
         mapRef.current.classList.add('mapa-equipe-preview');
       }
       
-      generatePDF(mapRef.current, () => {
+      // Pass filename string instead of callback
+      const success = generatePDF(mapRef.current, "mapa-da-equipe.pdf");
+      
+      if (success) {
         toast({
           title: "Download concluído",
           description: "Seu PDF foi baixado com sucesso!",
         });
-        
-        // Clean up the temporary class
-        if (mapRef.current) {
-          mapRef.current.classList.remove('mapa-equipe-preview');
-        }
-      });
+      }
+      
+      // Clean up the temporary class
+      if (mapRef.current) {
+        mapRef.current.classList.remove('mapa-equipe-preview');
+      }
     }
   };
 
