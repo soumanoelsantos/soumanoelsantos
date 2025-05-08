@@ -6,25 +6,24 @@ import DraggableLeadCard from "./DraggableLeadCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface StatusColumnProps {
-  status: string;
+  columnId: string;
+  columnName: string;
   leads: LeadData[];
   onEditLead: (lead: LeadData) => void;
   onDeleteLead: (id: string) => void;
 }
 
-const StatusColumn = ({ status, leads, onEditLead, onDeleteLead }: StatusColumnProps) => {
-  const filteredLeads = leads.filter(lead => lead.status === status);
-
+const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }: StatusColumnProps) => {
   return (
     <div className="bg-gray-50 rounded-lg p-4 flex flex-col h-full">
       <h2 className="font-semibold text-lg mb-3 text-gray-700 flex justify-between items-center">
-        {status}
+        {columnName}
         <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs">
-          {filteredLeads.length}
+          {leads.length}
         </span>
       </h2>
       
-      <Droppable droppableId={status}>
+      <Droppable droppableId={columnName}>
         {(provided) => (
           <ScrollArea className="flex-grow overflow-y-auto h-[calc(100vh-220px)]">
             <div
@@ -32,7 +31,7 @@ const StatusColumn = ({ status, leads, onEditLead, onDeleteLead }: StatusColumnP
               ref={provided.innerRef}
               className="min-h-[100px] pb-4"
             >
-              {filteredLeads.map((lead, index) => (
+              {leads.map((lead, index) => (
                 <DraggableLeadCard 
                   key={lead.id} 
                   lead={lead} 

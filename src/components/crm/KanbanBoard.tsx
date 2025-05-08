@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import LeadFormDialog from "./LeadFormDialog";
 import { useCrmData } from "./useCrmData";
@@ -9,19 +9,30 @@ import LoadingView from "./views/LoadingView";
 import KanbanHeader from "./KanbanHeader";
 import KanbanColumnsGrid from "./KanbanColumnsGrid";
 import { useKanbanOperations } from "./hooks/useKanbanOperations";
+import { useCrmColumns } from "@/hooks/crm/useCrmColumns";
+import ColumnManagementDialog from "./ColumnManagementDialog";
 
 const KanbanBoard = () => {
   const { isAuthenticated } = useAuth();
   const { 
     isLoading, 
     leads, 
-    statuses, 
     addLead, 
     updateLead, 
     deleteLead, 
     updateLeadStatus,
     fetchLeads 
   } = useCrmData();
+  
+  const {
+    columns,
+    isLoading: isColumnsLoading,
+    addColumn,
+    editColumn,
+    deleteColumn
+  } = useCrmColumns();
+  
+  const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
   
   const {
     isAddDialogOpen,
@@ -45,13 +56,18 @@ const KanbanBoard = () => {
     return <UnauthenticatedView />;
   }
 
-  if (isLoading) {
+  if (isLoading || isColumnsLoading) {
     return <LoadingView />;
   }
 
+  const columnNames = columns.map(column => column.name);
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <KanbanHeader onAddNew={() => setIsAddDialogOpen(true)} />
+      <KanbanHeader 
+        onAddNew={() => setIsAddDialogOpen(true)} 
+        onManageColumns={() => setIsColumnDialogOpen(true)}
+      />
       
       <LeadFormDialog
         isOpen={isAddDialogOpen}
@@ -59,7 +75,7 @@ const KanbanBoard = () => {
         onSubmit={handleAddSubmit}
         title="Adicionar Novo Lead"
         submitButtonText="Adicionar Lead"
-        statuses={statuses}
+        statuses={columnNames}
       />
       
       <LeadFormDialog
@@ -75,11 +91,20 @@ const KanbanBoard = () => {
         } : defaultLeadFormValues}
         title="Editar Lead"
         submitButtonText="Salvar Alterações"
-        statuses={statuses}
+        statuses={columnNames}
+      />
+      
+      <ColumnManagementDialog
+        isOpen={isColumnDialogOpen}
+        onOpenChange={setIsColumnDialogOpen}
+        columns={columns}
+        onAddColumn={addColumn}
+        onEditColumn={editColumn}
+        onDeleteColumn={deleteColumn}
       />
       
       <KanbanColumnsGrid
-        statuses={statuses}
+        columns={columns}
         leads={leads}
         onDragEnd={handleDragEnd}
         onEditLead={handleEditLead}

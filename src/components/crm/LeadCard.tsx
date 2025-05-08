@@ -1,7 +1,9 @@
 
 import React from "react";
-import { Edit, Trash2, Mail, Phone, Calendar, TagIcon } from "lucide-react";
+import { Edit, Trash2, Mail, Phone, Calendar, TagIcon, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface LeadCardProps {
   lead: {
@@ -11,6 +13,7 @@ interface LeadCardProps {
     phone: string;
     status: string;
     created_at: string;
+    status_changed_at?: string;
     notes: string | null;
     source: string | null;
   };
@@ -19,6 +22,11 @@ interface LeadCardProps {
 }
 
 const LeadCard = ({ lead, onEdit, onDelete }: LeadCardProps) => {
+  // Calculate how long the lead has been in the current status
+  const timeInStatus = lead.status_changed_at 
+    ? formatDistanceToNow(new Date(lead.status_changed_at), { addSuffix: false, locale: ptBR })
+    : formatDistanceToNow(new Date(lead.created_at), { addSuffix: false, locale: ptBR });
+
   return (
     <Card className="bg-white rounded-md p-4 mb-3 shadow-sm border border-gray-100 overflow-hidden">
       <div className="flex justify-between items-start mb-2">
@@ -52,6 +60,12 @@ const LeadCard = ({ lead, onEdit, onDelete }: LeadCardProps) => {
           <Calendar size={12} className="shrink-0" />
           <span>
             {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Clock size={12} className="shrink-0" />
+          <span className="text-gray-600">
+            {timeInStatus} na coluna atual
           </span>
         </div>
         {lead.source && (

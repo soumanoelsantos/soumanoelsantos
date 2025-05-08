@@ -23,6 +23,7 @@ export const useLeadOperations = (fetchLeads: () => Promise<void>) => {
         notes: values.notes || null,
         status: values.status,
         source: "manual",
+        status_changed_at: new Date().toISOString() // Add initial status timestamp
       }).select();
 
       if (error) {
@@ -55,15 +56,35 @@ export const useLeadOperations = (fetchLeads: () => Promise<void>) => {
   const updateLead = async (id: string, values: LeadFormValues) => {
     try {
       console.log("Atualizando lead:", id, values);
+      
+      // Get the current lead to check if status is changing
+      const { data: currentLead, error: fetchError } = await supabase
+        .from("leads")
+        .select("status")
+        .eq("id", id)
+        .single();
+      
+      if (fetchError) {
+        console.error("Erro ao buscar lead atual:", fetchError);
+        throw fetchError;
+      }
+      
+      const updateData: any = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        notes: values.notes,
+        status: values.status,
+      };
+      
+      // If status is changing, update the status_changed_at timestamp
+      if (currentLead && currentLead.status !== values.status) {
+        updateData.status_changed_at = new Date().toISOString();
+      }
+      
       const { error } = await supabase
         .from("leads")
-        .update({
-          name: values.name,
-          email: values.email,
-          phone: values.phone,
-          notes: values.notes,
-          status: values.status,
-        })
+        .update(updateData)
         .eq("id", id);
 
       if (error) {
@@ -132,7 +153,10 @@ export const useLeadOperations = (fetchLeads: () => Promise<void>) => {
       console.log(`Atualizando status do lead ${id} para ${newStatus}`);
       const { error } = await supabase
         .from("leads")
-        .update({ status: newStatus })
+        .update({ 
+          status: newStatus,
+          status_changed_at: new Date().toISOString() // Update timestamp when status changes
+        })
         .eq("id", id);
 
       if (error) {
