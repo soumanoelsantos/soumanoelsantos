@@ -50,15 +50,19 @@ const CrmPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="h-screen bg-white flex flex-col overflow-hidden">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
-      <div className="container mx-auto px-4 py-4">
-        <div className="mt-6 mb-6">
-          <BackToMemberAreaButton />
+      <div className="flex-grow overflow-hidden">
+        <div className="container mx-auto px-4 py-4 h-full flex flex-col">
+          <div className="mb-4">
+            <BackToMemberAreaButton />
+          </div>
+          
+          <div className="flex-grow overflow-hidden">
+            <KanbanBoard />
+          </div>
         </div>
-        
-        <KanbanBoard />
       </div>
     </div>
   );

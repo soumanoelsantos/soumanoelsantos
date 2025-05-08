@@ -1,6 +1,7 @@
 
 import React from "react";
-import { Edit, Trash2, Mail, Phone, Calendar } from "lucide-react";
+import { Edit, Trash2, Mail, Phone, Calendar, TagIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface LeadCardProps {
   lead: {
@@ -19,10 +20,10 @@ interface LeadCardProps {
 
 const LeadCard = ({ lead, onEdit, onDelete }: LeadCardProps) => {
   return (
-    <div className="bg-white rounded-md p-4 mb-3 shadow-sm border border-gray-100">
+    <Card className="bg-white rounded-md p-4 mb-3 shadow-sm border border-gray-100 overflow-hidden">
       <div className="flex justify-between items-start mb-2">
-        <h3 className="font-medium text-gray-800">{lead.name}</h3>
-        <div className="flex gap-2">
+        <h3 className="font-medium text-gray-800 truncate">{lead.name}</h3>
+        <div className="flex gap-2 shrink-0">
           <button
             onClick={() => onEdit(lead)}
             className="text-gray-500 hover:text-gray-700"
@@ -39,23 +40,24 @@ const LeadCard = ({ lead, onEdit, onDelete }: LeadCardProps) => {
       </div>
       
       <div className="text-xs text-gray-500 space-y-1">
-        <div className="flex items-center gap-1">
-          <Mail size={12} />
-          <span>{lead.email}</span>
+        <div className="flex items-center gap-1 truncate">
+          <Mail size={12} className="shrink-0" />
+          <span className="truncate">{lead.email}</span>
         </div>
         <div className="flex items-center gap-1">
-          <Phone size={12} />
+          <Phone size={12} className="shrink-0" />
           <span>{lead.phone}</span>
         </div>
         <div className="flex items-center gap-1">
-          <Calendar size={12} />
+          <Calendar size={12} className="shrink-0" />
           <span>
             {new Date(lead.created_at).toLocaleDateString('pt-BR')}
           </span>
         </div>
         {lead.source && (
           <div className="flex items-center gap-1 mt-1">
-            <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs">
+            <TagIcon size={12} className="shrink-0" />
+            <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs truncate">
               {lead.source}
             </span>
           </div>
@@ -64,10 +66,10 @@ const LeadCard = ({ lead, onEdit, onDelete }: LeadCardProps) => {
       
       {lead.notes && (
         <div className="mt-2 pt-2 border-t border-gray-100">
-          <p className="text-xs text-gray-600">{lead.notes}</p>
+          <p className="text-xs text-gray-600 line-clamp-2 break-words">{lead.notes}</p>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 
