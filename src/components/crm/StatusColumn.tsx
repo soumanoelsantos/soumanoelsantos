@@ -14,6 +14,9 @@ interface StatusColumnProps {
 }
 
 const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }: StatusColumnProps) => {
+  // Add debug logging
+  console.log(`StatusColumn "${columnName}" render:`, { leadsCount: leads.length });
+  
   return (
     <div className="bg-gray-50 rounded-lg p-4 flex flex-col h-full">
       <h2 className="font-semibold text-lg mb-3 text-gray-700 flex justify-between items-center">
@@ -30,6 +33,7 @@ const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }:
               {...provided.droppableProps}
               ref={provided.innerRef}
               className="min-h-[100px] pb-4"
+              data-column-id={columnName} // Add data attribute for debugging
             >
               {leads.map((lead, index) => (
                 <DraggableLeadCard 

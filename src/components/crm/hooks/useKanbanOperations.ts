@@ -66,13 +66,28 @@ export const useKanbanOperations = ({
       return;
     }
 
+    // Log more information to debug
+    console.log("Drag end event:", {
+      draggableId,
+      sourceId: source.droppableId,
+      destinationId: destination.droppableId,
+      sourceIndex: source.index,
+      destinationIndex: destination.index
+    });
+
     // Update the lead's status in the database
     console.log(`Moving lead ${draggableId} to ${destination.droppableId}`);
-    const success = await updateLeadStatus(draggableId, destination.droppableId);
-    if (success) {
-      // Refresh the leads list to get the updated data
-      console.log("Status updated successfully, refreshing leads...");
-      await fetchLeads();
+    try {
+      const success = await updateLeadStatus(draggableId, destination.droppableId);
+      if (success) {
+        // Refresh the leads list to get the updated data
+        console.log("Status updated successfully, refreshing leads...");
+        await fetchLeads();
+      } else {
+        console.error("Failed to update lead status");
+      }
+    } catch (error) {
+      console.error("Error in handleDragEnd:", error);
     }
   };
 

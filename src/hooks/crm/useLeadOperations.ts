@@ -151,6 +151,18 @@ export const useLeadOperations = (fetchLeads: () => Promise<void>) => {
   const updateLeadStatus = async (id: string, newStatus: string) => {
     try {
       console.log(`Atualizando status do lead ${id} para ${newStatus}`);
+      
+      // Add error logging to help debug issues
+      if (!id) {
+        console.error("ID do lead não fornecido");
+        return false;
+      }
+      
+      if (!newStatus) {
+        console.error("Novo status não fornecido");
+        return false;
+      }
+      
       const { error } = await supabase
         .from("leads")
         .update({ 
