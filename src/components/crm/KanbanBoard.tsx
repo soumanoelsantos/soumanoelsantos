@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import StatusColumn from "./StatusColumn";
 import LeadFormDialog from "./LeadFormDialog";
 import { useCrmData } from "./useCrmData";
 import { LeadData, LeadFormValues } from "@/types/crm";
+import { supabase } from "@/integrations/supabase/client";
 
 const KanbanBoard = () => {
   const { isAuthenticated } = useAuth();
@@ -27,12 +28,19 @@ const KanbanBoard = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editLead, setEditLead] = useState<LeadData | null>(null);
 
+  // Force refresh leads when component mounts
+  useEffect(() => {
+    console.log("KanbanBoard mounted, fetching leads...");
+    fetchLeads();
+  }, []);
+
   const handleAddSubmit = async (values: LeadFormValues) => {
     console.log("Submitting new lead:", values);
     const success = await addLead(values);
     if (success) {
       setIsAddDialogOpen(false);
       // Refresh the leads list
+      console.log("Lead added successfully, refreshing leads...");
       await fetchLeads();
     }
   };
@@ -40,11 +48,13 @@ const KanbanBoard = () => {
   const handleEditSubmit = async (values: LeadFormValues) => {
     if (!editLead) return;
     
+    console.log("Updating lead:", editLead.id, values);
     const success = await updateLead(editLead.id, values);
     if (success) {
       setIsEditDialogOpen(false);
       setEditLead(null);
       // Refresh the leads list
+      console.log("Lead updated successfully, refreshing leads...");
       await fetchLeads();
     }
   };
@@ -69,9 +79,11 @@ const KanbanBoard = () => {
     }
 
     // Update the lead's status in the database
+    console.log(`Moving lead ${draggableId} to ${destination.droppableId}`);
     const success = await updateLeadStatus(draggableId, destination.droppableId);
     if (success) {
       // Refresh the leads list to get the updated data
+      console.log("Status updated successfully, refreshing leads...");
       await fetchLeads();
     }
   };

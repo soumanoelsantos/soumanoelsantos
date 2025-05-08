@@ -48,17 +48,27 @@ const LeadCaptureForm = ({
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
+      console.log("Enviando lead para o CRM:", {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        source: source,
+        status: "Novo"
+      });
+      
       // Insert lead with the default status "Novo"
-      const { error } = await supabase.from("leads").insert({
+      const { error, data } = await supabase.from("leads").insert({
         name: values.name,
         email: values.email,
         phone: values.phone,
         source: source,
         status: "Novo", // Explicitly set status to "Novo"
         notes: `Lead capturado via ${source}`
-      });
+      }).select();
       
       if (error) throw error;
+      
+      console.log("Lead cadastrado com sucesso:", data);
       
       toast({
         title: "Solicitação enviada!",

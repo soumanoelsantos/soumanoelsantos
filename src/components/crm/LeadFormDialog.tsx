@@ -66,14 +66,18 @@ const LeadFormDialog = ({
 
   React.useEffect(() => {
     if (isOpen) {
+      console.log("Dialog opened, resetting form with values:", defaultValues);
       form.reset(defaultValues);
     }
   }, [isOpen, defaultValues, form]);
 
   const handleSubmit = async (values: LeadFormValues) => {
+    console.log("Form submitted with values:", values);
     setIsSubmitting(true);
     try {
       await onSubmit(values);
+    } catch (error) {
+      console.error("Error in form submission:", error);
     } finally {
       setIsSubmitting(false);
     }

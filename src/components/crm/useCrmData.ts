@@ -15,10 +15,12 @@ export const useCrmData = () => {
   const fetchLeads = async () => {
     setIsLoading(true);
     try {
+      console.log("Buscando leads...");
       const { data, error } = await fetchLeadsFromDb();
 
       if (error) throw error;
 
+      console.log("Leads encontrados:", data);
       setLeads(data || []);
     } catch (error) {
       console.error("Error fetching leads:", error);
@@ -139,6 +141,7 @@ export const useCrmData = () => {
 
   const updateLeadStatus = async (id: string, newStatus: string) => {
     try {
+      console.log(`Atualizando status do lead ${id} para ${newStatus}`);
       const { error } = await supabase
         .from("leads")
         .update({ status: newStatus })
@@ -146,15 +149,10 @@ export const useCrmData = () => {
 
       if (error) throw error;
 
-      // Update local state to reflect the change
-      setLeads(prevLeads => 
-        prevLeads.map(lead => {
-          if (lead.id === id) {
-            return { ...lead, status: newStatus };
-          }
-          return lead;
-        })
-      );
+      console.log("Status do lead atualizado com sucesso");
+      
+      // Refresh leads list to get updated data
+      await fetchLeads();
 
       return true;
     } catch (error) {
@@ -169,6 +167,7 @@ export const useCrmData = () => {
   };
 
   useEffect(() => {
+    console.log("Inicializando CRM data...");
     fetchLeads();
     
     // Set up realtime subscription for lead updates
@@ -188,7 +187,10 @@ export const useCrmData = () => {
       )
       .subscribe();
 
+    console.log("Subscription to realtime updates initialized");
+
     return () => {
+      console.log("Removing realtime subscription");
       supabase.removeChannel(channel);
     };
   }, []);
