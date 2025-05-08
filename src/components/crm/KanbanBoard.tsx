@@ -19,7 +19,8 @@ const KanbanBoard = () => {
     addLead, 
     updateLead, 
     deleteLead, 
-    updateLeadStatus 
+    updateLeadStatus,
+    fetchLeads 
   } = useCrmData();
   
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -27,9 +28,12 @@ const KanbanBoard = () => {
   const [editLead, setEditLead] = useState<LeadData | null>(null);
 
   const handleAddSubmit = async (values: LeadFormValues) => {
+    console.log("Submitting new lead:", values);
     const success = await addLead(values);
     if (success) {
       setIsAddDialogOpen(false);
+      // Refresh the leads list
+      await fetchLeads();
     }
   };
 
@@ -40,6 +44,8 @@ const KanbanBoard = () => {
     if (success) {
       setIsEditDialogOpen(false);
       setEditLead(null);
+      // Refresh the leads list
+      await fetchLeads();
     }
   };
 
@@ -63,7 +69,11 @@ const KanbanBoard = () => {
     }
 
     // Update the lead's status in the database
-    await updateLeadStatus(draggableId, destination.droppableId);
+    const success = await updateLeadStatus(draggableId, destination.droppableId);
+    if (success) {
+      // Refresh the leads list to get the updated data
+      await fetchLeads();
+    }
   };
 
   if (!isAuthenticated) {

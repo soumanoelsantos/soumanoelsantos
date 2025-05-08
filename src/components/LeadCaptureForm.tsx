@@ -54,7 +54,8 @@ const LeadCaptureForm = ({
         email: values.email,
         phone: values.phone,
         source: source,
-        status: "Novo" // Explicitly set status to "Novo"
+        status: "Novo", // Explicitly set status to "Novo"
+        notes: `Lead capturado via ${source}`
       });
       
       if (error) throw error;

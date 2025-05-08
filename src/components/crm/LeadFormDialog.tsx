@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 const leadSchema = z.object({
   name: z.string().min(2, { message: "Nome precisa ter no mínimo 2 caracteres" }),
@@ -57,6 +58,7 @@ const LeadFormDialog = ({
   submitButtonText,
   statuses
 }: LeadFormDialogProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadSchema),
     defaultValues
@@ -68,7 +70,14 @@ const LeadFormDialog = ({
     }
   }, [isOpen, defaultValues, form]);
 
-  const handleSubmit = form.handleSubmit(onSubmit);
+  const handleSubmit = async (values: LeadFormValues) => {
+    setIsSubmitting(true);
+    try {
+      await onSubmit(values);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -78,7 +87,7 @@ const LeadFormDialog = ({
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
             <FormField
               control={form.control}
               name="name"
@@ -157,8 +166,19 @@ const LeadFormDialog = ({
             />
             
             <DialogFooter>
-              <Button type="submit" className="bg-dark-primary hover:bg-dark-primary/90 text-black">
-                {submitButtonText}
+              <Button 
+                type="submit" 
+                className="bg-dark-primary hover:bg-dark-primary/90 text-black"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  submitButtonText
+                )}
               </Button>
             </DialogFooter>
           </form>

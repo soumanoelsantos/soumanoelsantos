@@ -34,29 +34,41 @@ export const useCrmData = () => {
 
   const addLead = async (values: LeadFormValues) => {
     try {
-      const { error } = await supabase.from("leads").insert({
+      // Make sure all required fields are present
+      if (!values.name || !values.email || !values.phone || !values.status) {
+        throw new Error("Campos obrigatórios faltando");
+      }
+      
+      console.log("Adicionando lead:", values);
+      
+      const { data, error } = await supabase.from("leads").insert({
         name: values.name,
         email: values.email,
         phone: values.phone,
-        notes: values.notes,
+        notes: values.notes || null,
         status: values.status,
         source: "manual",
-      });
+      }).select();
 
       if (error) throw error;
 
+      console.log("Lead adicionado com sucesso:", data);
+      
+      // Refresh leads list
+      await fetchLeads();
+      
       toast({
         title: "Lead criado",
         description: "Lead criado com sucesso",
       });
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating lead:", error);
       toast({
         variant: "destructive",
         title: "Erro ao criar lead",
-        description: "Não foi possível criar o lead. Tente novamente.",
+        description: error.message || "Não foi possível criar o lead. Tente novamente.",
       });
       return false;
     }
@@ -76,6 +88,9 @@ export const useCrmData = () => {
         .eq("id", id);
 
       if (error) throw error;
+      
+      // Refresh leads list after update
+      await fetchLeads();
 
       toast({
         title: "Lead atualizado",
@@ -101,6 +116,9 @@ export const useCrmData = () => {
       const { error } = await supabase.from("leads").delete().eq("id", id);
 
       if (error) throw error;
+      
+      // Refresh leads list after deletion
+      await fetchLeads();
 
       toast({
         title: "Lead excluído",
