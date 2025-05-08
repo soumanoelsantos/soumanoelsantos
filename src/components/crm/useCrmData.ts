@@ -38,6 +38,7 @@ export const useCrmData = () => {
     try {
       // Make sure all required fields are present
       if (!values.name || !values.email || !values.phone || !values.status) {
+        console.error("Campos obrigatórios faltando:", values);
         throw new Error("Campos obrigatórios faltando");
       }
       
@@ -52,7 +53,10 @@ export const useCrmData = () => {
         source: "manual",
       }).select();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro ao inserir lead no Supabase:", error);
+        throw error;
+      }
 
       console.log("Lead adicionado com sucesso:", data);
       
@@ -78,6 +82,7 @@ export const useCrmData = () => {
 
   const updateLead = async (id: string, values: LeadFormValues) => {
     try {
+      console.log("Atualizando lead:", id, values);
       const { error } = await supabase
         .from("leads")
         .update({
@@ -89,7 +94,12 @@ export const useCrmData = () => {
         })
         .eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro ao atualizar lead no Supabase:", error);
+        throw error;
+      }
+      
+      console.log("Lead atualizado com sucesso");
       
       // Refresh leads list after update
       await fetchLeads();
@@ -115,9 +125,15 @@ export const useCrmData = () => {
     if (!window.confirm("Tem certeza que deseja excluir este lead?")) return false;
 
     try {
+      console.log("Excluindo lead:", id);
       const { error } = await supabase.from("leads").delete().eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro ao excluir lead no Supabase:", error);
+        throw error;
+      }
+      
+      console.log("Lead excluído com sucesso");
       
       // Refresh leads list after deletion
       await fetchLeads();
@@ -147,7 +163,10 @@ export const useCrmData = () => {
         .update({ status: newStatus })
         .eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro ao atualizar status do lead no Supabase:", error);
+        throw error;
+      }
 
       console.log("Status do lead atualizado com sucesso");
       

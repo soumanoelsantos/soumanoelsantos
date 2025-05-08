@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,7 +64,8 @@ const LeadFormDialog = ({
     defaultValues
   });
 
-  React.useEffect(() => {
+  // Reset the form with default values when the dialog opens
+  useEffect(() => {
     if (isOpen) {
       console.log("Dialog opened, resetting form with values:", defaultValues);
       form.reset(defaultValues);
@@ -141,7 +142,11 @@ const LeadFormDialog = ({
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Observações sobre o lead" {...field} value={field.value || ''} />
+                    <Textarea 
+                      placeholder="Observações sobre o lead" 
+                      {...field} 
+                      value={field.value || ''} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
