@@ -7,3 +7,4 @@ export * from './storage/businessMapUtils';
 export * from './storage/puvUtils';
 export * from './storage/diagnosticUtils';
 export * from './storage/mapaEquipeUtils';
+export * from './storage/crmUtils';
