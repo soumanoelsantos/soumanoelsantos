@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMapaEquipeValidation } from "@/hooks/useMapaEquipeValidation";
 import { loadMapaEquipeData, saveMapaEquipeData, deleteMapaEquipeData } from "@/utils/storage";
 import { Colaborador } from "@/types/mapaEquipe";
-import { supabase } from "@/integrations/supabase/client";
 
 export const useMapaEquipeOperations = (
   empresaNome: string,
@@ -33,17 +32,6 @@ export const useMapaEquipeOperations = (
       if (data) {
         setEmpresaNome(data.empresaNome);
         setColaboradores(data.colaboradores);
-        
-        // Need to query for the mapa ID separately as it's not included in the MapaEquipeData
-        const { data: mapaData } = await supabase
-          .from('mapa_equipe')
-          .select('id')
-          .eq('user_id', userId)
-          .single();
-          
-        if (mapaData) {
-          setMapaId(mapaData.id);
-        }
         
         toast({
           title: "Dados carregados",
@@ -76,12 +64,12 @@ export const useMapaEquipeOperations = (
       try {
         setIsLoading(true);
         
-        const result = await saveMapaEquipeData(
-          userId,
-          mapaId,
+        const data = {
           empresaNome,
           colaboradores
-        );
+        };
+        
+        const result = await saveMapaEquipeData(userId, data);
         
         if (result.success) {
           if (result.id) setMapaId(result.id);
@@ -113,11 +101,11 @@ export const useMapaEquipeOperations = (
   };
 
   const resetForm = async () => {
-    if (mapaId && userId) {
+    if (userId) {
       try {
         setIsLoading(true);
         
-        const success = await deleteMapaEquipeData(mapaId);
+        const success = await deleteMapaEquipeData(userId);
         
         if (success) {
           setMapaId(null);
