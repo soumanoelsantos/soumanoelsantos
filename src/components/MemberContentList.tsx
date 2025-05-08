@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import {
   loadDiagnosticCompletion,
   loadPhaseTestCompletion
 } from "@/utils/storage";
-import { CheckCheck } from "lucide-react";
+import { CheckCheck, Tag } from "lucide-react";
 
 // Sample program modules and content
 const programModules = [
@@ -28,6 +27,7 @@ const programModules = [
       { id: 5, title: "Mapa do Negócio", url: "/mapa-negocio", isWhatsapp: false, dataKey: "business_map_data" },
       { id: 6, title: "Proposta Única de Valor (PUV)", url: "/proposta-unica-valor", isWhatsapp: false, dataKey: "puv_data" },
       { id: 7, title: "Mapa da Equipe", url: "/mapa-equipe", isWhatsapp: false, dataKey: "mapa_equipe" },
+      { id: 8, title: "CRM - Gestão de Leads", url: "/crm", isWhatsapp: false, dataKey: "" },
     ]
   },
   {
@@ -198,7 +198,14 @@ const MemberContentList = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
+                            {lesson.title === "CRM - Gestão de Leads" ? (
+                              <div className="flex items-center gap-2">
+                                <Tag className="h-4 w-4 text-blue-600" />
+                                <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
+                              </div>
+                            ) : (
+                              <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
+                            )}
                             {renderCompletionStatus(lesson.dataKey)}
                           </div>
                           <Button 
