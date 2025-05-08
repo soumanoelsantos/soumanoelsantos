@@ -35,12 +35,20 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
 
   // Renders a completion indicator for tools that have been completed
   const renderCompletionStatus = () => {
-    return lesson.dataKey && completedTools[lesson.dataKey] ? (
-      <Badge className="ml-2 bg-green-500 text-white">
-        <CheckCheck className="h-3 w-3 mr-1" />
-        <span className="text-xs">Preenchido</span>
-      </Badge>
-    ) : null;
+    // Debug the completion status of this particular lesson
+    console.log(`Checking completion for "${lesson.title}" with dataKey:`, lesson.dataKey);
+    console.log(`Completion status for ${lesson.dataKey}:`, lesson.dataKey ? completedTools[lesson.dataKey] : 'No dataKey');
+    
+    // If the lesson has a dataKey and the tool is completed, show the badge
+    if (lesson.dataKey && completedTools[lesson.dataKey]) {
+      return (
+        <Badge className="ml-2 bg-green-500 text-white">
+          <CheckCheck className="h-3 w-3 mr-1" />
+          <span className="text-xs">Preenchido</span>
+        </Badge>
+      );
+    }
+    return null;
   };
 
   return (

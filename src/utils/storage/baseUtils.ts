@@ -10,6 +10,7 @@ interface UserToolsData {
   checklist_data?: Json;
   puv_data?: Json;
   swot_data?: Json;
+  mapa_equipe?: Json;
   created_at?: string;
   updated_at?: string;
   id?: string;
@@ -116,6 +117,9 @@ export const checkUserToolCompletion = async (
       return {};
     }
 
+    // Log the request for debugging
+    console.log(`Checking tool completion for user ${userId}, keys:`, dataKeys);
+
     const { data, error } = await supabase
       .from('user_tools_data')
       .select(dataKeys.join(','))
@@ -124,6 +128,7 @@ export const checkUserToolCompletion = async (
     
     if (error) {
       if (error.code === 'PGRST116') { // "No rows found"
+        console.log("No tool data found for user");
         return dataKeys.reduce((acc, key) => {
           acc[key] = false;
           return acc;
@@ -132,11 +137,15 @@ export const checkUserToolCompletion = async (
       throw error;
     }
     
-    // Check which tools have data
-    return dataKeys.reduce((acc, key) => {
+    // Check which tools have data and log the results
+    const completionStatus = dataKeys.reduce((acc, key) => {
       acc[key] = data[key] !== null && data[key] !== undefined;
       return acc;
     }, {} as Record<string, boolean>);
+    
+    console.log("Tool completion check results:", completionStatus);
+    
+    return completionStatus;
     
   } catch (error) {
     console.error(`Error checking tool completion:`, error);
