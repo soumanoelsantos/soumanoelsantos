@@ -506,6 +506,7 @@ export type Database = {
           business_map_data: Json | null
           checklist_data: Json | null
           created_at: string
+          crm_data: Json | null
           id: string
           puv_data: Json | null
           swot_data: Json | null
@@ -516,6 +517,7 @@ export type Database = {
           business_map_data?: Json | null
           checklist_data?: Json | null
           created_at?: string
+          crm_data?: Json | null
           id?: string
           puv_data?: Json | null
           swot_data?: Json | null
@@ -526,6 +528,7 @@ export type Database = {
           business_map_data?: Json | null
           checklist_data?: Json | null
           created_at?: string
+          crm_data?: Json | null
           id?: string
           puv_data?: Json | null
           swot_data?: Json | null
