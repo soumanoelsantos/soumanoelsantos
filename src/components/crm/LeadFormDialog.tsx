@@ -16,7 +16,7 @@ import LeadFormSubmitButton from "./LeadFormSubmitButton";
 interface LeadFormDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: LeadFormValues) => Promise<void>;
+  onSubmit: (values: LeadFormValues) => Promise<boolean | void>;
   defaultValues?: LeadFormValues;
   title: string;
   submitButtonText: string;

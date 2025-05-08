@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { leadFormSchema, LeadFormValues, defaultLeadFormValues } from "../schemas/leadFormSchema";
 
 interface UseLeadFormProps {
-  onSubmit: (values: LeadFormValues) => Promise<void>;
+  onSubmit: (values: LeadFormValues) => Promise<boolean | void>;
   defaultValues?: LeadFormValues;
   isOpen: boolean;
 }
