@@ -15,7 +15,11 @@ interface StatusColumnProps {
 
 const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }: StatusColumnProps) => {
   // Add debug logging
-  console.log(`StatusColumn "${columnName}" render:`, { leadsCount: leads.length });
+  console.log(`StatusColumn render:`, { 
+    columnId,
+    columnName,
+    leadsCount: leads.length 
+  });
   
   return (
     <div className="bg-gray-50 rounded-lg p-4 flex flex-col h-full">
@@ -33,7 +37,8 @@ const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }:
               {...provided.droppableProps}
               ref={provided.innerRef}
               className="min-h-[100px] pb-4"
-              data-column-id={columnName} // Add data attribute for debugging
+              data-column-id={columnId}
+              data-column-name={columnName}
             >
               {leads.map((lead, index) => (
                 <DraggableLeadCard 

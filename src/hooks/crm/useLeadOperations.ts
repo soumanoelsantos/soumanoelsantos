@@ -152,42 +152,50 @@ export const useLeadOperations = (fetchLeads: () => Promise<void>) => {
     try {
       console.log(`Atualizando status do lead ${id} para ${newStatus}`);
       
-      // Add error logging to help debug issues
+      // Add more detailed error logging
       if (!id) {
         console.error("ID do lead não fornecido");
-        return false;
+        throw new Error("ID do lead não fornecido");
       }
       
       if (!newStatus) {
         console.error("Novo status não fornecido");
-        return false;
+        throw new Error("Novo status não fornecido");
       }
       
-      const { error } = await supabase
+      // Log the full update operation
+      console.log("Dados da atualização:", {
+        id: id,
+        newStatus: newStatus,
+        timestamp: new Date().toISOString()
+      });
+      
+      const { data, error } = await supabase
         .from("leads")
         .update({ 
           status: newStatus,
           status_changed_at: new Date().toISOString() // Update timestamp when status changes
         })
-        .eq("id", id);
+        .eq("id", id)
+        .select();
 
       if (error) {
         console.error("Erro ao atualizar status do lead no Supabase:", error);
         throw error;
       }
 
-      console.log("Status do lead atualizado com sucesso");
+      console.log("Status do lead atualizado com sucesso:", data);
       
       // Refresh leads list to get updated data
       await fetchLeads();
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating lead status:", error);
       toast({
         variant: "destructive",
         title: "Erro ao atualizar status",
-        description: "Não foi possível atualizar o status do lead. Tente novamente.",
+        description: error.message || "Não foi possível atualizar o status do lead. Tente novamente.",
       });
       return false;
     }

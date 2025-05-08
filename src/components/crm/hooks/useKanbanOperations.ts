@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { LeadData } from "@/types/crm";
 import { LeadFormValues } from "../schemas/leadFormSchema";
+import { useToast } from "@/hooks/use-toast";
 
 interface UseKanbanOperationsProps {
   addLead: (values: LeadFormValues) => Promise<boolean>;
@@ -18,9 +19,11 @@ export const useKanbanOperations = ({
   updateLeadStatus,
   fetchLeads
 }: UseKanbanOperationsProps) => {
+  const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editLead, setEditLead] = useState<LeadData | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   const handleAddSubmit = async (values: LeadFormValues) => {
     console.log("Submitting new lead:", values);
@@ -56,13 +59,17 @@ export const useKanbanOperations = ({
     const { destination, source, draggableId } = result;
 
     // If dropped outside a droppable area
-    if (!destination) return;
+    if (!destination) {
+      console.log("Drop fora de uma área válida");
+      return;
+    }
 
     // If dropped back to the same place
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
+      console.log("Drop no mesmo lugar, ignorando");
       return;
     }
 
@@ -75,19 +82,44 @@ export const useKanbanOperations = ({
       destinationIndex: destination.index
     });
 
+    // Prevent multiple concurrent updates
+    if (isUpdatingStatus) {
+      console.log("Já está atualizando o status, ignorando esta operação");
+      return;
+    }
+
     // Update the lead's status in the database
-    console.log(`Moving lead ${draggableId} to ${destination.droppableId}`);
     try {
+      setIsUpdatingStatus(true);
+      console.log(`Movendo lead ${draggableId} para ${destination.droppableId}`);
+      
       const success = await updateLeadStatus(draggableId, destination.droppableId);
+      
       if (success) {
         // Refresh the leads list to get the updated data
-        console.log("Status updated successfully, refreshing leads...");
+        console.log("Status atualizado com sucesso, atualizando lista de leads...");
         await fetchLeads();
+        toast({
+          title: "Status atualizado",
+          description: `Lead movido para ${destination.droppableId}`,
+        });
       } else {
-        console.error("Failed to update lead status");
+        console.error("Falha ao atualizar status do lead");
+        toast({
+          variant: "destructive",
+          title: "Erro ao atualizar status",
+          description: "Não foi possível atualizar o status do lead. Tente novamente.",
+        });
       }
     } catch (error) {
-      console.error("Error in handleDragEnd:", error);
+      console.error("Erro em handleDragEnd:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar status",
+        description: "Ocorreu um erro ao atualizar o status. Tente novamente.",
+      });
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 

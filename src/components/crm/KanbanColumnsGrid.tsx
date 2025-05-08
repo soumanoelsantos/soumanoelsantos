@@ -21,10 +21,28 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   onDeleteLead 
 }) => {
   // Debugging to check props
-  console.log("KanbanColumnsGrid render:", { columnsCount: columns.length, leadsCount: leads.length });
+  console.log("KanbanColumnsGrid render:", { 
+    columnsCount: columns.length, 
+    leadsCount: leads.length,
+    columnIds: columns.map(c => c.id),
+    columnNames: columns.map(c => c.name)
+  });
+
+  const handleDragEnd = (result: any) => {
+    // Enhanced logging for drag events
+    console.log("Drag end event details:", {
+      draggableId: result.draggableId,
+      source: result.source,
+      destination: result.destination,
+      type: result.type,
+    });
+    
+    // Call the parent component's onDragEnd handler
+    onDragEnd(result);
+  };
   
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 h-[calc(100vh-180px)]">
         {columns.sort((a, b) => a.order - b.order).map(column => (
           <StatusColumn
