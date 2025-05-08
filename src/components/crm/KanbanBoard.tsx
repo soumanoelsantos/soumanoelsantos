@@ -32,6 +32,30 @@ const KanbanBoard = () => {
   useEffect(() => {
     console.log("KanbanBoard mounted, fetching leads...");
     fetchLeads();
+    
+    // Set up realtime subscription for lead updates
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'leads',
+        },
+        (payload) => {
+          console.log('Realtime update received:', payload);
+          fetchLeads();
+        }
+      )
+      .subscribe();
+
+    console.log("Subscription to realtime updates initialized");
+
+    return () => {
+      console.log("Removing realtime subscription");
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleAddSubmit = async (values: LeadFormValues) => {

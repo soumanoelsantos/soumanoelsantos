@@ -66,7 +66,10 @@ const LeadCaptureForm = ({
         notes: `Lead capturado via ${source}`
       }).select();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error inserting lead:", error);
+        throw error;
+      }
       
       console.log("Lead cadastrado com sucesso:", data);
       
