@@ -59,12 +59,14 @@ const LeadFormDialog = ({
   statuses
 }: LeadFormDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Create form with default values
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadSchema),
-    defaultValues
+    defaultValues: defaultValues
   });
 
-  // Reset the form with default values when the dialog opens
+  // Reset form when dialog opens or defaultValues change
   useEffect(() => {
     if (isOpen) {
       console.log("Dialog opened, resetting form with values:", defaultValues);
@@ -77,6 +79,7 @@ const LeadFormDialog = ({
     setIsSubmitting(true);
     try {
       await onSubmit(values);
+      console.log("Form submission completed successfully");
     } catch (error) {
       console.error("Error in form submission:", error);
     } finally {
@@ -84,9 +87,14 @@ const LeadFormDialog = ({
     }
   };
 
+  // Prevent form from being closed when clicking inside it
+  const handleDialogContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]" onClick={handleDialogContentClick}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
