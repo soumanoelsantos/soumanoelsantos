@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,7 +7,8 @@ import { Plus } from "lucide-react";
 import StatusColumn from "./StatusColumn";
 import LeadFormDialog from "./LeadFormDialog";
 import { useCrmData } from "./useCrmData";
-import { LeadData, LeadFormValues } from "@/types/crm";
+import { LeadData } from "@/types/crm";
+import { LeadFormValues } from "./schemas/leadFormSchema";
 import { supabase } from "@/integrations/supabase/client";
 
 const KanbanBoard = () => {
