@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { Json } from '@/integrations/supabase/types';
 
 // Type definitions
 interface ColumnData {
@@ -26,8 +27,8 @@ export const saveCrmColumns = async (
       return { success: false };
     }
     
-    // Prepare the data
-    const crmData = { columns };
+    // Prepare the data - explicitly cast to Json type
+    const crmData = { columns } as unknown as Json;
     
     let result;
     if (existingData) {
@@ -75,11 +76,17 @@ export const loadCrmColumns = async (userId: string): Promise<ColumnData[] | nul
       return null;
     }
     
-    if (!data || !data.crm_data || !data.crm_data.columns) {
+    if (!data || !data.crm_data) {
       return null;
     }
     
-    return data.crm_data.columns;
+    // Safe type checking and casting
+    const crmData = data.crm_data as { columns?: ColumnData[] };
+    if (!crmData || !Array.isArray(crmData.columns)) {
+      return null;
+    }
+    
+    return crmData.columns;
   } catch (error) {
     console.error(`Error in loadCrmColumns:`, error);
     return null;
