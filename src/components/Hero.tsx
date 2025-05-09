@@ -94,7 +94,17 @@ const Hero = () => {
                 </div>
               </div>
               <div className="text-center mt-3">
-                <p className="font-medium text-xl text-dark-primary">Manoel Santos</p>
+                <p className="font-medium text-xl text-dark-primary">CRO - Manoel Santos</p>
+                <div className="flex flex-wrap justify-center gap-2 mt-2">
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">aceleração empresarial</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">gestão</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">marketing</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">dashboard</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">crm</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">acompanhamento</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">vendas</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">treinamento</span>
+                </div>
               </div>
             </div>
           </div>
