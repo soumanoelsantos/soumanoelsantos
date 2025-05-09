@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Calendar } from "lucide-react";
+import { ArrowRight, Calendar, TrendingUp, Users, MessageSquare, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import LeadCaptureForm from "./LeadCaptureForm";
 
@@ -40,7 +40,7 @@ const Hero = () => {
                   crm
                 </Badge>
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
-                  acompanhamento
+                  acompanhamento diário
                 </Badge>
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
                   vendas
@@ -71,6 +71,21 @@ const Hero = () => {
                 </Badge>
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
                   comunidade de empresários
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  indicadores de performance
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  one on one
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  feedback
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  metas diárias
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  desenvolvimento de lideranças
                 </Badge>
               </div>
               
@@ -125,7 +140,7 @@ const Hero = () => {
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">marketing</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">dashboard</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">crm</span>
-                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">acompanhamento</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">acompanhamento diário</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">vendas</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">treinamento</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">processos</span>
@@ -136,6 +151,11 @@ const Hero = () => {
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">processo seletivo</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">tutorias</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">comunidade de empresários</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">indicadores de performance</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">one on one</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">feedback</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">metas diárias</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">desenvolvimento de lideranças</span>
                 </div>
               </div>
             </div>

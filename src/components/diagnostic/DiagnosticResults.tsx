@@ -6,7 +6,7 @@ import DownloadPdfButton from './DownloadPdfButton';
 import ResetDiagnosticButton from './ResetDiagnosticButton';
 import BackToMemberAreaButton from './BackToMemberAreaButton';
 import { AnswersDataType } from '@/types/diagnostic';
-import { Calendar } from 'lucide-react';
+import { Calendar, TrendingUp, Users, MessageSquare, Star } from 'lucide-react';
 import ActionButton from '../ui/action-button';
 import LeadCaptureForm from '../LeadCaptureForm';
 
@@ -47,7 +47,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">marketing</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">dashboard</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">crm</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">acompanhamento</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">acompanhamento diário</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">vendas</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">treinamento</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">processos</span>
@@ -58,6 +58,11 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">processo seletivo</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">tutorias</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">comunidade de empresários</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">indicadores de performance</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">one on one</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">feedback</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">metas diárias</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">desenvolvimento de lideranças</span>
         </div>
         
         <h2 className="text-3xl font-bold mb-4 text-gray-800">
