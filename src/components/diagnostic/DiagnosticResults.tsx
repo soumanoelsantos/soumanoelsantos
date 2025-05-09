@@ -41,6 +41,15 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
       
       {/* Marketing CTA Section - Updated to white background with appropriate text colors */}
       <div className="bg-white p-6 border rounded-lg shadow-sm text-center mt-12 pdf-marketing-section">
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">aceleração empresarial</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">gestão</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">marketing</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">acompanhamento</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">vendas</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">treinamento</span>
+        </div>
+        
         <h2 className="text-3xl font-bold mb-4 text-gray-800">
           Transforme sua empresa em <br />
           uma <span className="text-[#D4AF37]">máquina de vendas</span>

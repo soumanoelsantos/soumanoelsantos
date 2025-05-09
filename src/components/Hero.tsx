@@ -23,9 +23,24 @@ const Hero = () => {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
           <div className="lg:w-1/2 space-y-4 lg:space-y-6">
             <div className="space-y-3 lg:space-y-4 text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start space-x-2">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
                   aceleração empresarial
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  gestão
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  marketing
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  acompanhamento
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  vendas
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  treinamento
                 </Badge>
               </div>
               
