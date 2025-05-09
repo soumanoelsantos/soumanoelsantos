@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -87,6 +86,12 @@ const Hero = () => {
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
                   desenvolvimento de lideranças
                 </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  plano de carreira
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  plano de fidelidade
+                </Badge>
               </div>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -156,6 +161,8 @@ const Hero = () => {
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">feedback</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">metas diárias</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">desenvolvimento de lideranças</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">plano de carreira</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">plano de fidelidade</span>
                 </div>
               </div>
             </div>

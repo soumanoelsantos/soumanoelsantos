@@ -63,6 +63,8 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">feedback</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">metas diárias</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">desenvolvimento de lideranças</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">plano de carreira</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">plano de fidelidade</span>
         </div>
         
         <h2 className="text-3xl font-bold mb-4 text-gray-800">
