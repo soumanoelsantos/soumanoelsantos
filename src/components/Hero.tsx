@@ -50,7 +50,7 @@ const Hero = () => {
               
               <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
                 <p className="text-base sm:text-lg text-dark-text/80">
-                  Em 30 minutos farei um PLANO DE AÇÃO GRATUITO para sua empresa DOBRAR o faturamento em 90 dias!
+                  Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
                 </p>
               </div>
 

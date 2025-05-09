@@ -35,8 +35,7 @@ const ContactForm = () => {
           />
           
           <div className="mt-8 space-y-4 text-dark-text/60">
-            <p className="text-lg font-medium">Seu investimento: GRATUITO</p>
-            <p className="text-dark-primary">Valor aproximado deste diagnóstico: R$ 2.500,00</p>
+            <p className="text-lg font-medium">Seu investimento: <strong>GRATUITO</strong></p>
             <p className="text-sm">Vagas limitadas - Garanta sua análise estratégica agora</p>
           </div>
         </div>

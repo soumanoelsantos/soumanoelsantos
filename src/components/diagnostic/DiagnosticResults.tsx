@@ -55,7 +55,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           uma <span className="text-[#D4AF37]">máquina de vendas</span>
         </h2>
         <p className="text-lg text-gray-700 mb-6">
-          Em 30 minutos farei um PLANO DE AÇÃO GRATUITO para sua empresa DOBRAR o faturamento em 90 dias!
+          Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
         </p>
         
         <div className="pdf-cta-button mb-2">
