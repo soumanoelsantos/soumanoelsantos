@@ -3,6 +3,7 @@ import React from "react";
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ModuleStatusBadge from "./ModuleStatusBadge";
 import ModuleContent from "./ModuleContent";
+import ModuleTagsList from "./ModuleTagsList";
 
 interface ModuleAccordionItemProps {
   module: {
@@ -10,6 +11,7 @@ interface ModuleAccordionItemProps {
     title: string;
     description: string;
     status: string;
+    tags?: string[];
     lessons: {
       id: number;
       title: string;
@@ -37,6 +39,9 @@ const ModuleAccordionItem: React.FC<ModuleAccordionItemProps> = ({ module, compl
         </div>
       </AccordionTrigger>
       <AccordionContent>
+        {module.tags && module.tags.length > 0 && (
+          <ModuleTagsList tags={module.tags} />
+        )}
         <ModuleContent 
           module={module} 
           completedTools={completedTools} 

@@ -9,6 +9,7 @@ interface ModuleContentProps {
     title: string;
     description: string;
     status: string;
+    tags?: string[];
     lessons: {
       id: number;
       title: string;
