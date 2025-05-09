@@ -50,6 +50,14 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">acompanhamento</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">vendas</span>
           <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">treinamento</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">processos</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">pós-venda</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">sucesso do cliente</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">encantamento do cliente</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">cultura</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">processo seletivo</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">tutorias</span>
+          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">comunidade de empresários</span>
         </div>
         
         <h2 className="text-3xl font-bold mb-4 text-gray-800">

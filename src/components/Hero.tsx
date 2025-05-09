@@ -48,6 +48,30 @@ const Hero = () => {
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
                   treinamento
                 </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  processos
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  pós-venda
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  sucesso do cliente
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  encantamento do cliente
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  cultura
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  processo seletivo
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  tutorias
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  comunidade de empresários
+                </Badge>
               </div>
               
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -104,6 +128,14 @@ const Hero = () => {
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">acompanhamento</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">vendas</span>
                   <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">treinamento</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">processos</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">pós-venda</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">sucesso do cliente</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">encantamento do cliente</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">cultura</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">processo seletivo</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">tutorias</span>
+                  <span className="bg-dark-primary/10 text-dark-primary text-xs px-2 py-1 rounded-full">comunidade de empresários</span>
                 </div>
               </div>
             </div>
