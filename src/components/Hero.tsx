@@ -34,6 +34,12 @@ const Hero = () => {
                   marketing
                 </Badge>
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  dashboard
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
+                  crm
+                </Badge>
+                <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
                   acompanhamento
                 </Badge>
                 <Badge variant="outline" className="bg-dark-primary/10 text-dark-primary border-dark-primary/20 px-4 py-2">
