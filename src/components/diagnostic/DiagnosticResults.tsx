@@ -46,7 +46,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           uma <span className="text-[#D4AF37]">máquina de vendas</span>
         </h2>
         <p className="text-lg text-gray-700 mb-6">
-          Em 45 minutos, farei um plano de ação <strong>GRATUITO</strong> de vendas, marketing e gestão para a sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias.
+          Em 30 minutos farei um PLANO DE AÇÃO GRATUITO para sua empresa DOBRAR o faturamento em 90 dias!
         </p>
         
         <div className="pdf-cta-button mb-2">
