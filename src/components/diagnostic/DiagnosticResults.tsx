@@ -41,32 +41,6 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
       
       {/* Marketing CTA Section - Updated to white background with appropriate text colors */}
       <div className="bg-white p-6 border rounded-lg shadow-sm text-center mt-12 pdf-marketing-section">
-        <div className="flex flex-wrap justify-center gap-2 mb-4">
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">aceleração empresarial</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">gestão</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">marketing</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">dashboard</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">crm</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">acompanhamento diário</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">vendas</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">treinamento</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">processos</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">pós-venda</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">sucesso do cliente</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">encantamento do cliente</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">cultura</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">processo seletivo</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">tutorias</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">comunidade de empresários</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">indicadores de performance</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">one on one</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">feedback</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">metas diárias</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">desenvolvimento de lideranças</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">plano de carreira</span>
-          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">plano de fidelidade</span>
-        </div>
-        
         <h2 className="text-3xl font-bold mb-4 text-gray-800">
           Transforme sua empresa em <br />
           uma <span className="text-[#D4AF37]">máquina de vendas</span>

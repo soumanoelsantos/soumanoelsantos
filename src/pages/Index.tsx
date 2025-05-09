@@ -1,12 +1,13 @@
 
 import Hero from "@/components/Hero";
 import ContactForm from "@/components/ContactForm";
+import QuemEManoel from "@/components/QuemEManoel";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-dark-background">
       <Hero />
-      {/* Button removed as requested */}
+      <QuemEManoel />
       <ContactForm />
     </div>
   );
