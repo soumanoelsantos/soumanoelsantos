@@ -48,9 +48,6 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
       ) : (
         <div className="bg-amber-50 border border-amber-200 p-6 rounded-lg shadow-sm">
           <h3 className="text-xl font-bold text-amber-800 mb-4">Plano de Ação</h3>
-          <p className="text-amber-700 mb-4">
-            Não foi possível gerar um plano de ação. Gere um plano de ação personalizado com base nos seus resultados.
-          </p>
           <ActionButton 
             onClick={regenerateActionPlan} 
             variant="primary"
