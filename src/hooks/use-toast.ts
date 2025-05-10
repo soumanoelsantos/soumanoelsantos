@@ -9,7 +9,7 @@ import type {
 } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 8;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_REMOVE_DELAY = 0; // Changed from 1000000 to 0 to disable toasts
 
 export type ToasterToast = ToastProps & {
   id: string;
@@ -79,7 +79,7 @@ export const reducer = (state: State, action: Action): State => {
     case actionTypes.ADD_TOAST:
       return {
         ...state,
-        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT)
+        toasts: [] // Changed to return empty array instead of adding toasts
       };
 
     case actionTypes.UPDATE_TOAST:
@@ -141,6 +141,7 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">;
 
+// Modificação da função toast para não mostrar notificações
 function toast({ ...props }: Toast) {
   const id = genId();
 
@@ -151,17 +152,8 @@ function toast({ ...props }: Toast) {
     });
   const dismiss = () => dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id });
 
-  dispatch({
-    type: actionTypes.ADD_TOAST,
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss();
-      }
-    }
-  });
+  // Não adicione o toast ao estado
+  // O toast é imediatamente descartado
 
   return {
     id: id,

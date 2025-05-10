@@ -1,7 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { Json } from '@/integrations/supabase/types';
-import { toast } from '@/hooks/use-toast';
 
 // Define the type for user_tools_data table
 interface UserToolsData {
@@ -64,19 +63,12 @@ export const saveDataToSupabase = async (
       throw result.error;
     }
 
-    toast({
-      title: "Dados salvos!",
-      description: "Seus dados foram salvos com sucesso.",
-    });
+    // Toasts removidos - nenhuma mensagem será exibida
 
     return true;
   } catch (error) {
     console.error(`Error saving user_tools_data:`, error);
-    toast({
-      variant: "destructive",
-      title: "Erro ao salvar",
-      description: "Não foi possível salvar os dados. Tente novamente.",
-    });
+    // Toast removido - nenhuma mensagem será exibida
     return false;
   }
 };
