@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { generatePDF } from '@/utils/pdfGenerator';
 import DownloadPdfButton from "./DownloadPdfButton";
 import { useNavigate } from "react-router-dom";
+import LeadCaptureForm from "../LeadCaptureForm";
 
 interface DiagnosticResultsProps {
   results: any;
@@ -148,6 +149,35 @@ const DiagnosticResults = ({
           <Download className="h-4 w-4" />
           Baixar Diagnóstico em PDF
         </Button>
+      </div>
+      
+      {/* CTA Section for Lead Capture */}
+      <div className="mt-10 pt-6 border-t border-gray-200 print:hidden">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Transforme sua empresa em <span className="text-[#D4AF37]">máquina de vendas</span>
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
+              </p>
+              <p className="text-gray-700 font-medium">
+                Em 30 minutos farei um <span className="font-bold">PLANO DE AÇÃO GRATUITO</span> para sua empresa <span className="font-bold">DOBRAR</span> o faturamento em 90 dias!
+              </p>
+            </div>
+            <div className="flex flex-col items-center">
+              <LeadCaptureForm 
+                source="diagnostico_resultados" 
+                buttonText="Agendar diagnóstico gratuito"
+                buttonClassName="w-full bg-[#D4AF37] hover:bg-[#c69e22] text-black font-medium py-3"
+              />
+              <p className="text-sm text-gray-500 mt-2 text-center">
+                Clique acima e agende agora – As vagas são limitadas!
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
