@@ -133,11 +133,18 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
       setIsGeneratingPlan(false);
     }
   };
+  
+  // Adicionar função de regeneração do plano, que usa a mesma lógica da função handleGenerateActionPlan
+  const handleRegenerateActionPlan = () => {
+    handleGenerateActionPlan();
+  };
 
   return {
     isGeneratingPlan,
     showEnhancedPlan,
     setShowEnhancedPlan,
-    handleGenerateActionPlan
+    handleGenerateActionPlan,
+    handleRegenerateActionPlan
   };
 };
+
