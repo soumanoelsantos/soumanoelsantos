@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Nome precisa ter no mínimo 2 caracteres" }),
@@ -35,6 +36,7 @@ const LeadCaptureForm = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -101,21 +103,23 @@ const LeadCaptureForm = ({
       <DialogTrigger asChild>
         <Button className={buttonClassName}>{buttonText}</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className={`${isMobile ? 'w-[95%] max-h-[80vh] overflow-y-auto p-4' : 'sm:max-w-[425px]'}`}>
         <DialogHeader>
-          <DialogTitle className="text-2xl text-center">Agendar diagnóstico gratuito</DialogTitle>
+          <DialogTitle className={`text-2xl text-center ${isMobile ? 'text-xl mb-2' : ''}`}>
+            Agendar diagnóstico gratuito
+          </DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 py-2">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome completo</FormLabel>
+                  <FormLabel className={isMobile ? "text-sm" : ""}>Nome completo</FormLabel>
                   <FormControl>
-                    <Input placeholder="Seu nome" {...field} />
+                    <Input placeholder="Seu nome" {...field} className={isMobile ? "text-base h-9" : ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -127,9 +131,9 @@ const LeadCaptureForm = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className={isMobile ? "text-sm" : ""}>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="seu@email.com" {...field} />
+                    <Input type="email" placeholder="seu@email.com" {...field} className={isMobile ? "text-base h-9" : ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,16 +145,20 @@ const LeadCaptureForm = ({
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Telefone</FormLabel>
+                  <FormLabel className={isMobile ? "text-sm" : ""}>Telefone</FormLabel>
                   <FormControl>
-                    <Input placeholder="(00) 00000-0000" {...field} />
+                    <Input placeholder="(00) 00000-0000" {...field} className={isMobile ? "text-base h-9" : ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             
-            <Button type="submit" className="w-full bg-dark-primary hover:bg-dark-primary/90 text-black" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              className="w-full bg-dark-primary hover:bg-dark-primary/90 text-black" 
+              disabled={isSubmitting}
+            >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -163,7 +171,7 @@ const LeadCaptureForm = ({
           </form>
         </Form>
         
-        <p className="text-sm text-center text-gray-500 mt-2">
+        <p className={`text-sm text-center text-gray-500 ${isMobile ? 'mt-1 text-xs' : 'mt-2'}`}>
           Seus dados estão seguros e não serão compartilhados com terceiros.
         </p>
       </DialogContent>
