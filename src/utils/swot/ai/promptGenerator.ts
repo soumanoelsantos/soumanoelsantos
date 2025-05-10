@@ -1,4 +1,3 @@
-
 import { SwotData } from "@/types/swot";
 import { CompanyInfoData } from "@/types/companyInfo";
 
@@ -162,7 +161,9 @@ export const generatePhaseTestPrompt = (data: any) => {
             if (answer.answer === 'satisfactory') {
               prompt += `- FORTE: ${answer.question}\n`;
             } else if (answer.answer === 'nonexistent') {
-              prompt += `- FRACO: ${answer.question}\n`;
+              prompt += `- FRACO (NÃO EXISTE): ${answer.question} - PRIORIDADE ALTA\n`;
+            } else if (answer.answer === 'unsatisfactory') {
+              prompt += `- FRACO (INSATISFATÓRIO): ${answer.question} - PRIORIDADE MÉDIA\n`;
             }
           });
         }
@@ -203,7 +204,7 @@ export const generatePhaseTestPrompt = (data: any) => {
     }
   }
   
-  // Instructions for the AI
+  // Instructions for the AI - enhanced to focus on non-existent and unsatisfactory areas
   prompt += `\nCom base nessas informações, crie um plano de ação personalizado e detalhado com 10 ações práticas e específicas seguindo a metodologia SMART:
   
 - Específico (Specific): Ações claras e bem definidas
@@ -211,6 +212,10 @@ export const generatePhaseTestPrompt = (data: any) => {
 - Atingível (Achievable): Realista e factível para esta empresa
 - Relevante (Relevant): Relacionado diretamente aos desafios identificados
 - Temporal (Time-bound): Com prazos claros para implementação
+
+IMPORTANTE: Crie ações específicas para cada item marcado como "NÃO EXISTE" ou "INSATISFATÓRIO" no diagnóstico da empresa.
+Para os itens marcados como "NÃO EXISTE", desenvolva ações para implementar estas práticas do zero.
+Para os itens marcados como "INSATISFATÓRIO", desenvolva ações para melhorar e otimizar as práticas existentes.
 
 Para cada ação, inclua:
 1. O que exatamente deve ser feito

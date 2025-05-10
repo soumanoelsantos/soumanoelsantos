@@ -104,6 +104,14 @@ export const parsePhaseTestActionPlan = (apiResponse: string) => {
       
       if (matches.length > 0) {
         actionItems = matches.map(match => match[1].trim());
+      } else {
+        // Try to find lines that start with a number
+        const lineByLineRegex = /^\d+\.\s+.+$/gm;
+        const lineMatches = [...apiResponse.matchAll(lineByLineRegex)];
+        
+        if (lineMatches.length > 0) {
+          actionItems = lineMatches.map(match => match[0].trim());
+        }
       }
     }
     
@@ -111,13 +119,23 @@ export const parsePhaseTestActionPlan = (apiResponse: string) => {
     if (actionItems.length === 0) {
       actionItems = apiResponse.split('\n')
         .map(line => line.trim())
-        .filter(line => line && line.length > 10); // Only keep non-empty lines with some content
+        .filter(line => line && line.length > 10 && /^\d+\./.test(line)); // Only keep non-empty lines with numbering
     }
     
     console.log("Parsed action items:", actionItems);
     
     if (actionItems.length === 0) {
-      throw new Error("Could not extract action items from response");
+      // Se mesmo assim não conseguir extrair itens numerados, tente dividir por parágrafos
+      const paragraphs = apiResponse.split('\n\n')
+        .map(p => p.trim())
+        .filter(p => p && p.length > 20);
+        
+      if (paragraphs.length > 0) {
+        // Formatar cada parágrafo como um item de ação numerado
+        actionItems = paragraphs.map((p, i) => `${i+1}. ${p}`);
+      } else {
+        throw new Error("Could not extract action items from response");
+      }
     }
     
     return actionItems;
@@ -129,7 +147,12 @@ export const parsePhaseTestActionPlan = (apiResponse: string) => {
       "2. Desenvolver sistema de controle financeiro com indicadores claros de desempenho.",
       "3. Criar programa de treinamento para equipe focado nas habilidades necessárias para a fase atual.",
       "4. Estabelecer rotina de reuniões semanais com equipe para acompanhamento de metas.",
-      "5. Documentar principais processos da empresa em formato de passo a passo."
+      "5. Documentar principais processos da empresa em formato de passo a passo.",
+      "6. Implementar avaliação de desempenho trimestral para identificar necessidades de desenvolvimento.",
+      "7. Criar manual de processos operacionais para padronização das atividades.",
+      "8. Desenvolver sistema de feedback contínuo entre liderança e colaboradores.",
+      "9. Estabelecer indicadores-chave de desempenho (KPIs) para cada área da empresa.",
+      "10. Implementar programa de reconhecimento e recompensa baseado em resultados."
     ];
   }
 };
