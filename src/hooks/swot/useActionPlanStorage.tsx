@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { saveDataToSupabase, loadDataFromSupabase } from '@/utils/storage';
+import { saveSwotData, loadSwotData } from '@/utils/storage/swotUtils';
 
 export const useActionPlanStorage = (isLoading: boolean) => {
   const { toast } = useToast();
@@ -17,11 +17,12 @@ export const useActionPlanStorage = (isLoading: boolean) => {
       
       try {
         // Load action plan
-        const savedPlan = await loadDataFromSupabase(userId, 'swot_action_plan');
-        if (savedPlan && Object.keys(savedPlan).length > 0) {
-          setActionPlan(savedPlan);
+        const savedData = await loadSwotData(userId);
+        
+        if (savedData && savedData.actionPlan && Object.keys(savedData.actionPlan).length > 0) {
+          setActionPlan(savedData.actionPlan);
           setSavedActionPlan(true);
-          console.log("Loaded saved action plan:", savedPlan);
+          console.log("Loaded saved action plan:", savedData.actionPlan);
         } else {
           setSavedActionPlan(false);
         }
@@ -38,7 +39,16 @@ export const useActionPlanStorage = (isLoading: boolean) => {
     if (!userId) return false;
     
     try {
-      const success = await saveDataToSupabase(userId, 'swot_action_plan', plan);
+      // Get existing SWOT data
+      const existingData = await loadSwotData(userId) || {};
+      
+      // Update the action plan in the existing data
+      const updatedData = {
+        ...existingData,
+        actionPlan: plan
+      };
+      
+      const success = await saveSwotData(userId, updatedData);
       
       if (success) {
         setActionPlan(plan);
