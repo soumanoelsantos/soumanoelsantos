@@ -6,6 +6,7 @@ import { useToggleUserStatus } from "@/hooks/admin/useToggleUserStatus";
 import { useDeleteUser } from "@/hooks/admin/useDeleteUser";
 import { useEditUserEmail } from "@/hooks/admin/useEditUserEmail";
 import { useViewAsUser } from "@/hooks/admin/useViewAsUser";
+import { useToast } from "@/hooks/use-toast";
 
 export const useAdminActions = (
   users: User[], 
@@ -14,6 +15,7 @@ export const useAdminActions = (
   currentUserEmail: string | null | undefined
 ) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { toggleModuleAccess: toggleModule } = useToggleModuleAccess();
   const { toggleNewUserStatus: toggleStatus } = useToggleUserStatus();
   const { deleteUser: removeUser } = useDeleteUser();
@@ -46,6 +48,72 @@ export const useAdminActions = (
       return true;
     }
     return false;
+  };
+
+  const toggleAllModules = async (userId: string, enableAll: boolean): Promise<boolean> => {
+    try {
+      const user = users.find(u => u.id === userId);
+      if (!user) return false;
+      
+      let success = true;
+      const updatedModuleIds: number[] = [...user.unlockedModules];
+      
+      // Process each module
+      for (const module of modules) {
+        const hasModule = user.unlockedModules.includes(module.id);
+        
+        if (enableAll && !hasModule) {
+          // Add module access
+          const result = await toggleModule(userId, module.id, users);
+          if (result.success && !result.hasModule) {
+            updatedModuleIds.push(module.id);
+          } else {
+            success = false;
+          }
+        } 
+        else if (!enableAll && hasModule) {
+          // Remove module access
+          const result = await toggleModule(userId, module.id, users);
+          if (result.success && result.hasModule) {
+            const index = updatedModuleIds.indexOf(module.id);
+            if (index > -1) {
+              updatedModuleIds.splice(index, 1);
+            }
+          } else {
+            success = false;
+          }
+        }
+      }
+      
+      // Update local state if any changes were made
+      if (success) {
+        setUsers(prevUsers => {
+          return prevUsers.map(u => {
+            if (u.id === userId) {
+              return { ...u, unlockedModules: updatedModuleIds };
+            }
+            return u;
+          });
+        });
+        
+        toast({
+          title: enableAll ? "Todos os módulos liberados" : "Acesso aos módulos removido",
+          description: `${enableAll ? "Acesso completo concedido" : "Acesso removido"} para ${user.email}`,
+        });
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error("Erro ao alternar acesso a todos os módulos:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao modificar acesso",
+        description: "Não foi possível atualizar o acesso aos módulos."
+      });
+      return false;
+    }
   };
 
   const toggleNewUserStatus = async (userId: string): Promise<boolean> => {
@@ -103,6 +171,7 @@ export const useAdminActions = (
     toggleNewUserStatus,
     deleteUser,
     editUserEmail,
-    viewAsUser
+    viewAsUser,
+    toggleAllModules
   };
 };

@@ -14,6 +14,7 @@ interface UsersTableProps {
   deleteUser: (userId: string) => Promise<boolean>;
   editUserEmail: (userId: string, newEmail: string) => Promise<boolean>;
   viewAsUser: (userId: string) => Promise<boolean>;
+  toggleAllModules: (userId: string, enableAll: boolean) => Promise<boolean>;
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({ 
@@ -23,7 +24,8 @@ const UsersTable: React.FC<UsersTableProps> = ({
   toggleModuleAccess,
   deleteUser,
   editUserEmail,
-  viewAsUser
+  viewAsUser,
+  toggleAllModules
 }) => {
   if (!filteredUsers || filteredUsers.length === 0) {
     return <EmptyUsersList />;
@@ -36,13 +38,7 @@ const UsersTable: React.FC<UsersTableProps> = ({
           <TableRow className="hover:bg-gray-100 border-gray-200">
             <TableHead className="text-gray-700 w-[250px]">Usuário</TableHead>
             <TableHead className="text-gray-700 w-[150px]">Novo Usuário</TableHead>
-            {modules.map(module => (
-              <TableHead key={module.id} className="text-gray-700 text-center">
-                {module.title.length > 15
-                  ? module.title.substring(0, 15) + "..."
-                  : module.title}
-              </TableHead>
-            ))}
+            <TableHead className="text-gray-700 text-center">Acesso aos Módulos</TableHead>
             <TableHead className="text-gray-700 text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -57,6 +53,7 @@ const UsersTable: React.FC<UsersTableProps> = ({
               deleteUser={deleteUser}
               editUserEmail={editUserEmail}
               viewAsUser={viewAsUser}
+              toggleAllModules={toggleAllModules}
             />
           ))}
         </TableBody>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { AdminUser } from "@/types/adminTypes";
 import { AdminModule } from "@/types/admin";
 import { UserDeleteDialog } from "./UserDeleteDialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface UserRowProps {
   user: AdminUser;
@@ -17,6 +18,7 @@ interface UserRowProps {
   deleteUser: (userId: string) => Promise<boolean>;
   editUserEmail: (userId: string, newEmail: string) => Promise<boolean>;
   viewAsUser: (userId: string) => Promise<boolean>;
+  toggleAllModules: (userId: string, enableAll: boolean) => Promise<boolean>;
 }
 
 const UserRow: React.FC<UserRowProps> = ({
@@ -26,10 +28,21 @@ const UserRow: React.FC<UserRowProps> = ({
   toggleModuleAccess,
   deleteUser,
   editUserEmail,
-  viewAsUser
+  viewAsUser,
+  toggleAllModules
 }) => {
   const [editingUser, setEditingUser] = useState<boolean>(false);
   const [newEmail, setNewEmail] = useState(user.email);
+
+  // Helper function to check if all modules are unlocked
+  const allModulesUnlocked = () => {
+    if (!modules.length) return false;
+    return modules.every(module => hasModule(user, module.id));
+  };
+
+  const handleSelectAllModules = async (checked: boolean) => {
+    await toggleAllModules(user.id, checked);
+  };
 
   const handleEditClick = () => {
     setEditingUser(true);
@@ -88,14 +101,21 @@ const UserRow: React.FC<UserRowProps> = ({
           </span>
         </div>
       </TableCell>
-      {modules.map(module => (
-        <TableCell key={module.id} className="text-center">
-          <Switch
-            checked={hasModule(user, module.id)}
-            onCheckedChange={() => toggleModuleAccess(user.id, module.id)}
+      <TableCell className="text-center">
+        <div className="flex items-center justify-center gap-2">
+          <Checkbox
+            checked={allModulesUnlocked()}
+            onCheckedChange={handleSelectAllModules}
+            id={`toggle-all-modules-${user.id}`}
           />
-        </TableCell>
-      ))}
+          <label 
+            htmlFor={`toggle-all-modules-${user.id}`}
+            className="text-sm text-gray-700 cursor-pointer"
+          >
+            Liberar Todos os Módulos
+          </label>
+        </div>
+      </TableCell>
       <TableCell className="flex justify-end gap-2">
         {editingUser ? (
           <UserRowEditActions 

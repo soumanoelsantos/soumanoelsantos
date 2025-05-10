@@ -17,6 +17,7 @@ interface UsersManagementProps {
   deleteUser: (userId: string) => Promise<boolean>;
   editUserEmail: (userId: string, newEmail: string) => Promise<boolean>;
   viewAsUser: (userId: string) => Promise<boolean>;
+  toggleAllModules: (userId: string, enableAll: boolean) => Promise<boolean>;
 }
 
 const UsersManagement: React.FC<UsersManagementProps> = ({
@@ -29,7 +30,8 @@ const UsersManagement: React.FC<UsersManagementProps> = ({
   toggleModuleAccess,
   deleteUser,
   editUserEmail,
-  viewAsUser
+  viewAsUser,
+  toggleAllModules
 }) => {
   return (
     <Card className="bg-white border-dark-primary/20 shadow-lg mb-8">
@@ -49,6 +51,7 @@ const UsersManagement: React.FC<UsersManagementProps> = ({
           deleteUser={deleteUser}
           editUserEmail={editUserEmail}
           viewAsUser={viewAsUser}
+          toggleAllModules={toggleAllModules}
         />
       </CardContent>
       <CardFooter className="flex justify-between">

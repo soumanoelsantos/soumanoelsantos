@@ -22,7 +22,8 @@ export const useAdminData = (currentUserEmail?: string | null) => {
     toggleNewUserStatus, 
     deleteUser, 
     editUserEmail, 
-    viewAsUser 
+    viewAsUser,
+    toggleAllModules
   } = useAdminActions(users, setUsers, modules, currentUserEmail);
 
   return {
@@ -37,6 +38,7 @@ export const useAdminData = (currentUserEmail?: string | null) => {
     deleteUser,
     editUserEmail,
     viewAsUser,
-    refreshData
+    refreshData,
+    toggleAllModules
   };
 };

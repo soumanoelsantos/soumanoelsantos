@@ -31,7 +31,8 @@ const AdminPage = () => {
     deleteUser,
     editUserEmail,
     viewAsUser,
-    refreshData
+    refreshData,
+    toggleAllModules
   } = useAdminData(userEmail);
 
   const handleLogout = () => {
@@ -113,6 +114,7 @@ const AdminPage = () => {
                     deleteUser={deleteUser}
                     editUserEmail={editUserEmail}
                     viewAsUser={viewAsUser}
+                    toggleAllModules={toggleAllModules}
                   />
                 </TabsContent>
                 
