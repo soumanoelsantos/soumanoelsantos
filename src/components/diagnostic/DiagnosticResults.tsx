@@ -59,7 +59,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
                 Criando Plano de Ação... <span className="animate-pulse">Analisando Dados</span>
               </span>
             ) : (
-              "Criar Plano de Ação Personalizado"
+              "Gerar e Salvar Plano de Ação Personalizado"
             )}
           </ActionButton>
         </div>

@@ -64,8 +64,8 @@ export const useActionPlanGeneration = (
             }
             
             toast({
-              title: "Plano de ação gerado!",
-              description: "O plano personalizado detalhado foi gerado com base nas suas respostas.",
+              title: "Plano de ação gerado e salvo!",
+              description: "O plano personalizado detalhado foi gerado com base nas suas respostas e salvo com sucesso.",
             });
           } else {
             throw new Error("Plano de ação vazio ou inválido");
@@ -92,8 +92,8 @@ export const useActionPlanGeneration = (
   const regenerateActionPlan = () => {
     setShouldGeneratePlan(true);
     toast({
-      title: "Gerando plano de ação",
-      description: "Aguarde enquanto geramos um novo plano personalizado baseado nas suas respostas...",
+      title: "Gerando e salvando plano de ação",
+      description: "Aguarde enquanto geramos e salvamos um novo plano personalizado baseado nas suas respostas...",
     });
   };
 
