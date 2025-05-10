@@ -13,7 +13,7 @@ const MentorshipCard: React.FC = () => {
       <CardHeader className={`${isMobile ? "px-4 py-4" : ""} text-center`}>
         <CardTitle className="text-xl text-gray-800">Transforme sua empresa em uma <span className="text-dark-primary">máquina de vendas</span></CardTitle>
         <CardDescription className="text-sm font-medium text-gray-700 mt-1">
-          Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
+          Exclusivo para empresas com faturamento acima de R$ 50.000,00 por mês
         </CardDescription>
       </CardHeader>
       <CardContent className={`${isMobile ? "px-4 pt-0" : ""}`}>
@@ -22,7 +22,7 @@ const MentorshipCard: React.FC = () => {
             <img
               src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
               alt="CRO - Manoel Santos"
-              className="w-full rounded-lg object-cover"
+              className="w-full h-64 rounded-lg object-cover object-center"
             />
           </div>
           <div className="md:w-2/3">

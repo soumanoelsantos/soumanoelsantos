@@ -15,7 +15,7 @@ const CTASection = ({ source }: CTASectionProps) => {
           <img
             src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
             alt="CRO - Manoel Santos"
-            className="w-full rounded-lg object-cover max-h-64 md:max-h-80"
+            className="w-full h-64 md:h-80 rounded-lg object-cover object-center"
           />
         </div>
         <div className="md:w-2/3">
@@ -25,7 +25,7 @@ const CTASection = ({ source }: CTASectionProps) => {
           </h2>
           
           <p className="text-base font-medium text-dark-primary mb-4">
-            Exclusivo para empresas com faturamento acima de R$ 50.000,00 por mês!
+            Exclusivo para empresas com faturamento acima de R$ 50.000,00 por mês
           </p>
           
           <p className="text-lg text-gray-700 mb-6">
