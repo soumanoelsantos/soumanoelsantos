@@ -21,6 +21,7 @@ interface DiagnosticTestContentProps {
   answersData: any;
   setAnswersData: (answersData: any) => void;
   handleSubmit: (results: any, answersData: any) => void;
+  resetDiagnostic?: () => void;
   isGeneratingPlan: boolean;
 }
 
@@ -33,6 +34,7 @@ const DiagnosticTestContent = ({
   answersData,
   setAnswersData,
   handleSubmit,
+  resetDiagnostic,
   isGeneratingPlan,
 }: DiagnosticTestContentProps) => {
   if (isGeneratingPlan) {
@@ -46,6 +48,17 @@ const DiagnosticTestContent = ({
       </div>
     );
   }
+
+  const handleReset = () => {
+    if (resetDiagnostic) {
+      resetDiagnostic();
+    } else {
+      // Fallback for backward compatibility
+      setResults(null);
+      setShowResults(false);
+      setAnswersData({});
+    }
+  };
 
   return (
     <Card className="shadow-lg">
@@ -63,17 +76,13 @@ const DiagnosticTestContent = ({
             sections={sections}
             answersData={answersData}
             setAnswersData={setAnswersData}
-            onSubmit={handleSubmit}
+            onSubmit={(calculatedResults, newAnswersData) => handleSubmit(calculatedResults, newAnswersData)}
           />
         ) : (
           <DiagnosticResults 
             results={results} 
             answersData={answersData} 
-            onRestart={() => {
-              setResults(null);
-              setShowResults(false);
-              setAnswersData({});
-            }} 
+            onRestart={handleReset} 
           />
         )}
       </CardContent>

@@ -21,7 +21,8 @@ const DiagnosticoTest = () => {
     isGeneratingPlan,
     answersData, 
     setAnswersData, 
-    handleSubmit 
+    handleSubmit,
+    resetDiagnostic
   } = useDiagnostic();
 
   // Handle logout from this page
@@ -56,6 +57,7 @@ const DiagnosticoTest = () => {
           answersData={answersData}
           setAnswersData={setAnswersData}
           handleSubmit={handleSubmit}
+          resetDiagnostic={resetDiagnostic}
           isGeneratingPlan={isGeneratingPlan}
         />
         

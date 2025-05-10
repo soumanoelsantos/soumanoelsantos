@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteDiagnosticFromSupabase } from "@/utils/storage/diagnosticUtils";
 
 export const useDiagnostic = () => {
   const { toast } = useToast();
@@ -93,6 +94,27 @@ export const useDiagnostic = () => {
       }
     }
   };
+  
+  const resetDiagnostic = async () => {
+    // Reset state
+    setResults(null);
+    setAnswersData({});
+    setShowResults(false);
+    
+    // Delete from database if user is logged in
+    if (userId && isAuthenticated) {
+      try {
+        await deleteDiagnosticFromSupabase(userId);
+      } catch (error) {
+        console.error("Error deleting diagnostic results:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao excluir resultados anteriores",
+          description: "O diagnóstico foi reiniciado localmente, mas houve um erro ao excluir os resultados anteriores do banco de dados."
+        });
+      }
+    }
+  };
 
   return {
     results,
@@ -103,7 +125,8 @@ export const useDiagnostic = () => {
     isGeneratingPlan,
     answersData,
     setAnswersData,
-    handleSubmit
+    handleSubmit,
+    resetDiagnostic
   };
 };
 

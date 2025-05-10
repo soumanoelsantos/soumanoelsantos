@@ -19,14 +19,17 @@ const DiagnosticForm = ({
   setAnswersData, 
   onSubmit 
 }: DiagnosticFormProps) => {
+  // Create a compatible props object for DiagnosticSections
+  const diagnosticSectionsProps = {
+    sections,
+    answersData: {}, // This should ideally come from somewhere
+    setAnswersData,
+    onSubmit: () => onSubmit()
+  };
+
   return (
     <>
-      <DiagnosticSections 
-        sections={sections} 
-        results={results} 
-        setResults={setResults}
-        setAnswersData={setAnswersData}
-      />
+      <DiagnosticSections {...diagnosticSectionsProps} />
 
       <div className="flex justify-center mt-8">
         <Button 

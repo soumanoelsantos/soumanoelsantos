@@ -6,6 +6,7 @@ import AnswersDisplay from "./AnswersDisplay";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Download } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from "react-router-dom";
 
 interface DiagnosticResultsProps {
   results: any;
@@ -20,12 +21,13 @@ const DiagnosticResults = ({
 }: DiagnosticResultsProps) => {
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   if (!results) return null;
 
-  const totalScore = results.totalScore;
-  const maxPossibleScore = results.maxPossibleScore;
-  const percentage = (totalScore / maxPossibleScore) * 100;
+  const totalScore = results.totalScore || 0;
+  const maxPossibleScore = results.maxPossibleScore || 100;
+  const percentage = Math.round((totalScore / maxPossibleScore) * 100) || 0;
 
   const handleDownloadPDF = () => {
     toast({
@@ -35,11 +37,21 @@ const DiagnosticResults = ({
     // Here you would add actual PDF generation logic
   };
 
+  const handleRestart = () => {
+    // Call the onRestart function provided by the parent
+    onRestart();
+    
+    toast({
+      title: "Diagnóstico reiniciado",
+      description: "Você pode realizar um novo diagnóstico agora."
+    });
+  };
+
   return (
     <div className="space-y-8" ref={pdfRef}>
       <div>
         <h2 className="text-xl font-semibold mb-4 text-center">
-          Pontuação Geral: {Math.round(percentage)}%
+          Pontuação Geral: {percentage}%
         </h2>
         <DiagnosticResultsChart results={results} />
       </div>
@@ -47,7 +59,7 @@ const DiagnosticResults = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ResultsCard
           title="Processos"
-          score={results.processos.percentage}
+          score={results.processos?.percentage || 0}
           observations={[
             "Avalia o nível de maturidade dos processos",
             "Verifica documentação e padronização",
@@ -56,7 +68,7 @@ const DiagnosticResults = ({
         />
         <ResultsCard
           title="Resultados"
-          score={results.resultados.percentage}
+          score={results.resultados?.percentage || 0}
           observations={[
             "Avalia métricas financeiras e de desempenho",
             "Verifica o acompanhamento de indicadores",
@@ -65,7 +77,7 @@ const DiagnosticResults = ({
         />
         <ResultsCard
           title="Sistema de Gestão"
-          score={results.sistemaGestao.percentage}
+          score={results.sistemaGestao?.percentage || 0}
           observations={[
             "Avalia a estrutura organizacional",
             "Verifica ferramentas de gestão",
@@ -74,7 +86,7 @@ const DiagnosticResults = ({
         />
         <ResultsCard
           title="Pessoas"
-          score={results.pessoas.percentage}
+          score={results.pessoas?.percentage || 0}
           observations={[
             "Avalia cultura organizacional",
             "Verifica processos de RH",
@@ -88,7 +100,7 @@ const DiagnosticResults = ({
       <div className="flex justify-between items-center flex-wrap gap-4 pt-6">
         <Button 
           variant="outline" 
-          onClick={onRestart}
+          onClick={handleRestart}
           className="flex items-center gap-2"
         >
           <RefreshCw className="h-4 w-4" />
