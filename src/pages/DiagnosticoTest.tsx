@@ -22,8 +22,7 @@ const DiagnosticoTest = () => {
     answersData, 
     setAnswersData, 
     actionPlan, 
-    handleSubmit,
-    handleRegenerateActionPlan // Make sure this is included from useDiagnostic
+    handleSubmit
   } = useDiagnostic();
 
   // Handle logout from this page
@@ -60,7 +59,6 @@ const DiagnosticoTest = () => {
           handleSubmit={handleSubmit}
           isGeneratingPlan={isGeneratingPlan}
           isSubmitting={isSubmitting}
-          handleRegenerateActionPlan={handleRegenerateActionPlan} // Pass the function to DiagnosticTestContent
         />
         
         {!showResults && !isGeneratingPlan && (
