@@ -1,4 +1,3 @@
-
 // Program modules and content
 export const programModules = [
   {
@@ -62,14 +61,6 @@ export const programModules = [
         isWhatsapp: false, 
         dataKey: "mapa_equipe",
         benefit: "Organize sua estrutura organizacional para máxima eficiência e produtividade."
-      },
-      { 
-        id: 8, 
-        title: "Dashboard de Gestão", 
-        url: "#", 
-        isWhatsapp: false, 
-        dataKey: "",
-        benefit: "Monitore indicadores-chave para tomar decisões baseadas em dados."
       },
     ]
   },
@@ -297,7 +288,7 @@ export const programModules = [
         title: "Comunidade de empresários", 
         url: "#", 
         isWhatsapp: false,
-        benefit: "Expanda sua rede e aprenda com experiências de outros empreendedores."
+        benefit: "Expande sua rede e aprenda com experiências de outros empreendedores."
       },
       { 
         id: 409, 
@@ -330,4 +321,3 @@ export const programModules = [
     ]
   }
 ];
-

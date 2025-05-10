@@ -37,6 +37,11 @@ export const useMapaEquipeOperations = (
           title: "Dados carregados",
           description: "Seus dados do Mapa da Equipe foram carregados com sucesso.",
         });
+        
+        // Auto-show preview if we already have data
+        if (data.empresaNome && data.colaboradores && data.colaboradores.length > 0) {
+          setShowPreview(true);
+        }
       }
     } catch (error) {
       console.error("Erro ao carregar dados do Mapa da Equipe:", error);
@@ -60,7 +65,12 @@ export const useMapaEquipeOperations = (
       return;
     }
 
-    if (validateForm(empresaNome, colaboradores)) {
+    // Allow preview even if just the company name and at least one collaborator with a name is set
+    const hasMinimalData = empresaNome.trim() !== "" && 
+      colaboradores.length > 0 && 
+      colaboradores[0].nome.trim() !== "";
+    
+    if (hasMinimalData) {
       try {
         setIsLoading(true);
         
@@ -93,6 +103,12 @@ export const useMapaEquipeOperations = (
       } finally {
         setIsLoading(false);
       }
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Dados incompletos",
+        description: "Preencha pelo menos o nome da empresa e de um colaborador.",
+      });
     }
   };
 

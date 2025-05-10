@@ -4,7 +4,8 @@ import {
   checkUserToolCompletion, 
   loadDiagnosticCompletion,
   loadPhaseTestCompletion,
-  loadChecklistData
+  loadChecklistData,
+  loadMapaEquipeData
 } from "@/utils/storage";
 
 export const useToolCompletionCheck = (userId: string | null) => {
@@ -41,6 +42,19 @@ export const useToolCompletionCheck = (userId: string | null) => {
           console.log("Direct checklist check result:", checklistCompleted);
         }
         
+        // Check mapa_equipe data directly as well
+        let mapaEquipeCompleted = toolsData.mapa_equipe;
+        if (!mapaEquipeCompleted) {
+          console.log("Double-checking mapa_equipe data directly");
+          const mapaEquipeData = await loadMapaEquipeData(userId);
+          // Consider it completed if there's data and at least one collaborator with a name
+          mapaEquipeCompleted = !!mapaEquipeData && 
+            !!mapaEquipeData.colaboradores && 
+            mapaEquipeData.colaboradores.length > 0 &&
+            !!mapaEquipeData.colaboradores[0].nome;
+          console.log("Direct mapa_equipe check result:", mapaEquipeCompleted, mapaEquipeData);
+        }
+        
         // Check diagnostic completion (separate table)
         const diagnosticCompleted = await loadDiagnosticCompletion(userId);
         
@@ -50,6 +64,7 @@ export const useToolCompletionCheck = (userId: string | null) => {
         const completionStatus = {
           ...toolsData,
           checklist_data: checklistCompleted,  // Ensure we use the direct check result
+          mapa_equipe: mapaEquipeCompleted,    // Ensure we use the direct check result
           diagnostic_results: diagnosticCompleted,
           fase_results: phaseTestCompleted
         };

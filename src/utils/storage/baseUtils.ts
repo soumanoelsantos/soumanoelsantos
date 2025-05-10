@@ -120,18 +120,19 @@ export const checkUserToolCompletion = async (
     // Log the request for debugging
     console.log(`Checking tool completion for user ${userId}, keys:`, dataKeys);
 
-    // First check if the table has all the required columns
+    // First try to get column information
     const { data: tableInfo, error: tableError } = await supabase
       .rpc('get_table_columns', { table_name: 'user_tools_data' });
     
     if (tableError) {
       console.error("Error getting table columns:", tableError);
       // If we can't get column info, let's try the query anyway
+      // This fixes the TS2345 error since we're not using the result directly
     }
     
     // Get existing columns if available
     let existingColumns: string[] = [];
-    if (tableInfo) {
+    if (tableInfo && Array.isArray(tableInfo)) {
       existingColumns = tableInfo.map((col: any) => col.column_name);
       console.log("Existing columns:", existingColumns);
     }
@@ -215,7 +216,7 @@ const checkToolCompletionBasic = async (
         .from('user_tools_data')
         .select(`${key}`)
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
       
       if (error) {
         if (error.code === 'PGRST116') { // "No rows found"

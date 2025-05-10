@@ -6,11 +6,21 @@ import MemberHeader from "@/components/MemberHeader";
 import MapaEquipeForm from "@/components/mapa-equipe/MapaEquipeForm";
 import { useToast } from "@/hooks/use-toast";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import { useMapaEquipe } from "@/hooks/useMapaEquipe";
 
 const MapaEquipe = () => {
   const navigate = useNavigate();
   const { userEmail, logout, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const { showPreview, handlePreview, isLoading } = useMapaEquipe();
+
+  useEffect(() => {
+    // When the component mounts, if data is loaded and not already showing preview
+    // trigger the handlePreview to show the preview immediately
+    if (!isLoading && !showPreview) {
+      handlePreview();
+    }
+  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!isAuthenticated) {
