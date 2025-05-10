@@ -1,10 +1,9 @@
-
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Download, RefreshCw, Info } from 'lucide-react';
 import ActionPlanDisplay from '@/components/swot/ActionPlanDisplay';
-import { useSwotActionPlan } from '@/hooks/useSwotActionPlan';
+import { useSwotActionPlan } from '@/hooks/swot/useSwotActionPlan';
 import { SwotData } from '@/types/swot';
 import { generatePDF } from '@/utils/pdfGenerator';
 import ActionButton from '@/components/ui/action-button';

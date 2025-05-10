@@ -1,185 +1,111 @@
-
-import React from "react";
-import { useForm } from "react-hook-form";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle,
-  DialogFooter,
-  DialogDescription
-} from "@/components/ui/dialog";
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import ActionButton from "@/components/ui/action-button";
-import { Info } from "lucide-react";
-
-interface CompanyInfoFormData {
-  industry: string;
-  mainProducts: string;
-  targetAudience: string;
-  mainChallenges: string;
-  competitors: string;
-  goals: string;
-}
+import { useForm } from 'react-hook-form';
+import { CompanyInfoData } from '@/types/companyInfo';
 
 interface SwotCompanyInfoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CompanyInfoFormData) => void;
+  onSubmit: (data: CompanyInfoData) => void;
 }
 
-const SwotCompanyInfoDialog: React.FC<SwotCompanyInfoDialogProps> = ({
-  open,
+const SwotCompanyInfoDialog: React.FC<SwotCompanyInfoDialogProps> = ({ 
+  open, 
   onOpenChange,
   onSubmit
 }) => {
-  const form = useForm<CompanyInfoFormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<CompanyInfoData>({
     defaultValues: {
-      industry: "",
-      mainProducts: "",
-      targetAudience: "",
-      mainChallenges: "",
-      competitors: "",
-      goals: ""
+      industry: '',
+      mainProducts: '',
+      targetAudience: '',
+      mainChallenges: '',
+      competitors: '',
+      goals: ''
     }
   });
-
-  const handleSubmit = (data: CompanyInfoFormData) => {
+  
+  const handleFormSubmit = (data: CompanyInfoData) => {
     onSubmit(data);
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Info className="w-5 h-5 text-blue-500" />
-            Informações da Empresa
-          </DialogTitle>
-          <DialogDescription>
-            Essas informações nos ajudarão a gerar um plano de ação mais personalizado e eficaz
-            para sua empresa. Quanto mais detalhes você fornecer, melhores serão as recomendações.
-          </DialogDescription>
+          <DialogTitle>Informações da sua empresa</DialogTitle>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="industry"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Em que setor ou indústria sua empresa atua?</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Tecnologia, Saúde, Varejo..." {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 mt-4">
+          <div className="space-y-2">
+            <Label htmlFor="industry">Setor/Indústria</Label>
+            <Input 
+              id="industry"
+              placeholder="Ex: Tecnologia, Varejo, Saúde, etc."
+              {...register('industry', { required: "Campo obrigatório" })}
             />
-            
-            <FormField
-              control={form.control}
-              name="mainProducts"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quais são seus principais produtos ou serviços?</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Descreva brevemente os produtos/serviços que você oferece..." 
-                      className="min-h-[80px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+            {errors.industry && <p className="text-sm text-red-500">{errors.industry.message}</p>}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="mainProducts">Principais produtos/serviços</Label>
+            <Textarea 
+              id="mainProducts"
+              placeholder="Descreva seus principais produtos ou serviços"
+              {...register('mainProducts', { required: "Campo obrigatório" })}
+              rows={2}
             />
-            
-            <FormField
-              control={form.control}
-              name="targetAudience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quem é seu público-alvo?</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Descreva o perfil dos seus clientes ideais..." 
-                      className="min-h-[80px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+            {errors.mainProducts && <p className="text-sm text-red-500">{errors.mainProducts.message}</p>}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="targetAudience">Público-alvo</Label>
+            <Input 
+              id="targetAudience"
+              placeholder="Quem são seus clientes ideais?"
+              {...register('targetAudience', { required: "Campo obrigatório" })}
             />
-            
-            <FormField
-              control={form.control}
-              name="mainChallenges"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quais são os principais desafios ou gargalos do seu negócio?</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Descreva os problemas e dificuldades que enfrenta..." 
-                      className="min-h-[80px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+            {errors.targetAudience && <p className="text-sm text-red-500">{errors.targetAudience.message}</p>}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="competitors">Principais concorrentes</Label>
+            <Input 
+              id="competitors"
+              placeholder="Quem são seus concorrentes diretos?"
+              {...register('competitors')}
             />
-            
-            <FormField
-              control={form.control}
-              name="competitors"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quem são seus principais concorrentes?</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Liste os principais concorrentes do seu negócio..." {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="mainChallenges">Principais desafios</Label>
+            <Textarea 
+              id="mainChallenges"
+              placeholder="Quais os principais desafios do seu negócio atualmente?"
+              {...register('mainChallenges')}
+              rows={2}
             />
-            
-            <FormField
-              control={form.control}
-              name="goals"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quais são seus principais objetivos para os próximos 12 meses?</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Descreva o que você deseja alcançar..." 
-                      className="min-h-[80px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="goals">Objetivos de negócio</Label>
+            <Textarea 
+              id="goals"
+              placeholder="Quais seus principais objetivos para os próximos 12 meses?"
+              {...register('goals')}
+              rows={2}
             />
-            
-            <DialogFooter className="mt-6">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancelar
-              </Button>
-              <ActionButton type="submit" variant="secondary">
-                Gerar Plano de Ação Personalizado
-              </ActionButton>
-            </DialogFooter>
-          </form>
-        </Form>
+          </div>
+          
+          <div className="flex justify-end pt-4">
+            <Button type="submit">Gerar Plano Personalizado</Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
