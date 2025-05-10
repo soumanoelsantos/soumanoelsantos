@@ -1,7 +1,9 @@
 
 import { toast } from "sonner"
 
-type ToastProps = {
+type ExternalToast = Parameters<typeof toast>[1]
+
+export interface ToastProps extends ExternalToast {
   title?: string
   description?: string
   action?: {

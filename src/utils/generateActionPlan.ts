@@ -1,3 +1,4 @@
+
 import { generateEnhancedActionPlan } from './deepseekApi';
 
 interface DiagnosticResults {
@@ -18,7 +19,6 @@ export const generateActionPlan = async (answersData: any, detailed: boolean = f
     const strengths = [];
     const weaknesses = [];
     const opportunities = [];
-    const threats = [];
     
     // Process each section
     Object.keys(answersData).forEach(section => {
@@ -46,10 +46,10 @@ export const generateActionPlan = async (answersData: any, detailed: boolean = f
     });
     
     const inputData = {
-      strengths: strengths.map(item => `${item.question} [${translateArea(item.area)}]`),
-      weaknesses: weaknesses.map(item => `${item.question} [${translateArea(item.area)}]`),
-      opportunities: opportunities.map(item => `${item.question} [${translateArea(item.area)}]`),
-      threats,
+      strengths,
+      weaknesses,
+      opportunities,
+      threats: [],
       detailed // Pass the detailed flag to request more detailed action plans
     };
     
@@ -73,7 +73,12 @@ export const generateActionPlan = async (answersData: any, detailed: boolean = f
   console.log("Generating fallback local action plan");
   let actionPlan: {
     [key: string]: string[];
-  } = {};
+  } = {
+    processos: [],
+    resultados: [],
+    sistemaGestao: [],
+    pessoas: []
+  };
   
   // Extract scores from answers data to calculate percentages for each section
   const results = {
@@ -83,30 +88,30 @@ export const generateActionPlan = async (answersData: any, detailed: boolean = f
     pessoas: { score: 0, total: 0, percentage: 0 }
   };
 
+  // Process each section to generate basic recommendations
   Object.keys(answersData).forEach(section => {
     const sectionData = answersData[section];
     if (sectionData && sectionData.answers) {
-      let sectionScore = 0;
-      const total = sectionData.answers.length * (section === 'processos' || section === 'pessoas' ? 10 : 20);
+      const weakAnswers = sectionData.answers.filter(a => a.answer === 'nonexistent' || a.answer === 'unsatisfactory');
       
-      sectionData.answers.forEach(answer => {
-        if (answer.answer === 'satisfactory') {
-          sectionScore += (section === 'processos' || section === 'pessoas' ? 10 : 20);
-        } else if (answer.answer === 'unsatisfactory') {
-          sectionScore += (section === 'processos' || section === 'pessoas' ? 5 : 10);
+      weakAnswers.forEach(answer => {
+        const action = answer.answer === 'nonexistent' 
+          ? `Implementar ${answer.question.toLowerCase()}.` 
+          : `Melhorar ${answer.question.toLowerCase()}.`;
+        
+        if (actionPlan[section]) {
+          actionPlan[section].push(action);
         }
       });
-      
-      results[section] = {
-        score: sectionScore,
-        total: total,
-        percentage: Math.round((sectionScore / total) * 100)
-      };
     }
   });
   
-  // Generate more detailed action plans with implementation steps if detailed flag is true
-  // ... keep existing code (all the action plan generation logic)
+  // If any section has no recommendations, add a generic one
+  Object.keys(actionPlan).forEach(key => {
+    if (actionPlan[key].length === 0) {
+      actionPlan[key].push(`Desenvolver um plano de melhoria contínua para a área de ${translateArea(key)}.`);
+    }
+  });
   
   console.log("Generated fallback action plan:", actionPlan);
   return actionPlan;

@@ -9,7 +9,7 @@ import { AnswersDataType } from '@/types/diagnostic';
 import CTASection from '../CTASection';
 import { useDiagnostic } from '@/hooks/useDiagnostic';
 import ActionButton from '../ui/action-button';
-import { FileEdit, Loader2 } from 'lucide-react';
+import { FileEdit, Loader2, RefreshCw } from 'lucide-react';
 import { toast } from "sonner";
 
 interface DiagnosticResultsProps {
@@ -51,9 +51,30 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
         <ResultsCard results={results} />
       </div>
       
-      {hasActionPlan ? (
+      {isGeneratingPlan ? (
+        <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg text-center">
+          <div className="flex flex-col items-center justify-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <h3 className="text-xl font-bold text-blue-800">Gerando Plano de Ação</h3>
+            <p className="text-blue-700">
+              Estamos analisando seus dados para criar um plano personalizado...
+            </p>
+          </div>
+        </div>
+      ) : hasActionPlan ? (
         <div className="pdf-action-plan">
           <ActionPlanCard actionPlan={actionPlan} answersData={answersData} />
+          <div className="mt-4 flex justify-end">
+            <ActionButton
+              onClick={handleRegenerateActionPlan}
+              variant="outline"
+              size="sm"
+              icon={RefreshCw}
+              disabled={isGeneratingPlan}
+            >
+              Regenerar Plano
+            </ActionButton>
+          </div>
         </div>
       ) : (
         <div className="bg-amber-50 border border-amber-200 p-6 rounded-lg shadow-sm">
@@ -73,7 +94,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
                 Criando Plano de Ação... <span className="animate-pulse">Analisando Dados</span>
               </span>
             ) : (
-              "Gerar e Salvar Plano de Ação Personalizado"
+              "Gerar Plano de Ação Personalizado"
             )}
           </ActionButton>
         </div>

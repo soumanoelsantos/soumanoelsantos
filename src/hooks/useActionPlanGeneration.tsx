@@ -59,21 +59,18 @@ export const useActionPlanGeneration = (
                 console.log("Detailed action plan saved to Supabase");
               } catch (error) {
                 console.error("Erro ao salvar plano de ação:", error);
-                throw new Error("Falha ao salvar o plano de ação no banco de dados");
+                toast("Erro ao salvar", {
+                  description: "Falha ao salvar o plano de ação no banco de dados"
+                });
               }
             }
-            
-            toast("Plano de ação gerado e salvo!", {
-              description: "O plano personalizado detalhado foi gerado com base nas suas respostas e salvo com sucesso."
-            });
           } else {
             throw new Error("Plano de ação vazio ou inválido");
           }
         } catch (error) {
           console.error("Error generating detailed action plan:", error);
           toast("Erro ao gerar plano de ação", {
-            description: "Ocorreu um erro ao gerar o plano de ação detalhado. Tente novamente.",
-            variant: "destructive"
+            description: "Ocorreu um erro ao gerar o plano de ação detalhado. Tente novamente."
           });
         } finally {
           setIsGeneratingPlan(false);

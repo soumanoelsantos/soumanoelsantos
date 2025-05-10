@@ -13,46 +13,44 @@ export const generateEnhancedActionPlan = async (data: any) => {
   try {
     // Determine if we're dealing with SWOT data, Phase Test data, or Diagnostic data
     const isPhaseTestData = data.phaseResult !== undefined;
-    const isDiagnosticData = data.answersData !== undefined && !isPhaseTestData;
+    const isDiagnosticData = data.answersData !== undefined || 
+                            (Array.isArray(data.strengths) && data.strengths.some((s: any) => s.area && s.question));
     
     let prompt;
     if (isPhaseTestData) {
       // Generate prompt for phase test data
       prompt = generatePhaseTestPrompt(data);
     } else if (isDiagnosticData) {
-      // This is now diagnostic data, we should handle it appropriately
-      // Use the same approach as SwotData for now, or create a specific promptGenerator
+      // This is diagnostic data, create a prompt with the diagnostic data
+      console.log("Generating prompt for diagnostic data:", data);
+      
+      // Create a specialized prompt for diagnostic data
+      const strengths = Array.isArray(data.strengths) ? data.strengths : [];
+      const weaknesses = Array.isArray(data.weaknesses) ? data.weaknesses : [];
+      const opportunities = Array.isArray(data.opportunities) ? data.opportunities : [];
+      const threats = Array.isArray(data.threats) ? data.threats : [];
+      
       prompt = generateSwotPrompt({
-        strengths: data.answersData ? Object.entries(data.answersData)
-          .flatMap(([section, sectionData]: [string, any]) => {
-            return sectionData.answers
-              .filter((a: any) => a.answer === 'satisfactory')
-              .map((a: any) => ({ text: a.question, area: section }));
-          }) : [],
-        weaknesses: data.answersData ? Object.entries(data.answersData)
-          .flatMap(([section, sectionData]: [string, any]) => {
-            return sectionData.answers
-              .filter((a: any) => a.answer === 'nonexistent')
-              .map((a: any) => ({ text: a.question, area: section }));
-          }) : [],
-        opportunities: data.answersData ? Object.entries(data.answersData)
-          .flatMap(([section, sectionData]: [string, any]) => {
-            return sectionData.answers
-              .filter((a: any) => a.answer === 'unsatisfactory')
-              .map((a: any) => ({ text: a.question, area: section }));
-          }) : [],
-        threats: [],
+        strengths: strengths.map((s: any) => typeof s === 'string' ? { text: s } : { text: s.question, area: s.area }),
+        weaknesses: weaknesses.map((w: any) => typeof w === 'string' ? { text: w } : { text: w.question, area: w.area }),
+        opportunities: opportunities.map((o: any) => typeof o === 'string' ? { text: o } : { text: o.question, area: o.area }),
+        threats: threats.map((t: any) => typeof t === 'string' ? { text: t } : { text: t.question, area: t.area }),
         detailed: true
       });
+      
+      console.log("Generated prompt for diagnostic data:", prompt);
     } else {
       // Generate prompt for SWOT data
       prompt = generateSwotPrompt(data);
     }
     
     // Call the DeepSeek API with the prepared prompt
+    console.log("Calling DeepSeek API with prompt:", prompt);
     const apiResponse = await callDeepseekApi(prompt);
+    console.log("Received API response:", apiResponse);
     
     if (!apiResponse) {
+      console.error("No response from DeepSeek API");
       return null;
     }
     
@@ -60,7 +58,9 @@ export const generateEnhancedActionPlan = async (data: any) => {
     if (isPhaseTestData) {
       return parsePhaseTestActionPlan(apiResponse);
     } else {
-      return parseSwotActionPlan(apiResponse);
+      const parsedPlan = parseSwotActionPlan(apiResponse);
+      console.log("Parsed action plan:", parsedPlan);
+      return parsedPlan;
     }
   } catch (error) {
     console.error("Error generating enhanced action plan:", error);
