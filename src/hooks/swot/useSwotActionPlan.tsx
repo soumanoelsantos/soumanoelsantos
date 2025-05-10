@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useCompanyInfo } from './useCompanyInfo';
 import { useActionPlanGeneration } from './useActionPlanGeneration';
 import { useActionPlanStorage } from './useActionPlanStorage';
+import { CompanyInfoData } from '@/types/companyInfo';
 
 export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
   const { toast } = useToast();
@@ -129,6 +130,3 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
     hasContent
   };
 };
-
-// Remove CompanyInfoData export as it's now in its own file
-export type { };
