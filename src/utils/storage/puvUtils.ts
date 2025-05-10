@@ -1,5 +1,5 @@
 
-import { saveDataToSupabase, loadDataFromSupabase } from './baseUtils';
+import { saveDataToSupabase, loadDataFromSupabase } from './dataAccess';
 
 // Specific functions for PUV (Proposta Única de Valor) tool
 export const savePuvData = async (userId: string, puvData: any): Promise<boolean> => {

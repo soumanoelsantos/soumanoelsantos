@@ -1,5 +1,5 @@
 
-import { saveDataToSupabase, loadDataFromSupabase } from './baseUtils';
+import { saveDataToSupabase, loadDataFromSupabase } from './dataAccess';
 
 // Specific functions for Checklist tool
 export const saveChecklistData = async (userId: string, checklistData: any): Promise<boolean> => {

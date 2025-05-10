@@ -1,5 +1,5 @@
 
-import { saveDataToSupabase, loadDataFromSupabase } from './baseUtils';
+import { saveDataToSupabase, loadDataFromSupabase } from './dataAccess';
 
 // Specific functions for SWOT tool
 export const saveSwotData = async (userId: string, swotData: any): Promise<boolean> => {

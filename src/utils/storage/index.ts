@@ -1,6 +1,7 @@
 
 // Export all storage utilities
-export * from './baseUtils';
+export * from './dataAccess';
+export * from './completionCheck';
 export * from './swotUtils';
 export * from './checklistUtils';
 export * from './businessMapUtils';

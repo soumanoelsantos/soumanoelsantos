@@ -1,5 +1,5 @@
 
-import { saveDataToSupabase, loadDataFromSupabase } from './baseUtils';
+import { saveDataToSupabase, loadDataFromSupabase } from './dataAccess';
 
 // Specific functions for Business Map tool
 export const saveBusinessMapData = async (userId: string, businessMapData: any): Promise<boolean> => {
