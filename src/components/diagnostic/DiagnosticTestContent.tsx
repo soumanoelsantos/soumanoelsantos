@@ -31,6 +31,7 @@ const DiagnosticTestContent = ({
 }: DiagnosticTestContentProps) => {
   const pdfRef = useRef<HTMLDivElement>(null);
 
+  // Only show the loading screen when initially generating results and not already showing results
   if (isGeneratingPlan && !showResults) {
     return (
       <div className="container mx-auto px-4 py-10">

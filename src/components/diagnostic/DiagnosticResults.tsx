@@ -27,7 +27,7 @@ interface DiagnosticResultsProps {
 }
 
 const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: DiagnosticResultsProps) => {
-  const { resetDiagnostic, regenerateActionPlan, isGeneratingPlan } = useDiagnostic();
+  const { resetDiagnostic, regenerateActionPlan, isGeneratingPlan, planGenerationAttempted } = useDiagnostic();
 
   const handleReset = () => {
     resetDiagnostic();
@@ -82,7 +82,9 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
         <div className="bg-amber-50 border border-amber-200 p-6 rounded-lg shadow-sm">
           <h3 className="text-xl font-bold text-amber-800 mb-4">Plano de Ação</h3>
           <p className="text-amber-700 mb-4">
-            Gere um plano de ação detalhado e personalizado com base nos resultados do diagnóstico da sua empresa.
+            {planGenerationAttempted ? 
+              "Não foi possível gerar o plano de ação. Por favor, tente novamente." : 
+              "Gere um plano de ação detalhado e personalizado com base nos resultados do diagnóstico da sua empresa."}
           </p>
           <ActionButton 
             onClick={handleRegenerateActionPlan} 
@@ -96,7 +98,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
                 Criando Plano de Ação... <span className="animate-pulse">Analisando Dados</span>
               </span>
             ) : (
-              "Gerar Plano de Ação Personalizado"
+              planGenerationAttempted ? "Tentar Novamente" : "Gerar Plano de Ação Personalizado"
             )}
           </ActionButton>
         </div>

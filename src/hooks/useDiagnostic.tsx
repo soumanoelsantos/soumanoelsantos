@@ -32,7 +32,8 @@ export const useDiagnostic = () => {
     actionPlan,
     isGeneratingPlan,
     regenerateActionPlan,
-    setActionPlan
+    setActionPlan,
+    planGenerationAttempted
   } = useActionPlanGeneration(
     userId,
     diagnosticId,
@@ -172,6 +173,7 @@ export const useDiagnostic = () => {
     isLoading,
     isSubmitting,
     isGeneratingPlan,
+    planGenerationAttempted,
     answersData,
     setAnswersData,
     actionPlan,

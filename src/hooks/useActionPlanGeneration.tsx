@@ -16,6 +16,7 @@ export const useActionPlanGeneration = (
 ) => {
   const [actionPlan, setActionPlan] = useState<{[key: string]: string[]}>({});
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [planGenerationAttempted, setPlanGenerationAttempted] = useState(false);
 
   useEffect(() => {
     const generatePlan = async () => {
@@ -28,7 +29,7 @@ export const useActionPlanGeneration = (
           console.log("Generating detailed action plan with answersData:", answersData);
           
           // Generate the detailed action plan
-          const plan = await generateActionPlan(answersData, true); // Added parameter to request detailed plan
+          const plan = await generateActionPlan(answersData, true);
           console.log("Generated detailed action plan:", plan);
           
           if (plan && Object.keys(plan).length > 0) {
@@ -44,6 +45,7 @@ export const useActionPlanGeneration = (
             }
             
             setActionPlan(formattedPlan);
+            setPlanGenerationAttempted(true);
             
             // Save the action plan in Supabase
             if (userId) {
@@ -58,7 +60,6 @@ export const useActionPlanGeneration = (
                 console.log("Detailed action plan saved to Supabase");
               } catch (error) {
                 console.error("Erro ao salvar plano de ação:", error);
-                // We don't show a toast notification as per user's request
               }
             }
           } else {
@@ -66,7 +67,8 @@ export const useActionPlanGeneration = (
           }
         } catch (error) {
           console.error("Error generating detailed action plan:", error);
-          // Don't show toast notification as per user's request
+          // Mark as attempted even if there was an error
+          setPlanGenerationAttempted(true);
         } finally {
           setIsGeneratingPlan(false);
           setShouldGeneratePlan(false);
@@ -80,6 +82,7 @@ export const useActionPlanGeneration = (
   }, [shouldGeneratePlan, showResults, results, answersData, userId, diagnosticId, setShouldGeneratePlan]);
   
   const regenerateActionPlan = () => {
+    setPlanGenerationAttempted(true); // Ensure we know an attempt has been made
     setShouldGeneratePlan(true);
   };
 
@@ -87,6 +90,7 @@ export const useActionPlanGeneration = (
     actionPlan,
     isGeneratingPlan,
     regenerateActionPlan,
-    setActionPlan
+    setActionPlan,
+    planGenerationAttempted
   };
 };
