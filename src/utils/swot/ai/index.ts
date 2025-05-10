@@ -2,17 +2,28 @@
 import { SwotData } from "@/types/swot";
 import { CompanyInfoData } from "@/types/companyInfo";
 import { callDeepseekApi } from "./deepseekClient";
-import { generateSwotPrompt, prepareSwotDataForApi } from "./promptGenerator";
-import { parseSwotActionPlan } from "./responseParser";
+import { generateSwotPrompt, generatePhaseTestPrompt, prepareSwotDataForApi, preparePhaseTestDataForApi } from "./promptGenerator";
+import { parseSwotActionPlan, parsePhaseTestActionPlan } from "./responseParser";
 
 /**
  * Generate enhanced action plan using DeepSeek AI
  * This is the main function that external modules should interact with
  */
-export const generateEnhancedActionPlan = async (swotData: any) => {
+export const generateEnhancedActionPlan = async (data: any) => {
   try {
+    // Determine if we're dealing with SWOT data or Phase Test data
+    const isPhaseTestData = data.phaseResult !== undefined;
+    
+    let prompt;
+    if (isPhaseTestData) {
+      // Generate prompt for phase test data
+      prompt = generatePhaseTestPrompt(data);
+    } else {
+      // Generate prompt for SWOT data
+      prompt = generateSwotPrompt(data);
+    }
+    
     // Call the DeepSeek API with the prepared prompt
-    const prompt = generateSwotPrompt(swotData);
     const apiResponse = await callDeepseekApi(prompt);
     
     if (!apiResponse) {
@@ -20,8 +31,11 @@ export const generateEnhancedActionPlan = async (swotData: any) => {
     }
     
     // Parse the API response into our expected action plan format
-    const actionPlan = parseSwotActionPlan(apiResponse);
-    return actionPlan;
+    if (isPhaseTestData) {
+      return parsePhaseTestActionPlan(apiResponse);
+    } else {
+      return parseSwotActionPlan(apiResponse);
+    }
   } catch (error) {
     console.error("Error generating enhanced action plan:", error);
     return null;

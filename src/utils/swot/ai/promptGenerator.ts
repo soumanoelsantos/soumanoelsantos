@@ -1,4 +1,3 @@
-
 import { SwotData } from "@/types/swot";
 import { CompanyInfoData } from "@/types/companyInfo";
 
@@ -85,6 +84,115 @@ Cada array deve conter strings com ações específicas. Seja prático, direto e
 };
 
 /**
+ * Generate a prompt for creating an action plan based on phase test results
+ */
+export const generatePhaseTestPrompt = (data: any) => {
+  let prompt = "Crie um plano de ação personalizado, prático e detalhado baseado nos seguintes dados sobre a empresa:\n\n";
+  
+  // Phase test results
+  if (data.phaseResult) {
+    prompt += `FASE ATUAL DA EMPRESA: ${data.phaseResult.phaseName}\n`;
+    prompt += `Compatibilidade com esta fase: ${Math.round(data.phaseResult.score)}%\n`;
+    prompt += `Descrição da fase: ${data.phaseResult.description}\n\n`;
+    
+    prompt += "RECOMENDAÇÕES INICIAIS:\n";
+    if (data.phaseResult.recommendations && data.phaseResult.recommendations.length > 0) {
+      data.phaseResult.recommendations.forEach((rec: string, index: number) => {
+        prompt += `${index + 1}. ${rec}\n`;
+      });
+    }
+  }
+  
+  // Add diagnostic data if available
+  if (data.diagnosticData) {
+    prompt += "\nRESULTADOS DO DIAGNÓSTICO GERAL:\n";
+    
+    if (data.diagnosticData.results) {
+      const results = data.diagnosticData.results;
+      
+      if (results.processos) prompt += `Processos: ${results.processos.percentage}%\n`;
+      if (results.pessoas) prompt += `Pessoas: ${results.pessoas.percentage}%\n`;
+      if (results.resultados) prompt += `Resultados: ${results.resultados.percentage}%\n`;
+      if (results.sistemaGestao) prompt += `Sistema de Gestão: ${results.sistemaGestao.percentage}%\n`;
+    }
+    
+    if (data.diagnosticData.answers_data) {
+      prompt += "\nPONTOS PRINCIPAIS IDENTIFICADOS NO DIAGNÓSTICO:\n";
+      
+      const answersData = data.diagnosticData.answers_data;
+      Object.keys(answersData).forEach(key => {
+        const section = answersData[key];
+        if (section && section.answers) {
+          section.answers.forEach((answer: any) => {
+            if (answer.answer === 'satisfactory') {
+              prompt += `- FORTE: ${answer.question}\n`;
+            } else if (answer.answer === 'nonexistent') {
+              prompt += `- FRACO: ${answer.question}\n`;
+            }
+          });
+        }
+      });
+    }
+  }
+  
+  // Add SWOT data if available
+  if (data.swotData) {
+    prompt += "\nANÁLISE SWOT DA EMPRESA:\n";
+    
+    if (data.swotData.strengths && data.swotData.strengths.length > 0) {
+      prompt += "Forças:\n";
+      data.swotData.strengths.forEach((strength: any) => {
+        if (strength.text) prompt += `- ${strength.text}\n`;
+      });
+    }
+    
+    if (data.swotData.weaknesses && data.swotData.weaknesses.length > 0) {
+      prompt += "\nFraquezas:\n";
+      data.swotData.weaknesses.forEach((weakness: any) => {
+        if (weakness.text) prompt += `- ${weakness.text}\n`;
+      });
+    }
+    
+    if (data.swotData.opportunities && data.swotData.opportunities.length > 0) {
+      prompt += "\nOportunidades:\n";
+      data.swotData.opportunities.forEach((opportunity: any) => {
+        if (opportunity.text) prompt += `- ${opportunity.text}\n`;
+      });
+    }
+    
+    if (data.swotData.threats && data.swotData.threats.length > 0) {
+      prompt += "\nAmeaças:\n";
+      data.swotData.threats.forEach((threat: any) => {
+        if (threat.text) prompt += `- ${threat.text}\n`;
+      });
+    }
+  }
+  
+  // Instructions for the AI
+  prompt += `\nCom base nessas informa��ões, crie um plano de ação personalizado e detalhado com 10 ações práticas e específicas seguindo a metodologia SMART:
+  
+- Específico (Specific): Ações claras e bem definidas
+- Mensurável (Measurable): Deve ser possível medir o progresso
+- Atingível (Achievable): Realista e factível para esta empresa
+- Relevante (Relevant): Relacionado diretamente aos desafios identificados
+- Temporal (Time-bound): Com prazos claros para implementação
+
+Para cada ação, inclua:
+1. O que exatamente deve ser feito
+2. Como será medido o sucesso
+3. Quais recursos serão necessários
+4. Por que esta ação é importante
+5. O prazo recomendado para implementação (curto, médio ou longo prazo)
+
+Formule cada ação como uma instrução clara e direta, iniciando com um verbo no infinitivo.
+Retorne apenas uma lista de 10 ações SMART, sem seções ou categorias adicionais.
+
+Lembre-se de que o plano deve ser adaptado à fase atual da empresa (${data.phaseResult?.phaseName || "Não identificada"}) e aos desafios específicos identificados nos diagnósticos.`;
+
+  return prompt;
+};
+
+/**
  * Prepare SWOT data for the API by formatting it correctly
  */
 export const prepareSwotDataForApi = (data: SwotData, companyInfo?: CompanyInfoData | null) => {
@@ -101,5 +209,16 @@ export const prepareSwotDataForApi = (data: SwotData, companyInfo?: CompanyInfoD
     opportunities: validOpportunities,
     threats: validThreats,
     companyInfo: companyInfo || undefined
+  };
+};
+
+/**
+ * Prepare phase test data for the API
+ */
+export const preparePhaseTestDataForApi = (phaseTestData: any, diagnosticData: any = null, swotData: any = null) => {
+  return {
+    phaseResult: phaseTestData,
+    diagnosticData: diagnosticData,
+    swotData: swotData
   };
 };

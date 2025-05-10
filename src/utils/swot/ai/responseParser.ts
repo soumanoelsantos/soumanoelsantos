@@ -58,3 +58,78 @@ export const parseSwotActionPlan = (apiResponse: string) => {
     return null;
   }
 };
+
+/**
+ * Parse the DeepSeek API response for phase test action plan
+ * This expects a list of action items in the response
+ */
+export const parsePhaseTestActionPlan = (apiResponse: string) => {
+  try {
+    console.log("Raw phase test API response to parse:", apiResponse);
+    
+    // Try different parsing strategies
+    let actionItems: string[] = [];
+    
+    // First try to extract as a JSON array
+    try {
+      const jsonMatch = apiResponse.match(/```json([\s\S]*?)```/) || 
+                        apiResponse.match(/\[([\s\S]*?)\]/) ||
+                        apiResponse.match(/{[\s\S]*?}/);
+      
+      if (jsonMatch) {
+        const jsonContent = jsonMatch[1] || jsonMatch[0];
+        // Check if it's an array or an object with an items property
+        const parsedData = JSON.parse(jsonContent);
+        
+        if (Array.isArray(parsedData)) {
+          actionItems = parsedData;
+        } else if (parsedData.actions && Array.isArray(parsedData.actions)) {
+          actionItems = parsedData.actions;
+        } else if (parsedData.items && Array.isArray(parsedData.items)) {
+          actionItems = parsedData.items;
+        } else {
+          // If it's an object with string values, convert to array
+          actionItems = Object.values(parsedData).filter(item => typeof item === 'string');
+        }
+      }
+    } catch (jsonError) {
+      console.log("Failed to parse as JSON, trying alternative parsing");
+    }
+    
+    // If JSON parsing failed, try to extract numbered list items
+    if (actionItems.length === 0) {
+      // Match numbered list items (1. Item text)
+      const numberedListRegex = /(?:^|\n)(\d+\.\s+.+?)(?=(?:\n\d+\.)|$)/g;
+      const matches = [...apiResponse.matchAll(numberedListRegex)];
+      
+      if (matches.length > 0) {
+        actionItems = matches.map(match => match[1].trim());
+      }
+    }
+    
+    // If still no items, try to split by new lines and filter out empty lines
+    if (actionItems.length === 0) {
+      actionItems = apiResponse.split('\n')
+        .map(line => line.trim())
+        .filter(line => line && line.length > 10); // Only keep non-empty lines with some content
+    }
+    
+    console.log("Parsed action items:", actionItems);
+    
+    if (actionItems.length === 0) {
+      throw new Error("Could not extract action items from response");
+    }
+    
+    return actionItems;
+  } catch (error) {
+    console.error("Error parsing phase test action plan:", error);
+    // Return a fallback plan in case of error
+    return [
+      "1. Implementar processo de planejamento estratégico trimestral com metas SMART.",
+      "2. Desenvolver sistema de controle financeiro com indicadores claros de desempenho.",
+      "3. Criar programa de treinamento para equipe focado nas habilidades necessárias para a fase atual.",
+      "4. Estabelecer rotina de reuniões semanais com equipe para acompanhamento de metas.",
+      "5. Documentar principais processos da empresa em formato de passo a passo."
+    ];
+  }
+};
