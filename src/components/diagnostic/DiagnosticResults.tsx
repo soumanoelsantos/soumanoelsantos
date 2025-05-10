@@ -48,11 +48,15 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
       ) : (
         <div className="bg-amber-50 border border-amber-200 p-6 rounded-lg shadow-sm">
           <h3 className="text-xl font-bold text-amber-800 mb-4">Plano de Ação</h3>
+          <p className="text-amber-700 mb-4">
+            Gere um plano de ação detalhado e personalizado com base nos resultados do diagnóstico da sua empresa.
+          </p>
           <ActionButton 
             onClick={regenerateActionPlan} 
             variant="primary"
             icon={isGeneratingPlan ? Loader2 : FileEdit}
             disabled={isGeneratingPlan}
+            className="w-full sm:w-auto"
           >
             {isGeneratingPlan ? (
               <span className="flex items-center gap-2">

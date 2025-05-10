@@ -30,6 +30,19 @@ const DiagnosticTestContent = ({
 }: DiagnosticTestContentProps) => {
   const pdfRef = useRef<HTMLDivElement>(null);
 
+  if (isGeneratingPlan) {
+    return (
+      <div className="container mx-auto px-4 py-10">
+        <DiagnosticHeader />
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#1d365c]"></div>
+          <p className="mt-4 text-lg text-gray-800">Gerando plano de ação avançado...</p>
+          <p className="text-sm text-gray-600">Isso pode levar alguns instantes.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-10">
       <DiagnosticHeader />
@@ -42,12 +55,6 @@ const DiagnosticTestContent = ({
           setAnswersData={setAnswersData}
           onSubmit={handleSubmit}
         />
-      ) : isGeneratingPlan ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#1d365c]"></div>
-          <p className="mt-4 text-lg text-gray-800">Gerando plano de ação avançado...</p>
-          <p className="text-sm text-gray-600">Isso pode levar alguns instantes.</p>
-        </div>
       ) : (
         <DiagnosticResults 
           results={results} 
