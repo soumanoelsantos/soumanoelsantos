@@ -1,11 +1,14 @@
 
-import React from 'react';
+import React, { forwardRef } from 'react';
+import { SwotData } from "@/types/swot";
 
 interface SwotPdfPreviewProps {
+  swotData: SwotData;
   actionPlan: Record<string, string[]>;
 }
 
-const SwotPdfPreview: React.FC<SwotPdfPreviewProps> = ({ actionPlan }) => {
+const SwotPdfPreview = forwardRef<HTMLDivElement, SwotPdfPreviewProps>(
+  ({ actionPlan, swotData }, ref) => {
   // Generate detailed help content for PDF
   const generatePdfHelpContent = (strategy: string, category: string) => {
     let steps = [];
@@ -73,7 +76,7 @@ const SwotPdfPreview: React.FC<SwotPdfPreviewProps> = ({ actionPlan }) => {
   };
 
   return (
-    <div className="swot-pdf-container p-8 bg-white">
+    <div ref={ref} className="swot-pdf-container p-8 bg-white">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Plano de Ação SWOT</h1>
         <p className="text-sm text-gray-600 mt-1">Baseado na sua análise SWOT</p>
@@ -284,6 +287,8 @@ const SwotPdfPreview: React.FC<SwotPdfPreviewProps> = ({ actionPlan }) => {
       </div>
     </div>
   );
-};
+});
+
+SwotPdfPreview.displayName = 'SwotPdfPreview';
 
 export default SwotPdfPreview;
