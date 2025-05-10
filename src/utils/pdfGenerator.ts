@@ -4,6 +4,7 @@ import { getDefaultPdfOptionsConfig } from './pdf/pdfOptions';
 import { getPUVPdfOptionsConfig, getPUVPdfStyles } from './pdf/puvStyles';
 import { getMapaEquipePdfOptionsConfig, getMapaEquipeStyles } from './pdf/mapaEquipeStyles';
 import { getSwotPdfOptionsConfig, getSwotPdfStyles } from './pdf/swotStyles';
+import { getDiagnosticPdfStyles, getDiagnosticPdfOptions } from './pdf/diagnosticStyles';
 
 /**
  * Generates a PDF from a given HTML element
@@ -15,7 +16,7 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
     // Default options
     let options = getDefaultPdfOptionsConfig();
     
-    // Check if the element has PUV specific class
+    // Check if the element has specific CSS classes for styling
     if (element.classList.contains('puv-preview')) {
       // Add PUV specific styles
       const styleElement = document.createElement('style');
@@ -24,11 +25,6 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       
       // Use PUV specific options if available
       options = getPUVPdfOptionsConfig();
-      
-      // Override filename if provided
-      if (fileName) {
-        options.filename = fileName;
-      }
     } 
     // Check if the element has mapa-equipe specific class
     else if (element.classList.contains('mapa-equipe-preview')) {
@@ -39,11 +35,6 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       
       // Use mapa-equipe specific options if available
       options = getMapaEquipePdfOptionsConfig();
-      
-      // Override filename if provided
-      if (fileName) {
-        options.filename = fileName;
-      }
     }
     // Check if the element has swot-pdf-container class
     else if (element.classList.contains('swot-pdf-container')) {
@@ -54,28 +45,21 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       
       // Use SWOT specific options if available
       options = getSwotPdfOptionsConfig();
-      
-      // Override filename if provided
-      if (fileName) {
-        options.filename = fileName;
-      }
-      
-      // Add link redirection function to the PDF for CTA button
-      const scriptElement = document.createElement('script');
-      scriptElement.textContent = `
-        document.addEventListener('click', function(e) {
-          if (e.target && e.target.closest('a[href="https://soumanoelsantos.com.br"]')) {
-            window.open('https://soumanoelsantos.com.br', '_blank');
-          }
-        });
-      `;
-      element.appendChild(scriptElement);
     }
-    else {
-      // Override filename if provided
-      if (fileName) {
-        options.filename = fileName;
-      }
+    // Check if the element has pdf-export class (for diagnostic)
+    else if (element.classList.contains('pdf-export')) {
+      // Add Diagnostic specific styles
+      const styleElement = document.createElement('style');
+      styleElement.textContent = getDiagnosticPdfStyles();
+      element.appendChild(styleElement);
+      
+      // Use Diagnostic specific options
+      options = getDiagnosticPdfOptions();
+    }
+    
+    // Override filename if provided
+    if (fileName) {
+      options.filename = fileName;
     }
 
     // Generate PDF
@@ -85,17 +69,10 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
     setTimeout(() => {
       const styleElements = element.querySelectorAll('style');
       styleElements.forEach(el => {
-        if (el.textContent?.includes('puv-preview') || 
+        if (el.textContent?.includes('pdf-export') || 
+            el.textContent?.includes('puv-preview') || 
             el.textContent?.includes('mapa-equipe-preview') ||
             el.textContent?.includes('swot-pdf-container')) {
-          el.remove();
-        }
-      });
-      
-      // Remove any temporary script elements
-      const scriptElements = element.querySelectorAll('script');
-      scriptElements.forEach(el => {
-        if (el.textContent?.includes('soumanoelsantos.com.br')) {
           el.remove();
         }
       });

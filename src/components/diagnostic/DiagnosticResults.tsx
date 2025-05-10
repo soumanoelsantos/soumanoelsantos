@@ -6,7 +6,8 @@ import AnswersDisplay from "./AnswersDisplay";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Download } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from "react-router-dom";
+import { generatePDF } from '@/utils/pdfGenerator';
+import DownloadPdfButton from "./DownloadPdfButton";
 
 interface DiagnosticResultsProps {
   results: any;
@@ -21,7 +22,6 @@ const DiagnosticResults = ({
 }: DiagnosticResultsProps) => {
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   // Safety check for results
   if (!results) {
@@ -45,11 +45,22 @@ const DiagnosticResults = ({
   const percentage = Math.round((totalScore / maxPossibleScore) * 100) || 0;
 
   const handleDownloadPDF = () => {
+    if (!pdfRef.current) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao gerar PDF",
+        description: "Não foi possível gerar o PDF do diagnóstico.",
+      });
+      return;
+    }
+    
     toast({
       title: "Download iniciado!",
       description: "O PDF do seu diagnóstico está sendo gerado.",
     });
-    // Here you would add actual PDF generation logic
+    
+    // Use the PDF generator utility to create and download the PDF
+    generatePDF(pdfRef.current, 'diagnostico-negocio.pdf');
   };
 
   const handleRestart = () => {
@@ -61,16 +72,10 @@ const DiagnosticResults = ({
     
     // Call the onRestart function provided by the parent
     onRestart();
-    
-    // Additional feedback after successful restart
-    toast({
-      title: "Diagnóstico reiniciado",
-      description: "Você pode realizar um novo diagnóstico agora."
-    });
   };
 
   return (
-    <div className="space-y-8" ref={pdfRef}>
+    <div className="pdf-export space-y-8" ref={pdfRef}>
       <div>
         <h2 className="text-xl font-semibold mb-4 text-center">
           Pontuação Geral: {percentage}%
@@ -121,7 +126,7 @@ const DiagnosticResults = ({
         <AnswersDisplay answersData={answersData} />
       )}
 
-      <div className="flex justify-between items-center flex-wrap gap-4 pt-6">
+      <div className="flex justify-between items-center flex-wrap gap-4 pt-6 print:hidden">
         <Button 
           variant="outline" 
           onClick={handleRestart}

@@ -64,15 +64,15 @@ const DiagnosticTestContent = ({
 
   return (
     <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">
+      <CardHeader className="bg-[#1d365c]">
+        <CardTitle className="text-2xl font-bold text-center text-white">
           Diagnóstico do Negócio
         </CardTitle>
-        <CardDescription className="text-center">
+        <CardDescription className="text-center text-white">
           Avalie o estágio atual da sua empresa em 4 áreas-chave
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         {!showResults ? (
           <DiagnosticSections
             sections={sections}

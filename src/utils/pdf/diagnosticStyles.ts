@@ -1,46 +1,85 @@
 
 /**
- * Diagnostic-specific PDF styling
- * Contains styles for diagnostic reports in PDF exports
+ * PDF styling utility for diagnostic reports
+ * Contains all styles needed for diagnostic PDF export
  */
 
 export const getDiagnosticPdfStyles = (): string => {
   return `
-    /* Answer section styles */
-    .pdf-export .answers-section ul li {
+    /* Base styles for PDF export */
+    .pdf-export {
+      font-family: 'Arial', sans-serif !important;
       color: #000000 !important;
-      font-size: 11px !important;
-      margin-bottom: 3px !important;
-    }
-    .pdf-export .answers-section .question-text {
-      font-weight: 600 !important;
-      color: #000000 !important;
-    }
-    .pdf-export .answers-section h3 {
-      font-size: 14px !important;
-      margin-bottom: 5px !important;
-    }
-    .pdf-export .answers-section h2 {
-      font-size: 16px !important;
-      margin-bottom: 10px !important;
-    }
-    .pdf-export .answers-section .answer-satisfactory {
-      color: #22c55e !important;
-    }
-    .pdf-export .answers-section .answer-unsatisfactory {
-      color: #eab308 !important;
-    }
-    .pdf-export .answers-section .answer-nonexistent {
-      color: #ef4444 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
     }
     
-    /* Action plan section */
-    .pdf-export .space-y-6 > div {
-      margin-bottom: 10px !important;
+    /* Text colors */
+    .pdf-export * {
+      color: #000000 !important;
     }
-    .pdf-export .space-y-6 h3 {
-      font-size: 14px !important;
-      margin-bottom: 5px !important;
+    
+    /* Chart styling */
+    .pdf-export .recharts-layer {
+      color: inherit !important;
+    }
+    .pdf-export .recharts-surface {
+      overflow: visible !important;
+    }
+    .pdf-export .recharts-wrapper {
+      width: 100% !important;
+      height: 300px !important;
+      overflow: visible !important;
+      margin: 0 auto !important;
+    }
+    
+    /* Card styling */
+    .pdf-export .bg-\\[\\#1d365c\\] {
+      background-color: #1d365c !important;
+      color: white !important;
+    }
+    .pdf-export .bg-\\[\\#1d365c\\] * {
+      color: white !important;
+    }
+    
+    /* Hide elements not needed in PDF */
+    .pdf-export .print\\:hidden {
+      display: none !important;
+    }
+    
+    /* Grid layout for PDF */
+    .pdf-export .grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 16px !important;
+    }
+    
+    @media print {
+      .print\\:hidden {
+        display: none !important;
+      }
     }
   `;
+};
+
+export const getDiagnosticPdfOptions = () => {
+  return {
+    margin: [10, 10, 10, 10],
+    filename: 'diagnostico-negocio.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { 
+      scale: 2,
+      logging: true, 
+      useCORS: true,
+      allowTaint: true
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'portrait',
+      compress: true
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
 };
