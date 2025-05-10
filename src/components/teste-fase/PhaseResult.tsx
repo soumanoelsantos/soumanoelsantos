@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { PhaseTestResult } from "../../types/phaseTest";
@@ -22,15 +22,14 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [showEnhancedPlan, setShowEnhancedPlan] = useState(false);
   
-  if (!result) return null;
-
-  // Check if there's an enhanced action plan already
-  const hasEnhancedPlan = result.enhanced_action_plan && result.enhanced_action_plan.length > 0;
+  useEffect(() => {
+    // Check if there's an enhanced action plan already and show it by default
+    if (result && result.enhanced_action_plan && result.enhanced_action_plan.length > 0) {
+      setShowEnhancedPlan(true);
+    }
+  }, [result]);
   
-  // If there's an enhanced plan, show it by default
-  if (hasEnhancedPlan && !showEnhancedPlan) {
-    setShowEnhancedPlan(true);
-  }
+  if (!result) return null;
 
   const handleGenerateActionPlan = async () => {
     if (!userId) {
@@ -65,8 +64,11 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
         swotData: swotData?.swot_data || null
       };
       
+      console.log("Sending data to AI for plan generation:", inputData);
+      
       // Generate enhanced action plan using AI
       const generatedPlan = await generateEnhancedActionPlan(inputData);
+      console.log("Received generated plan:", generatedPlan);
       
       if (generatedPlan) {
         // Format the plan as a list of action items
@@ -74,11 +76,17 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
           ? generatedPlan 
           : Object.values(generatedPlan).flat();
         
-        // Update the current result object
-        result.enhanced_action_plan = actionItems;
+        console.log("Formatted action items:", actionItems);
+        
+        // Create a new result object to avoid mutating the original
+        const updatedResult = {
+          ...result,
+          enhanced_action_plan: actionItems
+        };
         
         // Save the enhanced action plan to the database
         if (userId) {
+          console.log("Saving plan to database for user:", userId);
           // Save enhanced plan to fase_results
           const { error } = await supabase
             .from('fase_results')
@@ -87,7 +95,15 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
             })
             .eq('user_id', userId);
           
-          if (error) throw error;
+          if (error) {
+            console.error("Error saving to database:", error);
+            throw error;
+          }
+        }
+        
+        // Update local state with the new plan
+        if (result) {
+          result.enhanced_action_plan = actionItems;
         }
         
         setShowEnhancedPlan(true);
@@ -162,6 +178,17 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
                   <li key={index} className="text-gray-700">{action}</li>
                 ))}
               </ul>
+              <div className="mt-4 pt-4 border-t border-green-200">
+                <ActionButton
+                  onClick={handleGenerateActionPlan}
+                  variant="outline"
+                  size="sm"
+                  icon={RefreshCw}
+                  disabled={isGeneratingPlan}
+                >
+                  {isGeneratingPlan ? "Gerando..." : "Regenerar Plano"}
+                </ActionButton>
+              </div>
             </div>
           )}
           

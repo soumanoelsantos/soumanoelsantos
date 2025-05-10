@@ -1,3 +1,4 @@
+
 import { SwotData } from "@/types/swot";
 import { CompanyInfoData } from "@/types/companyInfo";
 
@@ -169,7 +170,7 @@ export const generatePhaseTestPrompt = (data: any) => {
   }
   
   // Instructions for the AI
-  prompt += `\nCom base nessas informa��ões, crie um plano de ação personalizado e detalhado com 10 ações práticas e específicas seguindo a metodologia SMART:
+  prompt += `\nCom base nessas informações, crie um plano de ação personalizado e detalhado com 10 ações práticas e específicas seguindo a metodologia SMART:
   
 - Específico (Specific): Ações claras e bem definidas
 - Mensurável (Measurable): Deve ser possível medir o progresso

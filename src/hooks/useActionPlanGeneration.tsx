@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { DiagnosticResults, AnswersDataType } from "@/types/diagnostic";
 import { generateActionPlan } from "@/utils/generateActionPlan";
@@ -102,6 +102,3 @@ export const useActionPlanGeneration = (
     setActionPlan
   };
 };
-
-// Add missing import
-import { useEffect } from 'react';
