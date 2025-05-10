@@ -103,7 +103,7 @@ const LeadCaptureForm = ({
       <DialogTrigger asChild>
         <Button className={buttonClassName}>{buttonText}</Button>
       </DialogTrigger>
-      <DialogContent className={`${isMobile ? 'w-[95%] max-h-[80vh] overflow-y-auto p-4' : 'sm:max-w-[425px]'}`}>
+      <DialogContent className={`${isMobile ? 'w-[calc(100%-16px)] mx-2 max-h-[92vh] overflow-y-auto p-4' : 'sm:max-w-[425px]'}`}>
         <DialogHeader>
           <DialogTitle className={`text-2xl text-center ${isMobile ? 'text-xl mb-2' : ''}`}>
             Agendar diagnóstico gratuito
@@ -111,7 +111,7 @@ const LeadCaptureForm = ({
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 py-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 py-2 pb-6">
             <FormField
               control={form.control}
               name="name"
@@ -156,7 +156,7 @@ const LeadCaptureForm = ({
             
             <Button 
               type="submit" 
-              className="w-full bg-dark-primary hover:bg-dark-primary/90 text-black" 
+              className="w-full bg-dark-primary hover:bg-dark-primary/90 text-black mt-2" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from 'react-hook-form';
 import { CompanyInfoData } from '@/types/companyInfo';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SwotCompanyInfoDialogProps {
   open: boolean;
@@ -29,6 +31,8 @@ const SwotCompanyInfoDialog: React.FC<SwotCompanyInfoDialogProps> = ({
     }
   });
   
+  const isMobile = useIsMobile();
+  
   const handleFormSubmit = (data: CompanyInfoData) => {
     onSubmit(data);
     onOpenChange(false);
@@ -41,7 +45,7 @@ const SwotCompanyInfoDialog: React.FC<SwotCompanyInfoDialogProps> = ({
           <DialogTitle>Informações da sua empresa</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 mt-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 mt-4 pb-6">
           <div className="space-y-2">
             <Label htmlFor="industry">Setor/Indústria</Label>
             <Input 
@@ -102,7 +106,7 @@ const SwotCompanyInfoDialog: React.FC<SwotCompanyInfoDialogProps> = ({
             />
           </div>
           
-          <div className="flex justify-end pt-4">
+          <div className={`flex justify-end ${isMobile ? 'mt-6' : 'pt-4'}`}>
             <Button type="submit">Gerar Plano Personalizado</Button>
           </div>
         </form>

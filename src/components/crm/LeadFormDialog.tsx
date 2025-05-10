@@ -12,6 +12,7 @@ import { LeadFormValues } from "./schemas/leadFormSchema";
 import { useLeadForm } from "./hooks/useLeadForm";
 import LeadFormFields from "./LeadFormFields";
 import LeadFormSubmitButton from "./LeadFormSubmitButton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LeadFormDialogProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ const LeadFormDialog: React.FC<LeadFormDialogProps> = ({
     defaultValues,
     isOpen
   });
+  const isMobile = useIsMobile();
 
   // Prevent form from being closed when clicking inside it
   const handleDialogContentClick = (e: React.MouseEvent) => {
@@ -45,16 +47,19 @@ const LeadFormDialog: React.FC<LeadFormDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]" onClick={handleDialogContentClick}>
+      <DialogContent 
+        className={`${isMobile ? 'w-[calc(100%-16px)] mx-2 max-h-[92vh] overflow-y-auto' : 'sm:max-w-[500px]'}`} 
+        onClick={handleDialogContentClick}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4 pb-6">
             <LeadFormFields form={form} statuses={statuses} />
             
-            <DialogFooter>
+            <DialogFooter className={`${isMobile ? 'mt-4' : ''}`}>
               <LeadFormSubmitButton 
                 isSubmitting={isSubmitting} 
                 submitButtonText={submitButtonText} 
