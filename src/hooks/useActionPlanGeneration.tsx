@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { DiagnosticResults, AnswersDataType } from "@/types/diagnostic";
 import { generateActionPlan } from "@/utils/generateActionPlan";
-import { saveDiagnosticToSupabase } from "@/utils/diagnosticUtils";
+import { saveDiagnosticToSupabase } from "@/utils/storage";
 import { Json } from "@/integrations/supabase/types";
 
 export const useActionPlanGeneration = (
@@ -27,10 +27,9 @@ export const useActionPlanGeneration = (
         setIsGeneratingPlan(true);
         
         try {
-          console.log("Generating action plan with results:", results);
-          console.log("And answers data:", answersData);
+          console.log("Generating action plan with answersData:", answersData);
           
-          const plan = await generateActionPlan(results, answersData);
+          const plan = await generateActionPlan(answersData);
           console.log("Generated action plan:", plan);
           
           if (plan && Object.keys(plan).length > 0) {

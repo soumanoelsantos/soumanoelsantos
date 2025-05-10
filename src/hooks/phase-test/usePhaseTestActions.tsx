@@ -42,7 +42,7 @@ export const usePhaseTestActions = (state: PhaseTestState) => {
   
   const handleNext = () => {
     if (currentPhaseIndex < phaseTestData.length - 1) {
-      setCurrentPhaseIndex(prev => prev + 1);
+      setCurrentPhaseIndex(currentPhaseIndex + 1);
     } else {
       calculateResult();
     }
@@ -50,7 +50,7 @@ export const usePhaseTestActions = (state: PhaseTestState) => {
   
   const handlePrevious = () => {
     if (currentPhaseIndex > 0) {
-      setCurrentPhaseIndex(prev => prev - 1);
+      setCurrentPhaseIndex(currentPhaseIndex - 1);
     }
   };
   

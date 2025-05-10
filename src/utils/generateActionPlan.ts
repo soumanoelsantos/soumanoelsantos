@@ -8,20 +8,40 @@ interface DiagnosticResults {
   pessoas: { score: number; total: number; percentage: number };
 }
 
-export const generateActionPlan = async (results: DiagnosticResults, answersData?: any) => {
-  console.log("Starting action plan generation with results:", results);
-  console.log("And answers data:", answersData);
+export const generateActionPlan = async (answersData: any) => {
+  console.log("Starting action plan generation with answers data:", answersData);
   
   // First try to get an enhanced plan from the DeepSeek API
   try {
     console.log("Attempting to generate enhanced action plan via DeepSeek API...");
     
-    // Convert diagnostic results to SWOT format for the API
+    // Extract strengths and weaknesses from answers data
+    const strengths = [];
+    const weaknesses = [];
+    const opportunities = [];
+    const threats = [];
+    
+    // Process each section
+    Object.keys(answersData).forEach(section => {
+      const sectionData = answersData[section];
+      if (sectionData && sectionData.answers) {
+        sectionData.answers.forEach(answer => {
+          if (answer.answer === 'satisfactory') {
+            strengths.push(answer.question);
+          } else if (answer.answer === 'nonexistent') {
+            weaknesses.push(answer.question);
+          } else if (answer.answer === 'unsatisfactory') {
+            opportunities.push(answer.question);
+          }
+        });
+      }
+    });
+    
     const swotData = {
-      strengths: [`Pontuação em Processos: ${results.processos.percentage}%`],
-      weaknesses: [`Pontuação em Gestão: ${results.sistemaGestao.percentage}%`],
-      opportunities: [`Pontuação em Resultados: ${results.resultados.percentage}%`],
-      threats: [`Pontuação em Pessoas: ${results.pessoas.percentage}%`]
+      strengths,
+      weaknesses,
+      opportunities,
+      threats
     };
     
     const enhancedPlan = await generateEnhancedActionPlan(swotData);
@@ -43,6 +63,36 @@ export const generateActionPlan = async (results: DiagnosticResults, answersData
   let actionPlan: {
     [key: string]: string[];
   } = {};
+  
+  // Extract scores from answers data to calculate percentages for each section
+  const results = {
+    processos: { score: 0, total: 0, percentage: 0 },
+    resultados: { score: 0, total: 0, percentage: 0 },
+    sistemaGestao: { score: 0, total: 0, percentage: 0 },
+    pessoas: { score: 0, total: 0, percentage: 0 }
+  };
+
+  Object.keys(answersData).forEach(section => {
+    const sectionData = answersData[section];
+    if (sectionData && sectionData.answers) {
+      let sectionScore = 0;
+      const total = sectionData.answers.length * (section === 'processos' || section === 'pessoas' ? 10 : 20);
+      
+      sectionData.answers.forEach(answer => {
+        if (answer.answer === 'satisfactory') {
+          sectionScore += (section === 'processos' || section === 'pessoas' ? 10 : 20);
+        } else if (answer.answer === 'unsatisfactory') {
+          sectionScore += (section === 'processos' || section === 'pessoas' ? 5 : 10);
+        }
+      });
+      
+      results[section] = {
+        score: sectionScore,
+        total: total,
+        percentage: Math.round((sectionScore / total) * 100)
+      };
+    }
+  });
   
   // Processos
   if (results.processos.percentage < 50) {

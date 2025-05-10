@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { loadDiagnosticDataFromSupabase } from "@/utils/diagnosticUtils";
+import { loadDiagnosticDataFromSupabase } from "@/utils/storage";
 import { DiagnosticResults, AnswersDataType } from "@/types/diagnostic";
 import { initialDiagnosticState } from "@/types/diagnosticState";
 
@@ -73,7 +73,7 @@ export const useDiagnosticData = () => {
     showResults,
     setShowResults,
     isLoading,
-    setIsLoading, // Make sure to include setIsLoading in the returned object
+    setIsLoading,
     diagnosticId,
     setDiagnosticId,
   };
