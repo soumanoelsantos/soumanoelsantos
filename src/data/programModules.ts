@@ -1,3 +1,4 @@
+
 // Program modules and content
 export const programModules = [
   {
@@ -14,6 +15,7 @@ export const programModules = [
       { id: 5, title: "Mapa do Negócio", url: "/mapa-negocio", isWhatsapp: false, dataKey: "business_map_data" },
       { id: 6, title: "Proposta Única de Valor (PUV)", url: "/proposta-unica-valor", isWhatsapp: false, dataKey: "puv_data" },
       { id: 7, title: "Mapa da Equipe", url: "/mapa-equipe", isWhatsapp: false, dataKey: "mapa_equipe" },
+      { id: 8, title: "Dashboard de Gestão", url: "#", isWhatsapp: false, dataKey: "" },
     ]
   },
   {
@@ -27,6 +29,8 @@ export const programModules = [
       { id: 102, title: "Definindo metas SMART para 90 dias", url: "#", isWhatsapp: false },
       { id: 103, title: "Criando seu plano de ação", url: "#", isWhatsapp: false },
       { id: 104, title: "Workshop: Análise SWOT da sua empresa", url: "#", isWhatsapp: false },
+      { id: 105, title: "Aceleração empresarial", url: "#", isWhatsapp: false },
+      { id: 106, title: "CRM e acompanhamento diário", url: "#", isWhatsapp: false },
     ]
   },
   {
@@ -40,6 +44,9 @@ export const programModules = [
       { id: 202, title: "Script de vendas de alto impacto", url: "#", isWhatsapp: false },
       { id: 203, title: "Técnicas de fechamento avançadas", url: "#", isWhatsapp: false },
       { id: 204, title: "Objeções: como transformá-las em vendas", url: "#", isWhatsapp: false },
+      { id: 205, title: "Treinamento de equipe de vendas", url: "#", isWhatsapp: false },
+      { id: 206, title: "Implementando metas diárias", url: "#", isWhatsapp: false },
+      { id: 207, title: "Processos de venda eficientes", url: "#", isWhatsapp: false },
     ]
   },
   {
@@ -53,6 +60,9 @@ export const programModules = [
       { id: 302, title: "Tráfego pago: Facebook e Instagram Ads", url: "#", isWhatsapp: false },
       { id: 303, title: "Copywriting para conversão", url: "#", isWhatsapp: false },
       { id: 304, title: "Automação de marketing", url: "#", isWhatsapp: false },
+      { id: 305, title: "Pós-venda e sucesso do cliente", url: "#", isWhatsapp: false },
+      { id: 306, title: "Encantamento do cliente", url: "#", isWhatsapp: false },
+      { id: 307, title: "Plano de fidelidade", url: "#", isWhatsapp: false },
     ]
   },
   {
@@ -66,6 +76,14 @@ export const programModules = [
       { id: 402, title: "Processos e operações eficientes", url: "#", isWhatsapp: false },
       { id: 403, title: "Recrutamento e gestão de equipe", url: "#", isWhatsapp: false },
       { id: 404, title: "Plano de crescimento sustentável", url: "#", isWhatsapp: false },
+      { id: 405, title: "Cultura empresarial", url: "#", isWhatsapp: false },
+      { id: 406, title: "Processo seletivo eficiente", url: "#", isWhatsapp: false },
+      { id: 407, title: "Programas de tutorias", url: "#", isWhatsapp: false },
+      { id: 408, title: "Comunidade de empresários", url: "#", isWhatsapp: false },
+      { id: 409, title: "Desenvolvimento de lideranças", url: "#", isWhatsapp: false },
+      { id: 410, title: "Plano de carreira", url: "#", isWhatsapp: false },
+      { id: 411, title: "Metodologia One on One", url: "#", isWhatsapp: false },
+      { id: 412, title: "Cultura de feedback", url: "#", isWhatsapp: false },
     ]
   }
 ];
