@@ -15,7 +15,6 @@ const PreviewActions = ({ onEditClick, onDownloadClick }: PreviewActionsProps) =
         onClick={onEditClick}
         variant="secondary"
         icon={ArrowLeft}
-        className="text-white"
       >
         Editar Dados
       </ActionButton>

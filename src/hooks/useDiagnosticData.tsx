@@ -17,6 +17,7 @@ export const useDiagnosticData = () => {
   const [showResults, setShowResults] = useState(initialDiagnosticState.showResults);
   const [isLoading, setIsLoading] = useState(initialDiagnosticState.isLoading);
   const [diagnosticId, setDiagnosticId] = useState<string | null>(initialDiagnosticState.diagnosticId);
+  const [loadError, setLoadError] = useState<Error | null>(null);
 
   // Check authentication and load saved data
   useEffect(() => {
@@ -39,6 +40,7 @@ export const useDiagnosticData = () => {
 
       try {
         console.log("Loading diagnostic data for user:", userId);
+        setLoadError(null);
         const loadedData = await loadDiagnosticDataFromSupabase(userId);
         
         if (loadedData.results) {
@@ -61,6 +63,12 @@ export const useDiagnosticData = () => {
         }
       } catch (error) {
         console.error("Erro ao carregar diagnóstico:", error);
+        setLoadError(error as Error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar diagnóstico",
+          description: "Não foi possível carregar os dados do diagnóstico. Tente novamente."
+        });
       } finally {
         setIsLoading(false);
       }
@@ -80,5 +88,6 @@ export const useDiagnosticData = () => {
     setIsLoading,
     diagnosticId,
     setDiagnosticId,
+    loadError
   };
 };

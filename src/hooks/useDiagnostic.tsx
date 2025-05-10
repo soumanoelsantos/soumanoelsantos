@@ -13,6 +13,7 @@ export const useDiagnostic = () => {
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [loadError, setLoadError] = useState<Error | null>(null);
 
   useEffect(() => {
     // Load saved diagnostic results when component mounts
@@ -25,7 +26,7 @@ export const useDiagnostic = () => {
       try {
         console.log("Attempting to load diagnostic results for user:", userId);
         
-        // Changed to use .eq and removed .single() to avoid the 406 error
+        // Use array notation with .eq instead of .single()
         const { data, error } = await supabase
           .from("diagnostic_results")
           .select("*")
@@ -33,6 +34,7 @@ export const useDiagnostic = () => {
 
         if (error) {
           console.error("Error fetching diagnostic results:", error);
+          setLoadError(error);
           throw error;
         }
 
@@ -42,15 +44,20 @@ export const useDiagnostic = () => {
           setResults(data[0].results);
           setAnswersData(data[0].answers_data || {});
           setShowResults(true);
+          setLoadError(null);
         } else {
           console.log("No diagnostic results found for user");
+          setResults(null);
+          setAnswersData({});
+          setShowResults(false);
         }
       } catch (error) {
         console.error("Error loading diagnostic results:", error);
+        setLoadError(error as Error);
         toast({
           variant: "destructive",
           title: "Erro ao carregar resultados",
-          description: "Não foi possível carregar os resultados do diagnóstico."
+          description: "Não foi possível carregar os resultados do diagnóstico. Tente novamente."
         });
       } finally {
         setIsLoading(false);
@@ -68,6 +75,7 @@ export const useDiagnostic = () => {
     if (userId) {
       try {
         console.log("Saving diagnostic results for user:", userId);
+        setIsLoading(true);
         
         // Check if a diagnostic exists for this user
         const { data, error } = await supabase
@@ -101,6 +109,11 @@ export const useDiagnostic = () => {
           if (insertError) throw insertError;
           console.log("Created new diagnostic results");
         }
+
+        toast({
+          title: "Diagnóstico salvo",
+          description: "Seus resultados foram salvos com sucesso."
+        });
       } catch (error) {
         console.error("Error saving diagnostic results:", error);
         toast({
@@ -108,6 +121,8 @@ export const useDiagnostic = () => {
           title: "Erro ao salvar resultados",
           description: "Os resultados foram calculados mas não puderam ser salvos."
         });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -123,6 +138,7 @@ export const useDiagnostic = () => {
     // Delete from database if user is logged in
     if (userId && isAuthenticated) {
       try {
+        setIsLoading(true);
         console.log("Attempting to delete diagnostic results for user:", userId);
         
         try {
@@ -159,6 +175,8 @@ export const useDiagnostic = () => {
           title: "Erro ao excluir resultados anteriores",
           description: "O diagnóstico foi reiniciado localmente, mas houve um erro ao excluir os resultados anteriores do banco de dados."
         });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -173,7 +191,8 @@ export const useDiagnostic = () => {
     answersData,
     setAnswersData,
     handleSubmit,
-    resetDiagnostic
+    resetDiagnostic,
+    loadError
   };
 };
 

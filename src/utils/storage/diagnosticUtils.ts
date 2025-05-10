@@ -13,10 +13,12 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
       .eq('user_id', userId);
 
     if (error) {
+      console.error("Error loading diagnostic data:", error);
       throw error;
     }
 
     if (!data || data.length === 0) {
+      console.log("No diagnostic data found for user:", userId);
       return {
         results: null,
         answersData: null,
@@ -37,6 +39,8 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
       
       if (isValidDiagnosticResults(loadedResults)) {
         parsedResults = loadedResults;
+      } else {
+        console.warn("Invalid diagnostic results format:", loadedResults);
       }
     }
     
@@ -46,6 +50,8 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
       
       if (isValidAnswersData(loadedAnswersData)) {
         parsedAnswersData = loadedAnswersData;
+      } else {
+        console.warn("Invalid answers data format:", loadedAnswersData);
       }
     }
     
@@ -55,9 +61,12 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
       
       if (isValidActionPlan(loadedActionPlan)) {
         parsedActionPlan = loadedActionPlan;
+      } else {
+        console.warn("Invalid action plan format:", loadedActionPlan);
       }
     }
 
+    console.log("Successfully loaded diagnostic data for user:", userId);
     return {
       results: parsedResults,
       answersData: parsedAnswersData,
@@ -78,6 +87,8 @@ export const saveDiagnosticToSupabase = async (
   actionPlan: { [key: string]: string[] }
 ) => {
   try {
+    console.log("Saving diagnostic data for user:", userId);
+    
     const diagnosticData = {
       user_id: userId,
       results: results as unknown as Json,
@@ -89,6 +100,7 @@ export const saveDiagnosticToSupabase = async (
     
     if (diagnosticId) {
       // Update existing diagnostic
+      console.log("Updating existing diagnostic with ID:", diagnosticId);
       result = await supabase
         .from('diagnostic_results')
         .update({
@@ -97,8 +109,14 @@ export const saveDiagnosticToSupabase = async (
           action_plan: diagnosticData.action_plan
         })
         .eq('id', diagnosticId);
+        
+      if (result.error) {
+        console.error("Error updating diagnostic:", result.error);
+        throw result.error;
+      }
     } else {
       // Insert new diagnostic
+      console.log("Creating new diagnostic for user:", userId);
       result = await supabase
         .from('diagnostic_results')
         .insert({
@@ -108,6 +126,11 @@ export const saveDiagnosticToSupabase = async (
           action_plan: diagnosticData.action_plan
         });
         
+      if (result.error) {
+        console.error("Error inserting diagnostic:", result.error);
+        throw result.error;
+      }
+      
       // Get the new diagnostic ID - changed to handle array results
       const { data, error } = await supabase
         .from('diagnostic_results')
@@ -115,6 +138,7 @@ export const saveDiagnosticToSupabase = async (
         .eq('user_id', userId);
         
       if (!error && data && data.length > 0) {
+        console.log("New diagnostic created with ID:", data[0].id);
         return { result, diagnosticId: data[0].id };
       }
     }
@@ -126,12 +150,12 @@ export const saveDiagnosticToSupabase = async (
   }
 };
 
-// Melhorando a função para excluir diagnóstico
+// Improved function for deleting diagnóstico
 export const deleteDiagnosticFromSupabase = async (userId: string) => {
   try {
     console.log("Attempting to delete diagnostic for user:", userId);
     
-    // First attempt with specific table
+    // Using simple delete query with error handling
     const { error, count } = await supabase
       .from('diagnostic_results')
       .delete({ count: 'exact' })
@@ -142,20 +166,15 @@ export const deleteDiagnosticFromSupabase = async (userId: string) => {
       throw error;
     }
     
-    console.log(`Deleted ${count || 0} diagnostic results`);
+    console.log(`Deleted ${count || 0} diagnostic results for user ${userId}`);
     return true;
   } catch (error) {
     console.error("Error deleting diagnostic:", error);
-    
-    // Remove the RPC call that's causing the error
-    // Since we're already trying to delete via direct table access,
-    // we don't need this secondary approach
-    console.error("Failed to delete diagnostic results:", error);
     throw error;
   }
 };
 
-// Função para verificar se o diagnóstico está completo
+// Function to check if a diagnostic is complete
 export const isDiagnosticComplete = async (userId: string): Promise<boolean> => {
   try {
     if (!userId) {
@@ -169,6 +188,7 @@ export const isDiagnosticComplete = async (userId: string): Promise<boolean> => 
       .eq('user_id', userId);
     
     if (error) {
+      console.error("Error checking diagnostic completion:", error);
       throw error;
     }
     
@@ -178,12 +198,12 @@ export const isDiagnosticComplete = async (userId: string): Promise<boolean> => 
     }
     
     const firstEntry = data[0];
-    // Verifica se há resultados e plano de ação
+    // Check if there are results and an action plan
     return !!(firstEntry && firstEntry.results && firstEntry.action_plan &&
       typeof firstEntry.action_plan === 'object' && 
       Object.keys(firstEntry.action_plan).length > 0);
   } catch (error) {
-    console.error("Erro ao verificar conclusão do diagnóstico:", error);
+    console.error("Error checking diagnostic completion:", error);
     return false;
   }
 };

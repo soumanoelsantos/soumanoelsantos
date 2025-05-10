@@ -3,8 +3,9 @@ import React from "react";
 import DiagnosticSections from "./DiagnosticSections";
 import DiagnosticResults from "./DiagnosticResults";
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 // Component Props
 interface DiagnosticTestContentProps {
@@ -56,17 +57,15 @@ const DiagnosticTestContent = ({
     if (resetDiagnostic) {
       console.log("Resetting diagnostic via resetDiagnostic function");
       resetDiagnostic();
-      // Navigate back to the test page
-      navigate("/teste");
     } else {
       // Fallback for backward compatibility
       console.log("Using fallback reset mechanism");
       setResults(null);
       setShowResults(false);
       setAnswersData({});
-      // Navigate back to the test page
-      navigate("/teste");
     }
+    // Navigate back to the test page
+    navigate("/teste");
   };
 
   return (
@@ -88,11 +87,27 @@ const DiagnosticTestContent = ({
             onSubmit={(calculatedResults, newAnswersData) => handleSubmit(calculatedResults, newAnswersData)}
           />
         ) : (
-          <DiagnosticResults 
-            results={results} 
-            answersData={answersData} 
-            onRestart={handleReset} 
-          />
+          results ? (
+            <DiagnosticResults 
+              results={results} 
+              answersData={answersData} 
+              onRestart={handleReset} 
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16">
+              <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
+              <h2 className="text-xl font-semibold text-center">Não foi possível carregar os resultados</h2>
+              <p className="text-gray-600 text-center mt-2 mb-6">
+                Houve um erro ao carregar os resultados do diagnóstico.
+              </p>
+              <Button 
+                onClick={handleReset}
+                className="bg-[#1d365c] hover:bg-[#152a49] text-white"
+              >
+                Iniciar Novo Diagnóstico
+              </Button>
+            </div>
+          )
         )}
       </CardContent>
     </Card>
