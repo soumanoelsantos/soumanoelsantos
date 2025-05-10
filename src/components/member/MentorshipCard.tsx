@@ -29,7 +29,7 @@ const MentorshipCard: React.FC = () => {
               Exclusivo para empresas com faturamento acima de R$ 50.000,00 por mês
             </p>
             
-            <p className="text-lg text-gray-700 mb-6">
+            <p className="text-lg text-gray-700 mb-6 text-center">
               Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
             </p>
             
