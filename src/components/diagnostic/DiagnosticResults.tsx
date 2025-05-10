@@ -7,6 +7,7 @@ import ResetDiagnosticButton from './ResetDiagnosticButton';
 import BackToMemberAreaButton from './BackToMemberAreaButton';
 import { AnswersDataType } from '@/types/diagnostic';
 import CTASection from '../CTASection';
+import { useDiagnostic } from '@/hooks/useDiagnostic';
 
 interface DiagnosticResultsProps {
   results: {
@@ -23,8 +24,11 @@ interface DiagnosticResultsProps {
 }
 
 const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: DiagnosticResultsProps) => {
+  const { resetDiagnostic } = useDiagnostic();
+
   const handleReset = () => {
-    // This will be handled by the ResetDiagnosticButton component
+    // Pass the reset function from useDiagnostic hook
+    resetDiagnostic();
   };
 
   return (

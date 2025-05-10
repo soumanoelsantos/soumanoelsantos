@@ -11,18 +11,13 @@ interface ResetDiagnosticButtonProps {
 }
 
 const ResetDiagnosticButton = ({ onReset }: ResetDiagnosticButtonProps) => {
-  const { userEmail } = useAuth();
+  const { userId } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   
   const handleReset = () => {
-    if (userEmail) {
-      const resultsKey = `diagnostic_results_${userEmail}`;
-      const answersKey = `diagnostic_answers_${userEmail}`;
-      
-      localStorage.removeItem(resultsKey);
-      localStorage.removeItem(answersKey);
-      
+    if (userId) {
+      // Call the onReset function provided by the parent component
       onReset();
       
       toast({
@@ -32,6 +27,12 @@ const ResetDiagnosticButton = ({ onReset }: ResetDiagnosticButtonProps) => {
       
       // Force reload the page to reset the form
       navigate(0);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Erro ao reiniciar",
+        description: "Você precisa estar logado para reiniciar o diagnóstico.",
+      });
     }
   };
   

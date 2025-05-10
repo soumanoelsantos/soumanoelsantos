@@ -125,6 +125,23 @@ export const saveDiagnosticToSupabase = async (
   }
 };
 
+// Adicionando função para excluir diagnóstico
+export const deleteDiagnosticFromSupabase = async (userId: string) => {
+  try {
+    const { error } = await supabase
+      .from('diagnostic_results')
+      .delete()
+      .eq('user_id', userId);
+      
+    if (error) throw error;
+    
+    return true;
+  } catch (error) {
+    console.error("Erro ao excluir diagnóstico:", error);
+    throw error;
+  }
+};
+
 // Função para verificar se o diagnóstico está completo
 export const isDiagnosticComplete = async (userId: string): Promise<boolean> => {
   try {
@@ -157,4 +174,3 @@ export const isDiagnosticComplete = async (userId: string): Promise<boolean> => 
 
 // Export the function for the module to use
 export const loadDiagnosticCompletion = isDiagnosticComplete;
-
