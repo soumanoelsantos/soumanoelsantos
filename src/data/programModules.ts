@@ -1,4 +1,3 @@
-
 // Program modules and content
 export const programModules = [
   {
@@ -15,7 +14,6 @@ export const programModules = [
       { id: 5, title: "Mapa do Negócio", url: "/mapa-negocio", isWhatsapp: false, dataKey: "business_map_data" },
       { id: 6, title: "Proposta Única de Valor (PUV)", url: "/proposta-unica-valor", isWhatsapp: false, dataKey: "puv_data" },
       { id: 7, title: "Mapa da Equipe", url: "/mapa-equipe", isWhatsapp: false, dataKey: "mapa_equipe" },
-      { id: 8, title: "CRM - Gestão de Leads", url: "/crm", isWhatsapp: false, dataKey: "" },
     ]
   },
   {

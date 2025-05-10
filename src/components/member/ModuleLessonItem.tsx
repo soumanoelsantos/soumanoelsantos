@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCheck, Tag } from "lucide-react";
+import { CheckCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface ModuleLessonItemProps {
@@ -58,14 +58,7 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          {lesson.title === "CRM - Gestão de Leads" ? (
-            <div className="flex items-center gap-2">
-              <Tag className="h-4 w-4 text-blue-600" />
-              <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
-            </div>
-          ) : (
-            <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
-          )}
+          <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
           {renderCompletionStatus()}
         </div>
         <Button 
