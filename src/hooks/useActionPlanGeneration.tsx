@@ -56,6 +56,7 @@ export const useActionPlanGeneration = (
                   answersData,
                   formattedPlan
                 );
+                console.log("Action plan saved to Supabase");
               } catch (error) {
                 console.error("Erro ao salvar plano de ação:", error);
               }

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -163,6 +162,17 @@ export const useDiagnostic = () => {
     return false;
   };
 
+  // Add a new function to regenerate the action plan
+  const regenerateActionPlan = () => {
+    // Trigger regeneration of action plan
+    setShouldGeneratePlan(true);
+    
+    toast({
+      title: "Gerando plano de ação",
+      description: "Aguarde enquanto criamos um plano personalizado...",
+    });
+  };
+  
   return {
     results,
     setResults,
@@ -177,5 +187,6 @@ export const useDiagnostic = () => {
     setActionPlan,
     handleSubmit,
     resetDiagnostic,
+    regenerateActionPlan,
   };
 };

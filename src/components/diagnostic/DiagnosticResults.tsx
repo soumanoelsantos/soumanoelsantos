@@ -8,6 +8,8 @@ import BackToMemberAreaButton from './BackToMemberAreaButton';
 import { AnswersDataType } from '@/types/diagnostic';
 import CTASection from '../CTASection';
 import { useDiagnostic } from '@/hooks/useDiagnostic';
+import ActionButton from '../ui/action-button';
+import { FileEdit } from 'lucide-react';
 
 interface DiagnosticResultsProps {
   results: {
@@ -24,12 +26,14 @@ interface DiagnosticResultsProps {
 }
 
 const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: DiagnosticResultsProps) => {
-  const { resetDiagnostic } = useDiagnostic();
+  const { resetDiagnostic, regenerateActionPlan } = useDiagnostic();
 
   const handleReset = () => {
     // Pass the reset function from useDiagnostic hook
     resetDiagnostic();
   };
+
+  const hasActionPlan = actionPlan && Object.keys(actionPlan).length > 0;
 
   return (
     <div ref={pdfRef} className="mt-10 space-y-8 pdf-container">
@@ -37,9 +41,25 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
         <ResultsCard results={results} />
       </div>
       
-      <div className="pdf-action-plan">
-        <ActionPlanCard actionPlan={actionPlan} answersData={answersData} />
-      </div>
+      {hasActionPlan ? (
+        <div className="pdf-action-plan">
+          <ActionPlanCard actionPlan={actionPlan} answersData={answersData} />
+        </div>
+      ) : (
+        <div className="bg-amber-50 border border-amber-200 p-6 rounded-lg shadow-sm">
+          <h3 className="text-xl font-bold text-amber-800 mb-4">Plano de Ação</h3>
+          <p className="text-amber-700 mb-4">
+            Não foi possível gerar um plano de ação. Gere um plano de ação personalizado com base nos seus resultados.
+          </p>
+          <ActionButton 
+            onClick={regenerateActionPlan} 
+            variant="primary"
+            icon={FileEdit}
+          >
+            Criar Plano de Ação Personalizado
+          </ActionButton>
+        </div>
+      )}
       
       {/* Marketing CTA Section with photo */}
       <div className="pdf-marketing-section">
