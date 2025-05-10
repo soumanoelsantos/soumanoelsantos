@@ -22,7 +22,7 @@ const ActionPlanDisplay: React.FC<ActionPlanDisplayProps> = ({ actionPlan }) => 
   const handleOpenHelp = (category: string, strategy: string, index: number) => {
     const dialogId = `${category}-${index}`;
     setHelpTitle(`Como implementar esta estratégia`);
-    setHelpContent(generateHelpContent(strategy, category));
+    setHelpContent(generatePersonalizedHelpContent(strategy, category));
     setOpenDialogs(prev => ({ ...prev, [dialogId]: true }));
   };
 
@@ -30,104 +30,271 @@ const ActionPlanDisplay: React.FC<ActionPlanDisplayProps> = ({ actionPlan }) => 
     setOpenDialogs(prev => ({ ...prev, [dialogId]: false }));
   };
 
-  // Generate help content based on the strategy and category
-  const generateHelpContent = (strategy: string, category: string) => {
-    // Base content
-    let content = `<p class="mb-4">Aqui está um guia detalhado para implementar a estratégia: <strong>${strategy}</strong></p>`;
-    
-    // Add steps based on category
+  // Generate personalized help content based on the specific strategy
+  const generatePersonalizedHelpContent = (strategy: string, category: string) => {
+    // Start with strategy-specific content
+    let content = `<p class="mb-4">Guia detalhado para implementar: <strong>${strategy}</strong></p>`;
     content += '<div class="space-y-4">';
     
-    if (category === 'strengthsOpportunities') {
+    // Generate personalized steps based on the strategy content
+    if (strategy.toLowerCase().includes('funil de vendas') || strategy.toLowerCase().includes('anúncios')) {
       content += `
-        <h3 class="text-md font-semibold">Passos para implementação:</h3>
+        <h3 class="text-md font-semibold">Passo a passo para criar um funil de vendas com anúncios:</h3>
         <ol class="list-decimal pl-5 space-y-2">
-          <li>Faça um levantamento detalhado dos recursos disponíveis para executar esta estratégia.</li>
-          <li>Defina métricas específicas de sucesso para acompanhar o progresso.</li>
-          <li>Estabeleça um cronograma realista com marcos claros para implementação.</li>
-          <li>Identifique os responsáveis por cada etapa do processo.</li>
-          <li>Reserve um orçamento adequado para garantir a execução bem-sucedida.</li>
-          <li>Estabeleça parcerias estratégicas que possam amplificar suas forças.</li>
+          <li>Acesse <a href="https://business.facebook.com" target="_blank" class="text-blue-600 underline">business.facebook.com</a> e crie sua conta Meta Business.</li>
+          <li>Configure uma conta de anúncios no Gerenciador de Negócios Meta.</li>
+          <li>Defina seu público-alvo com base nas características demográficas e interesses relacionados ao seu produto.</li>
+          <li>Crie pelo menos 5 criativos diferentes (imagens/vídeos) para testar qual tem melhor performance.</li>
+          <li>Configure um orçamento diário inicial entre R$30-R$50 para testes.</li>
+          <li>Crie uma landing page específica para converter os visitantes (use Elementor, Unbounce ou similar).</li>
+          <li>Após 3-5 dias, analise o desempenho dos criativos e desligue os que estão com custo por resultado mais alto.</li>
+          <li>Aumente gradualmente o orçamento nos anúncios que estão performando melhor.</li>
+          <li>Implemente um sistema de captura de leads na landing page conectado ao seu CRM ou WhatsApp.</li>
+          <li>Monte uma sequência de follow-up para os leads que não converteram imediatamente.</li>
         </ol>
         
-        <h3 class="text-md font-semibold mt-4">Dicas específicas:</h3>
+        <h3 class="text-md font-semibold mt-4">Ferramentas recomendadas:</h3>
         <ul class="list-disc pl-5 space-y-2">
-          <li>Realize uma pesquisa de mercado para validar sua estratégia antes de investir recursos significativos.</li>
-          <li>Consulte especialistas no setor para obter insights valiosos.</li>
-          <li>Monitore as tendências do mercado para garantir que a oportunidade continue relevante.</li>
-          <li>Desenvolva um plano B caso encontre obstáculos inesperados.</li>
+          <li>Meta Business Suite para gerenciar os anúncios</li>
+          <li>Google Analytics para acompanhar o comportamento na landing page</li>
+          <li>Plataforma de automação como ActiveCampaign ou RD Station para follow-up</li>
+          <li>Hotjar para análise de comportamento do usuário na landing page</li>
         </ul>
       `;
-    } else if (category === 'strengthsThreats') {
+    } else if (strategy.toLowerCase().includes('parcerias') || strategy.toLowerCase().includes('parceria')) {
       content += `
-        <h3 class="text-md font-semibold">Passos para implementação:</h3>
+        <h3 class="text-md font-semibold">Como estabelecer parcerias estratégicas eficazes:</h3>
         <ol class="list-decimal pl-5 space-y-2">
-          <li>Faça uma análise detalhada da ameaça e seu potencial impacto no seu negócio.</li>
-          <li>Identifique quais forças podem ser utilizadas para neutralizar ou mitigar a ameaça.</li>
-          <li>Desenvolva um plano de contingência detalhado para lidar com cenários adversos.</li>
-          <li>Atribua responsabilidades claras para monitoramento contínuo da ameaça.</li>
-          <li>Estabeleça um sistema de alerta precoce para detectar mudanças no ambiente de ameaça.</li>
-          <li>Revise e atualize regularmente sua estratégia de mitigação.</li>
+          <li>Identifique potenciais parceiros que atendem o mesmo público, mas não competem diretamente.</li>
+          <li>Pesquise cada potencial parceiro: tamanho do público, reputação no mercado, valores da marca.</li>
+          <li>Prepare uma proposta de valor clara mostrando os benefícios mútuos da parceria.</li>
+          <li>Faça uma abordagem personalizada via email ou LinkedIn para o responsável por parcerias.</li>
+          <li>Na primeira reunião, foque em entender as necessidades do potencial parceiro.</li>
+          <li>Estruture um modelo de parceria com métricas de sucesso claras para ambos.</li>
+          <li>Formalize a parceria com um contrato simples estabelecendo responsabilidades e divisão de resultados.</li>
+          <li>Implemente um sistema de acompanhamento e reporte regular dos resultados.</li>
+          <li>Mantenha comunicação constante para fortalecer o relacionamento.</li>
         </ol>
         
-        <h3 class="text-md font-semibold mt-4">Dicas específicas:</h3>
+        <h3 class="text-md font-semibold mt-4">Tipos de parcerias a considerar:</h3>
         <ul class="list-disc pl-5 space-y-2">
-          <li>Mantenha-se informado sobre mudanças no ambiente competitivo e regulatório.</li>
-          <li>Fortaleça relacionamentos com parceiros estratégicos que possam ajudar a neutralizar ameaças.</li>
-          <li>Invista em inovação contínua para manter-se à frente das mudanças do mercado.</li>
-          <li>Considere diversificar suas ofertas para reduzir riscos associados a ameaças específicas.</li>
+          <li>Co-marketing (criação de conteúdo conjunto)</li>
+          <li>Programa de afiliados (comissão por vendas)</li>
+          <li>Eventos colaborativos (webinars, workshops)</li>
+          <li>Pacotes de serviços combinados</li>
         </ul>
       `;
-    } else if (category === 'weaknessesOpportunities') {
+    } else if (strategy.toLowerCase().includes('marketing') || strategy.toLowerCase().includes('conteúdo')) {
       content += `
-        <h3 class="text-md font-semibold">Passos para implementação:</h3>
+        <h3 class="text-md font-semibold">Como implementar uma estratégia de marketing de conteúdo:</h3>
         <ol class="list-decimal pl-5 space-y-2">
-          <li>Identifique claramente qual fraqueza precisa ser superada para aproveitar a oportunidade.</li>
-          <li>Desenvolva um plano de desenvolvimento de competências ou recursos necessários.</li>
-          <li>Considere parcerias estratégicas que possam compensar suas fraquezas.</li>
-          <li>Estabeleça um cronograma realista para desenvolver as capacidades necessárias.</li>
-          <li>Defina métricas claras para medir seu progresso na superação da fraqueza.</li>
-          <li>Avalie constantemente se a oportunidade ainda é viável durante o processo de melhoria.</li>
+          <li>Defina as 3-5 personas principais do seu negócio com detalhes demográficos e psicográficos.</li>
+          <li>Realize uma pesquisa de palavras-chave para identificar os termos mais buscados pelo seu público.</li>
+          <li>Crie um calendário editorial com temas divididos em conteúdo para topo, meio e fundo de funil.</li>
+          <li>Desenvolva conteúdos em diferentes formatos: blog posts, vídeos, podcasts, infográficos, etc.</li>
+          <li>Estabeleça uma frequência consistente de publicação (ex: 2 posts por semana).</li>
+          <li>Otimize cada conteúdo para SEO com palavras-chave principais e secundárias.</li>
+          <li>Distribua o conteúdo nas redes sociais relevantes para seu público.</li>
+          <li>Crie materiais ricos (e-books, webinars) para captura de leads.</li>
+          <li>Implemente uma estratégia de email marketing para nutrir os leads.</li>
+          <li>Analise os resultados mensalmente e ajuste a estratégia com base nos dados.</li>
         </ol>
         
-        <h3 class="text-md font-semibold mt-4">Dicas específicas:</h3>
+        <h3 class="text-md font-semibold mt-4">Ferramentas recomendadas:</h3>
         <ul class="list-disc pl-5 space-y-2">
-          <li>Contrate especialistas ou consultores para acelerar o desenvolvimento de capacidades.</li>
-          <li>Considere aquisições estratégicas que possam rapidamente preencher suas lacunas.</li>
-          <li>Invista em treinamento e desenvolvimento da sua equipe.</li>
-          <li>Busque tecnologias que possam automatizar ou melhorar áreas de fraqueza.</li>
+          <li>Semrush ou Ahrefs para pesquisa de palavras-chave</li>
+          <li>Google Analytics para análise de tráfego</li>
+          <li>Buffer ou Hootsuite para agendamento de posts</li>
+          <li>Canva para criação de imagens</li>
+          <li>Mailchimp ou ActiveCampaign para email marketing</li>
         </ul>
       `;
-    } else if (category === 'weaknessesThreats') {
+    } else if (strategy.toLowerCase().includes('pesquisa') || strategy.toLowerCase().includes('mercado')) {
       content += `
-        <h3 class="text-md font-semibold">Passos para implementação:</h3>
+        <h3 class="text-md font-semibold">Como conduzir uma pesquisa de mercado eficaz:</h3>
         <ol class="list-decimal pl-5 space-y-2">
-          <li>Priorize as fraquezas que mais expõem seu negócio às ameaças identificadas.</li>
-          <li>Desenvolva um plano detalhado de mitigação de riscos e fortalecimento.</li>
-          <li>Identifique recursos e habilidades necessários para fortalecer áreas vulneráveis.</li>
-          <li>Considere reestruturação organizacional se necessário.</li>
-          <li>Estabeleça sistemas de monitoramento para acompanhar tanto suas fraquezas quanto as ameaças externas.</li>
-          <li>Crie planos de contingência para cenários de pior caso.</li>
+          <li>Defina claramente os objetivos da sua pesquisa de mercado (problema a resolver).</li>
+          <li>Identifique o tipo de dados necessários: demográficos, comportamentais, de percepção, etc.</li>
+          <li>Escolha os métodos de pesquisa apropriados: questionários online, entrevistas, grupos focais.</li>
+          <li>Desenvolva as perguntas da pesquisa, evitando questões tendenciosas.</li>
+          <li>Determine o tamanho da amostra necessário para resultados confiáveis (mínimo 100 respondentes).</li>
+          <li>Use ferramentas como Google Forms, Typeform ou SurveyMonkey para criar o questionário.</li>
+          <li>Distribua a pesquisa através de email, redes sociais, ou site.</li>
+          <li>Ofereça um incentivo para aumentar a taxa de resposta (desconto, sorteio, etc).</li>
+          <li>Colete e organize os dados em planilhas para análise.</li>
+          <li>Identifique padrões, tendências e insights a partir dos dados coletados.</li>
+          <li>Elabore um relatório com conclusões claras e ações recomendadas.</li>
         </ol>
         
-        <h3 class="text-md font-semibold mt-4">Dicas específicas:</h3>
+        <h3 class="text-md font-semibold mt-4">Fontes adicionais de dados:</h3>
         <ul class="list-disc pl-5 space-y-2">
-          <li>Considere uma estratégia defensiva até que suas fraquezas sejam abordadas adequadamente.</li>
-          <li>Busque alianças estratégicas que ofereçam proteção contra ameaças específicas.</li>
-          <li>Invista em desenvolvimento de resiliência organizacional.</li>
-          <li>Mantenha-se atualizado sobre mudanças no ambiente externo que possam agravar ameaças existentes.</li>
+          <li>IBGE para dados demográficos</li>
+          <li>Google Trends para análise de tendências de busca</li>
+          <li>Relatórios setoriais de associações da indústria</li>
+          <li>Análise de concorrentes (preços, ofertas, diferenciais)</li>
         </ul>
       `;
+    } else if (strategy.toLowerCase().includes('inovação') || strategy.toLowerCase().includes('produto')) {
+      content += `
+        <h3 class="text-md font-semibold">Como implementar inovação em produtos ou serviços:</h3>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>Realize sessões regulares de brainstorming com sua equipe (1-2x por mês).</li>
+          <li>Implemente um sistema de coleta de feedback contínuo dos clientes.</li>
+          <li>Analise as reclamações e sugestões recebidas para identificar oportunidades de melhoria.</li>
+          <li>Estude as tendências do seu setor através de relatórios, eventos e publicações especializadas.</li>
+          <li>Mapeie as dores não resolvidas dos seus clientes através de entrevistas e pesquisas.</li>
+          <li>Desenvolva protótipos rápidos de novas ideias para testar com um grupo seleto de clientes.</li>
+          <li>Utilize metodologias ágeis como Design Thinking e Lean Startup para desenvolvimento.</li>
+          <li>Estabeleça métricas claras para avaliar o sucesso das inovações implementadas.</li>
+          <li>Crie um cronograma de lançamentos com fases de testes e ajustes.</li>
+          <li>Documente lições aprendidas de cada ciclo de inovação para melhorar o processo.</li>
+        </ol>
+        
+        <h3 class="text-md font-semibold mt-4">Ferramentas para inovação:</h3>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>Miro ou Mural para sessões virtuais de ideação</li>
+          <li>Trello para gerenciamento do pipeline de inovação</li>
+          <li>UserTesting para testes com usuários reais</li>
+          <li>Figma para prototipar interfaces digitais</li>
+          <li>SurveyMonkey ou Typeform para coletar feedback</li>
+        </ul>
+      `;
+    } else if (strategy.toLowerCase().includes('diversificar') || strategy.toLowerCase().includes('diversificação')) {
+      content += `
+        <h3 class="text-md font-semibold">Como diversificar ofertas ou mercados de forma estratégica:</h3>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>Conduza uma análise SWOT completa do seu negócio atual para identificar capacidades subutilizadas.</li>
+          <li>Pesquise mercados adjacentes onde suas competências atuais possam ser aplicadas.</li>
+          <li>Identifique produtos ou serviços complementares que seus clientes atuais já compram de outros.</li>
+          <li>Avalie seus recursos disponíveis (financeiros, humanos, tecnológicos) para diversificação.</li>
+          <li>Desenvolva um plano de negócios detalhado para cada nova oferta ou mercado.</li>
+          <li>Teste conceitos em pequena escala antes de fazer grandes investimentos.</li>
+          <li>Estabeleça parcerias estratégicas para acelerar a entrada em novos mercados.</li>
+          <li>Crie um cronograma de expansão realista com marcos claros.</li>
+          <li>Defina indicadores de desempenho para monitorar o sucesso de cada nova iniciativa.</li>
+          <li>Documente e compartilhe aprendizados entre as diferentes linhas de negócio.</li>
+        </ol>
+        
+        <h3 class="text-md font-semibold mt-4">Estratégias de diversificação:</h3>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>Horizontal: Novos produtos para clientes atuais</li>
+          <li>Vertical: Assumir etapas anteriores ou posteriores da cadeia de valor</li>
+          <li>Concêntrica: Novos produtos relacionados com a tecnologia atual</li>
+          <li>Conglomerada: Novos produtos não relacionados para novos mercados</li>
+        </ul>
+      `;
+    } else if (strategy.toLowerCase().includes('capacitação') || strategy.toLowerCase().includes('treinamento')) {
+      content += `
+        <h3 class="text-md font-semibold">Como implementar programas de treinamento e capacitação:</h3>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>Realize uma avaliação de necessidades de treinamento com sua equipe.</li>
+          <li>Priorize as habilidades mais críticas para os objetivos estratégicos do negócio.</li>
+          <li>Defina os objetivos de aprendizagem específicos para cada treinamento.</li>
+          <li>Escolha os formatos de treinamento mais adequados: presencial, online, on-the-job, mentoria.</li>
+          <li>Desenvolva ou adquira conteúdos de qualidade alinhados aos objetivos de aprendizagem.</li>
+          <li>Crie um calendário anual de capacitação com frequência regular.</li>
+          <li>Implemente mecanismos de avaliação para medir a eficácia dos treinamentos.</li>
+          <li>Estabeleça um sistema de reconhecimento para incentivar a aplicação do conhecimento.</li>
+          <li>Colete feedback dos participantes para melhorar continuamente os programas.</li>
+          <li>Crie uma biblioteca de recursos para aprendizado contínuo.</li>
+        </ol>
+        
+        <h3 class="text-md font-semibold mt-4">Plataformas de treinamento recomendadas:</h3>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>Udemy for Business para cursos diversos</li>
+          <li>LinkedIn Learning para habilidades profissionais</li>
+          <li>Alura para treinamentos técnicos</li>
+          <li>Hotmart para cursos especializados em português</li>
+          <li>Google Classroom para organização de conteúdos próprios</li>
+        </ul>
+      `;
+    } else {
+      // Fallback generic content based on category
+      switch (category) {
+        case 'strengthsOpportunities':
+          content += `
+            <h3 class="text-md font-semibold">Passos para implementar esta estratégia SO:</h3>
+            <ol class="list-decimal pl-5 space-y-2">
+              <li>Analise detalhadamente quais são os pontos fortes que você utilizará nesta estratégia.</li>
+              <li>Identifique precisamente como esses pontos fortes se conectam com a oportunidade específica.</li>
+              <li>Estabeleça métricas claras para acompanhar o sucesso da implementação.</li>
+              <li>Desenvolva um cronograma detalhado com marcos para execução.</li>
+              <li>Atribua responsabilidades específicas para cada etapa do processo.</li>
+              <li>Defina o orçamento necessário para implementação completa.</li>
+              <li>Identifique possíveis obstáculos e prepare planos de contingência.</li>
+              <li>Estabeleça ciclos regulares de revisão e ajustes (quinzenais ou mensais).</li>
+              <li>Documente todo o processo para criar casos de sucesso internos.</li>
+            </ol>
+          `;
+          break;
+          
+        case 'strengthsThreats':
+          content += `
+            <h3 class="text-md font-semibold">Passos para implementar esta estratégia ST:</h3>
+            <ol class="list-decimal pl-5 space-y-2">
+              <li>Analise a natureza exata da ameaça que você está enfrentando.</li>
+              <li>Identifique quais forças específicas podem neutralizar ou mitigar esta ameaça.</li>
+              <li>Desenvolva um plano de resposta com ações preventivas e reativas.</li>
+              <li>Estabeleça um sistema de alerta para monitorar indicadores da ameaça.</li>
+              <li>Prepare sua equipe para responder rapidamente se a ameaça se intensificar.</li>
+              <li>Comunique claramente para stakeholders como você está protegendo o negócio.</li>
+              <li>Implemente ciclos regulares de revisão de riscos e resposta a ameaças.</li>
+              <li>Documente lições aprendidas para aprimorar sua resiliência.</li>
+            </ol>
+          `;
+          break;
+          
+        case 'weaknessesOpportunities':
+          content += `
+            <h3 class="text-md font-semibold">Passos para implementar esta estratégia WO:</h3>
+            <ol class="list-decimal pl-5 space-y-2">
+              <li>Avalie precisamente o impacto negativo que sua fraqueza tem atualmente.</li>
+              <li>Identifique como a oportunidade pode ajudar a superar ou compensar esta fraqueza.</li>
+              <li>Desenvolva um plano de capacitação ou aquisição de recursos necessários.</li>
+              <li>Busque benchmarks e melhores práticas do mercado para acelerar seu desenvolvimento.</li>
+              <li>Estabeleça parcerias estratégicas para complementar suas lacunas.</li>
+              <li>Defina indicadores claros para acompanhar a superação da fraqueza.</li>
+              <li>Implemente ciclos rápidos de feedback e ajuste (abordagem ágil).</li>
+              <li>Celebre e comunique pequenas vitórias para manter o momentum.</li>
+            </ol>
+          `;
+          break;
+          
+        case 'weaknessesThreats':
+          content += `
+            <h3 class="text-md font-semibold">Passos para implementar esta estratégia WT:</h3>
+            <ol class="list-decimal pl-5 space-y-2">
+              <li>Priorize as fraquezas que mais expõem seu negócio à ameaça identificada.</li>
+              <li>Desenvolva um plano defensivo de curto prazo para mitigar riscos imediatos.</li>
+              <li>Identifique recursos mínimos necessários para fortalecer pontos vulneráveis.</li>
+              <li>Busque mentoria ou consultoria especializada na área problemática.</li>
+              <li>Implemente sistemas de monitoramento constante das áreas vulneráveis.</li>
+              <li>Desenvolva planos de contingência detalhados para cenários críticos.</li>
+              <li>Estabeleça parcerias que possam oferecer proteção durante o período de vulnerabilidade.</li>
+              <li>Crie um plano de desenvolvimento de médio prazo para transformar a fraqueza em neutralidade ou força.</li>
+            </ol>
+          `;
+          break;
+      }
     }
     
-    // Add general resources
+    // Add general implementation tips based on category
     content += `
+      <h3 class="text-md font-semibold mt-4">Dicas para implementação bem-sucedida:</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li>Documente cada etapa do processo para facilitar ajustes futuros</li>
+        <li>Estabeleça prazos realistas para cada etapa da implementação</li>
+        <li>Designe um responsável principal para coordenar a execução</li>
+        <li>Implemente revisões regulares para ajustar o curso conforme necessário</li>
+        <li>Celebre os marcos alcançados para manter a motivação da equipe</li>
+      </ul>
+      
       <h3 class="text-md font-semibold mt-4">Recursos recomendados:</h3>
       <ul class="list-disc pl-5 space-y-2">
-        <li>Ferramentas de gestão de projetos para acompanhar a implementação</li>
-        <li>Mentoria especializada no setor</li>
-        <li>Grupos de networking com outros empresários</li>
-        <li>Cursos e treinamentos para desenvolvimento de habilidades específicas</li>
+        <li>Ferramentas de gestão de projetos como Trello, Asana ou ClickUp</li>
+        <li>Templates de planos de ação em Excel ou Google Sheets</li>
+        <li>Grupos profissionais para networking e benchmarking</li>
+        <li>Livros e cursos especializados na área específica da estratégia</li>
       </ul>
     `;
     
