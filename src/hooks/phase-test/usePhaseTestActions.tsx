@@ -9,7 +9,7 @@ interface PhaseTestState {
   currentPhaseIndex: number;
   setCurrentPhaseIndex: (index: number) => void;
   answers: { [key: number]: number[] };
-  setAnswers: (answers: { [key: number]: number[] }) => void;
+  setAnswers: (answers: { [key: number]: number[] } | ((prev: { [key: number]: number[] }) => { [key: number]: number[] })) => void;
   setShowResult: (show: boolean) => void;
   setResult: (result: PhaseTestResult | null) => void;
   setCompleted: (completed: boolean) => void;
@@ -30,7 +30,7 @@ export const usePhaseTestActions = (state: PhaseTestState) => {
   } = state;
 
   const handleAnswer = (questionIndex: number, value: number) => {
-    setAnswers(prev => {
+    setAnswers((prev) => {
       const newAnswers = { ...prev };
       if (!newAnswers[currentPhaseIndex]) {
         newAnswers[currentPhaseIndex] = new Array(phaseTestData[currentPhaseIndex].questions.length).fill(0);

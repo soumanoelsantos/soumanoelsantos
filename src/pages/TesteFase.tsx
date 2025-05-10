@@ -6,7 +6,7 @@ import MemberHeader from "@/components/MemberHeader";
 import { useAuth } from "@/hooks/useAuth";
 import PhaseQuestionList from "@/components/teste-fase/PhaseQuestionList";
 import PhaseResult from "@/components/teste-fase/PhaseResult";
-import { usePhaseTest } from "@/hooks/usePhaseTest";
+import { usePhaseTest } from "@/hooks/phase-test/usePhaseTest";
 
 const TesteFase = () => {
   const navigate = useNavigate();
