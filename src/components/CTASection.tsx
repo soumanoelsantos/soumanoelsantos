@@ -23,6 +23,11 @@ const CTASection = ({ source }: CTASectionProps) => {
             Transforme sua empresa em <br />
             uma <span className="text-[#D4AF37]">máquina de vendas</span>
           </h2>
+          
+          <p className="text-base font-medium text-dark-primary mb-4">
+            Exclusivo para empresas com faturamento acima de R$ 50.000,00 por mês!
+          </p>
+          
           <p className="text-lg text-gray-700 mb-6">
             Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
           </p>
