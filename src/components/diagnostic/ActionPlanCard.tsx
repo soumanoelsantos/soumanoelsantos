@@ -71,7 +71,8 @@ const ActionPlanCard = ({ actionPlan, answersData }: ActionPlanCardProps) => {
               <h3 className="text-xl font-semibold mb-2 pdf-header text-gray-800">
                 {key === 'processos' ? 'PROCESSOS' : 
                  key === 'resultados' ? 'RESULTADOS' : 
-                 key === 'sistemaGestao' ? 'SISTEMA DE GESTÃO' : 'PESSOAS'}
+                 key === 'sistemaGestao' ? 'SISTEMA DE GESTÃO' : 
+                 key === 'actions' ? 'AÇÕES RECOMENDADAS' : 'PESSOAS'}
               </h3>
               <ul className="list-disc list-inside space-y-1 pdf-action-items">
                 {Array.isArray(actions) && actions.length > 0 ? (

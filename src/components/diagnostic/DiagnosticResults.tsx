@@ -29,11 +29,11 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
   const { resetDiagnostic, regenerateActionPlan, isGeneratingPlan } = useDiagnostic();
 
   const handleReset = () => {
-    // Pass the reset function from useDiagnostic hook
     resetDiagnostic();
   };
 
-  const hasActionPlan = actionPlan && Object.keys(actionPlan).length > 0;
+  const hasActionPlan = actionPlan && Object.keys(actionPlan).length > 0 && 
+    Object.values(actionPlan).some(items => items && items.length > 0);
 
   return (
     <div ref={pdfRef} className="mt-10 space-y-8 pdf-container">
