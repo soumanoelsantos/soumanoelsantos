@@ -1,14 +1,16 @@
 
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
 import { PhaseTestResult } from "../../types/phaseTest";
-import ActionButton from "../ui/action-button";
-import { ArrowLeft, RefreshCw, FileEdit } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { generateEnhancedActionPlan } from "@/utils/deepseekApi";
+import PhaseInfo from "./PhaseInfo";
+import PhaseRecommendations from "./PhaseRecommendations";
+import ActionPlanGenerator from "./ActionPlanGenerator";
+import EnhancedActionPlan from "./EnhancedActionPlan";
+import NavigationButtons from "./NavigationButtons";
 
 interface PhaseResultProps {
   result: PhaseTestResult | null;
@@ -16,7 +18,6 @@ interface PhaseResultProps {
 }
 
 const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
-  const navigate = useNavigate();
   const { userId } = useAuth();
   const { toast } = useToast();
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
@@ -132,82 +133,29 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <h2 className="text-2xl font-bold text-blue-800 mb-2">
-              Sua empresa está na: {result.phaseName}
-            </h2>
-            <p className="text-gray-700 mb-2">
-              Compatibilidade com esta fase: {Math.round(result.score)}%
-            </p>
-            <p className="text-gray-600">{result.description}</p>
-          </div>
+          <PhaseInfo 
+            phaseName={result.phaseName} 
+            score={result.score} 
+            description={result.description} 
+          />
           
           {!showEnhancedPlan ? (
             <>
-              <div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Recomendações para esta fase:</h3>
-                <ul className="list-disc pl-5 space-y-2">
-                  {result.recommendations.map((rec, index) => (
-                    <li key={index} className="text-gray-700">{rec}</li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
-                <h3 className="font-medium text-amber-800 flex items-center gap-2 mb-2">
-                  <FileEdit size={18} />
-                  Plano de Ação Personalizado
-                </h3>
-                <p className="text-amber-700 mb-3">
-                  Gere um plano de ação detalhado e personalizado com base nos seus resultados e seguindo a metodologia SMART.
-                </p>
-                <ActionButton 
-                  onClick={handleGenerateActionPlan}
-                  disabled={isGeneratingPlan}
-                  variant="primary"
-                >
-                  {isGeneratingPlan ? "Gerando..." : "Criar Plano de Ação Personalizado"}
-                </ActionButton>
-              </div>
+              <PhaseRecommendations recommendations={result.recommendations} />
+              <ActionPlanGenerator 
+                onGeneratePlan={handleGenerateActionPlan} 
+                isGenerating={isGeneratingPlan} 
+              />
             </>
           ) : (
-            <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
-              <h3 className="text-xl font-bold text-green-800 mb-4">Seu Plano de Ação Personalizado (SMART):</h3>
-              <ul className="list-decimal pl-5 space-y-3">
-                {result.enhanced_action_plan && result.enhanced_action_plan.map((action, index) => (
-                  <li key={index} className="text-gray-700">{action}</li>
-                ))}
-              </ul>
-              <div className="mt-4 pt-4 border-t border-green-200">
-                <ActionButton
-                  onClick={handleGenerateActionPlan}
-                  variant="outline"
-                  size="sm"
-                  icon={RefreshCw}
-                  disabled={isGeneratingPlan}
-                >
-                  {isGeneratingPlan ? "Gerando..." : "Regenerar Plano"}
-                </ActionButton>
-              </div>
-            </div>
+            <EnhancedActionPlan 
+              actionPlan={result.enhanced_action_plan || []} 
+              onRegeneratePlan={handleGenerateActionPlan}
+              isGenerating={isGeneratingPlan}
+            />
           )}
           
-          <div className="pt-4 border-t border-gray-200 flex gap-4 flex-wrap">
-            <ActionButton 
-              onClick={onResetTest} 
-              variant="outline"
-              icon={RefreshCw}
-            >
-              Reiniciar Teste
-            </ActionButton>
-            <ActionButton 
-              onClick={() => navigate("/membros")}
-              variant="secondary"
-              icon={ArrowLeft}
-            >
-              Voltar para Área de Membros
-            </ActionButton>
-          </div>
+          <NavigationButtons onResetTest={onResetTest} />
         </div>
       </CardContent>
     </Card>
