@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Accordion } from "@/components/ui/accordion";
 import { useAuth } from "@/hooks/useAuth";
 import { useToolCompletionCheck } from "@/hooks/useToolCompletionCheck";
@@ -10,6 +10,13 @@ const MemberContentList = () => {
   const [expandedModule, setExpandedModule] = useState<string>("item-0");
   const { userId } = useAuth();
   const { completedTools, isLoading } = useToolCompletionCheck(userId);
+
+  // Debug log to check the completion status after loading
+  useEffect(() => {
+    if (!isLoading) {
+      console.log("MemberContentList - Completed tools data:", completedTools);
+    }
+  }, [completedTools, isLoading]);
 
   if (isLoading) {
     return <div className="py-4 text-gray-500">Carregando conteúdos...</div>;

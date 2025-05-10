@@ -26,13 +26,18 @@ export const useChecklist = () => {
 
       try {
         setIsLoading(true);
+        console.log("Loading checklist data for user:", userId);
         const savedData = await loadChecklistData(userId);
         
         if (savedData) {
           setChecklistItems(savedData.checklistItems);
           setScore(savedData.score);
           setShowResults(true);
-          console.log("Loaded checklist data from Supabase:", savedData);
+          console.log("Loaded checklist data from Supabase:", {
+            itemsCount: savedData.checklistItems?.length,
+            score: savedData.score,
+            showResults: true
+          });
         } else {
           console.log("No saved checklist data found in Supabase");
         }
@@ -81,9 +86,16 @@ export const useChecklist = () => {
           score: checkedCount
         };
         
+        console.log("Saving checklist data to Supabase:", {
+          userId,
+          itemsCount: checklistItems.length,
+          score: checkedCount
+        });
+        
         const success = await saveChecklistData(userId, dataToSave);
         
         if (success) {
+          console.log("Checklist data saved successfully");
           toast({
             title: "Pontuação calculada",
             description: `Você marcou ${checkedCount} de 10 itens. Resultado salvo com sucesso.`,

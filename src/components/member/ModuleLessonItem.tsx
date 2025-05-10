@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCheck, HelpCircle } from "lucide-react";
@@ -26,6 +26,14 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
 }) => {
   const navigate = useNavigate();
 
+  // Debug log to check if the completedTools data is correctly passed
+  useEffect(() => {
+    if (lesson.dataKey) {
+      console.log(`ModuleLessonItem: "${lesson.title}" with dataKey "${lesson.dataKey}"`, 
+        completedTools[lesson.dataKey] ? "is completed" : "is not completed");
+    }
+  }, [lesson, completedTools]);
+
   const handleClickLesson = () => {
     if (lesson.isWhatsapp) {
       const message = encodeURIComponent("Olá, Manoel! Gostaria de agendar meu diagnóstico empresarial completo com você!");
@@ -38,6 +46,12 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
   // Renders a completion indicator for tools that have been completed
   const renderCompletionStatus = () => {
     if (!lesson.dataKey) return null;
+    
+    console.log(`Rendering completion status for ${lesson.title}:`, {
+      dataKey: lesson.dataKey,
+      isCompleted: completedTools[lesson.dataKey] === true,
+      completedTools
+    });
     
     // Check if the tool is completed
     const isCompleted = completedTools[lesson.dataKey] === true;

@@ -18,6 +18,8 @@ export const useToolCompletionCheck = (userId: string | null) => {
       }
 
       try {
+        console.log("Starting tool completion check for userId:", userId);
+        
         // Check regular tools saved in user_tools_data
         const toolsData = await checkUserToolCompletion(userId, [
           'swot_data',
@@ -26,6 +28,8 @@ export const useToolCompletionCheck = (userId: string | null) => {
           'puv_data',
           'mapa_equipe'
         ]);
+        
+        console.log("Regular tools completion data:", toolsData);
         
         // Check diagnostic completion (separate table)
         const diagnosticCompleted = await loadDiagnosticCompletion(userId);
@@ -38,6 +42,8 @@ export const useToolCompletionCheck = (userId: string | null) => {
           diagnostic_results: diagnosticCompleted,
           fase_results: phaseTestCompleted
         };
+        
+        console.log("Final completion status:", completionStatus);
         
         // Set the completed tools state
         setCompletedTools(completionStatus);
