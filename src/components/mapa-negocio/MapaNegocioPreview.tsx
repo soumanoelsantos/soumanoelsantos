@@ -34,49 +34,49 @@ const MapaNegocioPreview = ({ data, previewRef, onEditClick }: MapaNegocioPrevie
   };
 
   const topRowFields = [
-    { key: "missao", title: "Missão" },
-    { key: "visao", title: "Visão" },
-    { key: "parceirosChave", title: "Parceiros Chave" },
-    { key: "atividadesChaves", title: "Atividades Chaves" },
-    { key: "valuePropositions", title: "Value Propositions" },
-    { key: "relacaoConsumidor", title: "Relação com o Consumidor" },
-    { key: "segmentoConsumidores", title: "Segmento de Consumidores" },
+    { key: "missao" as keyof BusinessMapData, title: "Missão" },
+    { key: "visao" as keyof BusinessMapData, title: "Visão" },
+    { key: "parceirosChave" as keyof BusinessMapData, title: "Parceiros Chave" },
+    { key: "atividadesChaves" as keyof BusinessMapData, title: "Atividades Chaves" },
+    { key: "valuePropositions" as keyof BusinessMapData, title: "Value Propositions" },
+    { key: "relacaoConsumidor" as keyof BusinessMapData, title: "Relação com o Consumidor" },
+    { key: "segmentoConsumidores" as keyof BusinessMapData, title: "Segmento de Consumidores" },
   ];
 
   const middleRowFields = [
-    { key: "valores", title: "Valores" },
+    { key: "valores" as keyof BusinessMapData, title: "Valores" },
     { 
-      key: "recursosChave", 
+      key: "recursosChave" as keyof BusinessMapData, 
       title: "Recursos Chave", 
       style: {gridColumn: shouldDisplayField(data.valores) ? "3 / 4" : "span 1"}
     },
     { 
-      key: "canaisDistribuicao", 
+      key: "canaisDistribuicao" as keyof BusinessMapData, 
       title: "Canais/Distribuição",
       style: {gridColumn: "7 / 8"} 
     },
   ];
 
   const bottomRow1Fields = [
-    { key: "posicionamentoMercado", title: "Posicionamento de Mercado" },
+    { key: "posicionamentoMercado" as keyof BusinessMapData, title: "Posicionamento de Mercado" },
   ];
 
   const bottomRow2Fields = [
     { 
-      key: "estruturaCustos", 
+      key: "estruturaCustos" as keyof BusinessMapData, 
       title: "Estrutura de Custos",
       style: {gridColumn: "4 / 5"} 
     },
     { 
-      key: "fontesReceita", 
+      key: "fontesReceita" as keyof BusinessMapData, 
       title: "Fontes de Receita",
       style: {gridColumn: "5 / 8"} 
     },
   ];
 
   const bottomRow3Fields = [
-    { key: "vantagemCompetitiva", title: "Vantagem Competitiva" },
-    { key: "competenciasEssenciais", title: "Competências Essenciais" },
+    { key: "vantagemCompetitiva" as keyof BusinessMapData, title: "Vantagem Competitiva" },
+    { key: "competenciasEssenciais" as keyof BusinessMapData, title: "Competências Essenciais" },
   ];
 
   return (
