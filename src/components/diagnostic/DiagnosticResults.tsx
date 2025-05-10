@@ -11,6 +11,7 @@ import { useDiagnostic } from '@/hooks/useDiagnostic';
 import ActionButton from '../ui/action-button';
 import { FileEdit, Loader2, RefreshCw } from 'lucide-react';
 import { toast } from "sonner";
+import AnswersDisplay from './AnswersDisplay';
 
 interface DiagnosticResultsProps {
   results: {
@@ -50,6 +51,13 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
       <div className="pdf-results-card">
         <ResultsCard results={results} />
       </div>
+      
+      {/* Display all questions and answers */}
+      {answersData && Object.keys(answersData).length > 0 && (
+        <div className="pdf-answers">
+          <AnswersDisplay answersData={answersData} />
+        </div>
+      )}
       
       {isGeneratingPlan ? (
         <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg text-center">
