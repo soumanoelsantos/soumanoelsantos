@@ -1,86 +1,34 @@
-import { useState, useEffect } from "react";
-import { phaseTestData } from "../data/phaseTestData";
+
 import { useToast } from "@/hooks/use-toast";
-import { PhaseTestResult } from "../types/phaseTest";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Json } from "@/integrations/supabase/types";
+import { PhaseTestResult } from "@/types/phaseTest";
+import { phaseTestData } from "../../data/phaseTestData";
 
-export const usePhaseTest = () => {
+interface PhaseTestState {
+  currentPhaseIndex: number;
+  setCurrentPhaseIndex: (index: number) => void;
+  answers: { [key: number]: number[] };
+  setAnswers: (answers: { [key: number]: number[] }) => void;
+  setShowResult: (show: boolean) => void;
+  setResult: (result: PhaseTestResult | null) => void;
+  setCompleted: (completed: boolean) => void;
+}
+
+export const usePhaseTestActions = (state: PhaseTestState) => {
   const { toast } = useToast();
   const { userId, isAuthenticated } = useAuth();
-  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
-  const [answers, setAnswers] = useState<{ [key: number]: number[] }>({});
-  const [showResult, setShowResult] = useState(false);
-  const [result, setResult] = useState<PhaseTestResult | null>(null);
-  const [completed, setCompleted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadResults = async () => {
-      if (!isAuthenticated || !userId) {
-        // Inicializar respostas
-        const initialAnswers: { [key: number]: number[] } = {};
-        phaseTestData.forEach((phase, index) => {
-          initialAnswers[index] = new Array(phase.questions.length).fill(0);
-        });
-        setAnswers(initialAnswers);
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        // Buscar resultados do teste de fase do Supabase
-        const { data, error } = await supabase
-          .from('fase_results')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-
-        if (error && error.code !== 'PGRST116') { // PGRST116 é o código para "nenhum resultado encontrado"
-          throw error;
-        }
-
-        if (data) {
-          // Converta a string de recommendations para array se necessário
-          let recommendations: string[] = [];
-          if (data.recommendations) {
-            if (typeof data.recommendations === 'string') {
-              // Se for uma string, transforme em um array
-              recommendations = [data.recommendations];
-            } else if (Array.isArray(data.recommendations)) {
-              // Se já for um array, use-o diretamente
-              recommendations = data.recommendations;
-            }
-          }
-          
-          const resultData: PhaseTestResult = {
-            phaseName: data.phase_name,
-            score: data.score,
-            description: data.description || "",
-            recommendations: recommendations
-          };
-          
-          setResult(resultData);
-          setCompleted(true);
-          setShowResult(true);
-        }
-      } catch (error) {
-        console.error("Erro ao carregar resultados do teste:", error);
-      } finally {
-        // Inicializar respostas
-        const initialAnswers: { [key: number]: number[] } = {};
-        phaseTestData.forEach((phase, index) => {
-          initialAnswers[index] = new Array(phase.questions.length).fill(0);
-        });
-        setAnswers(initialAnswers);
-        setIsLoading(false);
-      }
-    };
-
-    loadResults();
-  }, [userId, isAuthenticated]);
   
+  const {
+    currentPhaseIndex,
+    setCurrentPhaseIndex,
+    answers,
+    setAnswers,
+    setShowResult,
+    setResult,
+    setCompleted
+  } = state;
+
   const handleAnswer = (questionIndex: number, value: number) => {
     setAnswers(prev => {
       const newAnswers = { ...prev };
@@ -139,10 +87,10 @@ export const usePhaseTest = () => {
     setCompleted(true);
     setShowResult(true);
     
-    // Salvar resultado no Supabase se o usuário estiver autenticado
+    // Save result in Supabase if user is authenticated
     if (isAuthenticated && userId) {
       try {
-        // Verificar se já existe um resultado para este usuário
+        // Check if a result already exists for this user
         const { data, error: selectError } = await supabase
           .from('fase_results')
           .select('id')
@@ -162,7 +110,7 @@ export const usePhaseTest = () => {
         };
         
         if (data && data.length > 0) {
-          // Atualizar resultado existente
+          // Update existing result
           const { error: updateError } = await supabase
             .from('fase_results')
             .update(resultToSave)
@@ -170,7 +118,7 @@ export const usePhaseTest = () => {
           
           if (updateError) throw updateError;
         } else {
-          // Inserir novo resultado
+          // Insert new result
           const { error: insertError } = await supabase
             .from('fase_results')
             .insert([resultToSave]);
@@ -183,7 +131,7 @@ export const usePhaseTest = () => {
           description: "O resultado do teste foi salvo com sucesso."
         });
       } catch (error) {
-        console.error("Erro ao salvar resultado:", error);
+        console.error("Error saving result:", error);
         toast({
           variant: "destructive",
           title: "Erro ao salvar resultado",
@@ -196,7 +144,7 @@ export const usePhaseTest = () => {
   const resetTest = async () => {
     if (isAuthenticated && userId) {
       try {
-        // Remover resultado do Supabase
+        // Remove result from Supabase
         const { error } = await supabase
           .from('fase_results')
           .delete()
@@ -204,7 +152,7 @@ export const usePhaseTest = () => {
         
         if (error) throw error;
       } catch (error) {
-        console.error("Erro ao excluir resultado:", error);
+        console.error("Error deleting result:", error);
       }
     }
     
@@ -227,17 +175,9 @@ export const usePhaseTest = () => {
   };
 
   return {
-    currentPhaseIndex,
-    currentPhase: phaseTestData[currentPhaseIndex],
-    answers,
-    showResult,
-    result,
-    completed,
     handleAnswer,
     handleNext,
     handlePrevious,
-    resetTest,
-    phaseTestLength: phaseTestData.length,
-    isLoading
+    resetTest
   };
 };

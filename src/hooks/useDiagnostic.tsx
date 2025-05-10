@@ -1,90 +1,164 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { saveDiagnosticToSupabase } from "@/utils/diagnosticUtils";
-import { useDiagnosticData } from "@/hooks/useDiagnosticData";
-import { useActionPlanGeneration } from "@/hooks/useActionPlanGeneration";
+import {
+  loadDiagnosticDataFromSupabase,
+  saveDiagnosticToSupabase,
+  deleteDiagnosticFromSupabase
+} from "@/utils/storage";
+import { DiagnosticSections as DiagnosticSectionsType, DiagnosticResults, AnswersDataType } from "@/types/diagnostic";
+import { generateActionPlan } from "@/utils/deepseekApi";
+
+const initialResults = {
+  processos: { score: 0, total: 0, percentage: 0 },
+  resultados: { score: 0, total: 0, percentage: 0 },
+  sistemaGestao: { score: 0, total: 0, percentage: 0 },
+  pessoas: { score: 0, total: 0, percentage: 0 }
+};
 
 export const useDiagnostic = () => {
+  const { userId, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const { userId } = useAuth();
-  const [shouldGeneratePlan, setShouldGeneratePlan] = useState(false);
-  
-  const {
-    results,
-    setResults,
-    answersData,
-    setAnswersData,
-    showResults,
-    setShowResults,
-    isLoading,
-    setIsLoading,  // Make sure we're getting setIsLoading from useDiagnosticData
-    diagnosticId,
-    setDiagnosticId,
-  } = useDiagnosticData();
-  
-  const {
-    actionPlan,
-    isGeneratingPlan,
-    regenerateActionPlan,
-    setActionPlan
-  } = useActionPlanGeneration(
-    userId,
-    diagnosticId,
-    showResults,
-    results,
-    answersData,
-    shouldGeneratePlan,
-    setShouldGeneratePlan
-  );
+  const [results, setResults] = useState<DiagnosticResults>(initialResults);
+  const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [answersData, setAnswersData] = useState<AnswersDataType>({});
+  const [actionPlan, setActionPlan] = useState<{ [key: string]: string[] }>({});
+  const [diagnosticId, setDiagnosticId] = useState<string | null>(null);
 
-  // Save diagnostic results and trigger plan generation
+  useEffect(() => {
+    const loadDiagnostic = async () => {
+      if (!isAuthenticated || !userId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const { results, answersData, actionPlan, diagnosticId } = await loadDiagnosticDataFromSupabase(userId);
+        if (results) {
+          setResults(results);
+        }
+        if (answersData) {
+          setAnswersData(answersData);
+        }
+        if (actionPlan) {
+          setActionPlan(actionPlan);
+        }
+        if (diagnosticId) {
+          setDiagnosticId(diagnosticId);
+        }
+        setShowResults(!!(results && actionPlan));
+      } catch (error) {
+        console.error("Erro ao carregar diagnóstico:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar diagnóstico",
+          description: "Não foi possível carregar os dados do diagnóstico."
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDiagnostic();
+  }, [userId, isAuthenticated, toast]);
+
+  const calculateResults = (sections: DiagnosticSectionsType, answers: any) => {
+    const newResults: DiagnosticResults = {
+      processos: { score: 0, total: 0, percentage: 0 },
+      resultados: { score: 0, total: 0, percentage: 0 },
+      sistemaGestao: { score: 0, total: 0, percentage: 0 },
+      pessoas: { score: 0, total: 0, percentage: 0 }
+    };
+
+    Object.keys(sections).forEach(sectionKey => {
+      const section = sections[sectionKey];
+      const answer = answers[sectionKey];
+
+      if (answer === 'yes') {
+        newResults[sectionKey].score += section.pointValue;
+      }
+      newResults[sectionKey].total += section.pointValue;
+      newResults[sectionKey].percentage = (newResults[sectionKey].score / newResults[sectionKey].total) * 100;
+    });
+
+    return newResults;
+  };
+
   const handleSubmit = async () => {
-    if (!userId) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Você precisa estar logado para salvar seu diagnóstico.",
-      });
-      return;
-    }
+    setIsSubmitting(true);
+    setIsGeneratingPlan(true);
 
     try {
-      setIsLoading(true); // Now we have access to setIsLoading
-      
-      const { result, diagnosticId: newDiagnosticId } = await saveDiagnosticToSupabase(
-        userId,
-        diagnosticId,
-        results,
-        answersData,
-        actionPlan
-      );
-      
-      if (result?.error) throw result.error;
-      
-      if (newDiagnosticId) {
+      const calculatedResults = calculateResults(diagnosticSectionsData, results);
+      setResults(calculatedResults);
+
+      // Generate action plan
+      const generatedActionPlan = await generateActionPlan(answersData);
+      setActionPlan(generatedActionPlan);
+
+      // Save to Supabase
+      if (isAuthenticated && userId) {
+        const { result, diagnosticId: newDiagnosticId } = await saveDiagnosticToSupabase(userId, diagnosticId, calculatedResults, answersData, generatedActionPlan);
+
+        if (result.error) {
+          throw result.error;
+        }
+
         setDiagnosticId(newDiagnosticId);
       }
-      
+
       setShowResults(true);
-      // Set the flag to trigger plan generation
-      setShouldGeneratePlan(true);
-      
       toast({
-        title: "Diagnóstico salvo!",
-        description: "Gerando seu plano de ação personalizado...",
+        title: "Diagnóstico concluído",
+        description: "Seu plano de ação foi gerado com sucesso!"
       });
-    } catch (error: any) {
-      console.error("Erro ao salvar diagnóstico:", error);
+    } catch (error) {
+      console.error("Erro ao finalizar diagnóstico:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao salvar",
-        description: error.message || "Ocorreu um erro ao salvar o diagnóstico.",
+        title: "Erro ao finalizar diagnóstico",
+        description: "Não foi possível gerar o plano de ação. Por favor, tente novamente."
       });
     } finally {
-      setIsLoading(false); // Now we have access to setIsLoading
+      setIsSubmitting(false);
+      setIsGeneratingPlan(false);
     }
+  };
+
+  const resetDiagnostic = async () => {
+    if (userId) {
+      try {
+        await deleteDiagnosticFromSupabase(userId);
+        setResults(initialResults);
+        setShowResults(false);
+        setAnswersData({});
+        setActionPlan({});
+        setIsSubmitting(false);
+        setIsGeneratingPlan(false);
+        setDiagnosticId(null);
+        
+        toast({
+          title: "Diagnóstico reiniciado",
+          description: "Todos os dados foram apagados. Você pode realizar um novo diagnóstico."
+        });
+        
+        return true;
+      } catch (error) {
+        console.error("Erro ao resetar diagnóstico:", error);
+        
+        toast({
+          variant: "destructive",
+          title: "Erro ao resetar diagnóstico",
+          description: "Não foi possível apagar os dados do diagnóstico."
+        });
+        
+        return false;
+      }
+    }
+    return false;
   };
 
   return {
@@ -93,11 +167,14 @@ export const useDiagnostic = () => {
     showResults,
     setShowResults,
     isLoading,
+    isSubmitting,
     isGeneratingPlan,
     answersData,
     setAnswersData,
     actionPlan,
+    setActionPlan,
     handleSubmit,
-    regenerateActionPlan
+    resetDiagnostic,
   };
 };
+
