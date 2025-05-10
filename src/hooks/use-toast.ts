@@ -39,4 +39,5 @@ const useToast = () => {
 }
 
 export { useToast, toast }
-export type { ToastProps }
+// The error is here - we're exporting ToastProps twice
+// Removing the duplicate export of ToastProps
