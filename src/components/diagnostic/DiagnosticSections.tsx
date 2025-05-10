@@ -25,11 +25,27 @@ const DiagnosticSections = ({
   onSubmit 
 }: DiagnosticSectionsProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formComplete, setFormComplete] = useState(false);
   
   // Debug logging
   useEffect(() => {
     console.log("DiagnosticSections rendered with answersData:", answersData);
   }, [answersData]);
+
+  // Check if we have answers for all sections to enable submit
+  useEffect(() => {
+    const checkFormCompletion = () => {
+      const complete = Object.keys(sections).every(key => 
+        answersData[key] && 
+        answersData[key].answers && 
+        answersData[key].answers.length === sections[key].questions.length
+      );
+      
+      setFormComplete(complete);
+    };
+    
+    checkFormCompletion();
+  }, [answersData, sections]);
 
   // Calculate results based on answersData
   const calculateResults = () => {
@@ -71,7 +87,7 @@ const DiagnosticSections = ({
   };
 
   const handleSubmit = () => {
-    if (isSubmitting) return;
+    if (isSubmitting || !formComplete) return;
     
     setIsSubmitting(true);
     
@@ -82,16 +98,8 @@ const DiagnosticSections = ({
       onSubmit(results, answersData);
     } catch (error) {
       console.error("Error submitting diagnostic results:", error);
+      setIsSubmitting(false);
     }
-  };
-  
-  // Check if we have answers for all sections to enable submit
-  const isFormComplete = () => {
-    return Object.keys(sections).every(key => 
-      answersData[key] && 
-      answersData[key].answers && 
-      answersData[key].answers.length === sections[key].questions.length
-    );
   };
 
   return (
@@ -115,7 +123,7 @@ const DiagnosticSections = ({
       <div className="flex justify-end mt-8">
         <ActionButton 
           onClick={handleSubmit} 
-          disabled={!isFormComplete() || isSubmitting}
+          disabled={!formComplete || isSubmitting}
           variant="secondary"
         >
           <span className="whitespace-nowrap">Finalizar e Ver Resultados</span>

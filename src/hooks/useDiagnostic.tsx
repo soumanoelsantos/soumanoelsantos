@@ -14,6 +14,7 @@ export const useDiagnostic = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [loadError, setLoadError] = useState<Error | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     // Load saved diagnostic results when component mounts
@@ -25,6 +26,7 @@ export const useDiagnostic = () => {
 
       try {
         console.log("Attempting to load diagnostic results for user:", userId);
+        setIsLoading(true);
         
         // Use array notation with .eq instead of .single()
         const { data, error } = await supabase
@@ -68,14 +70,15 @@ export const useDiagnostic = () => {
   }, [userId, isAuthenticated, toast]);
 
   const handleSubmit = async (newResults, newAnswersData) => {
+    if (isSaving) return;
+    
+    setIsSaving(true);
     setResults(newResults);
     setAnswersData(newAnswersData);
-    setShowResults(true);
-
+    
     if (userId) {
       try {
         console.log("Saving diagnostic results for user:", userId);
-        setIsLoading(true);
         
         // Check if a diagnostic exists for this user
         const { data, error } = await supabase
@@ -121,10 +124,12 @@ export const useDiagnostic = () => {
           title: "Erro ao salvar resultados",
           description: "Os resultados foram calculados mas não puderam ser salvos."
         });
-      } finally {
-        setIsLoading(false);
       }
     }
+    
+    // Set showResults to true only after all operations complete
+    setShowResults(true);
+    setIsSaving(false);
   };
   
   const resetDiagnostic = async () => {

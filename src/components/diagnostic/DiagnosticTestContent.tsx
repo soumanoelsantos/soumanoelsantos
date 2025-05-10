@@ -84,7 +84,7 @@ const DiagnosticTestContent = ({
             sections={sections}
             answersData={answersData}
             setAnswersData={setAnswersData}
-            onSubmit={(calculatedResults, newAnswersData) => handleSubmit(calculatedResults, newAnswersData)}
+            onSubmit={handleSubmit}
           />
         ) : (
           results ? (
