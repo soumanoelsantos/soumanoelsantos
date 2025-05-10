@@ -16,6 +16,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
         descriptionClassName: "group-[.toast]:text-muted-foreground",
       }}
+      position="top-right"
+      expand={false}
+      richColors
       {...props}
     />
   )
