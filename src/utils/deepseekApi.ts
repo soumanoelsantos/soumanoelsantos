@@ -96,6 +96,19 @@ const prepareSwotPrompt = (swotData: any) => {
     prompt += "Nenhuma ameaça identificada.\n";
   }
   
+  // Add company info if available
+  if (swotData.companyInfo) {
+    prompt += "\nINFORMAÇÕES ADICIONAIS SOBRE A EMPRESA:\n";
+    const info = swotData.companyInfo;
+    
+    if (info.industry) prompt += `Setor/Indústria: ${info.industry}\n`;
+    if (info.mainProducts) prompt += `Principais produtos/serviços: ${info.mainProducts}\n`;
+    if (info.targetAudience) prompt += `Público-alvo: ${info.targetAudience}\n`;
+    if (info.mainChallenges) prompt += `Principais desafios/gargalos: ${info.mainChallenges}\n`;
+    if (info.competitors) prompt += `Principais concorrentes: ${info.competitors}\n`;
+    if (info.goals) prompt += `Objetivos para os próximos 12 meses: ${info.goals}\n`;
+  }
+  
   // Detailed instructions for the AI
   prompt += `\nCrie um plano de ação detalhado dividido em 4 tipos de estratégias:
   
@@ -105,7 +118,8 @@ const prepareSwotPrompt = (swotData: any) => {
 4. Estratégias WT (Fraquezas + Ameaças): Como minimizar os pontos fracos e evitar as ameaças
 
 Para cada tipo de estratégia, inclua pelo menos 3-5 ações PRÁTICAS e ESPECÍFICAS que podem ser implementadas imediatamente.
-Cada ação deve ser clara, prática e diretamente relacionada aos pontos da análise SWOT.
+Cada ação deve ser clara, prática, e diretamente relacionada aos pontos da análise SWOT e às informações da empresa fornecidas.
+Certifique-se de personalizar as recomendações com base no setor da empresa, produtos, público-alvo e desafios mencionados.
 
 Formate sua resposta como um objeto JSON com estas quatro chaves:
 - "strengthsOpportunities": array de ações para estratégias SO

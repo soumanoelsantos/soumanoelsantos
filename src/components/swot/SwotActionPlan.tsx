@@ -1,14 +1,15 @@
 
 import React, { useRef } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Download, RefreshCw, Save } from "lucide-react";
-import { SwotData } from "@/types/swot";
-import { useToast } from "@/hooks/use-toast";
-import { generatePDF } from '@/utils/pdfGenerator';
-import ActionPlanDisplay from './ActionPlanDisplay';
-import SwotPdfPreview from './SwotPdfPreview';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Download, RefreshCw, Info } from 'lucide-react';
+import ActionPlanDisplay from '@/components/swot/ActionPlanDisplay';
 import { useSwotActionPlan } from '@/hooks/useSwotActionPlan';
+import { SwotData } from '@/types/swot';
+import { generatePDF } from '@/utils/pdfGenerator';
+import ActionButton from '@/components/ui/action-button';
+import SwotPdfPreview from './SwotPdfPreview';
+import SwotCompanyInfoDialog from './SwotCompanyInfoDialog';
 
 interface SwotActionPlanProps {
   swotData: SwotData;
@@ -16,114 +17,111 @@ interface SwotActionPlanProps {
 }
 
 const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) => {
-  const { toast } = useToast();
-  const pdfRef = useRef<HTMLDivElement>(null);
   const { 
     actionPlan, 
     generating, 
-    savedActionPlan,
-    handleGenerateAndSaveActionPlan,
+    handleGenerateAndSaveActionPlan, 
     handleRegenerateActionPlan,
-    hasContent 
+    hasContent,
+    companyInfoDialogOpen,
+    setCompanyInfoDialogOpen,
+    handleCompanyInfoSubmit
   } = useSwotActionPlan(swotData, isLoading);
+  
+  const pdfRef = useRef<HTMLDivElement>(null);
 
-  // Handle "Download Plan" button click to generate PDF
-  const handleDownloadPlan = () => {
-    try {
-      if (pdfRef.current) {
-        // Use the PDF generator utility to create and download the PDF
-        generatePDF(pdfRef.current, "plano_acao_swot.pdf");
-        
-        toast({
-          title: "PDF gerado com sucesso",
-          description: "O plano de ação SWOT foi baixado em formato PDF",
-        });
-      }
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao gerar PDF",
-        description: "Não foi possível gerar o PDF do plano de ação",
-      });
+  const handleDownloadPDF = () => {
+    if (pdfRef.current) {
+      generatePDF(pdfRef.current, 'plano_acao_swot.pdf');
     }
   };
 
-  // Show loading state if no data
-  if (isLoading || !hasContent(swotData)) {
-    return null; // Don't show anything if there's no data yet
+  const hasActionPlan = actionPlan && Object.keys(actionPlan).length > 0 && 
+    Object.values(actionPlan).some(strategies => strategies && strategies.length > 0);
+
+  if (!hasContent(swotData)) {
+    return (
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle className="text-center">Plano de Ação</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center py-8">
+          <p className="mb-4 text-gray-600">
+            Preencha sua análise SWOT para gerar um plano de ação personalizado.
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
     <>
       <Card className="mt-8">
-        <CardHeader className="bg-gradient-to-r from-gray-100 to-gray-50">
-          <CardTitle className="text-xl text-gray-800 flex justify-between items-center">
-            <span>Plano de Ação baseado na sua análise SWOT</span>
-            <div className="flex gap-2">
-              {!savedActionPlan || Object.keys(actionPlan).length === 0 ? (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="flex items-center gap-2" 
-                  onClick={handleGenerateAndSaveActionPlan}
-                  disabled={generating}
-                >
-                  <Save className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
-                  {generating ? 'Gerando...' : 'Gerar e Salvar Plano'}
-                </Button>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="flex items-center gap-2" 
-                  onClick={handleRegenerateActionPlan}
-                  disabled={generating}
-                >
-                  <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
-                  {generating ? 'Gerando...' : 'Atualizar Plano'}
-                </Button>
-              )}
-              
-              {Object.keys(actionPlan).length > 0 && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="flex items-center gap-2" 
-                  onClick={handleDownloadPlan}
-                >
-                  <Download className="h-4 w-4" />
-                  Baixar PDF
-                </Button>
-              )}
-            </div>
-          </CardTitle>
+        <CardHeader className="bg-blue-50 border-b">
+          <CardTitle className="text-center">Plano de Ação</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
           {generating ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mx-auto mb-4"></div>
-                <p className="text-gray-600">Gerando plano de ação detalhado...</p>
-              </div>
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-2" />
+              <p>Gerando seu plano de ação personalizado...</p>
             </div>
-          ) : Object.keys(actionPlan).length > 0 ? (
-            <ActionPlanDisplay actionPlan={actionPlan} />
+          ) : hasActionPlan ? (
+            <>
+              <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <h3 className="text-lg font-semibold">Estratégias Recomendadas</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-1"
+                    onClick={handleDownloadPDF}
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>Baixar PDF</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-1"
+                    onClick={handleRegenerateActionPlan}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    <span>Regenerar Plano</span>
+                  </Button>
+                </div>
+              </div>
+              <ActionPlanDisplay actionPlan={actionPlan} />
+            </>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">Nenhum plano de ação gerado ainda</p>
-              <p className="text-sm text-gray-500">Clique em "Gerar e Salvar Plano" para criar um plano de ação baseado na sua análise SWOT</p>
+            <div className="flex flex-col items-center py-8">
+              <p className="mb-6 text-center max-w-lg">
+                Gere um plano de ação personalizado baseado na sua análise SWOT para implementar estratégias eficazes para o seu negócio.
+              </p>
+              <ActionButton 
+                variant="secondary"
+                icon={Info}
+                onClick={handleGenerateAndSaveActionPlan}
+                disabled={generating}
+              >
+                Gerar Plano de Ação Personalizado
+              </ActionButton>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Hidden element for PDF generation */}
+      {/* Hidden PDF Preview for download */}
       <div className="hidden">
-        <div ref={pdfRef}>
-          <SwotPdfPreview actionPlan={actionPlan} />
-        </div>
+        <SwotPdfPreview ref={pdfRef} swotData={swotData} actionPlan={actionPlan} />
       </div>
+
+      {/* Company Info Collection Dialog */}
+      <SwotCompanyInfoDialog
+        open={companyInfoDialogOpen}
+        onOpenChange={setCompanyInfoDialogOpen}
+        onSubmit={handleCompanyInfoSubmit}
+      />
     </>
   );
 };
