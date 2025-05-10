@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { User, AdminModule } from "@/types/admin";
 import { useToggleModuleAccess } from "@/hooks/admin/useToggleModuleAccess";
@@ -52,6 +51,7 @@ export const useAdminActions = (
 
   const toggleAllModules = async (userId: string, enableAll: boolean): Promise<boolean> => {
     const result = await toggleAllModulesAccess(userId, enableAll, modules, users);
+    
     if (result.success) {
       // Update local state
       setUsers(prevUsers => {
@@ -64,12 +64,6 @@ export const useAdminActions = (
           }
           return user;
         });
-      });
-      
-      toast({
-        title: enableAll ? "Todos os módulos liberados" : "Acesso aos módulos removido",
-        description: `${enableAll ? "Acesso completo concedido" : "Acesso removido"} com sucesso`,
-        className: "bg-white border-gray-200"
       });
       
       return true;

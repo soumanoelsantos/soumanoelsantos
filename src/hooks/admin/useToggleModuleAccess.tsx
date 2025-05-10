@@ -47,29 +47,22 @@ export const useToggleModuleAccess = () => {
       const user = users.find(u => u.id === userId);
       if (!user) return { success: false };
       
-      if (enableAll) {
-        // Grant access to all modules
-        // Get modules that user doesn't already have access to
-        const modulesToAdd = modules
-          .filter(module => !user.unlockedModules.includes(module.id))
-          .map(module => ({ user_id: userId, module_id: module.id }));
-        
-        if (modulesToAdd.length > 0) {
-          const { error } = await supabase
-            .from('user_modules')
-            .insert(modulesToAdd);
-            
-          if (error) throw error;
+      // Use an edge function to avoid recursion issues with RLS policies
+      const { error, data } = await supabase.functions.invoke('toggle-user-modules', {
+        body: { 
+          userId, 
+          enableAll, 
+          moduleIds: modules.map(m => m.id)
         }
-      } else {
-        // Remove access to all modules
-        const { error } = await supabase
-          .from('user_modules')
-          .delete()
-          .eq('user_id', userId);
-          
-        if (error) throw error;
-      }
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: enableAll ? "Todos os módulos liberados" : "Acesso aos módulos removido",
+        description: `${enableAll ? "Acesso completo concedido" : "Acesso removido"} com sucesso`,
+        className: "bg-white"
+      });
       
       return { 
         success: true,
