@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { 
   checkUserToolCompletion, 
   loadDiagnosticCompletion,
-  loadPhaseTestCompletion
+  loadPhaseTestCompletion,
+  loadChecklistData
 } from "@/utils/storage";
 
 export const useToolCompletionCheck = (userId: string | null) => {
@@ -31,6 +32,15 @@ export const useToolCompletionCheck = (userId: string | null) => {
         
         console.log("Regular tools completion data:", toolsData);
         
+        // Double-check checklist data directly if the first check didn't find it
+        let checklistCompleted = toolsData.checklist_data;
+        if (!checklistCompleted) {
+          console.log("Double-checking checklist data directly");
+          const checklistData = await loadChecklistData(userId);
+          checklistCompleted = !!checklistData;
+          console.log("Direct checklist check result:", checklistCompleted);
+        }
+        
         // Check diagnostic completion (separate table)
         const diagnosticCompleted = await loadDiagnosticCompletion(userId);
         
@@ -39,6 +49,7 @@ export const useToolCompletionCheck = (userId: string | null) => {
         
         const completionStatus = {
           ...toolsData,
+          checklist_data: checklistCompleted,  // Ensure we use the direct check result
           diagnostic_results: diagnosticCompleted,
           fase_results: phaseTestCompleted
         };

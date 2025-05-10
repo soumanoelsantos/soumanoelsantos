@@ -30,7 +30,9 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
   useEffect(() => {
     if (lesson.dataKey) {
       console.log(`ModuleLessonItem: "${lesson.title}" with dataKey "${lesson.dataKey}"`, 
-        completedTools[lesson.dataKey] ? "is completed" : "is not completed");
+        completedTools[lesson.dataKey] ? "is completed" : "is not completed",
+        { completionValue: completedTools[lesson.dataKey], allCompletedTools: completedTools }
+      );
     }
   }, [lesson, completedTools]);
 
@@ -53,7 +55,7 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
       completedTools
     });
     
-    // Check if the tool is completed
+    // Check if the tool is completed - strict comparison to true
     const isCompleted = completedTools[lesson.dataKey] === true;
     
     if (isCompleted) {
@@ -74,7 +76,7 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
     >
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center flex-wrap">
             <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
             {renderCompletionStatus()}
             {lesson.benefit && (

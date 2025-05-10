@@ -120,9 +120,42 @@ export const checkUserToolCompletion = async (
     // Log the request for debugging
     console.log(`Checking tool completion for user ${userId}, keys:`, dataKeys);
 
+    // First check if the table has all the required columns
+    const { data: tableInfo, error: tableError } = await supabase
+      .rpc('get_table_columns', { table_name: 'user_tools_data' });
+    
+    if (tableError) {
+      console.error("Error getting table columns:", tableError);
+      // If we can't get column info, let's try the query anyway
+    }
+    
+    // Get existing columns if available
+    let existingColumns: string[] = [];
+    if (tableInfo) {
+      existingColumns = tableInfo.map((col: any) => col.column_name);
+      console.log("Existing columns:", existingColumns);
+    }
+
+    // Filter dataKeys to only include existing columns
+    const validDataKeys = dataKeys.filter(key => 
+      !tableInfo || existingColumns.includes(key) || key === 'id' || key === 'user_id'
+    );
+    
+    if (validDataKeys.length === 0) {
+      console.log("No valid columns to query");
+      return dataKeys.reduce((acc, key) => {
+        acc[key] = false;
+        return acc;
+      }, {} as Record<string, boolean>);
+    }
+
+    // Safely construct the query with only valid columns
+    const selectColumns = validDataKeys.join(',');
+    
+    // Execute the query to get tool completion status
     const { data, error } = await supabase
       .from('user_tools_data')
-      .select(dataKeys.join(','))
+      .select(selectColumns)
       .eq('user_id', userId)
       .single();
     
@@ -134,12 +167,24 @@ export const checkUserToolCompletion = async (
           return acc;
         }, {} as Record<string, boolean>);
       }
+      
+      // If there's a column error, try a more basic approach
+      if (error.code === '42703') { // Column not found
+        console.log("Column error detected, using basic query approach");
+        return await checkToolCompletionBasic(userId, dataKeys);
+      }
+      
       throw error;
     }
     
     // Check which tools have data and log the results
     const completionStatus = dataKeys.reduce((acc, key) => {
-      acc[key] = data[key] !== null && data[key] !== undefined;
+      // For columns that weren't actually queried, default to false
+      if (validDataKeys.includes(key)) {
+        acc[key] = data[key] !== null && data[key] !== undefined;
+      } else {
+        acc[key] = false;
+      }
       return acc;
     }, {} as Record<string, boolean>);
     
@@ -149,6 +194,48 @@ export const checkUserToolCompletion = async (
     
   } catch (error) {
     console.error(`Error checking tool completion:`, error);
-    return {};
+    // Fall back to basic approach if there's an error
+    return await checkToolCompletionBasic(userId, dataKeys);
   }
+};
+
+// A more basic approach that checks one column at a time
+const checkToolCompletionBasic = async (
+  userId: string, 
+  dataKeys: string[]
+): Promise<Record<string, boolean>> => {
+  console.log("Using basic tool completion check");
+  
+  const result: Record<string, boolean> = {};
+  
+  for (const key of dataKeys) {
+    try {
+      // Check one column at a time
+      const { data, error } = await supabase
+        .from('user_tools_data')
+        .select(`${key}`)
+        .eq('user_id', userId)
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') { // "No rows found"
+          result[key] = false;
+        } else if (error.code === '42703') { // Column not found
+          result[key] = false;
+          console.log(`Column ${key} does not exist in the table`);
+        } else {
+          console.error(`Error checking completion for ${key}:`, error);
+          result[key] = false;
+        }
+      } else {
+        result[key] = data && data[key] !== null && data[key] !== undefined;
+      }
+    } catch (e) {
+      console.error(`Exception checking completion for ${key}:`, e);
+      result[key] = false;
+    }
+  }
+  
+  console.log("Basic tool completion results:", result);
+  return result;
 };
