@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { SwotData } from "@/types/swot";
 import { CompanyInfoData } from '@/types/companyInfo';
 import { generateEnhancedActionPlan } from '@/utils/deepseekApi';
-import { generateBasicActionPlan, generateEnhancedSwotPlan } from '@/utils/swot/actionPlanGenerator';
+import { generateBasicActionPlan } from '@/utils/swot/actionPlanGenerator';
 import { hasSwotContent } from '@/utils/swot/swotDataUtils';
+import { useToast } from '@/hooks/use-toast';
 
 export const useActionPlanGeneration = () => {
+  const { toast } = useToast();
   const [generating, setGenerating] = useState(false);
   const [isUsingAI, setIsUsingAI] = useState(false);
 
@@ -28,14 +30,18 @@ export const useActionPlanGeneration = () => {
       let generatedPlan;
       if (!isUsingAI) {
         try {
-          // Use the refactored enhancedSwotPlan function
-          generatedPlan = await generateEnhancedSwotPlan(data, companyInfoData);
+          generatedPlan = await generateEnhancedActionPlan(enrichedData);
           if (generatedPlan) {
             setIsUsingAI(true);
           }
         } catch (aiError) {
           console.error("Error with AI generation:", aiError);
           // Will fallback to basic generation below
+          toast({
+            variant: "destructive",
+            title: "Erro na geração com IA",
+            description: "Usando modo de geração alternativo",
+          });
         }
       }
 
@@ -55,10 +61,16 @@ export const useActionPlanGeneration = () => {
     }
   };
 
+  // Reset AI usage flag to attempt AI generation again
+  const resetAIUsage = () => {
+    setIsUsingAI(false);
+  };
+
   return {
     generating,
     isUsingAI,
     hasContent,
-    generateActionPlan
+    generateActionPlan,
+    resetAIUsage
   };
 };

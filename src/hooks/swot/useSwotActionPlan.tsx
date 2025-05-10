@@ -1,140 +1,58 @@
 
 import { useState, useEffect } from 'react';
 import { SwotData } from "@/types/swot";
-import { generateBasicActionPlan } from '@/utils/swot/actionPlanGenerator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { saveSwotData, loadSwotData } from '@/utils/storage/swotUtils';
-import { generateEnhancedActionPlan } from '@/utils/deepseekApi';
+import { saveSwotData, loadSwotData, saveSwotActionPlan, loadSwotActionPlan } from '@/utils/storage/swotUtils';
+import { useActionPlanGeneration } from './useActionPlanGeneration';
+import { useCompanyInfoManagement } from './useCompanyInfoManagement';
 import { CompanyInfoData } from '@/types/companyInfo';
 
 export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
   const { toast } = useToast();
   const { userId } = useAuth();
   const [actionPlan, setActionPlan] = useState<Record<string, string[]>>({});
-  const [generating, setGenerating] = useState(false);
-  const [isUsingAI, setIsUsingAI] = useState(false);
   const [savedActionPlan, setSavedActionPlan] = useState<boolean>(false);
-  const [companyInfoDialogOpen, setCompanyInfoDialogOpen] = useState(false);
-  const [companyInfo, setCompanyInfo] = useState<CompanyInfoData | null>(null);
+  
+  // Use composable hooks
+  const { 
+    generating, 
+    isUsingAI, 
+    hasContent,
+    generateActionPlan,
+    resetAIUsage
+  } = useActionPlanGeneration();
+  
+  const {
+    companyInfo,
+    companyInfoDialogOpen,
+    setCompanyInfoDialogOpen,
+    saveCompanyInfo
+  } = useCompanyInfoManagement();
 
-  // Load saved action plan and company info on component mount
+  // Load saved action plan on component mount
   useEffect(() => {
-    const loadSavedData = async () => {
+    const loadSavedPlan = async () => {
       if (!userId || isLoading) return;
       
       try {
-        // Load all SWOT data
-        const savedData = await loadSwotData(userId);
-        if (savedData) {
-          // Load company info
-          if (savedData.companyInfo) {
-            setCompanyInfo(savedData.companyInfo);
-            console.log("Loaded saved company info:", savedData.companyInfo);
-          }
-          
-          // Load action plan
-          if (savedData.actionPlan && Object.keys(savedData.actionPlan).length > 0) {
-            setActionPlan(savedData.actionPlan);
-            setSavedActionPlan(true);
-            console.log("Loaded saved action plan:", savedData.actionPlan);
-          } else {
-            setSavedActionPlan(false);
-          }
+        // Load action plan
+        const savedPlan = await loadSwotActionPlan(userId);
+        
+        if (savedPlan && Object.keys(savedPlan).length > 0) {
+          setActionPlan(savedPlan);
+          setSavedActionPlan(true);
+          console.log("Loaded saved action plan:", savedPlan);
+        } else {
+          setSavedActionPlan(false);
         }
       } catch (error) {
-        console.error("Error loading saved data:", error);
+        console.error("Error loading saved action plan:", error);
       }
     };
 
-    loadSavedData();
+    loadSavedPlan();
   }, [userId, isLoading]);
-
-  // Check if SWOT data has content
-  const hasContent = (data: SwotData): boolean => {
-    return Object.values(data).some(category => 
-      category.some(item => item.text && item.text.trim() !== '')
-    );
-  };
-
-  // Save data to Supabase
-  const saveData = async (data: any, key: string) => {
-    if (!userId) return false;
-    
-    try {
-      // Get existing SWOT data
-      const existingData = await loadSwotData(userId) || {};
-      
-      // Update the specific part of data
-      const updatedData = {
-        ...existingData,
-        [key]: data
-      };
-      
-      return await saveSwotData(userId, updatedData);
-    } catch (error) {
-      console.error(`Error saving ${key}:`, error);
-      return false;
-    }
-  };
-
-  // Generate action plan based on SWOT analysis and company info
-  const generateActionPlan = async (data: SwotData, companyInfoData?: CompanyInfoData | null) => {
-    setGenerating(true);
-    
-    try {
-      // Create a data object with both SWOT data and company info
-      const enrichedData = {
-        ...data,
-        companyInfo: companyInfoData || null
-      };
-
-      // Try to use DeepSeek AI for enhanced plan
-      let generatedPlan;
-      if (!isUsingAI) {
-        try {
-          generatedPlan = await generateEnhancedActionPlan(enrichedData);
-          if (generatedPlan) {
-            setIsUsingAI(true);
-          }
-        } catch (aiError) {
-          console.error("Error with AI generation:", aiError);
-          // Will fallback to basic generation below
-        }
-      }
-
-      // If no AI plan was generated, fallback to basic plan
-      if (!generatedPlan) {
-        generatedPlan = generateBasicActionPlan(data, companyInfoData);
-      }
-      
-      setActionPlan(generatedPlan);
-      
-      // Save company info if we have it
-      if (companyInfoData) {
-        await saveData(companyInfoData, 'companyInfo');
-      }
-      
-      // Save action plan
-      await saveData(generatedPlan, 'actionPlan');
-      setSavedActionPlan(true);
-      
-      return generatedPlan;
-    } catch (error) {
-      console.error("Error generating action plan:", error);
-      // Fallback to basic plan if all else fails
-      const basicPlan = generateBasicActionPlan(data, companyInfoData);
-      setActionPlan(basicPlan);
-      
-      // Save basic plan
-      await saveData(basicPlan, 'actionPlan');
-      setSavedActionPlan(true);
-      
-      return basicPlan;
-    } finally {
-      setGenerating(false);
-    }
-  };
 
   // Generate and save the action plan with company info
   const handleGenerateAndSaveActionPlan = async () => {
@@ -146,16 +64,22 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
       return;
     }
     
-    setGenerating(true);
-    
     try {
       // Generate the action plan with company info
-      await generateActionPlan(swotData, companyInfo);
+      const generatedPlan = await generateActionPlan(swotData, companyInfo);
       
-      toast({
-        title: "Plano de ação salvo",
-        description: "Seu plano de ação personalizado foi gerado e salvo com sucesso",
-      });
+      if (generatedPlan) {
+        setActionPlan(generatedPlan);
+        
+        // Save the action plan
+        await saveSwotActionPlan(userId, generatedPlan);
+        setSavedActionPlan(true);
+        
+        toast({
+          title: "Plano de ação salvo",
+          description: "Seu plano de ação personalizado foi gerado e salvo com sucesso",
+        });
+      }
     } catch (error) {
       console.error("Error generating and saving action plan:", error);
       toast({
@@ -163,24 +87,32 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
         title: "Erro ao salvar plano",
         description: "Não foi possível gerar e salvar o plano de ação",
       });
-    } finally {
-      setGenerating(false);
     }
   };
 
   // Handle company info submission
   const handleCompanyInfoSubmit = async (data: CompanyInfoData) => {
-    setCompanyInfo(data);
+    // Save company info first
+    const savedCompanyInfo = await saveCompanyInfo(data);
     
     // Now generate the action plan with the new company info
     try {
-      setGenerating(true);
-      await generateActionPlan(swotData, data);
+      const generatedPlan = await generateActionPlan(swotData, savedCompanyInfo);
       
-      toast({
-        title: "Plano de ação personalizado",
-        description: "Seu plano de ação foi gerado e salvo com base nas informações da sua empresa",
-      });
+      if (generatedPlan) {
+        setActionPlan(generatedPlan);
+        
+        // Save the action plan
+        if (userId) {
+          await saveSwotActionPlan(userId, generatedPlan);
+          setSavedActionPlan(true);
+          
+          toast({
+            title: "Plano de ação personalizado",
+            description: "Seu plano de ação foi gerado e salvo com base nas informações da sua empresa",
+          });
+        }
+      }
     } catch (error) {
       console.error("Error generating action plan with company info:", error);
       toast({
@@ -188,8 +120,6 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
         title: "Erro ao gerar plano",
         description: "Não foi possível gerar o plano de ação personalizado",
       });
-    } finally {
-      setGenerating(false);
     }
   };
 
@@ -203,16 +133,26 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
       return;
     }
     
-    setGenerating(true);
-    setIsUsingAI(false);
+    // Reset AI usage to try with AI again
+    resetAIUsage();
     
     try {
-      await generateActionPlan(swotData, companyInfo);
+      const generatedPlan = await generateActionPlan(swotData, companyInfo);
       
-      toast({
-        title: "Plano de ação atualizado",
-        description: "Seu plano de ação foi regenerado e salvo com sucesso",
-      });
+      if (generatedPlan) {
+        setActionPlan(generatedPlan);
+        
+        // Save regenerated plan
+        if (userId) {
+          await saveSwotActionPlan(userId, generatedPlan);
+          setSavedActionPlan(true);
+          
+          toast({
+            title: "Plano de ação atualizado",
+            description: "Seu plano de ação foi regenerado e salvo com sucesso",
+          });
+        }
+      }
     } catch (error) {
       console.error("Error regenerating action plan:", error);
       toast({
@@ -220,8 +160,6 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
         title: "Erro ao regenerar plano",
         description: "Não foi possível regenerar o plano de ação",
       });
-    } finally {
-      setGenerating(false);
     }
   };
 
