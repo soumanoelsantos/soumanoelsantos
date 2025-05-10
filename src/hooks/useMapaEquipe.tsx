@@ -28,7 +28,8 @@ export const useMapaEquipe = () => {
     loadData,
     handlePreview,
     closePreview,
-    resetForm
+    resetForm,
+    saveData
   } = useMapaEquipeOperations(
     empresaNome,
     colaboradores,
@@ -42,7 +43,10 @@ export const useMapaEquipe = () => {
   
   // Load saved data when component is mounted
   useEffect(() => {
-    loadData();
+    if (userId) {
+      console.log("Loading mapa equipe data for user:", userId);
+      loadData();
+    }
   }, [userId, isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
   
   return {
@@ -56,7 +60,8 @@ export const useMapaEquipe = () => {
     handlePreview,
     closePreview,
     resetForm,
-    isLoading
+    isLoading,
+    saveData
   };
 };
 

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Colaborador } from "@/types/mapaEquipe";
-import { FileDown, ArrowLeft } from "lucide-react";
+import { FileDown, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { generatePDF } from "@/utils/pdfGenerator";
 import { useToast } from "@/hooks/use-toast";
 
@@ -47,6 +47,12 @@ const MapaEquipePreview = ({ empresaNome, colaboradores, onClose }: MapaEquipePr
     }
   };
 
+  // Determine if the map is filled with at least some basic information
+  const isMapaPreenchido = 
+    empresaNome.trim() !== "" && 
+    colaboradores.length > 0 && 
+    colaboradores[0].nome.trim() !== "";
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -60,6 +66,15 @@ const MapaEquipePreview = ({ empresaNome, colaboradores, onClose }: MapaEquipePr
           Baixar PDF
         </Button>
       </div>
+      
+      {isMapaPreenchido && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="text-green-500 h-6 w-6" />
+          <p className="text-green-700 font-medium">
+            Mapa da Equipe preenchido! Seus dados foram salvos com sucesso.
+          </p>
+        </div>
+      )}
       
       <div ref={mapRef} className="mapa-equipe-preview">
         <Card className="bg-white shadow-md overflow-hidden">

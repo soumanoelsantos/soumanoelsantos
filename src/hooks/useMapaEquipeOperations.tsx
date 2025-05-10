@@ -27,11 +27,13 @@ export const useMapaEquipeOperations = (
 
     try {
       setIsLoading(true);
+      console.log("Attempting to load mapa equipe data");
       const data = await loadMapaEquipeData(userId);
       
       if (data) {
-        setEmpresaNome(data.empresaNome);
-        setColaboradores(data.colaboradores);
+        console.log("Loaded mapa equipe data:", data);
+        setEmpresaNome(data.empresaNome || "");
+        setColaboradores(data.colaboradores || []);
         
         toast({
           title: "Dados carregados",
@@ -39,9 +41,12 @@ export const useMapaEquipeOperations = (
         });
         
         // Auto-show preview if we already have data
-        if (data.empresaNome && data.colaboradores && data.colaboradores.length > 0) {
+        if (data.empresaNome && data.colaboradores && data.colaboradores.length > 0 && data.colaboradores[0].nome) {
+          console.log("Auto-showing preview with loaded data");
           setShowPreview(true);
         }
+      } else {
+        console.log("No saved mapa equipe data found");
       }
     } catch (error) {
       console.error("Erro ao carregar dados do Mapa da Equipe:", error);
@@ -53,6 +58,48 @@ export const useMapaEquipeOperations = (
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Save data without showing preview
+  const saveData = async () => {
+    if (!isAuthenticated || !userId) {
+      toast({
+        variant: "destructive",
+        title: "Erro de autenticação",
+        description: "Você precisa estar logado para salvar o mapa da equipe.",
+      });
+      return false;
+    }
+
+    // Allow save even if just the company name and at least one collaborator with a name is set
+    const hasMinimalData = empresaNome.trim() !== "" && 
+      colaboradores.length > 0 && 
+      colaboradores[0].nome.trim() !== "";
+    
+    if (hasMinimalData) {
+      try {
+        const data = {
+          empresaNome,
+          colaboradores
+        };
+        
+        const result = await saveMapaEquipeData(userId, data);
+        
+        if (result.success) {
+          if (result.id) setMapaId(result.id);
+          
+          console.log("Mapa equipe data saved successfully");
+          return true;
+        } else {
+          throw new Error("Falha ao salvar dados");
+        }
+      } catch (error: any) {
+        console.error("Erro ao salvar mapa da equipe:", error);
+        return false;
+      }
+    }
+    
+    return false;
   };
 
   const handlePreview = async () => {
@@ -170,6 +217,7 @@ export const useMapaEquipeOperations = (
 
   return {
     loadData,
+    saveData,
     handlePreview,
     closePreview,
     resetForm

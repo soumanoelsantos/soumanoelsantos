@@ -51,7 +51,8 @@ export const useToolCompletionCheck = (userId: string | null) => {
           mapaEquipeCompleted = !!mapaEquipeData && 
             !!mapaEquipeData.colaboradores && 
             mapaEquipeData.colaboradores.length > 0 &&
-            !!mapaEquipeData.colaboradores[0].nome;
+            !!mapaEquipeData.colaboradores[0].nome &&
+            mapaEquipeData.colaboradores[0].nome.trim() !== "";
           console.log("Direct mapa_equipe check result:", mapaEquipeCompleted, mapaEquipeData);
         }
         

@@ -11,9 +11,16 @@ import CTASection from "@/components/CTASection";
 
 const MapaEquipe = () => {
   const navigate = useNavigate();
-  const { userEmail, logout, isAuthenticated } = useAuth();
+  const { userEmail, logout, isAuthenticated, userId } = useAuth();
   const { toast } = useToast();
-  const { showPreview, handlePreview, isLoading, colaboradores, empresaNome } = useMapaEquipe();
+  const { 
+    showPreview, 
+    handlePreview, 
+    isLoading, 
+    colaboradores, 
+    empresaNome,
+    saveData 
+  } = useMapaEquipe();
 
   useEffect(() => {
     // When the component mounts, if data is loaded and not already showing preview
@@ -22,6 +29,7 @@ const MapaEquipe = () => {
         empresaNome && colaboradores && 
         colaboradores.length > 0 && 
         colaboradores[0].nome) {
+      console.log("Auto-showing preview with existing data:", { empresaNome, colaboradores });
       handlePreview();
     }
   }, [isLoading, showPreview, handlePreview, colaboradores, empresaNome]);
@@ -34,8 +42,11 @@ const MapaEquipe = () => {
         description: "Você precisa fazer login para acessar esta página",
       });
       navigate("/login");
+    } else if (userId) {
+      // Ensure data is loaded when user is authenticated
+      console.log("User is authenticated, checking for existing data");
     }
-  }, [isAuthenticated, navigate, toast]);
+  }, [isAuthenticated, navigate, toast, userId]);
 
   const handleLogout = () => {
     logout();
@@ -54,7 +65,7 @@ const MapaEquipe = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-center">Mapa da Equipe</h1>
           <p className="text-gray-600 text-center mt-2">
-            Organize e visualize sua equipe
+            Organize e visualize sua equipe de colaboradores
           </p>
         </div>
         
