@@ -9,3 +9,5 @@ export * from './puvUtils';
 export * from './diagnosticUtils';
 export * from './mapaEquipeUtils';
 export * from './crmUtils';
+export * from './phaseTestUtils';
+

@@ -7,6 +7,7 @@ import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButt
 import SwotCategory from "@/components/swot/SwotCategory";
 import SwotInfo from "@/components/swot/SwotInfo";
 import SwotActions from "@/components/swot/SwotActions";
+import SwotActionPlan from "@/components/swot/SwotActionPlan";
 import { useSwotAnalysis } from "@/hooks/useSwotAnalysis";
 import { SwotData } from "@/types/swot";
 import CTASection from "@/components/CTASection";
@@ -110,6 +111,9 @@ const AnaliseSwot: React.FC = () => {
           onSave={handleSaveAnalysis}
           onReset={handleResetAnalysis}
         />
+
+        {/* Action Plan Component */}
+        <SwotActionPlan swotData={swotData} isLoading={isLoading} />
         
         <div className="mt-12">
           <CTASection source="analise_swot" />

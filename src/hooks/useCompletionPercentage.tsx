@@ -1,6 +1,10 @@
 
 import { useState, useEffect } from "react";
-import { checkUserToolCompletion, loadDiagnosticCompletion, loadPhaseTestCompletion } from "@/utils/storage";
+import { 
+  checkUserToolCompletion, 
+  isDiagnosticComplete as loadDiagnosticCompletion,
+  loadPhaseTestCompletion
+} from "@/utils/storage";
 
 export const useCompletionPercentage = (userId: string | null) => {
   const [completionPercent, setCompletionPercent] = useState(0);

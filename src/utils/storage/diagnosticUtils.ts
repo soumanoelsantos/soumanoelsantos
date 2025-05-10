@@ -154,3 +154,7 @@ export const isDiagnosticComplete = async (userId: string): Promise<boolean> => 
     return false;
   }
 };
+
+// Export the function for the module to use
+export const loadDiagnosticCompletion = isDiagnosticComplete;
+

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { 
   checkUserToolCompletion,
-  loadDiagnosticCompletion,
+  isDiagnosticComplete as loadDiagnosticCompletion,
   loadPhaseTestCompletion,
   loadChecklistData,
   loadMapaEquipeData
