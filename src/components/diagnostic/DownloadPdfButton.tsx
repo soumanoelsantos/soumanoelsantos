@@ -13,14 +13,7 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
   const { toast } = useToast();
 
   const downloadPDF = () => {
-    if (!pdfRef.current) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao gerar PDF",
-        description: "Não foi possível gerar o PDF do diagnóstico.",
-      });
-      return;
-    }
+    if (!pdfRef.current) return;
 
     // Show toast notification
     toast({
@@ -29,7 +22,7 @@ const DownloadPdfButton = ({ pdfRef }: DownloadPdfButtonProps) => {
     });
 
     // Generate the PDF using our utility function
-    generatePDF(pdfRef.current, 'diagnostico-negocio.pdf');
+    generatePDF(pdfRef.current);
   };
 
   return (

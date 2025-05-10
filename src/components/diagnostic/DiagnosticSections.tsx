@@ -1,9 +1,6 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import DiagnosticSection from '@/components/DiagnosticSection';
-import { Button } from '@/components/ui/button';
-import ActionButton from '@/components/ui/action-button';
-import { CheckCircle } from 'lucide-react';
 
 interface DiagnosticSectionsProps {
   sections: {
@@ -13,125 +10,39 @@ interface DiagnosticSectionsProps {
       pointValue: number;
     };
   };
-  answersData: any;
-  setAnswersData: (answersData: any) => void;
-  onSubmit: (results: any, answersData: any) => void;
+  results: {
+    processos: { score: number; total: number; percentage: number };
+    resultados: { score: number; total: number; percentage: number };
+    sistemaGestao: { score: number; total: number; percentage: number };
+    pessoas: { score: number; total: number; percentage: number };
+  };
+  setResults: React.Dispatch<React.SetStateAction<{
+    processos: { score: number; total: number; percentage: number };
+    resultados: { score: number; total: number; percentage: number };
+    sistemaGestao: { score: number; total: number; percentage: number };
+    pessoas: { score: number; total: number; percentage: number };
+  }>>;
+  setAnswersData: React.Dispatch<React.SetStateAction<{
+    [key: string]: {
+      title: string;
+      answers: { question: string; answer: string }[];
+    };
+  }>>;
 }
 
-const DiagnosticSections = ({ 
-  sections, 
-  answersData, 
-  setAnswersData, 
-  onSubmit 
-}: DiagnosticSectionsProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formComplete, setFormComplete] = useState(false);
-  
-  // Debug logging
-  useEffect(() => {
-    console.log("DiagnosticSections rendered with answersData:", answersData);
-  }, [answersData]);
-
-  // Check if we have answers for all sections to enable submit
-  useEffect(() => {
-    const checkFormCompletion = () => {
-      const complete = Object.keys(sections).every(key => 
-        answersData[key] && 
-        answersData[key].answers && 
-        answersData[key].answers.length === sections[key].questions.length
-      );
-      
-      setFormComplete(complete);
-    };
-    
-    checkFormCompletion();
-  }, [answersData, sections]);
-
-  // Calculate results based on answersData
-  const calculateResults = () => {
-    const results: any = {};
-    let totalScore = 0;
-    let maxPossibleScore = 0;
-
-    Object.entries(sections).forEach(([key, section]) => {
-      if (answersData[key] && answersData[key].answers) {
-        const sectionAnswers = answersData[key].answers;
-        let score = 0;
-        
-        sectionAnswers.forEach((answerData: any) => {
-          if (answerData.answer === 'satisfactory') {
-            score += section.pointValue;
-          } else if (answerData.answer === 'unsatisfactory') {
-            score += section.pointValue / 2;
-          }
-        });
-        
-        const total = section.questions.length * section.pointValue;
-        const percentage = Math.round((score / total) * 100) || 0;
-        
-        results[key] = {
-          score,
-          total,
-          percentage
-        };
-        
-        totalScore += score;
-        maxPossibleScore += total;
-      }
-    });
-
-    results.totalScore = totalScore;
-    results.maxPossibleScore = maxPossibleScore;
-    
-    return results;
-  };
-
-  const handleSubmit = () => {
-    if (isSubmitting || !formComplete) return;
-    
-    // Set submitting state to prevent multiple clicks
-    setIsSubmitting(true);
-    
-    try {
-      const results = calculateResults();
-      console.log("Submitting diagnostic with results:", results);
-      console.log("And answersData:", answersData);
-      
-      // Call the onSubmit function with calculated results and answers data
-      onSubmit(results, answersData);
-    } catch (error) {
-      console.error("Error submitting diagnostic results:", error);
-      setIsSubmitting(false);
-    }
-  };
-
+const DiagnosticSections = ({ sections, results, setResults, setAnswersData }: DiagnosticSectionsProps) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 my-8">
       {Object.entries(sections).map(([key, section]) => (
         <DiagnosticSection 
           key={key}
           section={section} 
+          results={results}
+          setResults={setResults}
           sectionKey={key}
-          results={{
-            processos: { score: 0, total: 0, percentage: 0 },
-            resultados: { score: 0, total: 0, percentage: 0 },
-            sistemaGestao: { score: 0, total: 0, percentage: 0 },
-            pessoas: { score: 0, total: 0, percentage: 0 }
-          }}
-          setResults={() => {}}
           setAnswersData={setAnswersData}
         />
       ))}
-      
-      <div className="flex justify-end mt-8">
-        <ActionButton 
-          onClick={handleSubmit} 
-          disabled={!formComplete || isSubmitting}
-          variant="secondary"
-        >
-          <span className="whitespace-nowrap">Finalizar e Ver Resultados</span>
-        </ActionButton>
-      </div>
     </div>
   );
 };

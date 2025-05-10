@@ -1,30 +1,21 @@
 
-import React from "react";
-import DiagnosticSections from "./DiagnosticSections";
-import DiagnosticResults from "./DiagnosticResults";
-import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card";
-import { Loader2, AlertTriangle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import React, { useRef } from "react";
+import DiagnosticHeader from "@/components/DiagnosticHeader";
+import DiagnosticForm from "@/components/diagnostic/DiagnosticForm";
+import DiagnosticResults from "@/components/diagnostic/DiagnosticResults";
+import { DiagnosticSections as DiagnosticSectionsType } from "@/types/diagnostic";
+import { Loader2 } from "lucide-react";
 
-// Component Props
 interface DiagnosticTestContentProps {
-  sections: {
-    [key: string]: {
-      title: string;
-      questions: string[];
-      pointValue: number;
-    };
-  };
-  results: any | null;
-  setResults: (results: any) => void;
+  sections: DiagnosticSectionsType;
+  results: any;
+  setResults: React.Dispatch<React.SetStateAction<any>>;
   showResults: boolean;
-  setShowResults: (show: boolean) => void; 
   answersData: any;
-  setAnswersData: (answersData: any) => void;
-  handleSubmit: (results: any, answersData: any) => void;
-  resetDiagnostic?: () => void;
-  isGeneratingPlan: boolean;
+  setAnswersData: React.Dispatch<React.SetStateAction<any>>;
+  actionPlan: any;
+  handleSubmit: () => void;
+  isGeneratingPlan?: boolean;
 }
 
 const DiagnosticTestContent = ({
@@ -32,85 +23,50 @@ const DiagnosticTestContent = ({
   results,
   setResults,
   showResults,
-  setShowResults,
   answersData,
   setAnswersData,
+  actionPlan,
   handleSubmit,
-  resetDiagnostic,
-  isGeneratingPlan,
+  isGeneratingPlan = false
 }: DiagnosticTestContentProps) => {
-  const navigate = useNavigate();
-  
-  if (isGeneratingPlan) {
+  const pdfRef = useRef<HTMLDivElement>(null);
+
+  // Only show the loading screen when initially generating results
+  // and NOT when regenerating the action plan on the results page
+  if (isGeneratingPlan && !showResults) {
     return (
-      <div className="flex flex-col items-center justify-center py-16">
-        <Loader2 className="h-12 w-12 animate-spin text-blue-500 mb-4" />
-        <h2 className="text-xl font-semibold text-center">Processando seu diagnóstico...</h2>
-        <p className="text-gray-600 text-center mt-2">
-          Estamos analisando suas respostas para gerar resultados personalizados.
-        </p>
+      <div className="container mx-auto px-4 py-10">
+        <DiagnosticHeader />
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#1d365c]"></div>
+          <p className="mt-4 text-lg text-gray-800">Gerando resultados do diagnóstico...</p>
+          <p className="text-sm text-gray-600">Isso pode levar alguns instantes.</p>
+        </div>
       </div>
     );
   }
 
-  const handleReset = () => {
-    if (resetDiagnostic) {
-      console.log("Resetting diagnostic via resetDiagnostic function");
-      resetDiagnostic();
-    } else {
-      // Fallback for backward compatibility
-      console.log("Using fallback reset mechanism");
-      setResults(null);
-      setShowResults(false);
-      setAnswersData({});
-    }
-    // Navigate back to the test page
-    navigate("/teste");
-  };
-
   return (
-    <Card className="shadow-lg">
-      <CardHeader className="bg-[#1d365c]">
-        <CardTitle className="text-2xl font-bold text-center text-white">
-          Diagnóstico do Negócio
-        </CardTitle>
-        <CardDescription className="text-center text-white">
-          Avalie o estágio atual da sua empresa em 4 áreas-chave
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-6">
-        {!showResults ? (
-          <DiagnosticSections
-            sections={sections}
-            answersData={answersData}
-            setAnswersData={setAnswersData}
-            onSubmit={handleSubmit}
-          />
-        ) : (
-          results ? (
-            <DiagnosticResults 
-              results={results} 
-              answersData={answersData} 
-              onRestart={handleReset} 
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center py-16">
-              <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
-              <h2 className="text-xl font-semibold text-center">Não foi possível carregar os resultados</h2>
-              <p className="text-gray-600 text-center mt-2 mb-6">
-                Houve um erro ao carregar os resultados do diagnóstico.
-              </p>
-              <Button 
-                onClick={handleReset}
-                className="bg-[#1d365c] hover:bg-[#152a49] text-white"
-              >
-                Iniciar Novo Diagnóstico
-              </Button>
-            </div>
-          )
-        )}
-      </CardContent>
-    </Card>
+    <div className="container mx-auto px-4 py-10">
+      <DiagnosticHeader />
+      
+      {!showResults ? (
+        <DiagnosticForm 
+          sections={sections}
+          results={results}
+          setResults={setResults}
+          setAnswersData={setAnswersData}
+          onSubmit={handleSubmit}
+        />
+      ) : (
+        <DiagnosticResults 
+          results={results} 
+          actionPlan={actionPlan}
+          answersData={answersData}
+          pdfRef={pdfRef}
+        />
+      )}
+    </div>
   );
 };
 

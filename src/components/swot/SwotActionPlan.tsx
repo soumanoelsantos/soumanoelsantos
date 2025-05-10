@@ -2,7 +2,7 @@
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Download, RefreshCw } from 'lucide-react';
+import { Loader2, Download, RefreshCw, Info } from 'lucide-react';
 import ActionPlanDisplay from '@/components/swot/ActionPlanDisplay';
 import { useSwotActionPlan } from '@/hooks/swot/useSwotActionPlan';
 import { SwotData } from '@/types/swot';
@@ -101,9 +101,9 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
               </p>
               <ActionButton 
                 variant="secondary"
+                icon={Info}
                 onClick={handleGenerateAndSaveActionPlan}
                 disabled={generating}
-                className="text-white"
               >
                 Gerar Plano de Ação Personalizado
               </ActionButton>

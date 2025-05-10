@@ -41,7 +41,7 @@ const ActionButton = ({
       {...props}
     >
       {Icon && <Icon className="h-4 w-4" />}
-      <span className="whitespace-nowrap">{children}</span>
+      {children}
     </Button>
   );
 };

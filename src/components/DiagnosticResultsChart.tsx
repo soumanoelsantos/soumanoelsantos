@@ -11,42 +11,38 @@ import {
 } from 'recharts';
 
 interface DiagnosticResultsChartProps {
-  results: {
-    processos?: { percentage: number };
-    resultados?: { percentage: number };
-    sistemaGestao?: { percentage: number };
-    pessoas?: { percentage: number };
+  data: {
+    processos: { percentage: number };
+    resultados: { percentage: number };
+    sistemaGestao: { percentage: number };
+    pessoas: { percentage: number };
   };
 }
 
-const DiagnosticResultsChart = ({ results }: DiagnosticResultsChartProps) => {
-  if (!results || !results.processos || !results.resultados || !results.sistemaGestao || !results.pessoas) {
-    return <div className="w-full h-[400px] flex items-center justify-center">Dados insuficientes para exibir o gráfico</div>;
-  }
-
+const DiagnosticResultsChart = ({ data }: DiagnosticResultsChartProps) => {
   const chartData = [
     {
       subject: 'PROCESSOS',
       A: 100, // Desejado
-      B: results.processos?.percentage || 0, // Atual
+      B: data.processos.percentage, // Atual
       fullMark: 100,
     },
     {
       subject: 'RESULTADOS',
       A: 100, // Desejado
-      B: results.resultados?.percentage || 0,
+      B: data.resultados.percentage,
       fullMark: 100,
     },
     {
       subject: 'SISTEMA DE GESTÃO',
       A: 100, // Desejado
-      B: results.sistemaGestao?.percentage || 0,
+      B: data.sistemaGestao.percentage,
       fullMark: 100,
     },
     {
       subject: 'PESSOAS',
       A: 100, // Desejado
-      B: results.pessoas?.percentage || 0,
+      B: data.pessoas.percentage,
       fullMark: 100,
     },
   ];

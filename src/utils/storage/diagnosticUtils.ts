@@ -6,19 +6,17 @@ import { isValidDiagnosticResults, isValidAnswersData, isValidActionPlan } from 
 
 export const loadDiagnosticDataFromSupabase = async (userId: string) => {
   try {
-    // Changed to avoid using .single() and handle array results
     const { data, error } = await supabase
       .from('diagnostic_results')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .single();
 
-    if (error) {
-      console.error("Error loading diagnostic data:", error);
+    if (error && error.code !== 'PGRST116') { // PGRST116 é o código para "nenhum resultado encontrado"
       throw error;
     }
 
-    if (!data || data.length === 0) {
-      console.log("No diagnostic data found for user:", userId);
+    if (!data) {
       return {
         results: null,
         answersData: null,
@@ -27,51 +25,42 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
       };
     }
     
-    // Use the first result from the array (there should be only one per user)
-    const firstResult = data[0];
     let parsedResults = null;
     let parsedAnswersData = null;
     let parsedActionPlan = null;
     
     // Parse results
-    if (firstResult.results && typeof firstResult.results === 'object') {
-      const loadedResults = firstResult.results as Json;
+    if (data.results && typeof data.results === 'object') {
+      const loadedResults = data.results as Json;
       
       if (isValidDiagnosticResults(loadedResults)) {
         parsedResults = loadedResults;
-      } else {
-        console.warn("Invalid diagnostic results format:", loadedResults);
       }
     }
     
     // Parse answers data
-    if (firstResult.answers_data && typeof firstResult.answers_data === 'object') {
-      const loadedAnswersData = firstResult.answers_data as Json;
+    if (data.answers_data && typeof data.answers_data === 'object') {
+      const loadedAnswersData = data.answers_data as Json;
       
       if (isValidAnswersData(loadedAnswersData)) {
         parsedAnswersData = loadedAnswersData;
-      } else {
-        console.warn("Invalid answers data format:", loadedAnswersData);
       }
     }
     
     // Parse action plan
-    if (firstResult.action_plan && typeof firstResult.action_plan === 'object') {
-      const loadedActionPlan = firstResult.action_plan as Json;
+    if (data.action_plan && typeof data.action_plan === 'object') {
+      const loadedActionPlan = data.action_plan as Json;
       
       if (isValidActionPlan(loadedActionPlan)) {
         parsedActionPlan = loadedActionPlan;
-      } else {
-        console.warn("Invalid action plan format:", loadedActionPlan);
       }
     }
 
-    console.log("Successfully loaded diagnostic data for user:", userId);
     return {
       results: parsedResults,
       answersData: parsedAnswersData,
       actionPlan: parsedActionPlan,
-      diagnosticId: firstResult.id
+      diagnosticId: data.id
     };
   } catch (error) {
     console.error("Erro ao carregar diagnóstico:", error);
@@ -87,8 +76,6 @@ export const saveDiagnosticToSupabase = async (
   actionPlan: { [key: string]: string[] }
 ) => {
   try {
-    console.log("Saving diagnostic data for user:", userId);
-    
     const diagnosticData = {
       user_id: userId,
       results: results as unknown as Json,
@@ -100,7 +87,6 @@ export const saveDiagnosticToSupabase = async (
     
     if (diagnosticId) {
       // Update existing diagnostic
-      console.log("Updating existing diagnostic with ID:", diagnosticId);
       result = await supabase
         .from('diagnostic_results')
         .update({
@@ -109,14 +95,8 @@ export const saveDiagnosticToSupabase = async (
           action_plan: diagnosticData.action_plan
         })
         .eq('id', diagnosticId);
-        
-      if (result.error) {
-        console.error("Error updating diagnostic:", result.error);
-        throw result.error;
-      }
     } else {
       // Insert new diagnostic
-      console.log("Creating new diagnostic for user:", userId);
       result = await supabase
         .from('diagnostic_results')
         .insert({
@@ -126,20 +106,15 @@ export const saveDiagnosticToSupabase = async (
           action_plan: diagnosticData.action_plan
         });
         
-      if (result.error) {
-        console.error("Error inserting diagnostic:", result.error);
-        throw result.error;
-      }
-      
-      // Get the new diagnostic ID - changed to handle array results
+      // Get the new diagnostic ID
       const { data, error } = await supabase
         .from('diagnostic_results')
         .select('id')
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .single();
         
-      if (!error && data && data.length > 0) {
-        console.log("New diagnostic created with ID:", data[0].id);
-        return { result, diagnosticId: data[0].id };
+      if (!error && data) {
+        return { result, diagnosticId: data.id };
       }
     }
     
@@ -150,60 +125,49 @@ export const saveDiagnosticToSupabase = async (
   }
 };
 
-// Improved function for deleting diagnóstico
+// Adicionando função para excluir diagnóstico
 export const deleteDiagnosticFromSupabase = async (userId: string) => {
   try {
-    console.log("Attempting to delete diagnostic for user:", userId);
-    
-    // Using simple delete query with error handling
-    const { error, count } = await supabase
+    const { error } = await supabase
       .from('diagnostic_results')
-      .delete({ count: 'exact' })
+      .delete()
       .eq('user_id', userId);
       
-    if (error) {
-      console.error("Error during diagnostic deletion:", error);
-      throw error;
-    }
+    if (error) throw error;
     
-    console.log(`Deleted ${count || 0} diagnostic results for user ${userId}`);
     return true;
   } catch (error) {
-    console.error("Error deleting diagnostic:", error);
+    console.error("Erro ao excluir diagnóstico:", error);
     throw error;
   }
 };
 
-// Function to check if a diagnostic is complete
+// Função para verificar se o diagnóstico está completo
 export const isDiagnosticComplete = async (userId: string): Promise<boolean> => {
   try {
     if (!userId) {
       return false;
     }
 
-    // Changed to handle array results
     const { data, error } = await supabase
       .from('diagnostic_results')
       .select('results, action_plan')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .single();
     
     if (error) {
-      console.error("Error checking diagnostic completion:", error);
+      if (error.code === 'PGRST116') { // "No rows found"
+        return false;
+      }
       throw error;
     }
     
-    // Check if we have results and they have an action plan
-    if (!data || data.length === 0) {
-      return false;
-    }
-    
-    const firstEntry = data[0];
-    // Check if there are results and an action plan
-    return !!(firstEntry && firstEntry.results && firstEntry.action_plan &&
-      typeof firstEntry.action_plan === 'object' && 
-      Object.keys(firstEntry.action_plan).length > 0);
+    // Verifica se há resultados e plano de ação
+    return !!(data && data.results && data.action_plan &&
+      typeof data.action_plan === 'object' && 
+      Object.keys(data.action_plan).length > 0);
   } catch (error) {
-    console.error("Error checking diagnostic completion:", error);
+    console.error("Erro ao verificar conclusão do diagnóstico:", error);
     return false;
   }
 };

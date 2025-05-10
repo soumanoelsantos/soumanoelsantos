@@ -16,21 +16,13 @@ const DiagnosticoTest = () => {
     results, 
     setResults, 
     showResults, 
-    setShowResults,
     isLoading, 
     isGeneratingPlan,
     answersData, 
     setAnswersData, 
-    handleSubmit,
-    resetDiagnostic
+    actionPlan, 
+    handleSubmit 
   } = useDiagnostic();
-
-  // Debug logging
-  useEffect(() => {
-    console.log("DiagnosticoTest component mounted");
-    console.log("Initial results:", results);
-    console.log("Initial showResults:", showResults);
-  }, []);
 
   // Handle logout from this page
   const handleLogout = () => {
@@ -60,11 +52,10 @@ const DiagnosticoTest = () => {
           results={results}
           setResults={setResults}
           showResults={showResults}
-          setShowResults={setShowResults}
           answersData={answersData}
           setAnswersData={setAnswersData}
+          actionPlan={actionPlan}
           handleSubmit={handleSubmit}
-          resetDiagnostic={resetDiagnostic}
           isGeneratingPlan={isGeneratingPlan}
         />
         

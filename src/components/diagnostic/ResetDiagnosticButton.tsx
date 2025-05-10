@@ -25,8 +25,8 @@ const ResetDiagnosticButton = ({ onReset }: ResetDiagnosticButtonProps) => {
         description: "Você pode realizar um novo diagnóstico agora.",
       });
       
-      // Navigate to the diagnostic test page
-      navigate("/teste");
+      // Force reload the page to reset the form
+      navigate(0);
     } else {
       toast({
         variant: "destructive",

@@ -1,35 +1,88 @@
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DiagnosticResultsChart from '@/components/DiagnosticResultsChart';
 
 interface ResultsCardProps {
-  title: string;
-  score: number;
-  observations: string[];
+  results: {
+    processos: { score: number; total: number; percentage: number };
+    resultados: { score: number; total: number; percentage: number };
+    sistemaGestao: { score: number; total: number; percentage: number };
+    pessoas: { score: number; total: number; percentage: number };
+  };
 }
 
-const ResultsCard = ({ title, score, observations }: ResultsCardProps) => {
+const ResultsCard = ({ results }: ResultsCardProps) => {
+  // Calculate the overall percentage
+  const calculateOverallPercentage = () => {
+    const totalScore = 
+      results.processos.score + 
+      results.resultados.score + 
+      results.sistemaGestao.score + 
+      results.pessoas.score;
+    
+    const totalPossible = 
+      results.processos.total + 
+      results.resultados.total + 
+      results.sistemaGestao.total + 
+      results.pessoas.total;
+    
+    return Math.round((totalScore / totalPossible) * 100);
+  };
+
+  const overallPercentage = calculateOverallPercentage();
+
+  // Prepare chart data - fixed to match the expected data structure in DiagnosticResultsChart
+  const chartData = {
+    processos: { percentage: results.processos.percentage },
+    resultados: { percentage: results.resultados.percentage },
+    sistemaGestao: { percentage: results.sistemaGestao.percentage },
+    pessoas: { percentage: results.pessoas.percentage }
+  };
+
   return (
-    <div className="border rounded-md shadow-sm bg-white">
-      <div className="bg-[#1d365c] p-4 rounded-t-md">
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
-      </div>
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-gray-700">Pontuação:</span>
-          <span className="text-xl font-bold">{score}%</span>
+    <Card className="bg-white border-dark-primary/20">
+      <CardHeader className="bg-[#1d365c] card-header">
+        <CardTitle className="text-xl text-center text-white">Resultados do Diagnóstico</CardTitle>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <div className="mb-6 text-center">
+          <p className="text-lg text-gray-700 mb-2">Maturidade geral do negócio:</p>
+          <h3 className="text-3xl font-bold text-gray-900">{overallPercentage}%</h3>
         </div>
         
-        <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Observações:</h4>
-          <ul className="list-disc pl-5 space-y-1">
-            {observations.map((observation, index) => (
-              <li key={index} className="text-sm text-gray-600">{observation}</li>
-            ))}
-          </ul>
+        <div className="chart-container">
+          <DiagnosticResultsChart data={chartData} />
         </div>
-      </div>
-    </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <div className="border rounded p-4">
+            <h3 className="font-semibold text-gray-800 mb-2">Processos: {results.processos.percentage}%</h3>
+            <p className="text-sm text-gray-600">
+              {results.processos.score} de {results.processos.total} pontos
+            </p>
+          </div>
+          <div className="border rounded p-4">
+            <h3 className="font-semibold text-gray-800 mb-2">Resultados: {results.resultados.percentage}%</h3>
+            <p className="text-sm text-gray-600">
+              {results.resultados.score} de {results.resultados.total} pontos
+            </p>
+          </div>
+          <div className="border rounded p-4">
+            <h3 className="font-semibold text-gray-800 mb-2">Sistema de Gestão: {results.sistemaGestao.percentage}%</h3>
+            <p className="text-sm text-gray-600">
+              {results.sistemaGestao.score} de {results.sistemaGestao.total} pontos
+            </p>
+          </div>
+          <div className="border rounded p-4">
+            <h3 className="font-semibold text-gray-800 mb-2">Pessoas: {results.pessoas.percentage}%</h3>
+            <p className="text-sm text-gray-600">
+              {results.pessoas.score} de {results.pessoas.total} pontos
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
