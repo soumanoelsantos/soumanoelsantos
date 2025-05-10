@@ -5,7 +5,6 @@ import { PhaseTestResult } from "../../types/phaseTest";
 import { useAuth } from "@/hooks/useAuth";
 import PhaseInfo from "./PhaseInfo";
 import PhaseRecommendations from "./PhaseRecommendations";
-import ActionPlanGenerator from "./ActionPlanGenerator";
 import EnhancedActionPlan from "./EnhancedActionPlan";
 import NavigationButtons from "./NavigationButtons";
 import { usePhaseActionPlan } from "@/hooks/phase-test/usePhaseActionPlan";
@@ -22,7 +21,7 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
   const {
     isGeneratingPlan,
     showEnhancedPlan,
-    handleGenerateActionPlan
+    handleRegenerateActionPlan
   } = usePhaseActionPlan(userId, result);
   
   if (!result) return null;
@@ -42,20 +41,14 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
           
           <QuestionsAnswersList answers={result.answers || []} />
           
-          {!showEnhancedPlan ? (
-            <>
-              <PhaseRecommendations recommendations={result.recommendations} />
-              <ActionPlanGenerator 
-                onGeneratePlan={handleGenerateActionPlan} 
-                isGenerating={isGeneratingPlan} 
-              />
-            </>
-          ) : (
+          {showEnhancedPlan ? (
             <EnhancedActionPlan 
               actionPlan={result.enhanced_action_plan || []} 
-              onRegeneratePlan={handleGenerateActionPlan}
+              onRegeneratePlan={handleRegenerateActionPlan}
               isGenerating={isGeneratingPlan}
             />
+          ) : (
+            <PhaseRecommendations recommendations={result.recommendations} />
           )}
           
           <NavigationButtons onResetTest={onResetTest} />
