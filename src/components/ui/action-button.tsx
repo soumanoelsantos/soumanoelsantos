@@ -7,12 +7,14 @@ import { LucideIcon } from "lucide-react";
 export interface ActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: LucideIcon;
   variant?: "primary" | "secondary" | "outline" | "destructive";
+  size?: "default" | "sm" | "lg" | "icon";
   children: React.ReactNode;
 }
 
 const ActionButton = ({
   icon: Icon,
   variant = "primary",
+  size = "default",
   children,
   className,
   ...props
@@ -35,6 +37,7 @@ const ActionButton = ({
   return (
     <Button
       className={cn(getVariantClasses(), "flex items-center gap-2", className)}
+      size={size}
       {...props}
     >
       {Icon && <Icon className="h-4 w-4" />}
