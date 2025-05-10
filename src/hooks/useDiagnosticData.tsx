@@ -21,18 +21,17 @@ export const useDiagnosticData = () => {
 
   // Check authentication and load saved data
   useEffect(() => {
-    if (!isAuthenticated) {
-      toast({
-        variant: "destructive",
-        title: "Acesso negado",
-        description: "Você precisa fazer login para acessar esta página",
-      });
-      navigate("/login");
-      return;
-    }
+    const checkAuthAndLoadData = async () => {
+      if (!isAuthenticated) {
+        toast({
+          variant: "destructive",
+          title: "Acesso negado",
+          description: "Você precisa fazer login para acessar esta página",
+        });
+        navigate("/login");
+        return;
+      }
 
-    // Load saved diagnostic results when authenticated
-    const loadDiagnosticData = async () => {
       if (!userId) {
         setIsLoading(false);
         return;
@@ -40,7 +39,9 @@ export const useDiagnosticData = () => {
 
       try {
         console.log("Loading diagnostic data for user:", userId);
+        setIsLoading(true);
         setLoadError(null);
+        
         const loadedData = await loadDiagnosticDataFromSupabase(userId);
         
         if (loadedData.results) {
@@ -63,7 +64,7 @@ export const useDiagnosticData = () => {
         }
       } catch (error) {
         console.error("Erro ao carregar diagnóstico:", error);
-        setLoadError(error as Error);
+        setLoadError(error instanceof Error ? error : new Error('Erro desconhecido ao carregar diagnóstico'));
         toast({
           variant: "destructive",
           title: "Erro ao carregar diagnóstico",
@@ -74,7 +75,7 @@ export const useDiagnosticData = () => {
       }
     };
 
-    loadDiagnosticData();
+    checkAuthAndLoadData();
   }, [isAuthenticated, navigate, toast, userId]);
 
   return {

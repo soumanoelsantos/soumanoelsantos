@@ -1,7 +1,9 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import DiagnosticSection from '@/components/DiagnosticSection';
 import { Button } from '@/components/ui/button';
+import ActionButton from '@/components/ui/action-button';
+import { CheckCircle } from 'lucide-react';
 
 interface DiagnosticSectionsProps {
   sections: {
@@ -22,6 +24,8 @@ const DiagnosticSections = ({
   setAnswersData, 
   onSubmit 
 }: DiagnosticSectionsProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   // Debug logging
   useEffect(() => {
     console.log("DiagnosticSections rendered with answersData:", answersData);
@@ -67,10 +71,18 @@ const DiagnosticSections = ({
   };
 
   const handleSubmit = () => {
-    const results = calculateResults();
-    console.log("Submitting diagnostic with results:", results);
-    console.log("And answersData:", answersData);
-    onSubmit(results, answersData);
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      const results = calculateResults();
+      console.log("Submitting diagnostic with results:", results);
+      console.log("And answersData:", answersData);
+      onSubmit(results, answersData);
+    } catch (error) {
+      console.error("Error submitting diagnostic results:", error);
+    }
   };
   
   // Check if we have answers for all sections to enable submit
@@ -101,13 +113,13 @@ const DiagnosticSections = ({
       ))}
       
       <div className="flex justify-end mt-8">
-        <Button 
+        <ActionButton 
           onClick={handleSubmit} 
-          disabled={!isFormComplete()}
-          className="bg-[#1d365c] hover:bg-[#152a49] text-white" 
+          disabled={!isFormComplete() || isSubmitting}
+          variant="secondary"
         >
-          Finalizar e Ver Resultados
-        </Button>
+          <span className="whitespace-nowrap">Finalizar e Ver Resultados</span>
+        </ActionButton>
       </div>
     </div>
   );
