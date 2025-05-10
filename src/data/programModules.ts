@@ -6,7 +6,6 @@ export const programModules = [
     title: "Ferramentas",
     description: "Ferramentas de diagnóstico e análise para sua empresa",
     status: "disponível",
-    tags: ["aceleração empresarial", "gestão", "marketing", "dashboard"],
     lessons: [
       { id: 1, title: "Diagnóstico do Negócio", url: "/teste", isWhatsapp: false, dataKey: "diagnostic_results" },
       { id: 2, title: "Check List de Contratação", url: "/checklist-contratacao", isWhatsapp: false, dataKey: "checklist_data" },
@@ -23,7 +22,6 @@ export const programModules = [
     title: "Módulo 1 - Diagnóstico e Estratégia",
     description: "Entendendo seu negócio e traçando o plano de 90 dias",
     status: "bloqueado",
-    tags: ["crm", "acompanhamento diário", "vendas", "indicadores de performance"],
     lessons: [
       { id: 101, title: "Diagnóstico empresarial completo", url: "#", isWhatsapp: false },
       { id: 102, title: "Definindo metas SMART para 90 dias", url: "#", isWhatsapp: false },
@@ -38,7 +36,6 @@ export const programModules = [
     title: "Módulo 2 - Sistema de Vendas",
     description: "Implementando um funil de vendas eficiente",
     status: "bloqueado",
-    tags: ["treinamento", "processos", "vendas", "metas diárias"],
     lessons: [
       { id: 201, title: "Estruturando seu funil de vendas", url: "#", isWhatsapp: false },
       { id: 202, title: "Script de vendas de alto impacto", url: "#", isWhatsapp: false },
@@ -54,7 +51,6 @@ export const programModules = [
     title: "Módulo 3 - Marketing Digital",
     description: "Atraindo leads qualificados para seu negócio",
     status: "bloqueado",
-    tags: ["pós-venda", "sucesso do cliente", "encantamento do cliente", "plano de fidelidade"],
     lessons: [
       { id: 301, title: "Estratégia de marketing de conteúdo", url: "#", isWhatsapp: false },
       { id: 302, title: "Tráfego pago: Facebook e Instagram Ads", url: "#", isWhatsapp: false },
@@ -70,7 +66,6 @@ export const programModules = [
     title: "Módulo 4 - Gestão e Escalabilidade",
     description: "Estruturando sua empresa para crescer",
     status: "bloqueado",
-    tags: ["cultura", "processo seletivo", "tutorias", "comunidade de empresários", "desenvolvimento de lideranças", "plano de carreira", "one on one", "feedback"],
     lessons: [
       { id: 401, title: "KPIs essenciais para seu negócio", url: "#", isWhatsapp: false },
       { id: 402, title: "Processos e operações eficientes", url: "#", isWhatsapp: false },

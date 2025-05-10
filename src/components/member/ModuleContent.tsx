@@ -31,9 +31,6 @@ const ModuleContent: React.FC<ModuleContentProps> = ({ module, completedTools })
         <CardDescription className="text-gray-600">
           {module.description}
         </CardDescription>
-        {module.tags && module.tags.length > 0 && (
-          <ModuleTagsList tags={module.tags} />
-        )}
       </CardHeader>
       <CardContent className="p-0">
         <ul className="space-y-2">
