@@ -34,8 +34,9 @@ export const useToggleModuleAccess = () => {
       console.error("Error toggling module access:", error);
       toast({
         variant: "destructive",
-        title: "Error modifying access",
-        description: error.message || "Could not modify module access."
+        title: "Erro ao modificar acesso",
+        description: error.message || "Não foi possível modificar o acesso ao módulo.",
+        className: "bg-white border-red-200"
       });
       return { success: false };
     }

@@ -7,6 +7,7 @@ import { useDeleteUser } from "@/hooks/admin/useDeleteUser";
 import { useEditUserEmail } from "@/hooks/admin/useEditUserEmail";
 import { useViewAsUser } from "@/hooks/admin/useViewAsUser";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useAdminActions = (
   users: User[], 
@@ -55,62 +56,59 @@ export const useAdminActions = (
       const user = users.find(u => u.id === userId);
       if (!user) return false;
       
-      let success = true;
-      const updatedModuleIds: number[] = [...user.unlockedModules];
-      
-      // Process each module
-      for (const module of modules) {
-        const hasModule = user.unlockedModules.includes(module.id);
+      // Instead of making individual API calls for each module,
+      // make a single bulk update call
+      if (enableAll) {
+        // Grant access to all modules
+        const modulesToAdd = modules
+          .filter(module => !user.unlockedModules.includes(module.id))
+          .map(module => ({ user_id: userId, module_id: module.id }));
         
-        if (enableAll && !hasModule) {
-          // Add module access
-          const result = await toggleModule(userId, module.id, users);
-          if (result.success && !result.hasModule) {
-            updatedModuleIds.push(module.id);
-          } else {
-            success = false;
-          }
-        } 
-        else if (!enableAll && hasModule) {
-          // Remove module access
-          const result = await toggleModule(userId, module.id, users);
-          if (result.success && result.hasModule) {
-            const index = updatedModuleIds.indexOf(module.id);
-            if (index > -1) {
-              updatedModuleIds.splice(index, 1);
-            }
-          } else {
-            success = false;
-          }
+        if (modulesToAdd.length > 0) {
+          const { error } = await supabase
+            .from('user_modules')
+            .insert(modulesToAdd);
+            
+          if (error) throw error;
         }
+      } else {
+        // Remove access to all modules
+        const { error } = await supabase
+          .from('user_modules')
+          .delete()
+          .eq('user_id', userId);
+          
+        if (error) throw error;
       }
       
-      // Update local state if any changes were made
-      if (success) {
-        setUsers(prevUsers => {
-          return prevUsers.map(u => {
-            if (u.id === userId) {
-              return { ...u, unlockedModules: updatedModuleIds };
-            }
-            return u;
-          });
+      // Update local state
+      setUsers(prevUsers => {
+        return prevUsers.map(u => {
+          if (u.id === userId) {
+            return { 
+              ...u, 
+              unlockedModules: enableAll 
+                ? modules.map(m => m.id) 
+                : [] 
+            };
+          }
+          return u;
         });
-        
-        toast({
-          title: enableAll ? "Todos os módulos liberados" : "Acesso aos módulos removido",
-          description: `${enableAll ? "Acesso completo concedido" : "Acesso removido"} para ${user.email}`,
-        });
-        
-        return true;
-      }
+      });
       
-      return false;
+      toast({
+        title: enableAll ? "Todos os módulos liberados" : "Acesso aos módulos removido",
+        description: `${enableAll ? "Acesso completo concedido" : "Acesso removido"} para ${user.email}`,
+      });
+      
+      return true;
     } catch (error) {
       console.error("Erro ao alternar acesso a todos os módulos:", error);
       toast({
         variant: "destructive",
         title: "Erro ao modificar acesso",
-        description: "Não foi possível atualizar o acesso aos módulos."
+        description: "Não foi possível atualizar o acesso aos módulos.",
+        className: "bg-white border-red-200"
       });
       return false;
     }

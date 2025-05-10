@@ -35,7 +35,8 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         variant: "destructive",
         title: "Erro ao modificar acesso",
-        description: error.message || "Não foi possível modificar o acesso ao módulo."
+        description: error.message || "Não foi possível modificar o acesso ao módulo.",
+        className: "bg-white border-red-200"
       });
       return { success: false };
     }
@@ -58,6 +59,7 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         title: "Status atualizado",
         description: `${user.email} agora ${updatedStatus ? "é" : "não é mais"} um novo usuário`,
+        className: "bg-white"
       });
       
       return { success: true, updatedStatus };
@@ -66,7 +68,8 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         variant: "destructive",
         title: "Erro ao atualizar status",
-        description: error.message || "Não foi possível atualizar o status do usuário."
+        description: error.message || "Não foi possível atualizar o status do usuário.",
+        className: "bg-white border-red-200"
       });
       return { success: false };
     }
@@ -88,6 +91,7 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         title: "Usuário excluído",
         description: `${userToDelete.email} foi removido com sucesso`,
+        className: "bg-white"
       });
       
       return { success: true };
@@ -96,7 +100,8 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         variant: "destructive",
         title: "Erro ao excluir usuário",
-        description: error.message || "Não foi possível excluir o usuário."
+        description: error.message || "Não foi possível excluir o usuário.",
+        className: "bg-white border-red-200"
       });
       return { success: false };
     }
@@ -117,6 +122,7 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         title: "Email atualizado",
         description: `${userToEdit.email} foi alterado para ${newEmail}`,
+        className: "bg-white"
       });
       
       return { success: true, oldEmail: userToEdit.email };
@@ -125,7 +131,8 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         variant: "destructive",
         title: "Erro ao atualizar e-mail",
-        description: error.message || "Não foi possível atualizar o e-mail do usuário."
+        description: error.message || "Não foi possível atualizar o e-mail do usuário.",
+        className: "bg-white border-red-200"
       });
       return { success: false };
     }
@@ -151,6 +158,7 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         title: "Visualizando como usuário",
         description: `Agora você está visualizando como ${userToView.email}`,
+        className: "bg-white"
       });
       
       return { success: true, userEmail: userToView.email };
@@ -159,7 +167,8 @@ export const useAdminFunctions = (userEmail: string | null | undefined) => {
       toast({
         variant: "destructive",
         title: "Erro ao trocar de usuário",
-        description: error.message || "Não foi possível visualizar como o usuário selecionado."
+        description: error.message || "Não foi possível visualizar como o usuário selecionado.",
+        className: "bg-white border-red-200"
       });
       return { success: false };
     }
