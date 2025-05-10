@@ -60,7 +60,7 @@ const Hero = () => {
                   <img
                     src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
                     alt="aceleração empresarial"
-                    className="w-full h-[600px] object-cover object-center"
+                    className="w-full h-[600px] object-contain object-center"
                   />
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>

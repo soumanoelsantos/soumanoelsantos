@@ -16,7 +16,7 @@ const MentorshipCard: React.FC = () => {
             <img
               src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
               alt="CRO - Manoel Santos"
-              className="w-full h-64 md:h-80 rounded-lg object-cover object-center"
+              className="w-full h-64 md:h-80 rounded-lg object-contain object-center"
             />
           </div>
           <div className="md:w-2/3">
