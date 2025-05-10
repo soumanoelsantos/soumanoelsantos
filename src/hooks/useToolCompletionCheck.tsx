@@ -33,18 +33,14 @@ export const useToolCompletionCheck = (userId: string | null) => {
         // Check phase test completion (separate table)
         const phaseTestCompleted = await loadPhaseTestCompletion(userId);
         
-        // Log the completion statuses for debugging
-        console.log("Tool completion statuses:", {
+        const completionStatus = {
           ...toolsData,
           diagnostic_results: diagnosticCompleted,
           fase_results: phaseTestCompleted
-        });
+        };
         
-        setCompletedTools({
-          ...toolsData,
-          diagnostic_results: diagnosticCompleted,
-          fase_results: phaseTestCompleted
-        });
+        // Set the completed tools state
+        setCompletedTools(completionStatus);
       } catch (error) {
         console.error("Error checking completed tools:", error);
       } finally {
