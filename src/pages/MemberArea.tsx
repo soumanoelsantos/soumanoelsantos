@@ -1,17 +1,15 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import MemberAreaContent from "@/components/member/MemberAreaContent";
 import { useAuth } from "@/hooks/useAuth";
-import { useCompletionPercentage } from "@/hooks/useCompletionPercentage";
 
 const MemberArea = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated, userEmail, userId, logout } = useAuth();
-  const { completionPercent, isLoading } = useCompletionPercentage(userId);
 
   // Check authentication status
   useEffect(() => {
@@ -39,18 +37,10 @@ const MemberArea = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-800">Carregando...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
-      <MemberAreaContent completionPercent={completionPercent} />
+      <MemberAreaContent />
     </div>
   );
 };
