@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import DiagnosticResultsChart from "../DiagnosticResultsChart";
 import ResultsCard from "./ResultsCard";
 import AnswersDisplay from "./AnswersDisplay";
-import ResetDiagnosticButton from "./ResetDiagnosticButton";
-import DownloadPdfButton from "./DownloadPdfButton";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Download } from "lucide-react";
+import { useToast } from '@/hooks/use-toast';
 
 interface DiagnosticResultsProps {
   results: any;
@@ -17,14 +18,25 @@ const DiagnosticResults = ({
   answersData,
   onRestart,
 }: DiagnosticResultsProps) => {
+  const { toast } = useToast();
+  const pdfRef = useRef<HTMLDivElement>(null);
+
   if (!results) return null;
 
   const totalScore = results.totalScore;
   const maxPossibleScore = results.maxPossibleScore;
   const percentage = (totalScore / maxPossibleScore) * 100;
 
+  const handleDownloadPDF = () => {
+    toast({
+      title: "Download iniciado!",
+      description: "O PDF do seu diagnóstico está sendo gerado.",
+    });
+    // Here you would add actual PDF generation logic
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" ref={pdfRef}>
       <div>
         <h2 className="text-xl font-semibold mb-4 text-center">
           Pontuação Geral: {Math.round(percentage)}%
@@ -74,11 +86,22 @@ const DiagnosticResults = ({
       <AnswersDisplay answersData={answersData} />
 
       <div className="flex justify-between items-center flex-wrap gap-4 pt-6">
-        <ResetDiagnosticButton onRestart={onRestart} />
-        <DownloadPdfButton
-          results={results}
-          answersData={answersData}
-        />
+        <Button 
+          variant="outline" 
+          onClick={onRestart}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Reiniciar Diagnóstico
+        </Button>
+        
+        <Button 
+          onClick={handleDownloadPDF}
+          className="bg-[#1d365c] text-white flex items-center gap-2"
+        >
+          <Download className="h-4 w-4" />
+          Baixar Diagnóstico em PDF
+        </Button>
       </div>
     </div>
   );

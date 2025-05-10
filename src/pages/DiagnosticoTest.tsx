@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import MemberHeader from "@/components/MemberHeader";
@@ -16,11 +16,11 @@ const DiagnosticoTest = () => {
     results, 
     setResults, 
     showResults, 
+    setShowResults,
     isLoading, 
     isGeneratingPlan,
     answersData, 
     setAnswersData, 
-    actionPlan, 
     handleSubmit 
   } = useDiagnostic();
 
@@ -52,9 +52,9 @@ const DiagnosticoTest = () => {
           results={results}
           setResults={setResults}
           showResults={showResults}
+          setShowResults={setShowResults}
           answersData={answersData}
           setAnswersData={setAnswersData}
-          actionPlan={actionPlan}
           handleSubmit={handleSubmit}
           isGeneratingPlan={isGeneratingPlan}
         />

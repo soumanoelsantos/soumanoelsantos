@@ -7,10 +7,17 @@ import { Loader2 } from "lucide-react";
 
 // Component Props
 interface DiagnosticTestContentProps {
-  sections: any[];
+  sections: {
+    [key: string]: {
+      title: string;
+      questions: string[];
+      pointValue: number;
+    };
+  };
   results: any | null;
   setResults: (results: any) => void;
   showResults: boolean;
+  setShowResults: (show: boolean) => void; 
   answersData: any;
   setAnswersData: (answersData: any) => void;
   handleSubmit: (results: any, answersData: any) => void;
@@ -22,6 +29,7 @@ const DiagnosticTestContent = ({
   results,
   setResults,
   showResults,
+  setShowResults,
   answersData,
   setAnswersData,
   handleSubmit,
