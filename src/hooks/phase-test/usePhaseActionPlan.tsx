@@ -1,18 +1,20 @@
 
-import { useState, useEffect } from "react";
-import { PhaseTestResult } from "@/types/phaseTest";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { generateEnhancedActionPlan } from "@/utils/deepseekApi";
+import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { PhaseTestResult } from '@/types/phaseTest';
+import { supabase } from '@/integrations/supabase/client';
+import { generateEnhancedActionPlan } from '@/utils/deepseekApi';
 
 export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTestResult | null) => {
   const { toast } = useToast();
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [showEnhancedPlan, setShowEnhancedPlan] = useState(false);
+  const [enhancedActionPlan, setEnhancedActionPlan] = useState<string[]>([]);
   
-  // Verificar se já existe um plano de ação aprimorado ao carregar o componente
+  // Check if we already have a saved enhanced action plan
   useEffect(() => {
     if (result && result.enhanced_action_plan && result.enhanced_action_plan.length > 0) {
+      setEnhancedActionPlan(result.enhanced_action_plan);
       setShowEnhancedPlan(true);
     }
   }, [result]);
@@ -29,91 +31,45 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
 
     setIsGeneratingPlan(true);
     try {
-      // Buscar dados de outros diagnósticos e ferramentas se disponíveis
-      const { data: diagnosticData } = await supabase
-        .from('diagnostic_results')
-        .select('results, answers_data')
-        .eq('user_id', userId)
-        .maybeSingle();
-      
-      // Buscar dados da SWOT se disponíveis
-      const { data: swotData } = await supabase
-        .from('user_tools_data')
-        .select('swot_data')
-        .eq('user_id', userId)
-        .maybeSingle();
-      
-      // Preparar dados combinados para entrada da IA
+      // Prepare data for the AI
       const inputData = {
         phaseResult: result,
-        diagnosticData: diagnosticData || null,
-        swotData: swotData?.swot_data || null
+        // Optional: Get other diagnostic data if available
+        diagnosticData: null,
+        swotData: null
       };
       
-      console.log("Enviando dados para IA para geração do plano:", inputData);
-      
-      // Gerar plano de ação aprimorado usando IA
+      // Generate plan using the same AI service used by SWOT
       const generatedPlan = await generateEnhancedActionPlan(inputData);
-      console.log("Plano gerado recebido:", generatedPlan);
       
-      if (generatedPlan) {
-        // Formatar o plano como uma lista de itens de ação
-        const actionItems = Array.isArray(generatedPlan) 
-          ? generatedPlan 
-          : Object.values(generatedPlan).flat();
+      if (generatedPlan && Array.isArray(generatedPlan) && generatedPlan.length > 0) {
+        setEnhancedActionPlan(generatedPlan);
+        setShowEnhancedPlan(true);
         
-        console.log("Itens de ação formatados:", actionItems);
-        
-        // Salvar o plano de ação aprimorado no banco de dados
+        // Save the plan to the database
         if (userId) {
-          console.log("Salvando plano no banco de dados para o usuário:", userId);
-          // Verificar se já existe um resultado para este usuário
+          // Check if there's an existing result for this user
           const { data: existingResult } = await supabase
             .from('fase_results')
             .select('id')
             .eq('user_id', userId)
             .maybeSingle();
-
+          
           if (existingResult) {
-            // Atualizar o resultado existente
+            // Update the existing result
             const { error } = await supabase
               .from('fase_results')
               .update({
-                enhanced_action_plan: actionItems
+                enhanced_action_plan: generatedPlan
               })
               .eq('user_id', userId);
             
             if (error) {
-              console.error("Erro ao salvar no banco de dados:", error);
-              throw error;
-            }
-          } else {
-            // Inserir novo resultado
-            const { error } = await supabase
-              .from('fase_results')
-              .insert([{
-                user_id: userId,
-                phase_name: result?.phaseName || '',
-                score: result?.score || 0,
-                description: result?.description || '',
-                recommendations: result?.recommendations ? result.recommendations.join('|') : '',
-                answers: result?.answers ? JSON.stringify(result.answers) : null,
-                enhanced_action_plan: actionItems
-              }]);
-            
-            if (error) {
-              console.error("Erro ao inserir no banco de dados:", error);
+              console.error("Error saving action plan:", error);
               throw error;
             }
           }
         }
-        
-        // Atualizar estado local com o novo plano
-        if (result) {
-          result.enhanced_action_plan = actionItems;
-        }
-        
-        setShowEnhancedPlan(true);
         
         toast({
           title: "Plano de ação gerado",
@@ -123,7 +79,7 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
         throw new Error("Não foi possível gerar o plano de ação");
       }
     } catch (error) {
-      console.error("Erro ao gerar plano de ação aprimorado:", error);
+      console.error("Error generating action plan:", error);
       toast({
         variant: "destructive",
         title: "Erro ao gerar plano",
@@ -134,8 +90,8 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
     }
   };
   
-  // Adicionar função de regeneração do plano, que usa a mesma lógica da função handleGenerateActionPlan
   const handleRegenerateActionPlan = () => {
+    // Simply reuse the generation function
     handleGenerateActionPlan();
   };
 
@@ -143,8 +99,8 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
     isGeneratingPlan,
     showEnhancedPlan,
     setShowEnhancedPlan,
+    enhancedActionPlan,
     handleGenerateActionPlan,
     handleRegenerateActionPlan
   };
 };
-
