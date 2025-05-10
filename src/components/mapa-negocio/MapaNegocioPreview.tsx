@@ -1,11 +1,11 @@
 
-import React, { useRef } from "react";
-import { Card } from "@/components/ui/card";
-import { ArrowLeft, Download } from "lucide-react";
+import React from "react";
 import { BusinessMapData } from "@/types/businessMap";
 import { generatePDF } from "@/utils/pdfGenerator";
 import { useToast } from "@/hooks/use-toast";
-import ActionButton from "../ui/action-button";
+import PreviewActions from "./preview/PreviewActions";
+import BusinessMapHeader from "./preview/BusinessMapHeader";
+import BusinessMapGrid from "./preview/BusinessMapGrid";
 
 interface MapaNegocioPreviewProps {
   data: BusinessMapData;
@@ -15,6 +15,11 @@ interface MapaNegocioPreviewProps {
 
 const MapaNegocioPreview = ({ data, previewRef, onEditClick }: MapaNegocioPreviewProps) => {
   const { toast } = useToast();
+
+  // Helper function to check if a field should be displayed
+  const shouldDisplayField = (value: string | undefined): boolean => {
+    return !!value && value.trim() !== "" && value !== "Não preenchido";
+  };
 
   const handleDownloadPDF = () => {
     if (!previewRef.current) return;
@@ -28,173 +33,94 @@ const MapaNegocioPreview = ({ data, previewRef, onEditClick }: MapaNegocioPrevie
     generatePDF(previewRef.current);
   };
 
-  // Helper function to check if a field should be displayed
-  const shouldDisplayField = (value: string | undefined): boolean => {
-    return !!value && value.trim() !== "" && value !== "Não preenchido";
-  };
+  const topRowFields = [
+    { key: "missao", title: "Missão" },
+    { key: "visao", title: "Visão" },
+    { key: "parceirosChave", title: "Parceiros Chave" },
+    { key: "atividadesChaves", title: "Atividades Chaves" },
+    { key: "valuePropositions", title: "Value Propositions" },
+    { key: "relacaoConsumidor", title: "Relação com o Consumidor" },
+    { key: "segmentoConsumidores", title: "Segmento de Consumidores" },
+  ];
 
-  // Get filled fields count for grid layout calculations
-  const getFilledFieldsCount = (): number => {
-    let count = 0;
-    Object.values(data).forEach(value => {
-      if (shouldDisplayField(value)) count++;
-    });
-    return count;
-  };
+  const middleRowFields = [
+    { key: "valores", title: "Valores" },
+    { 
+      key: "recursosChave", 
+      title: "Recursos Chave", 
+      style: {gridColumn: shouldDisplayField(data.valores) ? "3 / 4" : "span 1"}
+    },
+    { 
+      key: "canaisDistribuicao", 
+      title: "Canais/Distribuição",
+      style: {gridColumn: "7 / 8"} 
+    },
+  ];
 
-  const filledFieldsCount = getFilledFieldsCount();
+  const bottomRow1Fields = [
+    { key: "posicionamentoMercado", title: "Posicionamento de Mercado" },
+  ];
+
+  const bottomRow2Fields = [
+    { 
+      key: "estruturaCustos", 
+      title: "Estrutura de Custos",
+      style: {gridColumn: "4 / 5"} 
+    },
+    { 
+      key: "fontesReceita", 
+      title: "Fontes de Receita",
+      style: {gridColumn: "5 / 8"} 
+    },
+  ];
+
+  const bottomRow3Fields = [
+    { key: "vantagemCompetitiva", title: "Vantagem Competitiva" },
+    { key: "competenciasEssenciais", title: "Competências Essenciais" },
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-4 justify-between mb-6">
-        <ActionButton 
-          onClick={onEditClick}
-          variant="secondary"
-          icon={ArrowLeft}
-        >
-          Editar Dados
-        </ActionButton>
-        
-        <ActionButton 
-          onClick={handleDownloadPDF}
-          variant="primary"
-          icon={Download}
-        >
-          Baixar Mapa em PDF
-        </ActionButton>
-      </div>
+      <PreviewActions 
+        onEditClick={onEditClick} 
+        onDownloadClick={handleDownloadPDF} 
+      />
 
       <div ref={previewRef} className="business-map bg-white p-8">
-        <div className="business-map-header mb-6">
-          <h2 className="text-2xl font-bold text-center text-gray-800">MAPA DO NEGÓCIO</h2>
-          <p className="text-center text-gray-600">Business Model Canvas com Cultura e Clareza</p>
-          
-          {shouldDisplayField(data.empresa) && (
-            <div className="bg-gray-200 p-2 mt-4 text-center">
-              <strong className="text-gray-800">Empresa:</strong> {data.empresa}
-            </div>
-          )}
-        </div>
+        <BusinessMapHeader 
+          empresa={data.empresa} 
+          showEmpresa={shouldDisplayField(data.empresa)} 
+        />
 
-        <div className="business-map-grid grid grid-cols-7 gap-2 mb-2">
-          {/* Top Row - Only render if data exists */}
-          {shouldDisplayField(data.missao) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Missão</h3>
-              <p className="text-xs">{data.missao}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.visao) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Visão</h3>
-              <p className="text-xs">{data.visao}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.parceirosChave) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Parceiros Chave</h3>
-              <p className="text-xs">{data.parceirosChave}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.atividadesChaves) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Atividades Chaves</h3>
-              <p className="text-xs">{data.atividadesChaves}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.valuePropositions) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Value Propositions</h3>
-              <p className="text-xs">{data.valuePropositions}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.relacaoConsumidor) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Relação com o Consumidor</h3>
-              <p className="text-xs">{data.relacaoConsumidor}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.segmentoConsumidores) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Segmento de Consumidores</h3>
-              <p className="text-xs">{data.segmentoConsumidores}</p>
-            </Card>
-          )}
-        </div>
+        <BusinessMapGrid 
+          data={data} 
+          fields={topRowFields} 
+          className="mb-2" 
+        />
 
-        <div className="business-map-grid grid grid-cols-7 gap-2 mb-2">
-          {/* Middle Row */}
-          {shouldDisplayField(data.valores) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Valores</h3>
-              <p className="text-xs">{data.valores}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.recursosChave) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300" style={{gridColumn: shouldDisplayField(data.valores) ? "3 / 4" : "span 1"}}>
-              <h3 className="font-semibold text-sm mb-1">Recursos Chave</h3>
-              <p className="text-xs">{data.recursosChave}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.canaisDistribuicao) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300" style={{gridColumn: "7 / 8"}}>
-              <h3 className="font-semibold text-sm mb-1">Canais/Distribuição</h3>
-              <p className="text-xs">{data.canaisDistribuicao}</p>
-            </Card>
-          )}
-        </div>
+        <BusinessMapGrid 
+          data={data} 
+          fields={middleRowFields} 
+          className="mb-2" 
+        />
 
-        <div className="business-map-grid grid grid-cols-7 gap-2 mb-2">
-          {/* Bottom Row 1 */}
-          {shouldDisplayField(data.posicionamentoMercado) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Posicionamento de Mercado</h3>
-              <p className="text-xs">{data.posicionamentoMercado}</p>
-            </Card>
-          )}
-        </div>
+        <BusinessMapGrid 
+          data={data} 
+          fields={bottomRow1Fields} 
+          className="mb-2" 
+        />
 
-        <div className="business-map-grid grid grid-cols-7 gap-2">
-          {/* Bottom Row 2 */}
-          {shouldDisplayField(data.estruturaCustos) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300" style={{gridColumn: "4 / 5"}}>
-              <h3 className="font-semibold text-sm mb-1">Estrutura de Custos</h3>
-              <p className="text-xs">{data.estruturaCustos}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.fontesReceita) && (
-            <Card className="map-card col-span-3 p-2 bg-white border border-gray-300" style={{gridColumn: "5 / 8"}}>
-              <h3 className="font-semibold text-sm mb-1">Fontes de Receita</h3>
-              <p className="text-xs">{data.fontesReceita}</p>
-            </Card>
-          )}
-        </div>
-        
-        <div className="business-map-grid grid grid-cols-7 gap-2 mt-2">
-          {/* Bottom Row 3 */}
-          {shouldDisplayField(data.vantagemCompetitiva) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Vantagem Competitiva</h3>
-              <p className="text-xs">{data.vantagemCompetitiva}</p>
-            </Card>
-          )}
-          
-          {shouldDisplayField(data.competenciasEssenciais) && (
-            <Card className="map-card col-span-1 p-2 bg-white border border-gray-300">
-              <h3 className="font-semibold text-sm mb-1">Competências Essenciais</h3>
-              <p className="text-xs">{data.competenciasEssenciais}</p>
-            </Card>
-          )}
-        </div>
+        <BusinessMapGrid 
+          data={data} 
+          fields={bottomRow2Fields} 
+          className="mb-2" 
+        />
+
+        <BusinessMapGrid 
+          data={data} 
+          fields={bottomRow3Fields} 
+          className="mt-2" 
+        />
       </div>
     </div>
   );
