@@ -89,12 +89,15 @@ const DiagnosticSections = ({
   const handleSubmit = () => {
     if (isSubmitting || !formComplete) return;
     
+    // Set submitting state to prevent multiple clicks
     setIsSubmitting(true);
     
     try {
       const results = calculateResults();
       console.log("Submitting diagnostic with results:", results);
       console.log("And answersData:", answersData);
+      
+      // Call the onSubmit function with calculated results and answers data
       onSubmit(results, answersData);
     } catch (error) {
       console.error("Error submitting diagnostic results:", error);

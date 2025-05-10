@@ -70,9 +70,13 @@ export const useDiagnostic = () => {
   }, [userId, isAuthenticated, toast]);
 
   const handleSubmit = async (newResults, newAnswersData) => {
+    // Prevent multiple submissions
     if (isSaving) return;
     
+    // Set saving state to true at the start
     setIsSaving(true);
+    
+    // Update local state with the results and answers
     setResults(newResults);
     setAnswersData(newAnswersData);
     
