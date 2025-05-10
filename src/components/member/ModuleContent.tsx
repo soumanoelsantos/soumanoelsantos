@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import ModuleLessonItem from "./ModuleLessonItem";
+import ModuleTagsList from "./ModuleTagsList";
 
 interface ModuleContentProps {
   module: {
@@ -30,6 +31,9 @@ const ModuleContent: React.FC<ModuleContentProps> = ({ module, completedTools })
         <CardDescription className="text-gray-600">
           {module.description}
         </CardDescription>
+        {module.tags && module.tags.length > 0 && (
+          <ModuleTagsList tags={module.tags} />
+        )}
       </CardHeader>
       <CardContent className="p-0">
         <ul className="space-y-2">
