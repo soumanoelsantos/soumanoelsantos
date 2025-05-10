@@ -119,79 +119,51 @@ export const checkUserToolCompletion = async (
 
     // Log the request for debugging
     console.log(`Checking tool completion for user ${userId}, keys:`, dataKeys);
-
-    // First try to get column information
-    const { data: tableInfo, error: tableError } = await supabase
-      .rpc('get_table_columns', { table_name: 'user_tools_data' });
     
-    if (tableError) {
-      console.error("Error getting table columns:", tableError);
-      // If we can't get column info, let's try the query anyway
-      // This fixes the TS2345 error since we're not using the result directly
-    }
+    // Instead of trying to fetch table column information (which was causing the error),
+    // we'll use a safer approach by directly querying each tool
     
-    // Get existing columns if available
-    let existingColumns: string[] = [];
-    if (tableInfo && Array.isArray(tableInfo)) {
-      existingColumns = tableInfo.map((col: any) => col.column_name);
-      console.log("Existing columns:", existingColumns);
-    }
-
-    // Filter dataKeys to only include existing columns
-    const validDataKeys = dataKeys.filter(key => 
-      !tableInfo || existingColumns.includes(key) || key === 'id' || key === 'user_id'
-    );
-    
-    if (validDataKeys.length === 0) {
-      console.log("No valid columns to query");
-      return dataKeys.reduce((acc, key) => {
-        acc[key] = false;
-        return acc;
-      }, {} as Record<string, boolean>);
-    }
-
-    // Safely construct the query with only valid columns
-    const selectColumns = validDataKeys.join(',');
-    
-    // Execute the query to get tool completion status
-    const { data, error } = await supabase
-      .from('user_tools_data')
-      .select(selectColumns)
-      .eq('user_id', userId)
-      .single();
-    
-    if (error) {
-      if (error.code === 'PGRST116') { // "No rows found"
-        console.log("No tool data found for user");
-        return dataKeys.reduce((acc, key) => {
-          acc[key] = false;
+    // First, try a direct query for all data
+    try {
+      const { data, error } = await supabase
+        .from('user_tools_data')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+        
+      if (error && error.code !== 'PGRST116') {
+        console.error("Error in direct query:", error);
+        // Continue to fallback approach if this fails
+      }
+      
+      if (data) {
+        // Check which tools have data
+        const completionStatus = dataKeys.reduce((acc, key) => {
+          acc[key] = data[key] !== null && data[key] !== undefined;
           return acc;
         }, {} as Record<string, boolean>);
+        
+        console.log("Tool completion check results:", completionStatus);
+        
+        // Double check mapa_equipe data
+        if (dataKeys.includes('mapa_equipe') && !completionStatus.mapa_equipe) {
+          const mapaEquipeData = await loadMapaEquipeData(userId);
+          completionStatus.mapa_equipe = !!mapaEquipeData && 
+            !!mapaEquipeData.colaboradores && 
+            mapaEquipeData.colaboradores.length > 0 &&
+            !!mapaEquipeData.colaboradores[0].nome;
+          console.log("Updated mapa_equipe status:", completionStatus.mapa_equipe);
+        }
+        
+        return completionStatus;
       }
-      
-      // If there's a column error, try a more basic approach
-      if (error.code === '42703') { // Column not found
-        console.log("Column error detected, using basic query approach");
-        return await checkToolCompletionBasic(userId, dataKeys);
-      }
-      
-      throw error;
+    } catch (e) {
+      console.error("Error checking all tools at once:", e);
+      // Fall through to the basic approach
     }
     
-    // Check which tools have data and log the results
-    const completionStatus = dataKeys.reduce((acc, key) => {
-      // For columns that weren't actually queried, default to false
-      if (validDataKeys.includes(key)) {
-        acc[key] = data[key] !== null && data[key] !== undefined;
-      } else {
-        acc[key] = false;
-      }
-      return acc;
-    }, {} as Record<string, boolean>);
-    
-    console.log("Tool completion check results:", completionStatus);
-    
-    return completionStatus;
+    // Fallback to basic approach if the direct query fails
+    return await checkToolCompletionBasic(userId, dataKeys);
     
   } catch (error) {
     console.error(`Error checking tool completion:`, error);
@@ -237,6 +209,47 @@ const checkToolCompletionBasic = async (
     }
   }
   
+  // Double check mapa_equipe data
+  if (dataKeys.includes('mapa_equipe') && !result.mapa_equipe) {
+    try {
+      const mapaEquipeData = await loadMapaEquipeData(userId);
+      result.mapa_equipe = !!mapaEquipeData && 
+        !!mapaEquipeData.colaboradores && 
+        mapaEquipeData.colaboradores.length > 0 &&
+        !!mapaEquipeData.colaboradores[0].nome;
+      console.log("Basic check updated mapa_equipe status:", result.mapa_equipe);
+    } catch (e) {
+      console.error("Error checking mapa_equipe data:", e);
+    }
+  }
+  
   console.log("Basic tool completion results:", result);
   return result;
+};
+
+// This function is added to be used in the above code
+// Directly importing from mapaEquipeUtils would create a circular dependency
+const loadMapaEquipeData = async (userId: string): Promise<any | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('mapa_equipe')
+      .select('empresa_nome, colaboradores')
+      .eq('user_id', userId)
+      .maybeSingle();
+    
+    if (error) {
+      console.error(`Error loading mapa_equipe data:`, error);
+      return null;
+    }
+    
+    if (!data) return null;
+    
+    return {
+      empresaNome: data.empresa_nome,
+      colaboradores: data.colaboradores
+    };
+  } catch (error) {
+    console.error(`Error loading mapa_equipe data:`, error);
+    return null;
+  }
 };

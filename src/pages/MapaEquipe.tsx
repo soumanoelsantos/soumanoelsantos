@@ -12,15 +12,18 @@ const MapaEquipe = () => {
   const navigate = useNavigate();
   const { userEmail, logout, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const { showPreview, handlePreview, isLoading } = useMapaEquipe();
+  const { showPreview, handlePreview, isLoading, colaboradores, empresaNome } = useMapaEquipe();
 
   useEffect(() => {
     // When the component mounts, if data is loaded and not already showing preview
     // trigger the handlePreview to show the preview immediately
-    if (!isLoading && !showPreview) {
+    if (!isLoading && !showPreview && 
+        empresaNome && colaboradores && 
+        colaboradores.length > 0 && 
+        colaboradores[0].nome) {
       handlePreview();
     }
-  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isLoading, showPreview, handlePreview, colaboradores, empresaNome]);
 
   useEffect(() => {
     if (!isAuthenticated) {
