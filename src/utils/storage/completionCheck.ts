@@ -1,5 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { MapaEquipeData } from '@/types/mapaEquipe';
+import { Json } from '@/integrations/supabase/types';
 
 // Check if specific tools have been completed by a user
 export const checkUserToolCompletion = async (userId: string, toolKeys: string[]): Promise<Record<string, boolean>> => {
@@ -35,7 +37,7 @@ export const checkUserToolCompletion = async (userId: string, toolKeys: string[]
         if (toolKey === 'business_map_data') {
           const businessMapData = data[toolKey];
           isCompleted = businessMapData && 
-            Object.values(businessMapData).some(value => 
+            Object.values(businessMapData as Record<string, any>).some(value => 
               value && typeof value === 'string' && value.trim() !== ''
             );
         }
@@ -43,26 +45,36 @@ export const checkUserToolCompletion = async (userId: string, toolKeys: string[]
         else if (toolKey === 'swot_data') {
           const swotData = data[toolKey];
           isCompleted = swotData && 
-            Object.keys(swotData).some(quadrant => 
-              Array.isArray(swotData[quadrant]) && swotData[quadrant].length > 0
+            Object.keys(swotData as Record<string, any>).some(quadrant => 
+              Array.isArray((swotData as Record<string, any>)[quadrant]) && 
+              (swotData as Record<string, any>)[quadrant].length > 0
             );
         }
         // For puv_data, check if at least one field has content
         else if (toolKey === 'puv_data') {
           const puvData = data[toolKey];
           isCompleted = puvData && 
-            Object.values(puvData).some(value => 
+            Object.values(puvData as Record<string, any>).some(value => 
               value && typeof value === 'string' && value.trim() !== ''
             );
         }
         // For mapa_equipe, check if there are any collaborators
         else if (toolKey === 'mapa_equipe') {
           const mapaEquipeData = data[toolKey];
-          isCompleted = mapaEquipeData && 
-                       mapaEquipeData.colaboradores && 
-                       Array.isArray(mapaEquipeData.colaboradores) && 
-                       mapaEquipeData.colaboradores.length > 0 &&
-                       mapaEquipeData.colaboradores.some(col => col.nome && col.nome.trim() !== '');
+          
+          // First check if mapaEquipeData is an object
+          if (mapaEquipeData && typeof mapaEquipeData === 'object' && !Array.isArray(mapaEquipeData)) {
+            // Safely cast to MapaEquipeData or Record<string, any>
+            const typedData = mapaEquipeData as Record<string, any>;
+            
+            // Check if collaborators exist and at least one has a name
+            isCompleted = typedData.colaboradores && 
+                          Array.isArray(typedData.colaboradores) && 
+                          typedData.colaboradores.length > 0 &&
+                          typedData.colaboradores.some((col: any) => col.nome && col.nome.trim() !== '');
+          } else {
+            isCompleted = false;
+          }
         }
         // For checklist and other tools, just check if data exists
         else {
