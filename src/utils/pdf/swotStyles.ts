@@ -101,31 +101,41 @@ export const getSwotPdfStyles = () => {
     .swot-pdf-container .bg-red-50 {
       background-color: #fef2f2;
     }
-
-    /* Estilos específicos para a seção CTA com foto à esquerda e texto centralizado */
-    .swot-pdf-container .flex {
-      display: flex;
-      align-items: center;
-    }
     
-    .swot-pdf-container .flex-shrink-0 {
-      flex-shrink: 0;
-    }
-    
-    .swot-pdf-container .flex-grow {
-      flex-grow: 1;
-    }
-    
+    /* Estilos para texto centralizado na seção CTA */
     .swot-pdf-container .text-center {
       text-align: center;
     }
     
-    .swot-pdf-container .w-1\/5 {
-      width: 20%;
+    /* Estilos para botões e links */
+    .swot-pdf-container .inline-block {
+      display: inline-block;
     }
     
-    .swot-pdf-container .max-w-\\[150px\\] {
-      max-width: 150px;
+    .swot-pdf-container .py-3 {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    
+    .swot-pdf-container .px-6 {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+    
+    .swot-pdf-container .bg-yellow-500 {
+      background-color: #eab308;
+    }
+    
+    .swot-pdf-container .rounded-md {
+      border-radius: 0.375rem;
+    }
+    
+    .swot-pdf-container .font-medium {
+      font-weight: 500;
+    }
+    
+    .swot-pdf-container .no-underline {
+      text-decoration: none;
     }
   `;
 };

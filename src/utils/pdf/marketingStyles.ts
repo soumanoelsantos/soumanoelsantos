@@ -45,20 +45,10 @@ export const getMarketingPdfStyles = (): string => {
       color: #000000 !important;
     }
     
-    /* Ajustes para o layout da seção CTA nos PDFs */
+    /* Ajustes para o layout centralizado da seção CTA nos PDFs */
     .pdf-export .cta-section {
-      display: flex !important;
-      align-items: center !important;
-      gap: 20px !important;
-    }
-    .pdf-export .cta-section .image-container {
-      width: 20% !important;
-      max-width: 150px !important;
-      flex-shrink: 0 !important;
-    }
-    .pdf-export .cta-section .text-container {
-      flex-grow: 1 !important;
       text-align: center !important;
+      padding: 15px !important;
     }
   `;
 };
