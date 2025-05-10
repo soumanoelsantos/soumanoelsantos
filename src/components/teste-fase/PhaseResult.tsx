@@ -5,9 +5,7 @@ import { PhaseTestResult } from "../../types/phaseTest";
 import { useAuth } from "@/hooks/useAuth";
 import PhaseInfo from "./PhaseInfo";
 import PhaseRecommendations from "./PhaseRecommendations";
-import EnhancedActionPlan from "./EnhancedActionPlan";
 import NavigationButtons from "./NavigationButtons";
-import { usePhaseActionPlan } from "@/hooks/phase-test/usePhaseActionPlan";
 import QuestionsAnswersList from "./QuestionsAnswersList";
 
 interface PhaseResultProps {
@@ -17,12 +15,6 @@ interface PhaseResultProps {
 
 const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
   const { userId } = useAuth();
-  
-  const {
-    isGeneratingPlan,
-    showEnhancedPlan,
-    handleRegenerateActionPlan
-  } = usePhaseActionPlan(userId, result);
   
   if (!result) return null;
 
@@ -41,15 +33,7 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
           
           <QuestionsAnswersList answers={result.answers || []} />
           
-          {showEnhancedPlan ? (
-            <EnhancedActionPlan 
-              actionPlan={result.enhanced_action_plan || []} 
-              onRegeneratePlan={handleRegenerateActionPlan}
-              isGenerating={isGeneratingPlan}
-            />
-          ) : (
-            <PhaseRecommendations recommendations={result.recommendations} />
-          )}
+          <PhaseRecommendations recommendations={result.recommendations} />
           
           <NavigationButtons onResetTest={onResetTest} />
         </div>
