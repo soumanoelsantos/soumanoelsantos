@@ -110,6 +110,7 @@ const AnaliseSwot: React.FC = () => {
         <SwotActions 
           onSave={handleSaveAnalysis}
           onReset={handleResetAnalysis}
+          swotData={swotData}
         />
 
         {/* Action Plan Component */}

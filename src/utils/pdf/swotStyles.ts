@@ -76,6 +76,31 @@ export const getSwotPdfStyles = () => {
       margin-top: 15px;
       text-decoration: none;
     }
+    
+    /* Grid layout for the quadrants in PDF */
+    .swot-pdf-container .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+    
+    /* Background colors for quadrant headers */
+    .swot-pdf-container .bg-yellow-50 {
+      background-color: #fffbeb;
+    }
+    
+    .swot-pdf-container .bg-gray-50 {
+      background-color: #f9fafb;
+    }
+    
+    .swot-pdf-container .bg-blue-50 {
+      background-color: #eff6ff;
+    }
+    
+    .swot-pdf-container .bg-red-50 {
+      background-color: #fef2f2;
+    }
   `;
 };
 
