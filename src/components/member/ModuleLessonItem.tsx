@@ -1,8 +1,7 @@
 
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckCheck, HelpCircle } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -45,30 +44,6 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
     }
   };
 
-  // Renders a completion indicator for tools that have been completed
-  const renderCompletionStatus = () => {
-    if (!lesson.dataKey) return null;
-    
-    console.log(`Rendering completion status for ${lesson.title}:`, {
-      dataKey: lesson.dataKey,
-      isCompleted: completedTools[lesson.dataKey] === true,
-      completedTools
-    });
-    
-    // Check if the tool is completed - strict comparison to true
-    const isCompleted = completedTools[lesson.dataKey] === true;
-    
-    if (isCompleted) {
-      return (
-        <Badge className="ml-2 bg-green-500 text-white">
-          <CheckCheck className="h-3 w-3 mr-1" />
-          <span className="text-xs">Preenchido</span>
-        </Badge>
-      );
-    }
-    return null;
-  };
-
   return (
     <li 
       className={`p-3 rounded-md border border-dark-primary/10 
@@ -78,7 +53,6 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center flex-wrap">
             <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
-            {renderCompletionStatus()}
             {lesson.benefit && (
               <TooltipProvider>
                 <Tooltip>
