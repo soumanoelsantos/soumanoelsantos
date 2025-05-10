@@ -1,21 +1,20 @@
 
-import React, { useRef } from "react";
-import DiagnosticHeader from "@/components/DiagnosticHeader";
-import DiagnosticForm from "@/components/diagnostic/DiagnosticForm";
-import DiagnosticResults from "@/components/diagnostic/DiagnosticResults";
-import { DiagnosticSections as DiagnosticSectionsType } from "@/types/diagnostic";
+import React from "react";
+import DiagnosticSections from "./DiagnosticSections";
+import DiagnosticResults from "./DiagnosticResults";
+import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
+// Component Props
 interface DiagnosticTestContentProps {
-  sections: DiagnosticSectionsType;
-  results: any;
-  setResults: React.Dispatch<React.SetStateAction<any>>;
+  sections: any[];
+  results: any | null;
+  setResults: (results: any) => void;
   showResults: boolean;
   answersData: any;
-  setAnswersData: React.Dispatch<React.SetStateAction<any>>;
-  actionPlan: any;
-  handleSubmit: () => void;
-  isGeneratingPlan?: boolean;
+  setAnswersData: (answersData: any) => void;
+  handleSubmit: (results: any, answersData: any) => void;
+  isGeneratingPlan: boolean;
 }
 
 const DiagnosticTestContent = ({
@@ -25,48 +24,52 @@ const DiagnosticTestContent = ({
   showResults,
   answersData,
   setAnswersData,
-  actionPlan,
   handleSubmit,
-  isGeneratingPlan = false
+  isGeneratingPlan,
 }: DiagnosticTestContentProps) => {
-  const pdfRef = useRef<HTMLDivElement>(null);
-
-  // Only show the loading screen when initially generating results
-  // and NOT when regenerating the action plan on the results page
-  if (isGeneratingPlan && !showResults) {
+  if (isGeneratingPlan) {
     return (
-      <div className="container mx-auto px-4 py-10">
-        <DiagnosticHeader />
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#1d365c]"></div>
-          <p className="mt-4 text-lg text-gray-800">Gerando resultados do diagnóstico...</p>
-          <p className="text-sm text-gray-600">Isso pode levar alguns instantes.</p>
-        </div>
+      <div className="flex flex-col items-center justify-center py-16">
+        <Loader2 className="h-12 w-12 animate-spin text-blue-500 mb-4" />
+        <h2 className="text-xl font-semibold text-center">Processando seu diagnóstico...</h2>
+        <p className="text-gray-600 text-center mt-2">
+          Estamos analisando suas respostas para gerar resultados personalizados.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <DiagnosticHeader />
-      
-      {!showResults ? (
-        <DiagnosticForm 
-          sections={sections}
-          results={results}
-          setResults={setResults}
-          setAnswersData={setAnswersData}
-          onSubmit={handleSubmit}
-        />
-      ) : (
-        <DiagnosticResults 
-          results={results} 
-          actionPlan={actionPlan}
-          answersData={answersData}
-          pdfRef={pdfRef}
-        />
-      )}
-    </div>
+    <Card className="shadow-lg">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold text-center">
+          Diagnóstico do Negócio
+        </CardTitle>
+        <CardDescription className="text-center">
+          Avalie o estágio atual da sua empresa em 4 áreas-chave
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {!showResults ? (
+          <DiagnosticSections
+            sections={sections}
+            answersData={answersData}
+            setAnswersData={setAnswersData}
+            onSubmit={handleSubmit}
+          />
+        ) : (
+          <DiagnosticResults 
+            results={results} 
+            answersData={answersData} 
+            onRestart={() => {
+              setResults(null);
+              setShowResults(false);
+              setAnswersData({});
+            }} 
+          />
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

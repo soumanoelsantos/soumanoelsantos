@@ -1,58 +1,59 @@
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AnswersDataType } from '@/types/diagnostic';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Download, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+// This component is now only used in the SWOT analysis page
+// It's been removed from the diagnostic test page as requested
 
 interface ActionPlanCardProps {
-  actionPlan: {
-    [key: string]: string[];
-  };
-  answersData?: AnswersDataType;
+  actionPlan: { [key: string]: string[] } | null;
+  isLoading: boolean;
+  onGeneratePlan?: () => void;
+  onRegeneratePlan?: () => void;
 }
 
-const ActionPlanCard = ({ actionPlan, answersData }: ActionPlanCardProps) => {
-  // Function to get appropriate color class for answer
-  const getAnswerColorClass = (answer: string) => {
-    switch (answer) {
-      case 'satisfactory':
-        return 'answer-satisfactory';
-      case 'unsatisfactory':
-        return 'answer-unsatisfactory';
-      case 'nonexistent':
-        return 'answer-nonexistent';
-      default:
-        return '';
-    }
-  };
-
-  // Function to get human-readable answer text
-  const getAnswerText = (answer: string) => {
-    switch (answer) {
-      case 'satisfactory':
-        return 'Existe e é satisfatório';
-      case 'unsatisfactory':
-        return 'Existe, mas não é satisfatório';
-      case 'nonexistent':
-        return 'Não existe';
-      default:
-        return answer;
-    }
-  };
-
-  // Check if action plan has content
-  const hasPlanContent = actionPlan && 
-                        Object.keys(actionPlan).length > 0 && 
-                        Object.values(actionPlan).some(items => items && items.length > 0);
-
-  if (!hasPlanContent) {
+const ActionPlanCard = ({
+  actionPlan,
+  isLoading,
+  onGeneratePlan,
+  onRegeneratePlan,
+}: ActionPlanCardProps) => {
+  if (isLoading) {
     return (
-      <Card className="bg-white border-dark-primary/20">
-        <CardHeader className="bg-[#1d365c] text-white card-header">
-          <CardTitle className="text-xl text-center text-white">Plano de Ação</CardTitle>
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Plano de Ação</CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="text-center py-8">
-            <p className="text-gray-600">Não foi possível gerar um plano de ação. Por favor, tente realizar o diagnóstico novamente.</p>
+        <CardContent>
+          <div className="text-center py-6">
+            <p className="text-gray-600 animate-pulse">
+              Gerando plano de ação personalizado...
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!actionPlan) {
+    return (
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Plano de Ação</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center">
+            <p className="mb-4">
+              Gere um plano de ação personalizado para melhorar seu desempenho
+              nas áreas avaliadas.
+            </p>
+            {onGeneratePlan && (
+              <Button onClick={onGeneratePlan} className="bg-[#1d365c]">
+                Gerar Plano de Ação
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -60,58 +61,40 @@ const ActionPlanCard = ({ actionPlan, answersData }: ActionPlanCardProps) => {
   }
 
   return (
-    <Card className="bg-white border-dark-primary/20">
-      <CardHeader className="bg-[#1d365c] text-white card-header">
-        <CardTitle className="text-xl text-center text-white">Plano de Ação</CardTitle>
+    <Card className="mt-6">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Plano de Ação</CardTitle>
+        <div className="flex gap-2">
+          {onRegeneratePlan && (
+            <Button variant="outline" size="sm" onClick={onRegeneratePlan}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Regenerar
+            </Button>
+          )}
+          <Button variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Baixar PDF
+          </Button>
+        </div>
       </CardHeader>
-      <CardContent className="pt-6 pdf-action-plan-content">
-        <div className="space-y-6">
-          {Object.entries(actionPlan).map(([key, actions]) => (
-            <div key={key} className="border-b border-gray-300 pb-4 pdf-action-plan-section">
-              <h3 className="text-xl font-semibold mb-2 pdf-header text-gray-800">
-                {key === 'processos' ? 'PROCESSOS' : 
-                 key === 'resultados' ? 'RESULTADOS' : 
-                 key === 'sistemaGestao' ? 'SISTEMA DE GESTÃO' : 
-                 key === 'actions' ? 'AÇÕES RECOMENDADAS' : 'PESSOAS'}
-              </h3>
-              <ul className="list-disc list-inside space-y-1 pdf-action-items">
-                {Array.isArray(actions) && actions.length > 0 ? (
-                  actions.map((action, index) => (
-                    <li key={index} className="text-gray-800">{action}</li>
-                  ))
-                ) : (
-                  <li className="text-gray-500 italic">Nenhuma ação definida para esta área.</li>
-                )}
+      <CardContent>
+        <div className="space-y-4">
+          {Object.entries(actionPlan).map(([area, actions], index) => (
+            <div key={index}>
+              <h3 className="font-semibold text-lg mb-2 capitalize">{area}</h3>
+              <ul className="space-y-2 pl-2">
+                {actions.map((action, idx) => (
+                  <li
+                    key={idx}
+                    className="bg-gray-50 p-3 rounded-md border border-gray-200"
+                  >
+                    {action}
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
         </div>
-        
-        {answersData && (
-          <div className="mt-8 answers-section">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800 pdf-answers-title">Respostas do Diagnóstico</h2>
-            {Object.entries(answersData).map(([sectionKey, section]) => (
-              <div key={sectionKey} className="mb-8 border-b border-gray-300 pb-6 pdf-answers-section">
-                <h3 className="text-xl font-semibold mb-4 text-gray-800">
-                  {section.title}
-                </h3>
-                <ul className="space-y-4 pdf-answers-list">
-                  {section.answers.map((item, index) => (
-                    <li key={index} className="text-gray-800 pdf-answer-item">
-                      <span className="question-text">Pergunta: </span> 
-                      {item.question}
-                      <br />
-                      <span className="question-text">Resposta: </span> 
-                      <span className={getAnswerColorClass(item.answer)}>
-                        {getAnswerText(item.answer)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
       </CardContent>
     </Card>
   );

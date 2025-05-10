@@ -1,185 +1,110 @@
 
-import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useDiagnosticData } from "@/hooks/useDiagnosticData";
-import { useActionPlanGeneration } from "@/hooks/useActionPlanGeneration";
-import { saveDiagnosticToSupabase, deleteDiagnosticFromSupabase } from "@/utils/storage";
-import { DiagnosticResults } from "@/types/diagnostic";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useDiagnostic = () => {
-  const { userId } = useAuth();
   const { toast } = useToast();
-  
-  // Get diagnostic data from useDiagnosticData hook
-  const {
-    results,
-    setResults,
-    answersData,
-    setAnswersData,
-    showResults,
-    setShowResults,
-    isLoading,
-    diagnosticId,
-    setDiagnosticId
-  } = useDiagnosticData();
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [shouldGeneratePlan, setShouldGeneratePlan] = useState(false);
+  const { userId, isAuthenticated } = useAuth();
+  const [results, setResults] = useState(null);
+  const [answersData, setAnswersData] = useState({});
+  const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
 
-  // Get action plan generation from useActionPlanGeneration hook
-  const {
-    actionPlan,
-    isGeneratingPlan,
-    regenerateActionPlan,
-    setActionPlan,
-    planGenerationAttempted
-  } = useActionPlanGeneration(
-    userId,
-    diagnosticId,
-    showResults,
-    results,
-    answersData,
-    shouldGeneratePlan,
-    setShouldGeneratePlan
-  );
-
-  const calculateResults = (sections: any, answers: any) => {
-    const newResults: DiagnosticResults = {
-      processos: { score: 0, total: 0, percentage: 0 },
-      resultados: { score: 0, total: 0, percentage: 0 },
-      sistemaGestao: { score: 0, total: 0, percentage: 0 },
-      pessoas: { score: 0, total: 0, percentage: 0 }
-    };
-
-    // Process each section from the diagnostic test sections data
-    Object.keys(sections).forEach(sectionKey => {
-      const section = sections[sectionKey];
-      let sectionScore = 0;
-      
-      // Calculate score based on answers in answersData
-      if (answersData[sectionKey] && answersData[sectionKey].answers) {
-        answersData[sectionKey].answers.forEach(answer => {
-          if (answer.answer === 'satisfactory') {
-            sectionScore += section.pointValue;
-          } else if (answer.answer === 'unsatisfactory') {
-            sectionScore += section.pointValue / 2;
-          }
-        });
+  useEffect(() => {
+    // Load saved diagnostic results when component mounts
+    const loadSavedResults = async () => {
+      if (!userId || !isAuthenticated) {
+        setIsLoading(false);
+        return;
       }
-      
-      const sectionTotal = section.questions.length * section.pointValue;
-      const percentage = sectionTotal > 0 ? Math.round((sectionScore / sectionTotal) * 100) : 0;
-      
-      newResults[sectionKey] = {
-        score: sectionScore,
-        total: sectionTotal,
-        percentage: percentage
-      };
-    });
 
-    return newResults;
-  };
+      try {
+        const { data, error } = await supabase
+          .from("diagnostic_results")
+          .select("*")
+          .eq("user_id", userId)
+          .single();
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setShouldGeneratePlan(true);
-
-    try {
-      // Import the diagnostic sections data dynamically to avoid circular dependencies
-      const { diagnosticSectionsData } = await import('@/data/diagnosticSections');
-      const calculatedResults = calculateResults(diagnosticSectionsData, answersData);
-      setResults(calculatedResults);
-
-      // Save to Supabase (without action plan, which will be generated later)
-      if (userId) {
-        const { result, diagnosticId: newDiagnosticId } = await saveDiagnosticToSupabase(
-          userId, 
-          diagnosticId, 
-          calculatedResults, 
-          answersData,
-          {} // Empty action plan, will be updated after generation
-        );
-
-        if (result.error) {
-          throw result.error;
+        if (error && error.code !== 'PGRST116') {
+          throw error;
         }
 
-        setDiagnosticId(newDiagnosticId);
-      }
-
-      setShowResults(true);
-      
-    } catch (error) {
-      console.error("Erro ao finalizar diagnóstico:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao finalizar diagnóstico",
-        description: "Não foi possível salvar os resultados. Por favor, tente novamente."
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const resetDiagnostic = async () => {
-    if (userId) {
-      try {
-        await deleteDiagnosticFromSupabase(userId);
-        
-        setResults({
-          processos: { score: 0, total: 0, percentage: 0 },
-          resultados: { score: 0, total: 0, percentage: 0 },
-          sistemaGestao: { score: 0, total: 0, percentage: 0 },
-          pessoas: { score: 0, total: 0, percentage: 0 }
-        });
-        
-        setShowResults(false);
-        setAnswersData({});
-        setActionPlan({});
-        setIsSubmitting(false);
-        setShouldGeneratePlan(false);
-        setDiagnosticId(null);
-        
-        toast({
-          title: "Diagnóstico reiniciado",
-          description: "Todos os dados foram apagados. Você pode realizar um novo diagnóstico."
-        });
-        
-        // Force refresh the page
-        window.location.reload();
-        
-        return true;
+        if (data) {
+          setResults(data.results);
+          setAnswersData(data.answers_data || {});
+          setShowResults(true);
+        }
       } catch (error) {
-        console.error("Erro ao resetar diagnóstico:", error);
-        
+        console.error("Error loading diagnostic results:", error);
         toast({
           variant: "destructive",
-          title: "Erro ao resetar diagnóstico",
-          description: "Não foi possível apagar os dados do diagnóstico."
+          title: "Erro ao carregar resultados",
+          description: "Não foi possível carregar os resultados do diagnóstico."
         });
-        
-        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSavedResults();
+  }, [userId, isAuthenticated, toast]);
+
+  const handleSubmit = async (newResults, newAnswersData) => {
+    setResults(newResults);
+    setAnswersData(newAnswersData);
+    setShowResults(true);
+
+    if (userId) {
+      try {
+        // Check if a diagnostic exists for this user
+        const { data, error } = await supabase
+          .from("diagnostic_results")
+          .select("id")
+          .eq("user_id", userId);
+
+        if (error) throw error;
+
+        const diagnosticData = {
+          user_id: userId,
+          results: newResults,
+          answers_data: newAnswersData
+        };
+
+        if (data && data.length > 0) {
+          // Update existing diagnostic
+          await supabase
+            .from("diagnostic_results")
+            .update(diagnosticData)
+            .eq("user_id", userId);
+        } else {
+          // Create new diagnostic
+          await supabase.from("diagnostic_results").insert([diagnosticData]);
+        }
+      } catch (error) {
+        console.error("Error saving diagnostic results:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao salvar resultados",
+          description: "Os resultados foram calculados mas não puderam ser salvos."
+        });
       }
     }
-    return false;
   };
-  
+
   return {
     results,
     setResults,
     showResults,
     setShowResults,
     isLoading,
-    isSubmitting,
     isGeneratingPlan,
-    planGenerationAttempted,
     answersData,
     setAnswersData,
-    actionPlan,
-    setActionPlan,
-    handleSubmit,
-    resetDiagnostic,
-    regenerateActionPlan,
+    handleSubmit
   };
 };
+
+export default useDiagnostic;
