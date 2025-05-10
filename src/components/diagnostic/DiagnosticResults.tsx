@@ -10,7 +10,6 @@ import CTASection from '../CTASection';
 import { useDiagnostic } from '@/hooks/useDiagnostic';
 import ActionButton from '../ui/action-button';
 import { FileEdit, Loader2, RefreshCw } from 'lucide-react';
-import { toast } from "sonner";
 import AnswersDisplay from './AnswersDisplay';
 
 interface DiagnosticResultsProps {
@@ -35,11 +34,6 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
   };
 
   const handleRegenerateActionPlan = () => {
-    toast("Gerando plano de ação", {
-      description: "Aguarde enquanto geramos um novo plano personalizado baseado nas suas respostas...",
-      duration: 3000
-    });
-    
     regenerateActionPlan();
   };
 

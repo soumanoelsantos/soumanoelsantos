@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { toast } from "sonner";
 import { DiagnosticResults, AnswersDataType } from "@/types/diagnostic";
 import { generateActionPlan } from "@/utils/generateActionPlan";
 import { saveDiagnosticToSupabase } from "@/utils/storage";
@@ -59,9 +58,7 @@ export const useActionPlanGeneration = (
                 console.log("Detailed action plan saved to Supabase");
               } catch (error) {
                 console.error("Erro ao salvar plano de ação:", error);
-                toast("Erro ao salvar", {
-                  description: "Falha ao salvar o plano de ação no banco de dados"
-                });
+                // We don't show a toast notification as per user's request
               }
             }
           } else {
@@ -69,9 +66,7 @@ export const useActionPlanGeneration = (
           }
         } catch (error) {
           console.error("Error generating detailed action plan:", error);
-          toast("Erro ao gerar plano de ação", {
-            description: "Ocorreu um erro ao gerar o plano de ação detalhado. Tente novamente."
-          });
+          // Don't show toast notification as per user's request
         } finally {
           setIsGeneratingPlan(false);
           setShouldGeneratePlan(false);
