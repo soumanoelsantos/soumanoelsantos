@@ -12,15 +12,15 @@ import {
 
 interface DiagnosticResultsChartProps {
   results: {
-    processos: { percentage: number };
-    resultados: { percentage: number };
-    sistemaGestao: { percentage: number };
-    pessoas: { percentage: number };
+    processos?: { percentage: number };
+    resultados?: { percentage: number };
+    sistemaGestao?: { percentage: number };
+    pessoas?: { percentage: number };
   };
 }
 
 const DiagnosticResultsChart = ({ results }: DiagnosticResultsChartProps) => {
-  if (!results) {
+  if (!results || !results.processos || !results.resultados || !results.sistemaGestao || !results.pessoas) {
     return <div className="w-full h-[400px] flex items-center justify-center">Dados insuficientes para exibir o gráfico</div>;
   }
 

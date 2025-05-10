@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import DiagnosticSection from '@/components/DiagnosticSection';
 import { Button } from '@/components/ui/button';
 
@@ -22,6 +22,11 @@ const DiagnosticSections = ({
   setAnswersData, 
   onSubmit 
 }: DiagnosticSectionsProps) => {
+  // Debug logging
+  useEffect(() => {
+    console.log("DiagnosticSections rendered with answersData:", answersData);
+  }, [answersData]);
+
   // Calculate results based on answersData
   const calculateResults = () => {
     const results: any = {};
@@ -63,6 +68,8 @@ const DiagnosticSections = ({
 
   const handleSubmit = () => {
     const results = calculateResults();
+    console.log("Submitting diagnostic with results:", results);
+    console.log("And answersData:", answersData);
     onSubmit(results, answersData);
   };
   

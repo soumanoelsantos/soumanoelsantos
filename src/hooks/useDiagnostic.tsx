@@ -96,7 +96,7 @@ export const useDiagnostic = () => {
   };
   
   const resetDiagnostic = async () => {
-    // Reset state
+    // Reset state first to ensure immediate UI feedback
     setResults(null);
     setAnswersData({});
     setShowResults(false);
@@ -104,7 +104,26 @@ export const useDiagnostic = () => {
     // Delete from database if user is logged in
     if (userId && isAuthenticated) {
       try {
-        await deleteDiagnosticFromSupabase(userId);
+        console.log("Attempting to delete diagnostic results for user:", userId);
+        
+        // First, try direct deletion
+        const { error } = await supabase
+          .from("diagnostic_results")
+          .delete()
+          .eq("user_id", userId);
+        
+        if (error) {
+          console.error("Direct deletion error:", error);
+          // Try using the utility function as fallback
+          await deleteDiagnosticFromSupabase(userId);
+        } else {
+          console.log("Diagnostic deletion successful");
+        }
+        
+        toast({
+          title: "Diagnóstico reiniciado",
+          description: "Você pode realizar um novo diagnóstico agora."
+        });
       } catch (error) {
         console.error("Error deleting diagnostic results:", error);
         toast({

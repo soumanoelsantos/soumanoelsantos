@@ -51,9 +51,11 @@ const DiagnosticTestContent = ({
 
   const handleReset = () => {
     if (resetDiagnostic) {
+      console.log("Resetting diagnostic via resetDiagnostic function");
       resetDiagnostic();
     } else {
       // Fallback for backward compatibility
+      console.log("Using fallback reset mechanism");
       setResults(null);
       setShowResults(false);
       setAnswersData({});

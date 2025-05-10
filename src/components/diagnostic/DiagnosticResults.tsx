@@ -23,7 +23,22 @@ const DiagnosticResults = ({
   const pdfRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  if (!results) return null;
+  // Safety check for results
+  if (!results) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-lg text-gray-600">Não foram encontrados resultados do diagnóstico.</p>
+        <Button 
+          variant="outline" 
+          onClick={onRestart}
+          className="mt-4 flex items-center gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Iniciar Novo Diagnóstico
+        </Button>
+      </div>
+    );
+  }
 
   const totalScore = results.totalScore || 0;
   const maxPossibleScore = results.maxPossibleScore || 100;
@@ -38,9 +53,16 @@ const DiagnosticResults = ({
   };
 
   const handleRestart = () => {
+    // Show a toast message to provide feedback
+    toast({
+      title: "Reiniciando diagnóstico",
+      description: "O diagnóstico está sendo reiniciado...",
+    });
+    
     // Call the onRestart function provided by the parent
     onRestart();
     
+    // Additional feedback after successful restart
     toast({
       title: "Diagnóstico reiniciado",
       description: "Você pode realizar um novo diagnóstico agora."
@@ -53,13 +75,13 @@ const DiagnosticResults = ({
         <h2 className="text-xl font-semibold mb-4 text-center">
           Pontuação Geral: {percentage}%
         </h2>
-        <DiagnosticResultsChart results={results} />
+        {results && <DiagnosticResultsChart results={results} />}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ResultsCard
           title="Processos"
-          score={results.processos?.percentage || 0}
+          score={results?.processos?.percentage || 0}
           observations={[
             "Avalia o nível de maturidade dos processos",
             "Verifica documentação e padronização",
@@ -68,7 +90,7 @@ const DiagnosticResults = ({
         />
         <ResultsCard
           title="Resultados"
-          score={results.resultados?.percentage || 0}
+          score={results?.resultados?.percentage || 0}
           observations={[
             "Avalia métricas financeiras e de desempenho",
             "Verifica o acompanhamento de indicadores",
@@ -77,7 +99,7 @@ const DiagnosticResults = ({
         />
         <ResultsCard
           title="Sistema de Gestão"
-          score={results.sistemaGestao?.percentage || 0}
+          score={results?.sistemaGestao?.percentage || 0}
           observations={[
             "Avalia a estrutura organizacional",
             "Verifica ferramentas de gestão",
@@ -86,7 +108,7 @@ const DiagnosticResults = ({
         />
         <ResultsCard
           title="Pessoas"
-          score={results.pessoas?.percentage || 0}
+          score={results?.pessoas?.percentage || 0}
           observations={[
             "Avalia cultura organizacional",
             "Verifica processos de RH",
@@ -95,7 +117,9 @@ const DiagnosticResults = ({
         />
       </div>
 
-      <AnswersDisplay answersData={answersData} />
+      {answersData && Object.keys(answersData).length > 0 && (
+        <AnswersDisplay answersData={answersData} />
+      )}
 
       <div className="flex justify-between items-center flex-wrap gap-4 pt-6">
         <Button 

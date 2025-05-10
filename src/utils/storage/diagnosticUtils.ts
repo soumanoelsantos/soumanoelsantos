@@ -125,20 +125,39 @@ export const saveDiagnosticToSupabase = async (
   }
 };
 
-// Adicionando função para excluir diagnóstico
+// Melhorando a função para excluir diagnóstico
 export const deleteDiagnosticFromSupabase = async (userId: string) => {
   try {
-    const { error } = await supabase
+    console.log("Attempting to delete diagnostic for user:", userId);
+    
+    // First attempt with specific table
+    const { error, count } = await supabase
       .from('diagnostic_results')
-      .delete()
+      .delete({ count: 'exact' })
       .eq('user_id', userId);
       
-    if (error) throw error;
+    if (error) {
+      console.error("Error during diagnostic deletion:", error);
+      throw error;
+    }
     
+    console.log(`Deleted ${count || 0} diagnostic results`);
     return true;
   } catch (error) {
-    console.error("Erro ao excluir diagnóstico:", error);
-    throw error;
+    console.error("Error deleting diagnostic:", error);
+    
+    // Failsafe attempt - try a different approach
+    try {
+      const { error: secondError } = await supabase.rpc('delete_user_diagnostic', { 
+        user_id_param: userId 
+      });
+      
+      if (secondError) throw secondError;
+      return true;
+    } catch (secondAttemptError) {
+      console.error("Second attempt error:", secondAttemptError);
+      throw error; // Throw the original error
+    }
   }
 };
 

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import MemberHeader from "@/components/MemberHeader";
@@ -24,6 +24,13 @@ const DiagnosticoTest = () => {
     handleSubmit,
     resetDiagnostic
   } = useDiagnostic();
+
+  // Debug logging
+  useEffect(() => {
+    console.log("DiagnosticoTest component mounted");
+    console.log("Initial results:", results);
+    console.log("Initial showResults:", showResults);
+  }, []);
 
   // Handle logout from this page
   const handleLogout = () => {
