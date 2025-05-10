@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import CTASection from "@/components/CTASection";
 
 const CrmPage = () => {
   const navigate = useNavigate();
@@ -53,15 +54,17 @@ const CrmPage = () => {
     <div className="h-screen bg-white flex flex-col overflow-hidden">
       <MemberHeader userEmail={userEmail} onLogout={handleLogout} />
       
-      <div className="flex-grow overflow-hidden">
-        <div className="container mx-auto px-4 py-4 h-full flex flex-col">
+      <div className="flex-grow overflow-y-auto">
+        <div className="container mx-auto px-4 py-4">
           <div className="mb-4">
             <BackToMemberAreaButton />
           </div>
           
-          <div className="flex-grow overflow-hidden">
+          <div className="mb-8">
             <KanbanBoard />
           </div>
+          
+          <CTASection source="crm_page" />
         </div>
       </div>
     </div>

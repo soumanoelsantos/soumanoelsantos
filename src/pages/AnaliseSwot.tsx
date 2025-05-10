@@ -9,6 +9,7 @@ import SwotInfo from "@/components/swot/SwotInfo";
 import SwotActions from "@/components/swot/SwotActions";
 import { useSwotAnalysis } from "@/hooks/useSwotAnalysis";
 import { SwotData } from "@/types/swot";
+import CTASection from "@/components/CTASection";
 
 const AnaliseSwot: React.FC = () => {
   const navigate = useNavigate();
@@ -109,6 +110,10 @@ const AnaliseSwot: React.FC = () => {
           onSave={handleSaveAnalysis}
           onReset={handleResetAnalysis}
         />
+        
+        <div className="mt-12">
+          <CTASection source="analise_swot" />
+        </div>
       </div>
     </div>
   );

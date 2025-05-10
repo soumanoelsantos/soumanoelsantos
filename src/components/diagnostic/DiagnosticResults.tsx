@@ -6,9 +6,7 @@ import DownloadPdfButton from './DownloadPdfButton';
 import ResetDiagnosticButton from './ResetDiagnosticButton';
 import BackToMemberAreaButton from './BackToMemberAreaButton';
 import { AnswersDataType } from '@/types/diagnostic';
-import { Calendar, TrendingUp, Users, MessageSquare, Star } from 'lucide-react';
-import ActionButton from '../ui/action-button';
-import LeadCaptureForm from '../LeadCaptureForm';
+import CTASection from '../CTASection';
 
 interface DiagnosticResultsProps {
   results: {
@@ -39,32 +37,9 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
         <ActionPlanCard actionPlan={actionPlan} answersData={answersData} />
       </div>
       
-      {/* Marketing CTA Section - Updated to white background with appropriate text colors */}
-      <div className="bg-white p-6 border rounded-lg shadow-sm text-center mt-12 pdf-marketing-section">
-        <h2 className="text-3xl font-bold mb-4 text-gray-800">
-          Transforme sua empresa em <br />
-          uma <span className="text-[#D4AF37]">máquina de vendas</span>
-        </h2>
-        <p className="text-lg text-gray-700 mb-6">
-          Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
-        </p>
-        
-        <div className="pdf-cta-button mb-2">
-          <LeadCaptureForm 
-            source="diagnostic_results"
-            buttonClassName="px-8 py-6 text-lg mx-auto bg-dark-primary hover:bg-dark-primary/90 text-black font-medium flex items-center gap-2"
-            buttonText={
-              <>
-                <Calendar className="h-4 w-4" />
-                Agendar diagnóstico gratuito
-              </>
-            }
-          />
-        </div>
-        
-        <p className="text-sm text-gray-500 mt-2">
-          Clique acima e agende agora – As vagas são limitadas!
-        </p>
+      {/* Marketing CTA Section with photo */}
+      <div className="pdf-marketing-section">
+        <CTASection source="diagnostic_results" />
       </div>
       
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 print:hidden">

@@ -7,6 +7,7 @@ import ChecklistForm from "@/components/checklist/ChecklistForm";
 import ChecklistResults from "@/components/checklist/ChecklistResults";
 import ChecklistInfo from "@/components/checklist/ChecklistInfo";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import CTASection from "@/components/CTASection";
 
 const CheckListContratacao = () => {
   const {
@@ -63,8 +64,10 @@ const CheckListContratacao = () => {
             </CardContent>
           </Card>
           
+          <CTASection source="checklist_contratacao" />
+          
           {!showResults && (
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-gray-500 mt-8">
               Este check list é inspirado em metodologias modernas de recrutamento e gestão de pessoas.
             </div>
           )}

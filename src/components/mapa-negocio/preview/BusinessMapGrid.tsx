@@ -1,11 +1,12 @@
 
 import React from "react";
 import BusinessMapCard from "./BusinessMapCard";
+import { BusinessMapData } from "@/types/businessMap";
 
 interface BusinessMapGridProps {
-  data: Record<string, string>;
+  data: BusinessMapData;
   fields: {
-    key: string;
+    key: keyof BusinessMapData;
     title: string;
     style?: React.CSSProperties;
   }[];
@@ -19,17 +20,23 @@ const BusinessMapGrid = ({ data, fields, className = "" }: BusinessMapGridProps)
   };
 
   return (
-    <div className={`business-map-grid grid grid-cols-7 gap-2 ${className}`}>
-      {fields.map((field) => 
-        shouldDisplayField(data[field.key]) ? (
-          <BusinessMapCard 
+    <div className={`grid grid-cols-7 gap-2 ${className}`}>
+      {fields.map((field) => {
+        const content = data[field.key] as string || "Não preenchido";
+        
+        if (!shouldDisplayField(content)) {
+          return null;
+        }
+        
+        return (
+          <BusinessMapCard
             key={field.key}
             title={field.title}
-            content={data[field.key]}
+            content={content}
             style={field.style}
           />
-        ) : null
-      )}
+        );
+      })}
     </div>
   );
 };

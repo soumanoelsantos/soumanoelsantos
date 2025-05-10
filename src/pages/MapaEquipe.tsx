@@ -7,6 +7,7 @@ import MapaEquipeForm from "@/components/mapa-equipe/MapaEquipeForm";
 import { useToast } from "@/hooks/use-toast";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 import { useMapaEquipe } from "@/hooks/useMapaEquipe";
+import CTASection from "@/components/CTASection";
 
 const MapaEquipe = () => {
   const navigate = useNavigate();
@@ -58,6 +59,10 @@ const MapaEquipe = () => {
         </div>
         
         <MapaEquipeForm />
+        
+        <div className="mt-12">
+          <CTASection source="mapa_equipe" />
+        </div>
       </div>
     </div>
   );

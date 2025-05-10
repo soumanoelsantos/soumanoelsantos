@@ -7,6 +7,7 @@ import DiagnosticTestContent from "@/components/diagnostic/DiagnosticTestContent
 import { useDiagnostic } from "@/hooks/useDiagnostic";
 import { diagnosticSectionsData } from "@/data/diagnosticSections";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import CTASection from "@/components/CTASection";
 
 const DiagnosticoTest = () => {
   const navigate = useNavigate();
@@ -57,6 +58,12 @@ const DiagnosticoTest = () => {
           handleSubmit={handleSubmit}
           isGeneratingPlan={isGeneratingPlan}
         />
+        
+        {!showResults && !isGeneratingPlan && (
+          <div className="mt-12">
+            <CTASection source="diagnostico_test" />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -13,10 +13,21 @@ const MentorshipCard: React.FC = () => {
       <CardHeader className={`${isMobile ? "px-4 py-4" : ""} text-center`}>
         <CardTitle className="text-xl text-gray-800">Transforme sua empresa em uma <span className="text-dark-primary">máquina de vendas</span></CardTitle>
       </CardHeader>
-      <CardContent className={`${isMobile ? "px-4 pt-0" : ""} text-center`}>
-        <p className="text-gray-700 mb-4">
-          Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
-        </p>
+      <CardContent className={`${isMobile ? "px-4 pt-0" : ""}`}>
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="md:w-1/3">
+            <img
+              src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
+              alt="CRO - Manoel Santos"
+              className="w-full rounded-lg object-cover"
+            />
+          </div>
+          <div className="md:w-2/3 text-center md:text-left">
+            <p className="text-gray-700 mb-4">
+              Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
+            </p>
+          </div>
+        </div>
       </CardContent>
       <CardFooter className={`flex-col items-center ${isMobile ? "px-4 pb-4" : ""}`}>
         <LeadCaptureForm 

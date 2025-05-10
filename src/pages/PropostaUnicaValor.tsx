@@ -8,6 +8,7 @@ import PUVForm from "@/components/puv/PUVForm";
 import PUVPreview from "@/components/puv/PUVPreview";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 import { Loader2 } from "lucide-react";
+import CTASection from "@/components/CTASection";
 
 const PropostaUnicaValor = () => {
   const navigate = useNavigate();
@@ -79,6 +80,10 @@ const PropostaUnicaValor = () => {
             onPreviewClick={handlePreviewClick}
           />
         )}
+        
+        <div className="mt-12">
+          <CTASection source="proposta_unica_valor" />
+        </div>
       </div>
     </div>
   );
