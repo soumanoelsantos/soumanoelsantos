@@ -1,43 +1,42 @@
 
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@/types/admin";
 
 export const useViewAsUser = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   
   const viewAsUser = async (userId: string, users: User[], adminEmail: string | null | undefined) => {
     try {
       const userToView = users.find(u => u.id === userId);
       if (!userToView) return { success: false };
       
-      // Store admin info for later restoration
+      // Armazenar o ID do administrador para restaurá-lo mais tarde
       localStorage.setItem('adminViewingAsUser', 'true');
       localStorage.setItem('adminOriginalEmail', adminEmail || '');
       
-      // Clear current session to force login as selected user
-      const { error } = await supabase.auth.setSession({
-        access_token: '', // Empty token to force login as another user
+      // Configurar a sessão para visualizar como o usuário selecionado
+      const { data, error } = await supabase.auth.setSession({
+        access_token: '', // Token vazio para forçar login como outro usuário
         refresh_token: ''
       });
       
       if (error) throw error;
       
       toast({
-        title: "Viewing as user",
-        description: `Now viewing as ${userToView.email}`,
+        title: "Visualizando como usuário",
+        description: `Agora você está visualizando como ${userToView.email}`,
+        className: "bg-white"
       });
       
-      // Redirecting happens in the calling component
       return { success: true, userEmail: userToView.email };
     } catch (error: any) {
-      console.error("Error viewing as user:", error);
+      console.error("Erro ao visualizar como usuário:", error);
       toast({
         variant: "destructive",
-        title: "Error switching user",
-        description: error.message || "Could not view as selected user."
+        title: "Erro ao trocar de usuário",
+        description: error.message || "Não foi possível visualizar como o usuário selecionado.",
+        className: "bg-white border-red-200"
       });
       return { success: false };
     }

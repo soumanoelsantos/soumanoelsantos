@@ -19,17 +19,19 @@ export const useEditUserEmail = () => {
       if (error) throw error;
       
       toast({
-        title: "Email updated",
-        description: `${userToEdit.email} was changed to ${newEmail}`,
+        title: "Email atualizado",
+        description: `${userToEdit.email} foi alterado para ${newEmail}`,
+        className: "bg-white"
       });
       
       return { success: true, oldEmail: userToEdit.email };
     } catch (error: any) {
-      console.error("Error editing user email:", error);
+      console.error("Erro ao editar e-mail do usuário:", error);
       toast({
         variant: "destructive",
-        title: "Error updating email",
-        description: error.message || "Could not update user email."
+        title: "Erro ao atualizar e-mail",
+        description: error.message || "Não foi possível atualizar o e-mail do usuário.",
+        className: "bg-white border-red-200"
       });
       return { success: false };
     }

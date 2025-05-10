@@ -21,17 +21,19 @@ export const useToggleUserStatus = () => {
       if (error) throw error;
       
       toast({
-        title: "Status updated",
-        description: `${user.email} is now ${updatedStatus ? "" : "no longer "}a new user`,
+        title: "Status atualizado",
+        description: `${user.email} agora ${updatedStatus ? "é" : "não é mais"} um novo usuário`,
+        className: "bg-white"
       });
       
       return { success: true, updatedStatus };
     } catch (error: any) {
-      console.error("Error toggling new user status:", error);
+      console.error("Erro ao alternar status de novo usuário:", error);
       toast({
         variant: "destructive",
-        title: "Error updating status",
-        description: error.message || "Could not update user status."
+        title: "Erro ao atualizar status",
+        description: error.message || "Não foi possível atualizar o status do usuário.",
+        className: "bg-white border-red-200" 
       });
       return { success: false };
     }

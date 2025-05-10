@@ -7,7 +7,6 @@ import { useDeleteUser } from "@/hooks/admin/useDeleteUser";
 import { useEditUserEmail } from "@/hooks/admin/useEditUserEmail";
 import { useViewAsUser } from "@/hooks/admin/useViewAsUser";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 export const useAdminActions = (
   users: User[], 
@@ -17,7 +16,7 @@ export const useAdminActions = (
 ) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { toggleModuleAccess: toggleModule } = useToggleModuleAccess();
+  const { toggleModuleAccess: toggleModule, toggleAllModules: toggleAllModulesAccess } = useToggleModuleAccess();
   const { toggleNewUserStatus: toggleStatus } = useToggleUserStatus();
   const { deleteUser: removeUser } = useDeleteUser();
   const { editUserEmail: updateEmail } = useEditUserEmail();
@@ -52,66 +51,30 @@ export const useAdminActions = (
   };
 
   const toggleAllModules = async (userId: string, enableAll: boolean): Promise<boolean> => {
-    try {
-      const user = users.find(u => u.id === userId);
-      if (!user) return false;
-      
-      // Instead of making individual API calls for each module,
-      // make a single bulk update call
-      if (enableAll) {
-        // Grant access to all modules
-        const modulesToAdd = modules
-          .filter(module => !user.unlockedModules.includes(module.id))
-          .map(module => ({ user_id: userId, module_id: module.id }));
-        
-        if (modulesToAdd.length > 0) {
-          const { error } = await supabase
-            .from('user_modules')
-            .insert(modulesToAdd);
-            
-          if (error) throw error;
-        }
-      } else {
-        // Remove access to all modules
-        const { error } = await supabase
-          .from('user_modules')
-          .delete()
-          .eq('user_id', userId);
-          
-        if (error) throw error;
-      }
-      
+    const result = await toggleAllModulesAccess(userId, enableAll, modules, users);
+    if (result.success) {
       // Update local state
       setUsers(prevUsers => {
-        return prevUsers.map(u => {
-          if (u.id === userId) {
+        return prevUsers.map(user => {
+          if (user.id === userId) {
             return { 
-              ...u, 
-              unlockedModules: enableAll 
-                ? modules.map(m => m.id) 
-                : [] 
+              ...user, 
+              unlockedModules: enableAll ? modules.map(m => m.id) : []
             };
           }
-          return u;
+          return user;
         });
       });
       
       toast({
         title: enableAll ? "Todos os módulos liberados" : "Acesso aos módulos removido",
-        description: `${enableAll ? "Acesso completo concedido" : "Acesso removido"} para ${user.email}`,
+        description: `${enableAll ? "Acesso completo concedido" : "Acesso removido"} com sucesso`,
+        className: "bg-white border-gray-200"
       });
       
       return true;
-    } catch (error) {
-      console.error("Erro ao alternar acesso a todos os módulos:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao modificar acesso",
-        description: "Não foi possível atualizar o acesso aos módulos.",
-        className: "bg-white border-red-200"
-      });
-      return false;
     }
+    return false;
   };
 
   const toggleNewUserStatus = async (userId: string): Promise<boolean> => {
