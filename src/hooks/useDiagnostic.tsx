@@ -96,6 +96,8 @@ export const useDiagnostic = () => {
   };
   
   const resetDiagnostic = async () => {
+    console.log("Resetting diagnostic");
+    
     // Reset state first to ensure immediate UI feedback
     setResults(null);
     setAnswersData({});

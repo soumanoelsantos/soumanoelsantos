@@ -8,6 +8,7 @@ import { RefreshCw, Download } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { generatePDF } from '@/utils/pdfGenerator';
 import DownloadPdfButton from "./DownloadPdfButton";
+import { useNavigate } from "react-router-dom";
 
 interface DiagnosticResultsProps {
   results: any;
@@ -21,6 +22,7 @@ const DiagnosticResults = ({
   onRestart,
 }: DiagnosticResultsProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const pdfRef = useRef<HTMLDivElement>(null);
 
   // Safety check for results
@@ -72,6 +74,9 @@ const DiagnosticResults = ({
     
     // Call the onRestart function provided by the parent
     onRestart();
+
+    // Navigate to the diagnostic test page
+    navigate("/teste");
   };
 
   return (

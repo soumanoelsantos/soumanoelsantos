@@ -4,6 +4,7 @@ import DiagnosticSections from "./DiagnosticSections";
 import DiagnosticResults from "./DiagnosticResults";
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Component Props
 interface DiagnosticTestContentProps {
@@ -37,6 +38,8 @@ const DiagnosticTestContent = ({
   resetDiagnostic,
   isGeneratingPlan,
 }: DiagnosticTestContentProps) => {
+  const navigate = useNavigate();
+  
   if (isGeneratingPlan) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
@@ -53,12 +56,16 @@ const DiagnosticTestContent = ({
     if (resetDiagnostic) {
       console.log("Resetting diagnostic via resetDiagnostic function");
       resetDiagnostic();
+      // Navigate back to the test page
+      navigate("/teste");
     } else {
       // Fallback for backward compatibility
       console.log("Using fallback reset mechanism");
       setResults(null);
       setShowResults(false);
       setAnswersData({});
+      // Navigate back to the test page
+      navigate("/teste");
     }
   };
 
