@@ -9,6 +9,7 @@ import ActionPlanGenerator from "./ActionPlanGenerator";
 import EnhancedActionPlan from "./EnhancedActionPlan";
 import NavigationButtons from "./NavigationButtons";
 import { usePhaseActionPlan } from "@/hooks/phase-test/usePhaseActionPlan";
+import QuestionsAnswersList from "./QuestionsAnswersList";
 
 interface PhaseResultProps {
   result: PhaseTestResult | null;
@@ -38,6 +39,8 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
             score={result.score} 
             description={result.description} 
           />
+          
+          <QuestionsAnswersList answers={result.answers || []} />
           
           {!showEnhancedPlan ? (
             <>

@@ -97,6 +97,7 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
                 score: result?.score || 0,
                 description: result?.description || '',
                 recommendations: result?.recommendations ? result.recommendations.join('|') : '',
+                answers: result?.answers ? JSON.stringify(result.answers) : null,
                 enhanced_action_plan: actionItems
               }]);
             

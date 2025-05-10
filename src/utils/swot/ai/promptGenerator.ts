@@ -1,3 +1,4 @@
+
 import { SwotData } from "@/types/swot";
 import { CompanyInfoData } from "@/types/companyInfo";
 
@@ -135,6 +136,20 @@ export const generatePhaseTestPrompt = (data: any) => {
         prompt += `${index + 1}. ${rec}\n`;
       });
     }
+    
+    // Add answers data from phase test
+    if (data.phaseResult.answers && data.phaseResult.answers.length > 0) {
+      prompt += "\nRESPOSTAS DO DIAGNÓSTICO DE FASE:\n";
+      data.phaseResult.answers.forEach((answer: any, index: number) => {
+        const answerText = answer.value === 1 ? "Sim" : "Não";
+        prompt += `${index + 1}. ${answer.question} - ${answerText}\n`;
+        
+        // Flag items that need improvement (answered as "No")
+        if (answer.value === 2) {
+          prompt += `   > AÇÃO NECESSÁRIA: Este item precisa ser implementado ou melhorado.\n`;
+        }
+      });
+    }
   }
   
   // Add diagnostic data if available
@@ -213,9 +228,8 @@ export const generatePhaseTestPrompt = (data: any) => {
 - Relevante (Relevant): Relacionado diretamente aos desafios identificados
 - Temporal (Time-bound): Com prazos claros para implementação
 
-IMPORTANTE: Crie ações específicas para cada item marcado como "NÃO EXISTE" ou "INSATISFATÓRIO" no diagnóstico da empresa.
-Para os itens marcados como "NÃO EXISTE", desenvolva ações para implementar estas práticas do zero.
-Para os itens marcados como "INSATISFATÓRIO", desenvolva ações para melhorar e otimizar as práticas existentes.
+MUITO IMPORTANTE: Concentre-se principalmente nos itens respondidos com "NÃO" no diagnóstico de fase da empresa.
+Para esses itens, desenvolva ações específicas para implementar ou melhorar essas áreas.
 
 Para cada ação, inclua:
 1. O que exatamente deve ser feito

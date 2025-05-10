@@ -2,7 +2,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { PhaseTestResult } from "@/types/phaseTest";
+import { PhaseTestResult, PhaseAnswer } from "@/types/phaseTest";
 import { phaseTestData } from "../../data/phaseTestData";
 
 interface PhaseTestState {
@@ -56,13 +56,22 @@ export const usePhaseTestActions = (state: PhaseTestState) => {
   
   const calculateResult = async () => {
     const phaseScores: number[] = [];
+    const allAnswers: PhaseAnswer[] = [];
     
-    // Calculate score for each phase
+    // Calculate score for each phase and collect all answers
     phaseTestData.forEach((phase, phaseIndex) => {
       const phaseAnswers = answers[phaseIndex];
       const yesCount = phaseAnswers.filter(answer => answer === 1).length;
       const phaseScore = (yesCount / phaseAnswers.length) * 100;
       phaseScores.push(phaseScore);
+      
+      // Collect answers for this phase
+      phase.questions.forEach((question, questionIndex) => {
+        allAnswers.push({
+          question,
+          value: phaseAnswers[questionIndex]
+        });
+      });
     });
     
     // Find the phase with the highest score
@@ -80,7 +89,8 @@ export const usePhaseTestActions = (state: PhaseTestState) => {
       phaseName: phaseTestData[highestScoreIndex].phase,
       score: highestScore,
       description: phaseTestData[highestScoreIndex].description,
-      recommendations: phaseTestData[highestScoreIndex].recommendations
+      recommendations: phaseTestData[highestScoreIndex].recommendations,
+      answers: allAnswers
     };
     
     setResult(resultData);
@@ -101,12 +111,14 @@ export const usePhaseTestActions = (state: PhaseTestState) => {
         // We need to join the recommendations array into a string for storage
         const recommendationsString = resultData.recommendations.join('|');
         
+        // Save answers as JSON
         const resultToSave = {
           user_id: userId,
           phase_name: resultData.phaseName,
           score: resultData.score,
           description: resultData.description,
-          recommendations: recommendationsString
+          recommendations: recommendationsString,
+          answers: JSON.stringify(allAnswers)
         };
         
         if (data && data.length > 0) {

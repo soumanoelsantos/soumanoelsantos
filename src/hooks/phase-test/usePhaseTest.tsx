@@ -1,21 +1,16 @@
-
 import { usePhaseTestState } from "./usePhaseTestState";
 import { usePhaseTestActions } from "./usePhaseTestActions";
 
 export const usePhaseTest = () => {
-  const stateHook = usePhaseTestState();
-  const { 
-    handleAnswer,
-    handleNext,
-    handlePrevious,
-    resetTest
-  } = usePhaseTestActions(stateHook);
-
+  // Get state from usePhaseTestState
+  const state = usePhaseTestState();
+  
+  // Get actions from usePhaseTestActions
+  const actions = usePhaseTestActions(state);
+  
+  // Return all state and actions
   return {
-    ...stateHook,
-    handleAnswer,
-    handleNext,
-    handlePrevious,
-    resetTest
+    ...state,
+    ...actions
   };
 };

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { phaseTestData } from "../../data/phaseTestData";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { PhaseTestResult } from "@/types/phaseTest";
+import { PhaseTestResult, PhaseAnswer } from "@/types/phaseTest";
 
 export const usePhaseTestState = () => {
   const { userId, isAuthenticated } = useAuth();
@@ -45,10 +45,20 @@ export const usePhaseTestState = () => {
           if (data.recommendations) {
             if (typeof data.recommendations === 'string') {
               // If it's a string, transform it into an array
-              recommendations = [data.recommendations];
+              recommendations = data.recommendations.split('|');
             } else if (Array.isArray(data.recommendations)) {
               // If it's already an array, use it directly
               recommendations = data.recommendations;
+            }
+          }
+          
+          // Parse answers from JSON if available
+          let answersData: PhaseAnswer[] = [];
+          if (data.answers) {
+            try {
+              answersData = JSON.parse(data.answers);
+            } catch (e) {
+              console.error("Error parsing answers:", e);
             }
           }
           
@@ -56,7 +66,9 @@ export const usePhaseTestState = () => {
             phaseName: data.phase_name,
             score: data.score,
             description: data.description || "",
-            recommendations: recommendations
+            recommendations: recommendations,
+            answers: answersData,
+            enhanced_action_plan: data.enhanced_action_plan
           };
           
           setResult(resultData);
