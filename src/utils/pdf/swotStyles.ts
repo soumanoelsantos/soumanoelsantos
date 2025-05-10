@@ -137,6 +137,97 @@ export const getSwotPdfStyles = () => {
     .swot-pdf-container .no-underline {
       text-decoration: none;
     }
+
+    /* Como Fazer section styles */
+    .swot-pdf-container .border-l-2 {
+      border-left-width: 2px;
+    }
+
+    .swot-pdf-container .border-green-400 {
+      border-color: #4ade80;
+    }
+
+    .swot-pdf-container .border-yellow-400 {
+      border-color: #facc15;
+    }
+
+    .swot-pdf-container .border-blue-400 {
+      border-color: #60a5fa;
+    }
+
+    .swot-pdf-container .border-red-400 {
+      border-color: #f87171;
+    }
+
+    .swot-pdf-container .mb-5 {
+      margin-bottom: 1.25rem;
+    }
+
+    .swot-pdf-container .ml-4 {
+      margin-left: 1rem;
+    }
+
+    .swot-pdf-container .ml-2 {
+      margin-left: 0.5rem;
+    }
+
+    .swot-pdf-container .mt-1 {
+      margin-top: 0.25rem;
+    }
+
+    .swot-pdf-container .mt-2 {
+      margin-top: 0.5rem;
+    }
+
+    .swot-pdf-container .mb-1 {
+      margin-bottom: 0.25rem;
+    }
+
+    .swot-pdf-container .mb-2 {
+      margin-bottom: 0.5rem;
+    }
+
+    .swot-pdf-container .p-2 {
+      padding: 0.5rem;
+    }
+
+    .swot-pdf-container .rounded {
+      border-radius: 0.25rem;
+    }
+
+    .swot-pdf-container .text-sm {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .swot-pdf-container .text-xs {
+      font-size: 0.75rem;
+      line-height: 1rem;
+    }
+
+    .swot-pdf-container .font-medium {
+      font-weight: 500;
+    }
+
+    .swot-pdf-container .italic {
+      font-style: italic;
+    }
+
+    .swot-pdf-container .list-decimal {
+      list-style-type: decimal;
+    }
+
+    .swot-pdf-container .list-disc {
+      list-style-type: disc;
+    }
+
+    .swot-pdf-container ol, .swot-pdf-container ul {
+      padding-left: 1rem;
+    }
+
+    .swot-pdf-container ol li, .swot-pdf-container ul li {
+      margin-bottom: 0.25rem;
+    }
   `;
 };
 
