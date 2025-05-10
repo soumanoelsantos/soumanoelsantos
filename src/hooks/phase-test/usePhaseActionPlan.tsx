@@ -134,7 +134,7 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
     }
   };
 
-  // Add this handleRegenerateActionPlan function that the PhaseResult component is expecting
+  // Add the handleRegenerateActionPlan function that the PhaseResult component needs
   const handleRegenerateActionPlan = async () => {
     // Re-use the same logic as handleGenerateActionPlan
     await handleGenerateActionPlan();
@@ -145,6 +145,6 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
     showEnhancedPlan,
     setShowEnhancedPlan,
     handleGenerateActionPlan,
-    handleRegenerateActionPlan // Add this to the returned object
+    handleRegenerateActionPlan // Return this function so it's available to components
   };
 };

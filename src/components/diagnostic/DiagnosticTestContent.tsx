@@ -15,6 +15,7 @@ interface DiagnosticTestContentProps {
   handleSubmit: () => void;
   isGeneratingPlan: boolean;
   isSubmitting?: boolean;
+  handleRegenerateActionPlan?: () => void; // Add this prop to the interface
 }
 
 const DiagnosticTestContent = ({
@@ -27,7 +28,8 @@ const DiagnosticTestContent = ({
   actionPlan,
   handleSubmit,
   isGeneratingPlan,
-  isSubmitting = false
+  isSubmitting = false,
+  handleRegenerateActionPlan, // Add this prop to the function parameters
 }: DiagnosticTestContentProps) => {
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +41,7 @@ const DiagnosticTestContent = ({
           actionPlan={actionPlan}
           answersData={answersData}
           pdfRef={pdfRef}
+          handleRegenerateActionPlan={handleRegenerateActionPlan} // Pass it to DiagnosticResults if needed
         />
       </div>
     );
