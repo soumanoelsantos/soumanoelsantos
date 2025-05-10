@@ -40,6 +40,11 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
   const hasActionPlan = actionPlan && Object.keys(actionPlan).length > 0 && 
     Object.values(actionPlan).some(items => items && items.length > 0);
 
+  // Function to get a more specific error message
+  const getErrorMessage = () => {
+    return "Não foi possível gerar o plano de ação. Isso pode ter ocorrido devido a uma falha na conexão com nosso serviço de IA ou problemas ao processar as informações do diagnóstico. Por favor, tente novamente.";
+  };
+
   return (
     <div ref={pdfRef} className="mt-10 space-y-8 pdf-container">
       <div className="pdf-results-card">
@@ -83,7 +88,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           <h3 className="text-xl font-bold text-amber-800 mb-4">Plano de Ação</h3>
           <p className="text-amber-700 mb-4">
             {planGenerationAttempted ? 
-              "Não foi possível gerar o plano de ação. Por favor, tente novamente." : 
+              getErrorMessage() : 
               "Gere um plano de ação detalhado e personalizado com base nos resultados do diagnóstico da sua empresa."}
           </p>
           <ActionButton 

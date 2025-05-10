@@ -4,6 +4,7 @@ import { DiagnosticResults, AnswersDataType } from "@/types/diagnostic";
 import { generateActionPlan } from "@/utils/generateActionPlan";
 import { saveDiagnosticToSupabase } from "@/utils/storage";
 import { Json } from "@/integrations/supabase/types";
+import { useToast } from "@/hooks/use-toast";
 
 export const useActionPlanGeneration = (
   userId: string | undefined,
@@ -14,9 +15,11 @@ export const useActionPlanGeneration = (
   shouldGeneratePlan: boolean,
   setShouldGeneratePlan: (value: boolean) => void
 ) => {
+  const { toast } = useToast();
   const [actionPlan, setActionPlan] = useState<{[key: string]: string[]}>({});
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [planGenerationAttempted, setPlanGenerationAttempted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const generatePlan = async () => {
@@ -24,6 +27,7 @@ export const useActionPlanGeneration = (
       
       if (showResults && Object.values(results).some(area => area.score > 0)) {
         setIsGeneratingPlan(true);
+        setErrorMessage(null);
         
         try {
           console.log("Generating detailed action plan with answersData:", answersData);
@@ -60,6 +64,7 @@ export const useActionPlanGeneration = (
                 console.log("Detailed action plan saved to Supabase");
               } catch (error) {
                 console.error("Erro ao salvar plano de ação:", error);
+                setErrorMessage("Não foi possível salvar o plano de ação no banco de dados.");
               }
             }
           } else {
@@ -67,6 +72,16 @@ export const useActionPlanGeneration = (
           }
         } catch (error) {
           console.error("Error generating detailed action plan:", error);
+          // Specific error messages based on the type of error
+          if (error instanceof TypeError) {
+            setErrorMessage("Erro de formato nos dados. Verifique se todas as respostas foram preenchidas corretamente.");
+          } else if (error.message.includes("Network") || error.message.includes("fetch") || error.message.includes("timeout")) {
+            setErrorMessage("Falha de conexão com o serviço de IA. Verifique sua conexão com a internet e tente novamente.");
+          } else if (error.message.includes("vazio") || error.message.includes("inválido")) {
+            setErrorMessage("O sistema não conseguiu gerar um plano de ação válido com base nas respostas fornecidas.");
+          } else {
+            setErrorMessage("Ocorreu um erro ao gerar o plano de ação. Por favor, tente novamente mais tarde.");
+          }
           // Mark as attempted even if there was an error
           setPlanGenerationAttempted(true);
         } finally {
@@ -79,10 +94,11 @@ export const useActionPlanGeneration = (
     };
     
     generatePlan();
-  }, [shouldGeneratePlan, showResults, results, answersData, userId, diagnosticId, setShouldGeneratePlan]);
+  }, [shouldGeneratePlan, showResults, results, answersData, userId, diagnosticId, setShouldGeneratePlan, toast]);
   
   const regenerateActionPlan = () => {
     setPlanGenerationAttempted(true); // Ensure we know an attempt has been made
+    setErrorMessage(null);
     setShouldGeneratePlan(true);
   };
 
@@ -91,6 +107,7 @@ export const useActionPlanGeneration = (
     isGeneratingPlan,
     regenerateActionPlan,
     setActionPlan,
-    planGenerationAttempted
+    planGenerationAttempted,
+    errorMessage
   };
 };
