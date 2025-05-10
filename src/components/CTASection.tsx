@@ -25,7 +25,7 @@ const CTASection = ({ source }: CTASectionProps) => {
           </h2>
           
           <p className="text-base font-medium text-dark-primary mb-4">
-            Exclusivo para empresas com faturamento acima de R$ 50.000,00 por mês
+            Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
           </p>
           
           <p className="text-lg text-gray-700 mb-6">
