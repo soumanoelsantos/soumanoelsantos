@@ -101,6 +101,32 @@ export const getSwotPdfStyles = () => {
     .swot-pdf-container .bg-red-50 {
       background-color: #fef2f2;
     }
+
+    /* Estilos específicos para a seção CTA com foto à esquerda e texto centralizado */
+    .swot-pdf-container .flex {
+      display: flex;
+      align-items: center;
+    }
+    
+    .swot-pdf-container .flex-shrink-0 {
+      flex-shrink: 0;
+    }
+    
+    .swot-pdf-container .flex-grow {
+      flex-grow: 1;
+    }
+    
+    .swot-pdf-container .text-center {
+      text-align: center;
+    }
+    
+    .swot-pdf-container .w-1\/5 {
+      width: 20%;
+    }
+    
+    .swot-pdf-container .max-w-\\[150px\\] {
+      max-width: 150px;
+    }
   `;
 };
 

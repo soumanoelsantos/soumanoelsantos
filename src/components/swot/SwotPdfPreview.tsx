@@ -81,15 +81,17 @@ const SwotPdfPreview: React.FC<SwotPdfPreviewProps> = ({ actionPlan }) => {
         </div>
       )}
       
-      {/* CTA Section in PDF */}
+      {/* CTA Section in PDF with modified layout */}
       <div className="mt-12 border-t pt-6">
-        <div className="flex flex-col md:flex-row items-center gap-6 bg-gray-50 rounded-lg p-6">
-          <img 
-            src="/lovable-uploads/eefe48b8-a593-4c67-bc73-6a207ae52ace.png" 
-            alt="Transformação de negócio" 
-            className="w-full md:w-1/3 rounded-lg" 
-          />
-          <div>
+        <div className="flex items-center gap-6 bg-gray-50 rounded-lg p-6">
+          <div className="flex-shrink-0 w-1/5 max-w-[150px]">
+            <img 
+              src="/lovable-uploads/ea90fa3b-a3cc-4d7a-b36f-8304f3a48a8a.png" 
+              alt="Manoel Santos" 
+              className="w-full rounded-lg" 
+            />
+          </div>
+          <div className="flex-grow text-center">
             <h2 className="text-2xl font-bold text-gray-900">Transforme sua empresa em uma máquina de vendas</h2>
             <p className="mt-2 text-gray-700">
               Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
