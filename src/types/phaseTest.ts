@@ -12,4 +12,5 @@ export interface PhaseTestResult {
   score: number;
   description: string;
   recommendations: string[];
+  enhanced_action_plan?: string[];
 }

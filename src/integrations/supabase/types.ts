@@ -114,6 +114,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          enhanced_action_plan: string[] | null
           id: string
           phase_name: string
           recommendations: string | null
@@ -124,6 +125,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          enhanced_action_plan?: string[] | null
           id?: string
           phase_name: string
           recommendations?: string | null
@@ -134,6 +136,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          enhanced_action_plan?: string[] | null
           id?: string
           phase_name?: string
           recommendations?: string | null

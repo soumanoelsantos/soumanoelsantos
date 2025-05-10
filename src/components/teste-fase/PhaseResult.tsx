@@ -20,10 +20,17 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
   const { userId } = useAuth();
   const { toast } = useToast();
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
-  const [enhancedPlan, setEnhancedPlan] = useState<string[]>([]);
   const [showEnhancedPlan, setShowEnhancedPlan] = useState(false);
   
   if (!result) return null;
+
+  // Check if there's an enhanced action plan already
+  const hasEnhancedPlan = result.enhanced_action_plan && result.enhanced_action_plan.length > 0;
+  
+  // If there's an enhanced plan, show it by default
+  if (hasEnhancedPlan && !showEnhancedPlan) {
+    setShowEnhancedPlan(true);
+  }
 
   const handleGenerateActionPlan = async () => {
     if (!userId) {
@@ -67,8 +74,8 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
           ? generatedPlan 
           : Object.values(generatedPlan).flat();
         
-        setEnhancedPlan(actionItems);
-        setShowEnhancedPlan(true);
+        // Update the current result object
+        result.enhanced_action_plan = actionItems;
         
         // Save the enhanced action plan to the database
         if (userId) {
@@ -82,6 +89,8 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
           
           if (error) throw error;
         }
+        
+        setShowEnhancedPlan(true);
         
         toast({
           title: "Plano de ação gerado",
@@ -149,7 +158,7 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
             <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
               <h3 className="text-xl font-bold text-green-800 mb-4">Seu Plano de Ação Personalizado (SMART):</h3>
               <ul className="list-decimal pl-5 space-y-3">
-                {enhancedPlan.map((action, index) => (
+                {result.enhanced_action_plan && result.enhanced_action_plan.map((action, index) => (
                   <li key={index} className="text-gray-700">{action}</li>
                 ))}
               </ul>

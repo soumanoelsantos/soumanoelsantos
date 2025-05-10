@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { DiagnosticResults, AnswersDataType } from "@/types/diagnostic";
 import { generateActionPlan } from "@/utils/generateActionPlan";
@@ -33,7 +33,18 @@ export const useActionPlanGeneration = (
           console.log("Generated action plan:", plan);
           
           if (plan && Object.keys(plan).length > 0) {
-            setActionPlan(plan);
+            // Make sure we're setting an object with string arrays as values
+            const formattedPlan: {[key: string]: string[]} = {};
+            
+            // If plan is an array, convert it to an object with a single key
+            if (Array.isArray(plan)) {
+              formattedPlan['actions'] = plan;
+            } else {
+              // It's already in the right format
+              Object.assign(formattedPlan, plan);
+            }
+            
+            setActionPlan(formattedPlan);
             
             // Save the action plan in Supabase
             if (userId) {
@@ -43,7 +54,7 @@ export const useActionPlanGeneration = (
                   diagnosticId,
                   results,
                   answersData,
-                  plan
+                  formattedPlan
                 );
               } catch (error) {
                 console.error("Erro ao salvar plano de ação:", error);
@@ -91,3 +102,6 @@ export const useActionPlanGeneration = (
     setActionPlan
   };
 };
+
+// Add missing import
+import { useEffect } from 'react';
