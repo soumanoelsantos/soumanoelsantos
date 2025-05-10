@@ -25,7 +25,8 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
     hasContent,
     companyInfoDialogOpen,
     setCompanyInfoDialogOpen,
-    handleCompanyInfoSubmit
+    handleCompanyInfoSubmit,
+    savedActionPlan
   } = useSwotActionPlan(swotData, isLoading);
   
   const pdfRef = useRef<HTMLDivElement>(null);
@@ -113,7 +114,11 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
 
       {/* Hidden PDF Preview for download */}
       <div className="hidden">
-        <SwotPdfPreview ref={pdfRef} swotData={swotData} actionPlan={actionPlan} />
+        <SwotPdfPreview 
+          ref={pdfRef} 
+          swotData={swotData} 
+          actionPlan={actionPlan} 
+        />
       </div>
 
       {/* Company Info Collection Dialog */}

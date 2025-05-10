@@ -59,8 +59,8 @@ const prepareSwotPrompt = (swotData: any) => {
   // Add Strengths
   prompt += "FORÇAS:\n";
   if (swotData.strengths && swotData.strengths.length > 0) {
-    swotData.strengths.forEach((item: string, index: number) => {
-      prompt += `${index + 1}. ${item}\n`;
+    swotData.strengths.forEach((item: any, index: number) => {
+      prompt += `${index + 1}. ${item.text}\n`;
     });
   } else {
     prompt += "Nenhuma força identificada.\n";
@@ -69,8 +69,8 @@ const prepareSwotPrompt = (swotData: any) => {
   // Add Weaknesses
   prompt += "\nFRAQUEZAS:\n";
   if (swotData.weaknesses && swotData.weaknesses.length > 0) {
-    swotData.weaknesses.forEach((item: string, index: number) => {
-      prompt += `${index + 1}. ${item}\n`;
+    swotData.weaknesses.forEach((item: any, index: number) => {
+      prompt += `${index + 1}. ${item.text}\n`;
     });
   } else {
     prompt += "Nenhuma fraqueza identificada.\n";
@@ -79,8 +79,8 @@ const prepareSwotPrompt = (swotData: any) => {
   // Add Opportunities
   prompt += "\nOPORTUNIDADES:\n";
   if (swotData.opportunities && swotData.opportunities.length > 0) {
-    swotData.opportunities.forEach((item: string, index: number) => {
-      prompt += `${index + 1}. ${item}\n`;
+    swotData.opportunities.forEach((item: any, index: number) => {
+      prompt += `${index + 1}. ${item.text}\n`;
     });
   } else {
     prompt += "Nenhuma oportunidade identificada.\n";
@@ -89,8 +89,8 @@ const prepareSwotPrompt = (swotData: any) => {
   // Add Threats
   prompt += "\nAMEAÇAS:\n";
   if (swotData.threats && swotData.threats.length > 0) {
-    swotData.threats.forEach((item: string, index: number) => {
-      prompt += `${index + 1}. ${item}\n`;
+    swotData.threats.forEach((item: any, index: number) => {
+      prompt += `${index + 1}. ${item.text}\n`;
     });
   } else {
     prompt += "Nenhuma ameaça identificada.\n";

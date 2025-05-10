@@ -5,6 +5,7 @@ import { generateEnhancedSwotPlan, generateBasicActionPlan } from '@/utils/swot/
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { saveDataToSupabase, loadDataFromSupabase } from '@/utils/storage';
+import { generateEnhancedActionPlan } from '@/utils/deepseekApi';
 
 export interface CompanyInfoData {
   industry: string;
@@ -31,6 +32,14 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
       if (!userId || isLoading) return;
       
       try {
+        // Load company info first
+        const savedCompanyInfo = await loadDataFromSupabase(userId, 'swot_company_info');
+        if (savedCompanyInfo) {
+          setCompanyInfo(savedCompanyInfo);
+          console.log("Loaded saved company info:", savedCompanyInfo);
+        }
+        
+        // Then load action plan
         const savedPlan = await loadDataFromSupabase(userId, 'swot_action_plan');
         if (savedPlan && Object.keys(savedPlan).length > 0) {
           setActionPlan(savedPlan);
@@ -38,13 +47,6 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
           console.log("Loaded saved action plan:", savedPlan);
         } else {
           setSavedActionPlan(false);
-        }
-        
-        // Load company info if available
-        const savedCompanyInfo = await loadDataFromSupabase(userId, 'swot_company_info');
-        if (savedCompanyInfo) {
-          setCompanyInfo(savedCompanyInfo);
-          console.log("Loaded saved company info:", savedCompanyInfo);
         }
       } catch (error) {
         console.error("Error loading saved data:", error);
@@ -66,37 +68,42 @@ export const useSwotActionPlan = (swotData: SwotData, isLoading: boolean) => {
     setGenerating(true);
     
     try {
-      // Try to generate an enhanced plan with DeepSeek AI
+      // Create a data object with both SWOT data and company info
+      const enrichedData = {
+        ...data,
+        companyInfo: companyInfoData || null
+      };
+
+      // Try to use DeepSeek AI for enhanced plan
+      let generatedPlan;
       if (!isUsingAI) {
-        const enhancedPlan = await generateEnhancedSwotPlan(data, companyInfoData);
-        
-        if (enhancedPlan) {
-          setActionPlan(enhancedPlan);
-          setIsUsingAI(true);
-          setGenerating(false);
-          
-          // Save company info if we have it
-          if (companyInfoData && userId) {
-            await saveDataToSupabase(userId, 'swot_company_info', companyInfoData);
+        try {
+          generatedPlan = await generateEnhancedActionPlan(enrichedData);
+          if (generatedPlan) {
+            setIsUsingAI(true);
           }
-          
-          return enhancedPlan;
+        } catch (aiError) {
+          console.error("Error with AI generation:", aiError);
+          // Will fallback to basic generation below
         }
       }
+
+      // If no AI plan was generated, fallback to basic plan
+      if (!generatedPlan) {
+        generatedPlan = generateBasicActionPlan(data, companyInfoData);
+      }
       
-      // Fallback to basic plan generation
-      const basicPlan = generateBasicActionPlan(data, companyInfoData);
-      setActionPlan(basicPlan);
+      setActionPlan(generatedPlan);
       
       // Save company info if we have it
       if (companyInfoData && userId) {
         await saveDataToSupabase(userId, 'swot_company_info', companyInfoData);
       }
       
-      return basicPlan;
+      return generatedPlan;
     } catch (error) {
       console.error("Error generating action plan:", error);
-      // Fallback to basic plan if AI fails
+      // Fallback to basic plan if all else fails
       const basicPlan = generateBasicActionPlan(data, companyInfoData);
       setActionPlan(basicPlan);
       return basicPlan;
