@@ -13,9 +13,11 @@ const MemberAreaContent: React.FC = () => {
         Área de Membros
       </h1>
       
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-8">
         <MemberContentList />
-        <MentorshipCard />
+        <div className="py-4">
+          <MentorshipCard />
+        </div>
       </div>
     </div>
   );
