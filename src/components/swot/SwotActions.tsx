@@ -1,6 +1,7 @@
 
 import React, { useRef } from 'react';
 import { Button } from "@/components/ui/button";
+import ActionButton from "@/components/ui/action-button";
 import { Save, RefreshCw, Download } from "lucide-react";
 import { SwotData } from "@/types/swot";
 import { generatePDF } from '@/utils/pdfGenerator';
@@ -57,13 +58,13 @@ const SwotActions: React.FC<SwotActionsProps> = ({ onSave, onReset, swotData }) 
           <Download className="h-4 w-4" />
           Baixar quadrantes em PDF
         </Button>
-        <Button 
+        <ActionButton 
+          variant="primary"
+          icon={Save}
           onClick={onSave}
-          className="bg-dark-primary hover:bg-dark-primary/90 text-white flex items-center gap-2"
         >
-          <Save className="h-4 w-4" />
           Salvar análise
-        </Button>
+        </ActionButton>
       </div>
       
       {/* Hidden element for PDF generation */}

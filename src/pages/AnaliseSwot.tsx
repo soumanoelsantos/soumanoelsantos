@@ -9,7 +9,6 @@ import SwotInfo from "@/components/swot/SwotInfo";
 import SwotActions from "@/components/swot/SwotActions";
 import SwotActionPlan from "@/components/swot/SwotActionPlan";
 import { useSwotAnalysis } from "@/hooks/useSwotAnalysis";
-import { SwotData } from "@/types/swot";
 import CTASection from "@/components/CTASection";
 
 const AnaliseSwot: React.FC = () => {

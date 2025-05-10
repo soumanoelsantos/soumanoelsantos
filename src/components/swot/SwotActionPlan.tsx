@@ -2,11 +2,10 @@
 import React, { useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw } from "lucide-react";
+import { Download, RefreshCw, Save } from "lucide-react";
 import { SwotData } from "@/types/swot";
 import { useToast } from "@/hooks/use-toast";
 import { generatePDF } from '@/utils/pdfGenerator';
-import CTASection from "@/components/CTASection";
 import ActionPlanDisplay from './ActionPlanDisplay';
 import SwotPdfPreview from './SwotPdfPreview';
 import { useSwotActionPlan } from '@/hooks/useSwotActionPlan';
@@ -22,6 +21,8 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
   const { 
     actionPlan, 
     generating, 
+    savedActionPlan,
+    handleGenerateAndSaveActionPlan,
     handleRegenerateActionPlan,
     hasContent 
   } = useSwotActionPlan(swotData, isLoading);
@@ -48,7 +49,7 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
     }
   };
 
-  // Show loading state if no data or generating
+  // Show loading state if no data
   if (isLoading || !hasContent(swotData)) {
     return null; // Don't show anything if there's no data yet
   }
@@ -60,25 +61,41 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
           <CardTitle className="text-xl text-gray-800 flex justify-between items-center">
             <span>Plano de Ação baseado na sua análise SWOT</span>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center gap-2" 
-                onClick={handleRegenerateActionPlan}
-                disabled={generating}
-              >
-                <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
-                {generating ? 'Gerando...' : 'Regenerar'}
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center gap-2" 
-                onClick={handleDownloadPlan}
-              >
-                <Download className="h-4 w-4" />
-                Baixar PDF
-              </Button>
+              {!savedActionPlan || Object.keys(actionPlan).length === 0 ? (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2" 
+                  onClick={handleGenerateAndSaveActionPlan}
+                  disabled={generating}
+                >
+                  <Save className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
+                  {generating ? 'Gerando...' : 'Gerar e Salvar Plano'}
+                </Button>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2" 
+                  onClick={handleRegenerateActionPlan}
+                  disabled={generating}
+                >
+                  <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
+                  {generating ? 'Gerando...' : 'Atualizar Plano'}
+                </Button>
+              )}
+              
+              {Object.keys(actionPlan).length > 0 && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2" 
+                  onClick={handleDownloadPlan}
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar PDF
+                </Button>
+              )}
             </div>
           </CardTitle>
         </CardHeader>
@@ -90,8 +107,13 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
                 <p className="text-gray-600">Gerando plano de ação detalhado...</p>
               </div>
             </div>
-          ) : (
+          ) : Object.keys(actionPlan).length > 0 ? (
             <ActionPlanDisplay actionPlan={actionPlan} />
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600 mb-4">Nenhum plano de ação gerado ainda</p>
+              <p className="text-sm text-gray-500">Clique em "Gerar e Salvar Plano" para criar um plano de ação baseado na sua análise SWOT</p>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -101,11 +123,6 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
         <div ref={pdfRef}>
           <SwotPdfPreview actionPlan={actionPlan} />
         </div>
-      </div>
-      
-      {/* CTA Section displayed in the page */}
-      <div className="mt-12">
-        <CTASection source="analise_swot" />
       </div>
     </>
   );
