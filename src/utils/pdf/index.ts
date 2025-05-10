@@ -10,3 +10,4 @@ export * from './mapaEquipeStyles';
 export * from './marketingStyles';
 export * from './pdfOptions';
 export * from './puvStyles';
+export * from './swotStyles';

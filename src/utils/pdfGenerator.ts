@@ -3,6 +3,7 @@ import html2pdf from 'html2pdf.js';
 import { getDefaultPdfOptionsConfig } from './pdf/pdfOptions';
 import { getPUVPdfOptionsConfig, getPUVPdfStyles } from './pdf/puvStyles';
 import { getMapaEquipePdfOptionsConfig, getMapaEquipeStyles } from './pdf/mapaEquipeStyles';
+import { getSwotPdfOptionsConfig, getSwotPdfStyles } from './pdf/swotStyles';
 
 /**
  * Generates a PDF from a given HTML element
@@ -44,6 +45,32 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
         options.filename = fileName;
       }
     }
+    // Check if the element has swot-pdf-container class
+    else if (element.classList.contains('swot-pdf-container')) {
+      // Add SWOT specific styles
+      const styleElement = document.createElement('style');
+      styleElement.textContent = getSwotPdfStyles();
+      element.appendChild(styleElement);
+      
+      // Use SWOT specific options if available
+      options = getSwotPdfOptionsConfig();
+      
+      // Override filename if provided
+      if (fileName) {
+        options.filename = fileName;
+      }
+      
+      // Add link redirection function to the PDF for CTA button
+      const scriptElement = document.createElement('script');
+      scriptElement.textContent = `
+        document.addEventListener('click', function(e) {
+          if (e.target && e.target.closest('a[href="https://soumanoelsantos.com.br"]')) {
+            window.open('https://soumanoelsantos.com.br', '_blank');
+          }
+        });
+      `;
+      element.appendChild(scriptElement);
+    }
     else {
       // Override filename if provided
       if (fileName) {
@@ -59,7 +86,16 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       const styleElements = element.querySelectorAll('style');
       styleElements.forEach(el => {
         if (el.textContent?.includes('puv-preview') || 
-            el.textContent?.includes('mapa-equipe-preview')) {
+            el.textContent?.includes('mapa-equipe-preview') ||
+            el.textContent?.includes('swot-pdf-container')) {
+          el.remove();
+        }
+      });
+      
+      // Remove any temporary script elements
+      const scriptElements = element.querySelectorAll('script');
+      scriptElements.forEach(el => {
+        if (el.textContent?.includes('soumanoelsantos.com.br')) {
           el.remove();
         }
       });

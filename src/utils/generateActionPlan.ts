@@ -1,3 +1,4 @@
+
 import { generateEnhancedActionPlan } from './deepseekApi';
 
 interface DiagnosticResults {
@@ -14,7 +15,16 @@ export const generateActionPlan = async (results: DiagnosticResults, answersData
   // First try to get an enhanced plan from the DeepSeek API
   try {
     console.log("Attempting to generate enhanced action plan via DeepSeek API...");
-    const enhancedPlan = await generateEnhancedActionPlan(results, answersData);
+    
+    // Convert diagnostic results to SWOT format for the API
+    const swotData = {
+      strengths: [`Pontuação em Processos: ${results.processos.percentage}%`],
+      weaknesses: [`Pontuação em Gestão: ${results.sistemaGestao.percentage}%`],
+      opportunities: [`Pontuação em Resultados: ${results.resultados.percentage}%`],
+      threats: [`Pontuação em Pessoas: ${results.pessoas.percentage}%`]
+    };
+    
+    const enhancedPlan = await generateEnhancedActionPlan(swotData);
     
     // If we got a successful response from the API, use it
     if (enhancedPlan && Object.keys(enhancedPlan).length > 0) {

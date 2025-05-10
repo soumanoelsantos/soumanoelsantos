@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, RefreshCw } from "lucide-react";
 import { SwotData } from "@/types/swot";
 import { useToast } from "@/hooks/use-toast";
 import { generateEnhancedActionPlan } from '@/utils/deepseekApi';
+import { generatePDF } from '@/utils/pdfGenerator';
+import CTASection from "@/components/CTASection";
 
 interface SwotActionPlanProps {
   swotData: SwotData;
@@ -16,6 +19,7 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
   const [actionPlan, setActionPlan] = useState<Record<string, string[]>>({});
   const [generating, setGenerating] = useState(false);
   const [isUsingAI, setIsUsingAI] = useState(false);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   // Generate action plan based on SWOT data
   useEffect(() => {
@@ -238,51 +242,24 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
     }
   };
 
-  // Handle "Download Plan" button click
+  // Handle "Download Plan" button click to generate PDF
   const handleDownloadPlan = () => {
     try {
-      // Create a text version of the action plan
-      let planText = "PLANO DE AÇÃO BASEADO NA ANÁLISE SWOT\n\n";
-      
-      planText += "ESTRATÉGIAS SO (FORÇAS + OPORTUNIDADES):\n";
-      actionPlan.strengthsOpportunities.forEach(strategy => {
-        planText += `- ${strategy}\n`;
-      });
-      
-      planText += "\nESTRATÉGIAS ST (FORÇAS + AMEAÇAS):\n";
-      actionPlan.strengthsThreats.forEach(strategy => {
-        planText += `- ${strategy}\n`;
-      });
-      
-      planText += "\nESTRATÉGIAS WO (FRAQUEZAS + OPORTUNIDADES):\n";
-      actionPlan.weaknessesOpportunities.forEach(strategy => {
-        planText += `- ${strategy}\n`;
-      });
-      
-      planText += "\nESTRATÉGIAS WT (FRAQUEZAS + AMEAÇAS):\n";
-      actionPlan.weaknessesThreats.forEach(strategy => {
-        planText += `- ${strategy}\n`;
-      });
-      
-      // Create and download a text file
-      const element = document.createElement("a");
-      const file = new Blob([planText], {type: 'text/plain'});
-      element.href = URL.createObjectURL(file);
-      element.download = "plano_acao_swot.txt";
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-      
-      toast({
-        title: "Plano de ação baixado",
-        description: "O arquivo foi salvo na sua pasta de downloads",
-      });
+      if (pdfRef.current) {
+        // Use the PDF generator utility to create and download the PDF
+        generatePDF(pdfRef.current, "plano_acao_swot.pdf");
+        
+        toast({
+          title: "PDF gerado com sucesso",
+          description: "O plano de ação SWOT foi baixado em formato PDF",
+        });
+      }
     } catch (error) {
-      console.error("Error downloading action plan:", error);
+      console.error("Error generating PDF:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao baixar",
-        description: "Não foi possível baixar o plano de ação",
+        title: "Erro ao gerar PDF",
+        description: "Não foi possível gerar o PDF do plano de ação",
       });
     }
   };
@@ -293,114 +270,230 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
   }
 
   return (
-    <Card className="mt-8">
-      <CardHeader className="bg-gradient-to-r from-gray-100 to-gray-50">
-        <CardTitle className="text-xl text-gray-800 flex justify-between items-center">
-          <span>Plano de Ação baseado na sua análise SWOT</span>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="flex items-center gap-2" 
-              onClick={handleRegenerateActionPlan}
-              disabled={generating}
-            >
-              <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
-              {generating ? 'Gerando...' : 'Regenerar'}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="flex items-center gap-2" 
-              onClick={handleDownloadPlan}
-            >
-              <Download className="h-4 w-4" />
-              Baixar plano
-            </Button>
+    <>
+      <Card className="mt-8">
+        <CardHeader className="bg-gradient-to-r from-gray-100 to-gray-50">
+          <CardTitle className="text-xl text-gray-800 flex justify-between items-center">
+            <span>Plano de Ação baseado na sua análise SWOT</span>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-2" 
+                onClick={handleRegenerateActionPlan}
+                disabled={generating}
+              >
+                <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
+                {generating ? 'Gerando...' : 'Regenerar'}
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-2" 
+                onClick={handleDownloadPlan}
+              >
+                <Download className="h-4 w-4" />
+                Baixar PDF
+              </Button>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          {generating ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                <p className="text-gray-600">Gerando plano de ação detalhado...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* SO Strategies */}
+              {actionPlan.strengthsOpportunities && actionPlan.strengthsOpportunities.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias SO (Forças + Oportunidades)</h3>
+                  <p className="text-sm text-gray-600 italic mb-3">
+                    Ações para usar suas forças para aproveitar oportunidades
+                  </p>
+                  <ul className="space-y-2">
+                    {actionPlan.strengthsOpportunities?.map((strategy, index) => (
+                      <li key={`so-${index}`} className="bg-green-50 border border-green-100 p-3 rounded-md text-gray-700">
+                        {strategy}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* ST Strategies */}
+              {actionPlan.strengthsThreats && actionPlan.strengthsThreats.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias ST (Forças + Ameaças)</h3>
+                  <p className="text-sm text-gray-600 italic mb-3">
+                    Ações para usar suas forças para reduzir o impacto das ameaças
+                  </p>
+                  <ul className="space-y-2">
+                    {actionPlan.strengthsThreats?.map((strategy, index) => (
+                      <li key={`st-${index}`} className="bg-yellow-50 border border-yellow-100 p-3 rounded-md text-gray-700">
+                        {strategy}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {/* WO Strategies */}
+              {actionPlan.weaknessesOpportunities && actionPlan.weaknessesOpportunities.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WO (Fraquezas + Oportunidades)</h3>
+                  <p className="text-sm text-gray-600 italic mb-3">
+                    Ações para superar fraquezas aproveitando oportunidades
+                  </p>
+                  <ul className="space-y-2">
+                    {actionPlan.weaknessesOpportunities?.map((strategy, index) => (
+                      <li key={`wo-${index}`} className="bg-blue-50 border border-blue-100 p-3 rounded-md text-gray-700">
+                        {strategy}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {/* WT Strategies */}
+              {actionPlan.weaknessesThreats && actionPlan.weaknessesThreats.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WT (Fraquezas + Ameaças)</h3>
+                  <p className="text-sm text-gray-600 italic mb-3">
+                    Ações para minimizar fraquezas e evitar ameaças
+                  </p>
+                  <ul className="space-y-2">
+                    {actionPlan.weaknessesThreats?.map((strategy, index) => (
+                      <li key={`wt-${index}`} className="bg-red-50 border border-red-100 p-3 rounded-md text-gray-700">
+                        {strategy}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Hidden element for PDF generation */}
+      <div className="hidden">
+        <div ref={pdfRef} className="swot-pdf-container p-8 bg-white">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-gray-800">Plano de Ação SWOT</h1>
+            <p className="text-sm text-gray-600 mt-1">Baseado na sua análise SWOT</p>
           </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-6">
-        {generating ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mx-auto mb-4"></div>
-              <p className="text-gray-600">Gerando plano de ação detalhado...</p>
+          
+          {/* SO Strategies */}
+          {actionPlan.strengthsOpportunities && actionPlan.strengthsOpportunities.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-800 mb-2 bg-green-50 p-2">Estratégias SO (Forças + Oportunidades)</h2>
+              <p className="text-sm text-gray-600 italic mb-3">
+                Ações para usar suas forças para aproveitar oportunidades
+              </p>
+              <ul className="space-y-1">
+                {actionPlan.strengthsOpportunities?.map((strategy, index) => (
+                  <li key={`pdf-so-${index}`} className="p-2 text-gray-700">
+                    • {strategy}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* ST Strategies */}
+          {actionPlan.strengthsThreats && actionPlan.strengthsThreats.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-800 mb-2 bg-yellow-50 p-2">Estratégias ST (Forças + Ameaças)</h2>
+              <p className="text-sm text-gray-600 italic mb-3">
+                Ações para usar suas forças para reduzir o impacto das ameaças
+              </p>
+              <ul className="space-y-1">
+                {actionPlan.strengthsThreats?.map((strategy, index) => (
+                  <li key={`pdf-st-${index}`} className="p-2 text-gray-700">
+                    • {strategy}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* WO Strategies */}
+          {actionPlan.weaknessesOpportunities && actionPlan.weaknessesOpportunities.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-800 mb-2 bg-blue-50 p-2">Estratégias WO (Fraquezas + Oportunidades)</h2>
+              <p className="text-sm text-gray-600 italic mb-3">
+                Ações para superar fraquezas aproveitando oportunidades
+              </p>
+              <ul className="space-y-1">
+                {actionPlan.weaknessesOpportunities?.map((strategy, index) => (
+                  <li key={`pdf-wo-${index}`} className="p-2 text-gray-700">
+                    • {strategy}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* WT Strategies */}
+          {actionPlan.weaknessesThreats && actionPlan.weaknessesThreats.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-800 mb-2 bg-red-50 p-2">Estratégias WT (Fraquezas + Ameaças)</h2>
+              <p className="text-sm text-gray-600 italic mb-3">
+                Ações para minimizar fraquezas e evitar ameaças
+              </p>
+              <ul className="space-y-1">
+                {actionPlan.weaknessesThreats?.map((strategy, index) => (
+                  <li key={`pdf-wt-${index}`} className="p-2 text-gray-700">
+                    • {strategy}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {/* CTA Section in PDF */}
+          <div className="mt-12 border-t pt-6">
+            <div className="flex flex-col md:flex-row items-center gap-6 bg-gray-50 rounded-lg p-6">
+              <img 
+                src="/lovable-uploads/eefe48b8-a593-4c67-bc73-6a207ae52ace.png" 
+                alt="Transformação de negócio" 
+                className="w-full md:w-1/3 rounded-lg" 
+              />
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Transforme sua empresa em uma máquina de vendas</h2>
+                <p className="mt-2 text-gray-700">
+                  Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
+                </p>
+                <p className="mt-4 text-gray-700">
+                  Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
+                </p>
+                <a 
+                  href="https://soumanoelsantos.com.br" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="mt-6 inline-block py-3 px-6 bg-yellow-500 text-gray-900 font-medium rounded-md no-underline hover:bg-yellow-600 transition-colors"
+                >
+                  Agendar diagnóstico gratuito
+                </a>
+                <p className="mt-2 text-sm text-gray-600">
+                  Clique acima e agende agora – As vagas são limitadas!
+                </p>
+              </div>
             </div>
           </div>
-        ) : (
-          <div className="space-y-6">
-            {/* SO Strategies */}
-            {actionPlan.strengthsOpportunities && actionPlan.strengthsOpportunities.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias SO (Forças + Oportunidades)</h3>
-                <p className="text-sm text-gray-600 italic mb-3">
-                  Ações para usar suas forças para aproveitar oportunidades
-                </p>
-                <ul className="space-y-2">
-                  {actionPlan.strengthsOpportunities?.map((strategy, index) => (
-                    <li key={`so-${index}`} className="bg-green-50 border border-green-100 p-3 rounded-md text-gray-700">
-                      {strategy}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* ST Strategies */}
-            {actionPlan.strengthsThreats && actionPlan.strengthsThreats.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias ST (Forças + Ameaças)</h3>
-                <p className="text-sm text-gray-600 italic mb-3">
-                  Ações para usar suas forças para reduzir o impacto das ameaças
-                </p>
-                <ul className="space-y-2">
-                  {actionPlan.strengthsThreats?.map((strategy, index) => (
-                    <li key={`st-${index}`} className="bg-yellow-50 border border-yellow-100 p-3 rounded-md text-gray-700">
-                      {strategy}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {/* WO Strategies */}
-            {actionPlan.weaknessesOpportunities && actionPlan.weaknessesOpportunities.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WO (Fraquezas + Oportunidades)</h3>
-                <p className="text-sm text-gray-600 italic mb-3">
-                  Ações para superar fraquezas aproveitando oportunidades
-                </p>
-                <ul className="space-y-2">
-                  {actionPlan.weaknessesOpportunities?.map((strategy, index) => (
-                    <li key={`wo-${index}`} className="bg-blue-50 border border-blue-100 p-3 rounded-md text-gray-700">
-                      {strategy}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {/* WT Strategies */}
-            {actionPlan.weaknessesThreats && actionPlan.weaknessesThreats.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WT (Fraquezas + Ameaças)</h3>
-                <p className="text-sm text-gray-600 italic mb-3">
-                  Ações para minimizar fraquezas e evitar ameaças
-                </p>
-                <ul className="space-y-2">
-                  {actionPlan.weaknessesThreats?.map((strategy, index) => (
-                    <li key={`wt-${index}`} className="bg-red-50 border border-red-100 p-3 rounded-md text-gray-700">
-                      {strategy}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+      
+      {/* CTA Section displayed in the page */}
+      <div className="mt-12">
+        <CTASection source="analise_swot" />
+      </div>
+    </>
   );
 };
 
