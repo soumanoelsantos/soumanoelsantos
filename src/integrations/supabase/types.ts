@@ -508,6 +508,7 @@ export type Database = {
           created_at: string
           crm_data: Json | null
           id: string
+          mapa_equipe: Json | null
           puv_data: Json | null
           swot_data: Json | null
           updated_at: string
@@ -519,6 +520,7 @@ export type Database = {
           created_at?: string
           crm_data?: Json | null
           id?: string
+          mapa_equipe?: Json | null
           puv_data?: Json | null
           swot_data?: Json | null
           updated_at?: string
@@ -530,6 +532,7 @@ export type Database = {
           created_at?: string
           crm_data?: Json | null
           id?: string
+          mapa_equipe?: Json | null
           puv_data?: Json | null
           swot_data?: Json | null
           updated_at?: string
