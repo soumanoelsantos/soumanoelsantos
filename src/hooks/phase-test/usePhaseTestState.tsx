@@ -56,7 +56,10 @@ export const usePhaseTestState = () => {
           let answersData: PhaseAnswer[] = [];
           if (data.answers) {
             try {
-              answersData = JSON.parse(data.answers);
+              // Use JSON.parse() only if data.answers is a string, otherwise assume it's already parsed
+              answersData = typeof data.answers === 'string' 
+                ? JSON.parse(data.answers) 
+                : data.answers;
             } catch (e) {
               console.error("Error parsing answers:", e);
             }
