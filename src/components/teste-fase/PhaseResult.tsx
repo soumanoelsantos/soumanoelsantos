@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"; 
-import { Download, RefreshCw, Info, Loader2 } from "lucide-react";
+import { Download, RefreshCw, Info, Loader2, FileEdit } from "lucide-react";
 import { PhaseTestResult } from "../../types/phaseTest";
 import { useAuth } from "@/hooks/useAuth";
 import PhaseInfo from "./PhaseInfo";
@@ -23,9 +23,10 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
   const {
     isGeneratingPlan,
     showEnhancedPlan,
+    setShowEnhancedPlan,
+    enhancedActionPlan,
     handleGenerateActionPlan,
-    handleRegenerateActionPlan,
-    enhancedActionPlan
+    handleRegenerateActionPlan
   } = usePhaseActionPlan(userId, result);
   
   if (!result) return null;
@@ -80,6 +81,7 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
                         size="sm"
                         className="flex items-center gap-1"
                         onClick={handleRegenerateActionPlan}
+                        disabled={isGeneratingPlan}
                       >
                         <RefreshCw className="h-4 w-4" />
                         <span>Regenerar Plano</span>
@@ -101,7 +103,7 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
                   </p>
                   <ActionButton 
                     variant="secondary"
-                    icon={Info}
+                    icon={FileEdit}
                     onClick={handleGenerateActionPlan}
                     disabled={isGeneratingPlan}
                   >
