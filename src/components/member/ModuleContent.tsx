@@ -2,7 +2,6 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import ModuleLessonItem from "./ModuleLessonItem";
-import ModuleTagsList from "./ModuleTagsList";
 
 interface ModuleContentProps {
   module: {
@@ -17,6 +16,7 @@ interface ModuleContentProps {
       url: string;
       isWhatsapp: boolean;
       dataKey?: string;
+      benefit?: string;
     }[];
   };
   completedTools: Record<string, boolean>;

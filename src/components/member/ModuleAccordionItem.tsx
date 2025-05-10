@@ -17,6 +17,7 @@ interface ModuleAccordionItemProps {
       url: string;
       isWhatsapp: boolean;
       dataKey?: string;
+      benefit?: string;
     }[];
   };
   completedTools: Record<string, boolean>;

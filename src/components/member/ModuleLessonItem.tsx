@@ -2,8 +2,9 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCheck } from "lucide-react";
+import { CheckCheck, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ModuleLessonItemProps {
   lesson: {
@@ -12,6 +13,7 @@ interface ModuleLessonItemProps {
     url: string;
     isWhatsapp: boolean;
     dataKey?: string;
+    benefit?: string;
   };
   isModuleBlocked: boolean;
   completedTools: Record<string, boolean>;
@@ -56,22 +58,44 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
       className={`p-3 rounded-md border border-dark-primary/10 
       ${isModuleBlocked ? 'opacity-50' : 'bg-gray-50'}`}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
-          {renderCompletionStatus()}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
+            {renderCompletionStatus()}
+            {lesson.benefit && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 p-0">
+                      <HelpCircle className="h-4 w-4 text-gray-500" />
+                      <span className="sr-only">Ver benefício</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="max-w-[250px] bg-white">
+                    <p className="text-sm">{lesson.benefit}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+          <Button 
+            size="sm" 
+            variant={isModuleBlocked ? "outline" : "default"}
+            className={isModuleBlocked 
+              ? "cursor-not-allowed border-dark-primary/20 text-gray-400" 
+              : "bg-dark-primary hover:bg-dark-primary/90 text-white"}
+            disabled={isModuleBlocked}
+            onClick={handleClickLesson}
+          >
+            {isModuleBlocked ? "Bloqueado" : "Acessar"}
+          </Button>
         </div>
-        <Button 
-          size="sm" 
-          variant={isModuleBlocked ? "outline" : "default"}
-          className={isModuleBlocked 
-            ? "cursor-not-allowed border-dark-primary/20 text-gray-400" 
-            : "bg-dark-primary hover:bg-dark-primary/90 text-white"}
-          disabled={isModuleBlocked}
-          onClick={handleClickLesson}
-        >
-          {isModuleBlocked ? "Bloqueado" : "Acessar"}
-        </Button>
+        {lesson.benefit && (
+          <p className="text-xs text-gray-600 italic pl-1">
+            <span className="font-medium">Benefício:</span> {lesson.benefit}
+          </p>
+        )}
       </div>
     </li>
   );

@@ -19,6 +19,15 @@ const MentorshipCard: React.FC = () => {
         <p className="text-gray-700 mb-4">
           As mentorias individuais são realizadas semanalmente e são fundamentais para o seu sucesso no programa.
         </p>
+        <div className="bg-gray-50 p-3 rounded-md border border-dark-primary/10 mb-4">
+          <p className="text-sm text-gray-700 font-medium">Benefícios da mentoria individual:</p>
+          <ul className="list-disc pl-5 mt-2 text-sm text-gray-600 space-y-1">
+            <li>Orientação personalizada para as necessidades específicas do seu negócio</li>
+            <li>Resolução de problemas em tempo real com feedback imediato</li>
+            <li>Aceleração dos resultados através de estratégias direcionadas</li>
+            <li>Acesso a conhecimento especializado e experiência prática</li>
+          </ul>
+        </div>
       </CardContent>
       <CardFooter className={isMobile ? "px-4 pb-4" : ""}>
         <LeadCaptureForm 
