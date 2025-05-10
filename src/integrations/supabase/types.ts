@@ -112,6 +112,7 @@ export type Database = {
       }
       fase_results: {
         Row: {
+          answers: Json | null
           created_at: string
           description: string | null
           enhanced_action_plan: string[] | null
@@ -123,6 +124,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          answers?: Json | null
           created_at?: string
           description?: string | null
           enhanced_action_plan?: string[] | null
@@ -134,6 +136,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          answers?: Json | null
           created_at?: string
           description?: string | null
           enhanced_action_plan?: string[] | null
