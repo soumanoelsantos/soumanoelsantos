@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { MapaEquipeData } from '@/types/mapaEquipe';
 import { Json } from '@/integrations/supabase/types';
+import { isDiagnosticComplete } from './diagnosticUtils';
 
 // Check if specific tools have been completed by a user
 export const checkUserToolCompletion = async (userId: string, toolKeys: string[]): Promise<Record<string, boolean>> => {
@@ -10,6 +11,17 @@ export const checkUserToolCompletion = async (userId: string, toolKeys: string[]
 
     if (!userId) {
       return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+    }
+
+    // Verify if diagnostic_results is one of the requested tools
+    if (toolKeys.includes('diagnostic_results')) {
+      result['diagnostic_results'] = await isDiagnosticComplete(userId);
+      // Filter out diagnostic_results from toolKeys to avoid processing it again
+      toolKeys = toolKeys.filter(key => key !== 'diagnostic_results');
+    }
+
+    if (toolKeys.length === 0) {
+      return result;
     }
 
     // Get the user's tools data
@@ -21,11 +33,11 @@ export const checkUserToolCompletion = async (userId: string, toolKeys: string[]
     
     if (error) {
       console.error('Error checking tool completion:', error);
-      return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+      return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), result);
     }
 
     if (!data) {
-      return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+      return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), result);
     }
 
     // Check each requested tool

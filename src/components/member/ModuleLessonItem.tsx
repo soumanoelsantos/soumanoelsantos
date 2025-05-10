@@ -1,7 +1,7 @@
 
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -44,15 +44,23 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
     }
   };
 
+  // Check if this lesson is completed
+  const isCompleted = lesson.dataKey ? completedTools[lesson.dataKey] : false;
+
   return (
     <li 
-      className={`p-3 rounded-md border border-dark-primary/10 
-      ${isModuleBlocked ? 'opacity-50' : 'bg-gray-50'}`}
+      className={`p-3 rounded-md border ${isCompleted ? 'border-green-500/30' : 'border-dark-primary/10'} 
+      ${isModuleBlocked ? 'opacity-50' : isCompleted ? 'bg-green-50' : 'bg-gray-50'}`}
     >
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center flex-wrap">
-            <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
+            <div className="flex items-center">
+              {isCompleted && (
+                <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              )}
+              <h4 className="text-gray-800 font-medium">{lesson.title}</h4>
+            </div>
             {lesson.benefit && (
               <TooltipProvider>
                 <Tooltip>
@@ -71,14 +79,16 @@ const ModuleLessonItem: React.FC<ModuleLessonItemProps> = ({
           </div>
           <Button 
             size="sm" 
-            variant={isModuleBlocked ? "outline" : "default"}
+            variant={isModuleBlocked ? "outline" : isCompleted ? "outline" : "default"}
             className={isModuleBlocked 
               ? "cursor-not-allowed border-dark-primary/20 text-gray-400" 
-              : "bg-dark-primary hover:bg-dark-primary/90 text-white"}
+              : isCompleted
+                ? "border-green-500 text-green-600 hover:bg-green-50"
+                : "bg-dark-primary hover:bg-dark-primary/90 text-white"}
             disabled={isModuleBlocked}
             onClick={handleClickLesson}
           >
-            {isModuleBlocked ? "Bloqueado" : "Acessar"}
+            {isModuleBlocked ? "Bloqueado" : isCompleted ? "Ver diagnóstico" : "Acessar"}
           </Button>
         </div>
         {lesson.benefit && (

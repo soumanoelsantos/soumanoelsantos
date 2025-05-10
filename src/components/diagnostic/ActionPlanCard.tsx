@@ -39,6 +39,26 @@ const ActionPlanCard = ({ actionPlan, answersData }: ActionPlanCardProps) => {
     }
   };
 
+  // Check if action plan has content
+  const hasPlanContent = actionPlan && 
+                        Object.keys(actionPlan).length > 0 && 
+                        Object.values(actionPlan).some(items => items && items.length > 0);
+
+  if (!hasPlanContent) {
+    return (
+      <Card className="bg-white border-dark-primary/20">
+        <CardHeader className="bg-[#1d365c] text-white card-header">
+          <CardTitle className="text-xl text-center text-white">Plano de Ação</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="text-center py-8">
+            <p className="text-gray-600">Não foi possível gerar um plano de ação. Por favor, tente realizar o diagnóstico novamente.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="bg-white border-dark-primary/20">
       <CardHeader className="bg-[#1d365c] text-white card-header">
@@ -54,9 +74,13 @@ const ActionPlanCard = ({ actionPlan, answersData }: ActionPlanCardProps) => {
                  key === 'sistemaGestao' ? 'SISTEMA DE GESTÃO' : 'PESSOAS'}
               </h3>
               <ul className="list-disc list-inside space-y-1 pdf-action-items">
-                {Array.isArray(actions) && actions.map((action, index) => (
-                  <li key={index} className="text-gray-800">{action}</li>
-                ))}
+                {Array.isArray(actions) && actions.length > 0 ? (
+                  actions.map((action, index) => (
+                    <li key={index} className="text-gray-800">{action}</li>
+                  ))
+                ) : (
+                  <li className="text-gray-500 italic">Nenhuma ação definida para esta área.</li>
+                )}
               </ul>
             </div>
           ))}
