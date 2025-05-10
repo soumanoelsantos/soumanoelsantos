@@ -30,6 +30,7 @@ export const useDiagnostic = () => {
   const {
     actionPlan,
     isGeneratingPlan,
+    regenerateActionPlan,
     setActionPlan
   } = useActionPlanGeneration(
     userId,

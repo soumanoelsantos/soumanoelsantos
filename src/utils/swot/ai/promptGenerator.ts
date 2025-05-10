@@ -61,8 +61,40 @@ export const generateSwotPrompt = (swotData: any) => {
     if (info.goals) prompt += `Objetivos para os próximos 12 meses: ${info.goals}\n`;
   }
   
+  // Check if detailed flag is set
+  const isDetailed = swotData.detailed === true;
+  
   // Detailed instructions for the AI
-  prompt += `\nCrie um plano de ação detalhado dividido em 4 tipos de estratégias:
+  if (isDetailed) {
+    // Request even more detailed and implementation-focused action plan
+    prompt += `\nCrie um plano de ação EXTREMAMENTE detalhado e implementável dividido em 4 tipos de estratégias:
+  
+1. Estratégias SO (Forças + Oportunidades): Como usar os pontos fortes para aproveitar as oportunidades
+2. Estratégias ST (Forças + Ameaças): Como usar os pontos fortes para minimizar as ameaças
+3. Estratégias WO (Fraquezas + Oportunidades): Como superar os pontos fracos aproveitando as oportunidades
+4. Estratégias WT (Fraquezas + Ameaças): Como minimizar os pontos fracos e evitar as ameaças
+
+Para cada tipo de estratégia, inclua pelo menos 4-7 ações PRÁTICAS, ESPECÍFICAS e DETALHADAS que podem ser implementadas imediatamente.
+CADA ação deve seguir o formato SMART:
+- Específico: Descreva exatamente o que precisa ser feito, em detalhes
+- Mensurável: Como medir o sucesso dessa ação
+- Atingível: Recursos necessários para implementar essa ação
+- Relevante: Por que essa ação é importante e como ela se conecta à estratégia geral
+- Temporal: Cronograma de implementação com prazos específicos
+
+Para cada ação, responda estas perguntas:
+1. O que precisa ser feito em detalhes práticos?
+2. Quem deve ser responsável por essa tarefa?
+3. Quais recursos (tempo, dinheiro, pessoas) serão necessários?
+4. Como medir o sucesso dessa ação específica?
+5. Quando deve ser implementada e concluída?
+6. Quais são os riscos ou desafios potenciais na implementação?
+7. Quais são os benefícios esperados após a implementação?
+
+Seja extremamente prático, específico e detalhado. ÉVITE GENERALIZAÇÕES.`;
+  } else {
+    // Standard instructions
+    prompt += `\nCrie um plano de ação detalhado dividido em 4 tipos de estratégias:
   
 1. Estratégias SO (Forças + Oportunidades): Como usar os pontos fortes para aproveitar as oportunidades
 2. Estratégias ST (Forças + Ameaças): Como usar os pontos fortes para minimizar as ameaças
@@ -71,9 +103,11 @@ export const generateSwotPrompt = (swotData: any) => {
 
 Para cada tipo de estratégia, inclua pelo menos 3-5 ações PRÁTICAS e ESPECÍFICAS que podem ser implementadas imediatamente.
 Cada ação deve ser clara, prática, e diretamente relacionada aos pontos da análise SWOT e às informações da empresa fornecidas.
-Certifique-se de personalizar as recomendações com base no setor da empresa, produtos, público-alvo e desafios mencionados.
-
-Formate sua resposta como um objeto JSON com estas quatro chaves:
+Certifique-se de personalizar as recomendações com base no setor da empresa, produtos, público-alvo e desafios mencionados.`;
+  }
+  
+  // Format response as JSON
+  prompt += `\n\nFormate sua resposta como um objeto JSON com estas quatro chaves:
 - "strengthsOpportunities": array de ações para estratégias SO
 - "strengthsThreats": array de ações para estratégias ST  
 - "weaknessesOpportunities": array de ações para estratégias WO

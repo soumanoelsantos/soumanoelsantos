@@ -9,7 +9,7 @@ import { AnswersDataType } from '@/types/diagnostic';
 import CTASection from '../CTASection';
 import { useDiagnostic } from '@/hooks/useDiagnostic';
 import ActionButton from '../ui/action-button';
-import { FileEdit } from 'lucide-react';
+import { FileEdit, Loader2 } from 'lucide-react';
 
 interface DiagnosticResultsProps {
   results: {
@@ -26,7 +26,7 @@ interface DiagnosticResultsProps {
 }
 
 const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: DiagnosticResultsProps) => {
-  const { resetDiagnostic, regenerateActionPlan } = useDiagnostic();
+  const { resetDiagnostic, regenerateActionPlan, isGeneratingPlan } = useDiagnostic();
 
   const handleReset = () => {
     // Pass the reset function from useDiagnostic hook
@@ -51,9 +51,16 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
           <ActionButton 
             onClick={regenerateActionPlan} 
             variant="primary"
-            icon={FileEdit}
+            icon={isGeneratingPlan ? Loader2 : FileEdit}
+            disabled={isGeneratingPlan}
           >
-            Criar Plano de Ação Personalizado
+            {isGeneratingPlan ? (
+              <span className="flex items-center gap-2">
+                Criando Plano de Ação... <span className="animate-pulse">Analisando Dados</span>
+              </span>
+            ) : (
+              "Criar Plano de Ação Personalizado"
+            )}
           </ActionButton>
         </div>
       )}

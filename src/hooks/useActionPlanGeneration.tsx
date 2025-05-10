@@ -27,10 +27,11 @@ export const useActionPlanGeneration = (
         setIsGeneratingPlan(true);
         
         try {
-          console.log("Generating action plan with answersData:", answersData);
+          console.log("Generating detailed action plan with answersData:", answersData);
           
-          const plan = await generateActionPlan(answersData);
-          console.log("Generated action plan:", plan);
+          // Generate the detailed action plan
+          const plan = await generateActionPlan(answersData, true); // Added parameter to request detailed plan
+          console.log("Generated detailed action plan:", plan);
           
           if (plan && Object.keys(plan).length > 0) {
             // Make sure we're setting an object with string arrays as values
@@ -56,7 +57,7 @@ export const useActionPlanGeneration = (
                   answersData,
                   formattedPlan
                 );
-                console.log("Action plan saved to Supabase");
+                console.log("Detailed action plan saved to Supabase");
               } catch (error) {
                 console.error("Erro ao salvar plano de ação:", error);
               }
@@ -64,13 +65,13 @@ export const useActionPlanGeneration = (
             
             toast({
               title: "Plano de ação gerado!",
-              description: "O plano personalizado foi gerado com base nas suas respostas.",
+              description: "O plano personalizado detalhado foi gerado com base nas suas respostas.",
             });
           } else {
             throw new Error("Plano de ação vazio ou inválido");
           }
         } catch (error) {
-          console.error("Error generating action plan:", error);
+          console.error("Error generating detailed action plan:", error);
           toast({
             variant: "destructive",
             title: "Erro ao gerar plano de ação",
@@ -91,8 +92,8 @@ export const useActionPlanGeneration = (
   const regenerateActionPlan = () => {
     setShouldGeneratePlan(true);
     toast({
-      title: "Regenerando plano de ação",
-      description: "Aguarde enquanto geramos um novo plano personalizado...",
+      title: "Gerando plano de ação",
+      description: "Aguarde enquanto geramos um novo plano personalizado baseado nas suas respostas...",
     });
   };
 
