@@ -146,18 +146,11 @@ export const deleteDiagnosticFromSupabase = async (userId: string) => {
   } catch (error) {
     console.error("Error deleting diagnostic:", error);
     
-    // Failsafe attempt - try a different approach
-    try {
-      const { error: secondError } = await supabase.rpc('delete_user_diagnostic', { 
-        user_id_param: userId 
-      });
-      
-      if (secondError) throw secondError;
-      return true;
-    } catch (secondAttemptError) {
-      console.error("Second attempt error:", secondAttemptError);
-      throw error; // Throw the original error
-    }
+    // Remove the RPC call that's causing the error
+    // Since we're already trying to delete via direct table access,
+    // we don't need this secondary approach
+    console.error("Failed to delete diagnostic results:", error);
+    throw error;
   }
 };
 

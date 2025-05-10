@@ -106,18 +106,24 @@ export const useDiagnostic = () => {
       try {
         console.log("Attempting to delete diagnostic results for user:", userId);
         
-        // First, try direct deletion
-        const { error } = await supabase
-          .from("diagnostic_results")
-          .delete()
-          .eq("user_id", userId);
-        
-        if (error) {
-          console.error("Direct deletion error:", error);
-          // Try using the utility function as fallback
+        try {
+          // Try to delete using our utility function
           await deleteDiagnosticFromSupabase(userId);
-        } else {
-          console.log("Diagnostic deletion successful");
+          console.log("Diagnostic deletion via utility function successful");
+        } catch (utilError) {
+          console.error("Deletion via utility function failed, trying direct deletion:", utilError);
+          
+          // Fallback: direct deletion
+          const { error } = await supabase
+            .from("diagnostic_results")
+            .delete()
+            .eq("user_id", userId);
+            
+          if (error) {
+            throw error;
+          } else {
+            console.log("Direct diagnostic deletion successful");
+          }
         }
         
         toast({
@@ -126,6 +132,9 @@ export const useDiagnostic = () => {
         });
       } catch (error) {
         console.error("Error deleting diagnostic results:", error);
+        
+        // Even if database deletion failed, we've already reset the local state
+        // So inform the user they can still proceed but with a warning
         toast({
           variant: "destructive",
           title: "Erro ao excluir resultados anteriores",
