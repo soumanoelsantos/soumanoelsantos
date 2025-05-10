@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"; 
-import { Download, RefreshCw, Info, Loader2, FileEdit } from "lucide-react";
+import { Download, RefreshCw, Loader2, FileEdit } from "lucide-react";
 import { PhaseTestResult } from "../../types/phaseTest";
 import { useAuth } from "@/hooks/useAuth";
 import PhaseInfo from "./PhaseInfo";
@@ -106,6 +106,7 @@ const PhaseResult = ({ result, onResetTest }: PhaseResultProps) => {
                     icon={FileEdit}
                     onClick={handleGenerateActionPlan}
                     disabled={isGeneratingPlan}
+                    className="text-white"
                   >
                     Gerar Plano de Ação Personalizado
                   </ActionButton>

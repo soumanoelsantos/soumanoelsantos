@@ -104,7 +104,7 @@ const DiagnosticSections = ({
         <Button 
           onClick={handleSubmit} 
           disabled={!isFormComplete()}
-          className="bg-[#1d365c] hover:bg-[#152a49]"
+          className="bg-[#1d365c] hover:bg-[#152a49] text-white" 
         >
           Finalizar e Ver Resultados
         </Button>

@@ -14,6 +14,7 @@ const FormActions = ({ onPreviewClick }: FormActionsProps) => {
         onClick={onPreviewClick}
         variant="secondary"
         icon={Eye}
+        className="text-white"
       >
         Visualizar Mapa do Negócio
       </ActionButton>

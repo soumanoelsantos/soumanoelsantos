@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ActionButton from "@/components/ui/action-button";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Nome precisa ter no mínimo 2 caracteres" }),
@@ -24,6 +25,8 @@ interface LeadCaptureFormProps {
   source?: string;
   buttonText?: React.ReactNode;
   buttonClassName?: string;
+  useActionButton?: boolean;
+  variant?: "primary" | "secondary" | "outline" | "destructive";
   onSuccess?: () => void;
 }
 
@@ -31,6 +34,8 @@ const LeadCaptureForm = ({
   source = "website", 
   buttonText = "Agendar diagnóstico gratuito", 
   buttonClassName = "",
+  useActionButton = false,
+  variant = "primary",
   onSuccess 
 }: LeadCaptureFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,10 +103,23 @@ const LeadCaptureForm = ({
     }
   };
 
+  const buttonElement = useActionButton ? (
+    <ActionButton 
+      variant={variant} 
+      className={buttonClassName}
+    >
+      {buttonText}
+    </ActionButton>
+  ) : (
+    <Button className={buttonClassName}>
+      {buttonText}
+    </Button>
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className={buttonClassName}>{buttonText}</Button>
+        {buttonElement}
       </DialogTrigger>
       <DialogContent className={`${isMobile ? 'w-[calc(100%-16px)] mx-2 max-h-[92vh] overflow-y-auto p-4' : 'sm:max-w-[425px]'}`}>
         <DialogHeader>

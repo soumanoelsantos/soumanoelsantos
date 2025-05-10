@@ -49,6 +49,7 @@ const ChecklistResults: React.FC<ChecklistResultsProps> = ({
           onClick={() => navigate('/membros')}
           variant="secondary"
           icon={ArrowLeft}
+          className="text-white"
         >
           Voltar para Área de Membros
         </ActionButton>
