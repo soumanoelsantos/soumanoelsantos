@@ -47,6 +47,14 @@ export const checkUserToolCompletion = async (userId: string, toolKeys: string[]
               Array.isArray(swotData[quadrant]) && swotData[quadrant].length > 0
             );
         }
+        // For puv_data, check if at least one field has content
+        else if (toolKey === 'puv_data') {
+          const puvData = data[toolKey];
+          isCompleted = puvData && 
+            Object.values(puvData).some(value => 
+              value && typeof value === 'string' && value.trim() !== ''
+            );
+        }
         // For mapa_equipe, check if there are any collaborators
         else if (toolKey === 'mapa_equipe') {
           const mapaEquipeData = data[toolKey];
