@@ -63,24 +63,29 @@ export const generateActionPlan = async (answersData: any, detailed: boolean = f
     
     console.log("Prepared data for AI:", inputData);
     
-    // Set up timeout for API call
+    // Set up timeout for API call - reduced from 30s to 15s to fail faster
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error("Tempo esgotado ao tentar gerar o plano de ação")), 30000)
+      setTimeout(() => reject(new Error("Tempo esgotado ao tentar gerar o plano de ação")), 15000)
     );
     
     // Race the API call against the timeout
-    const enhancedPlan = await Promise.race([
-      generateEnhancedActionPlan(inputData),
-      timeoutPromise
-    ]);
-    
-    // If we got a successful response from the API, use it
-    if (enhancedPlan && Object.keys(enhancedPlan).length > 0) {
-      console.log("Successfully generated enhanced plan:", enhancedPlan);
-      return enhancedPlan;
-    } else {
-      console.log("DeepSeek API returned empty or invalid response, falling back to local generation");
-      throw new Error("API retornou uma resposta vazia ou inválida");
+    try {
+      const enhancedPlan = await Promise.race([
+        generateEnhancedActionPlan(inputData),
+        timeoutPromise
+      ]);
+      
+      // If we got a successful response from the API, use it
+      if (enhancedPlan && Object.keys(enhancedPlan).length > 0) {
+        console.log("Successfully generated enhanced plan:", enhancedPlan);
+        return enhancedPlan;
+      } else {
+        console.log("DeepSeek API returned empty or invalid response, falling back to local generation");
+        throw new Error("API retornou uma resposta vazia ou inválida");
+      }
+    } catch (error) {
+      console.error("Timeout or error with API call:", error);
+      throw error; // Rethrow to trigger the fallback
     }
   } catch (error) {
     console.error("Error with enhanced action plan generation:", error);
@@ -104,14 +109,6 @@ export const generateActionPlan = async (answersData: any, detailed: boolean = f
   };
   
   try {
-    // Extract scores from answers data to calculate percentages for each section
-    const results = {
-      processos: { score: 0, total: 0, percentage: 0 },
-      resultados: { score: 0, total: 0, percentage: 0 },
-      sistemaGestao: { score: 0, total: 0, percentage: 0 },
-      pessoas: { score: 0, total: 0, percentage: 0 }
-    };
-
     // Process each section to generate basic recommendations
     Object.keys(answersData).forEach(section => {
       const sectionData = answersData[section];
@@ -141,7 +138,13 @@ export const generateActionPlan = async (answersData: any, detailed: boolean = f
     return actionPlan;
   } catch (error) {
     console.error("Error generating fallback action plan:", error);
-    throw new Error("Não foi possível gerar o plano de ação mesmo com o método alternativo. Por favor, tente novamente mais tarde.");
+    // Return a simple action plan instead of throwing an error
+    return {
+      processos: ["Desenvolver um plano de melhoria contínua para a área de Processos."],
+      resultados: ["Desenvolver um plano de melhoria contínua para a área de Resultados."],
+      sistemaGestao: ["Desenvolver um plano de melhoria contínua para a área de Sistema de Gestão."],
+      pessoas: ["Desenvolver um plano de melhoria contínua para a área de Pessoas."]
+    };
   }
 };
 

@@ -3,6 +3,8 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import DiagnosticSections from "@/components/diagnostic/DiagnosticSections";
 import { DiagnosticSections as DiagnosticSectionsType } from "@/types/diagnostic";
+import ActionButton from "@/components/ui/action-button";
+import { Loader2 } from "lucide-react";
 
 interface DiagnosticFormProps {
   sections: DiagnosticSectionsType;
@@ -10,6 +12,7 @@ interface DiagnosticFormProps {
   setResults: React.Dispatch<React.SetStateAction<any>>;
   setAnswersData: React.Dispatch<React.SetStateAction<any>>;
   onSubmit: () => void;
+  isSubmitting: boolean;
 }
 
 const DiagnosticForm = ({ 
@@ -17,7 +20,8 @@ const DiagnosticForm = ({
   results, 
   setResults, 
   setAnswersData, 
-  onSubmit 
+  onSubmit,
+  isSubmitting
 }: DiagnosticFormProps) => {
   return (
     <>
@@ -29,13 +33,20 @@ const DiagnosticForm = ({
       />
 
       <div className="flex justify-center mt-8">
-        <Button 
+        <ActionButton 
           onClick={onSubmit} 
-          size="lg" 
-          className="bg-[#1d365c] hover:bg-[#1d365c]/90 text-white"
+          size="lg"
+          variant="secondary"
+          disabled={isSubmitting}
+          icon={isSubmitting ? Loader2 : undefined}
+          className="transition-all"
         >
-          Finalizar e Ver Resultados
-        </Button>
+          {isSubmitting ? (
+            <span>Processando...</span>
+          ) : (
+            <span>Finalizar e Ver Resultados</span>
+          )}
+        </ActionButton>
       </div>
     </>
   );

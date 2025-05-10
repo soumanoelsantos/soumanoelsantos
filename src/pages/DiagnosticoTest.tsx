@@ -18,6 +18,7 @@ const DiagnosticoTest = () => {
     showResults, 
     isLoading, 
     isGeneratingPlan,
+    isSubmitting,
     answersData, 
     setAnswersData, 
     actionPlan, 
@@ -57,6 +58,7 @@ const DiagnosticoTest = () => {
           actionPlan={actionPlan}
           handleSubmit={handleSubmit}
           isGeneratingPlan={isGeneratingPlan}
+          isSubmitting={isSubmitting}
         />
         
         {!showResults && !isGeneratingPlan && (

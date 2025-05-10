@@ -1,13 +1,11 @@
 
-import React, { useRef } from "react";
-import DiagnosticHeader from "@/components/DiagnosticHeader";
-import DiagnosticForm from "@/components/diagnostic/DiagnosticForm";
-import DiagnosticResults from "@/components/diagnostic/DiagnosticResults";
-import { DiagnosticSections as DiagnosticSectionsType } from "@/types/diagnostic";
-import { Loader2 } from "lucide-react";
+import React, { useRef } from 'react';
+import DiagnosticForm from '@/components/diagnostic/DiagnosticForm';
+import DiagnosticResults from '@/components/diagnostic/DiagnosticResults';
+import { Loader2 } from 'lucide-react';
 
 interface DiagnosticTestContentProps {
-  sections: DiagnosticSectionsType;
+  sections: any;
   results: any;
   setResults: React.Dispatch<React.SetStateAction<any>>;
   showResults: boolean;
@@ -15,7 +13,8 @@ interface DiagnosticTestContentProps {
   setAnswersData: React.Dispatch<React.SetStateAction<any>>;
   actionPlan: any;
   handleSubmit: () => void;
-  isGeneratingPlan?: boolean;
+  isGeneratingPlan: boolean;
+  isSubmitting?: boolean;
 }
 
 const DiagnosticTestContent = ({
@@ -27,45 +26,34 @@ const DiagnosticTestContent = ({
   setAnswersData,
   actionPlan,
   handleSubmit,
-  isGeneratingPlan = false
+  isGeneratingPlan,
+  isSubmitting = false
 }: DiagnosticTestContentProps) => {
   const pdfRef = useRef<HTMLDivElement>(null);
 
-  // Only show the loading screen when initially generating results
-  // and NOT when regenerating the action plan on the results page
-  if (isGeneratingPlan && !showResults) {
+  if (showResults) {
     return (
-      <div className="container mx-auto px-4 py-10">
-        <DiagnosticHeader />
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#1d365c]"></div>
-          <p className="mt-4 text-lg text-gray-800">Gerando resultados do diagnóstico...</p>
-          <p className="text-sm text-gray-600">Isso pode levar alguns instantes.</p>
-        </div>
+      <div className="pb-20">
+        <DiagnosticResults
+          results={results}
+          actionPlan={actionPlan}
+          answersData={answersData}
+          pdfRef={pdfRef}
+        />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <DiagnosticHeader />
-      
-      {!showResults ? (
-        <DiagnosticForm 
-          sections={sections}
-          results={results}
-          setResults={setResults}
-          setAnswersData={setAnswersData}
-          onSubmit={handleSubmit}
-        />
-      ) : (
-        <DiagnosticResults 
-          results={results} 
-          actionPlan={actionPlan}
-          answersData={answersData}
-          pdfRef={pdfRef}
-        />
-      )}
+    <div className="pb-20">
+      <DiagnosticForm
+        sections={sections}
+        results={results}
+        setResults={setResults}
+        setAnswersData={setAnswersData}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };

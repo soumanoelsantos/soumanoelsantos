@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -82,9 +81,12 @@ export const useDiagnostic = () => {
   };
 
   const handleSubmit = async () => {
+    // Prevent multiple submissions
+    if (isSubmitting) return;
+    
     setIsSubmitting(true);
-    setShouldGeneratePlan(true);
-
+    setShowResults(false);
+    
     try {
       // Import the diagnostic sections data dynamically to avoid circular dependencies
       const { diagnosticSectionsData } = await import('@/data/diagnosticSections');
@@ -108,7 +110,11 @@ export const useDiagnostic = () => {
         setDiagnosticId(newDiagnosticId);
       }
 
+      // Only show results after saving to database
       setShowResults(true);
+      
+      // Trigger action plan generation after showing results
+      setShouldGeneratePlan(true);
       
     } catch (error) {
       console.error("Erro ao finalizar diagnóstico:", error);
@@ -117,8 +123,14 @@ export const useDiagnostic = () => {
         title: "Erro ao finalizar diagnóstico",
         description: "Não foi possível salvar os resultados. Por favor, tente novamente."
       });
-    } finally {
+      
+      // Reset submission state on error
       setIsSubmitting(false);
+    } finally {
+      // Set submission completed, but keep it true to prevent multiple clicks
+      setTimeout(() => {
+        setIsSubmitting(false);
+      }, 500);
     }
   };
 
