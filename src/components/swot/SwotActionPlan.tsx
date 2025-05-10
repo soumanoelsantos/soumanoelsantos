@@ -1,13 +1,15 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, RefreshCw } from "lucide-react";
 import { SwotData } from "@/types/swot";
 import { useToast } from "@/hooks/use-toast";
-import { generateEnhancedActionPlan } from '@/utils/deepseekApi';
 import { generatePDF } from '@/utils/pdfGenerator';
 import CTASection from "@/components/CTASection";
+import ActionPlanDisplay from './ActionPlanDisplay';
+import SwotPdfPreview from './SwotPdfPreview';
+import { useSwotActionPlan } from '@/hooks/useSwotActionPlan';
 
 interface SwotActionPlanProps {
   swotData: SwotData;
@@ -16,231 +18,13 @@ interface SwotActionPlanProps {
 
 const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) => {
   const { toast } = useToast();
-  const [actionPlan, setActionPlan] = useState<Record<string, string[]>>({});
-  const [generating, setGenerating] = useState(false);
-  const [isUsingAI, setIsUsingAI] = useState(false);
   const pdfRef = useRef<HTMLDivElement>(null);
-
-  // Generate action plan based on SWOT data
-  useEffect(() => {
-    if (!isLoading && hasContent(swotData)) {
-      generateActionPlan(swotData);
-    }
-  }, [swotData, isLoading]);
-
-  // Check if SWOT data has content
-  const hasContent = (data: SwotData): boolean => {
-    return Object.values(data).some(category => 
-      category.some(item => item.text && item.text.trim() !== '')
-    );
-  };
-
-  // Generate action plan based on SWOT analysis
-  const generateActionPlan = async (data: SwotData) => {
-    setGenerating(true);
-    
-    try {
-      // Try to generate an enhanced plan with DeepSeek AI
-      if (!isUsingAI) {
-        const enhancedPlan = await generateEnhancedSwotPlan(data);
-        
-        if (enhancedPlan) {
-          setActionPlan(enhancedPlan);
-          setIsUsingAI(true);
-          setGenerating(false);
-          return;
-        }
-      }
-      
-      // Fallback to basic plan generation
-      const basicPlan = generateBasicActionPlan(data);
-      setActionPlan(basicPlan);
-    } catch (error) {
-      console.error("Error generating action plan:", error);
-      // Fallback to basic plan if AI fails
-      const basicPlan = generateBasicActionPlan(data);
-      setActionPlan(basicPlan);
-    } finally {
-      setGenerating(false);
-    }
-  };
-  
-  // Generate enhanced action plan using DeepSeek AI
-  const generateEnhancedSwotPlan = async (data: SwotData) => {
-    try {
-      const validStrengths = data.strengths.filter(s => s.text && s.text.trim() !== '').map(s => s.text);
-      const validWeaknesses = data.weaknesses.filter(w => w.text && w.text.trim() !== '').map(w => w.text);
-      const validOpportunities = data.opportunities.filter(o => o.text && o.text.trim() !== '').map(o => o.text);
-      const validThreats = data.threats.filter(t => t.text && t.text.trim() !== '').map(t => t.text);
-      
-      // Prepare SWOT data for API
-      const swotForApi = {
-        strengths: validStrengths,
-        weaknesses: validWeaknesses,
-        opportunities: validOpportunities,
-        threats: validThreats
-      };
-      
-      console.log("Sending SWOT data to DeepSeek API:", swotForApi);
-      
-      // Call the DeepSeek API
-      const enhancedPlan = await generateEnhancedActionPlan(swotForApi);
-      
-      if (enhancedPlan) {
-        console.log("Received enhanced action plan:", enhancedPlan);
-        
-        // Restructure the plan to match our expected format
-        const restructuredPlan = {
-          strengthsOpportunities: enhancedPlan.strengthsOpportunities || enhancedPlan.so || [],
-          strengthsThreats: enhancedPlan.strengthsThreats || enhancedPlan.st || [],
-          weaknessesOpportunities: enhancedPlan.weaknessesOpportunities || enhancedPlan.wo || [],
-          weaknessesThreats: enhancedPlan.weaknessesThreats || enhancedPlan.wt || []
-        };
-        
-        return restructuredPlan;
-      }
-      
-      return null;
-    } catch (error) {
-      console.error("Error calling DeepSeek API:", error);
-      return null;
-    }
-  };
-
-  // Generate basic action plan without AI
-  const generateBasicActionPlan = (data: SwotData): Record<string, string[]> => {
-    const plan: Record<string, string[]> = {
-      strengthsOpportunities: [],
-      strengthsThreats: [],
-      weaknessesOpportunities: [],
-      weaknessesThreats: []
-    };
-
-    // Strength + Opportunities (SO strategies)
-    const validStrengths = data.strengths.filter(s => s.text && s.text.trim() !== '').map(s => s.text);
-    const validOpportunities = data.opportunities.filter(o => o.text && o.text.trim() !== '').map(o => o.text);
-    
-    if (validStrengths.length > 0 && validOpportunities.length > 0) {
-      plan.strengthsOpportunities = generateSOStrategies(validStrengths, validOpportunities);
-    }
-
-    // Strength + Threats (ST strategies)
-    const validThreats = data.threats.filter(t => t.text && t.text.trim() !== '').map(t => t.text);
-    if (validStrengths.length > 0 && validThreats.length > 0) {
-      plan.strengthsThreats = generateSTStrategies(validStrengths, validThreats);
-    }
-
-    // Weaknesses + Opportunities (WO strategies)
-    const validWeaknesses = data.weaknesses.filter(w => w.text && w.text.trim() !== '').map(w => w.text);
-    if (validWeaknesses.length > 0 && validOpportunities.length > 0) {
-      plan.weaknessesOpportunities = generateWOStrategies(validWeaknesses, validOpportunities);
-    }
-
-    // Weaknesses + Threats (WT strategies)
-    if (validWeaknesses.length > 0 && validThreats.length > 0) {
-      plan.weaknessesThreats = generateWTStrategies(validWeaknesses, validThreats);
-    }
-
-    return plan;
-  };
-
-  // Generate SO strategies (strengths + opportunities)
-  const generateSOStrategies = (strengths: string[], opportunities: string[]): string[] => {
-    const strategies = [];
-    
-    // Generic SO strategies based on strengths and opportunities
-    if (strengths.length > 0) {
-      strategies.push(`Utilize "${strengths[0]}" para aproveitar as oportunidades de mercado`);
-    }
-    
-    if (strengths.length > 0 && opportunities.length > 0) {
-      strategies.push(`Desenvolver uma campanha de marketing destacando "${strengths[0]}" para capitalizar sobre "${opportunities[0]}"`);
-    }
-    
-    if (strengths.length > 1 && opportunities.length > 0) {
-      strategies.push(`Criar parcerias estratégicas baseadas em "${strengths[1]}" para maximizar "${opportunities[0]}"`);
-    }
-    
-    // Add more generic strategies
-    strategies.push("Investir no desenvolvimento de novos produtos ou serviços que aproveitem suas forças");
-    strategies.push("Expandir para novos mercados onde suas forças serão mais valorizadas");
-    
-    return strategies;
-  };
-
-  // Generate ST strategies (strengths + threats)
-  const generateSTStrategies = (strengths: string[], threats: string[]): string[] => {
-    const strategies = [];
-    
-    if (strengths.length > 0 && threats.length > 0) {
-      strategies.push(`Usar "${strengths[0]}" para neutralizar a ameaça "${threats[0]}"`);
-    }
-    
-    if (strengths.length > 1 && threats.length > 0) {
-      strategies.push(`Desenvolver um plano de contingência usando "${strengths[1]}" para minimizar o impacto de "${threats[0]}"`);
-    }
-    
-    // Add more generic strategies
-    strategies.push("Fortalecer a proposta de valor única do seu negócio para se diferenciar da concorrência");
-    strategies.push("Investir em inovação contínua para manter-se à frente das ameaças do mercado");
-    strategies.push("Diversificar ofertas para reduzir o impacto potencial das ameaças externas");
-    
-    return strategies;
-  };
-
-  // Generate WO strategies (weaknesses + opportunities)
-  const generateWOStrategies = (weaknesses: string[], opportunities: string[]): string[] => {
-    const strategies = [];
-    
-    if (weaknesses.length > 0 && opportunities.length > 0) {
-      strategies.push(`Investir em treinamento para superar "${weaknesses[0]}" e assim aproveitar "${opportunities[0]}"`);
-    }
-    
-    if (weaknesses.length > 1 && opportunities.length > 0) {
-      strategies.push(`Buscar parcerias estratégicas para compensar "${weaknesses[1]}" e capitalizar em "${opportunities[0]}"`);
-    }
-    
-    // Add more generic strategies
-    strategies.push("Desenvolver novas habilidades ou contratar talentos para superar limitações internas");
-    strategies.push("Investir em tecnologia ou processos que possam transformar fraquezas em forças");
-    strategies.push("Buscar consultorias ou mentorias externas nas áreas mais frágeis do negócio");
-    
-    return strategies;
-  };
-
-  // Generate WT strategies (weaknesses + threats)
-  const generateWTStrategies = (weaknesses: string[], threats: string[]): string[] => {
-    const strategies = [];
-    
-    if (weaknesses.length > 0 && threats.length > 0) {
-      strategies.push(`Desenvolver um plano para mitigar "${weaknesses[0]}" antes que a ameaça "${threats[0]}" se materialize`);
-    }
-    
-    if (weaknesses.length > 1 && threats.length > 0) {
-      strategies.push(`Priorizar a melhoria em "${weaknesses[1]}" para reduzir o impacto potencial de "${threats[0]}"`);
-    }
-    
-    // Add more generic strategies
-    strategies.push("Criar um plano de gestão de riscos detalhado para proteger o negócio em áreas vulneráveis");
-    strategies.push("Considerar parcerias estratégicas que possam compensar fraquezas internas");
-    strategies.push("Investir em treinamento e desenvolvimento para transformar pontos fracos em neutros ou fortes");
-    
-    return strategies;
-  };
-  
-  // Regenerate the action plan with AI
-  const handleRegenerateActionPlan = async () => {
-    if (generating) return;
-    
-    setGenerating(true);
-    setIsUsingAI(false);
-    
-    try {
-      await generateActionPlan(swotData);
-    } finally {
-      setGenerating(false);
-    }
-  };
+  const { 
+    actionPlan, 
+    generating, 
+    handleRegenerateActionPlan,
+    hasContent 
+  } = useSwotActionPlan(swotData, isLoading);
 
   // Handle "Download Plan" button click to generate PDF
   const handleDownloadPlan = () => {
@@ -307,185 +91,15 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
               </div>
             </div>
           ) : (
-            <div className="space-y-6">
-              {/* SO Strategies */}
-              {actionPlan.strengthsOpportunities && actionPlan.strengthsOpportunities.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias SO (Forças + Oportunidades)</h3>
-                  <p className="text-sm text-gray-600 italic mb-3">
-                    Ações para usar suas forças para aproveitar oportunidades
-                  </p>
-                  <ul className="space-y-2">
-                    {actionPlan.strengthsOpportunities?.map((strategy, index) => (
-                      <li key={`so-${index}`} className="bg-green-50 border border-green-100 p-3 rounded-md text-gray-700">
-                        {strategy}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* ST Strategies */}
-              {actionPlan.strengthsThreats && actionPlan.strengthsThreats.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias ST (Forças + Ameaças)</h3>
-                  <p className="text-sm text-gray-600 italic mb-3">
-                    Ações para usar suas forças para reduzir o impacto das ameaças
-                  </p>
-                  <ul className="space-y-2">
-                    {actionPlan.strengthsThreats?.map((strategy, index) => (
-                      <li key={`st-${index}`} className="bg-yellow-50 border border-yellow-100 p-3 rounded-md text-gray-700">
-                        {strategy}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              
-              {/* WO Strategies */}
-              {actionPlan.weaknessesOpportunities && actionPlan.weaknessesOpportunities.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WO (Fraquezas + Oportunidades)</h3>
-                  <p className="text-sm text-gray-600 italic mb-3">
-                    Ações para superar fraquezas aproveitando oportunidades
-                  </p>
-                  <ul className="space-y-2">
-                    {actionPlan.weaknessesOpportunities?.map((strategy, index) => (
-                      <li key={`wo-${index}`} className="bg-blue-50 border border-blue-100 p-3 rounded-md text-gray-700">
-                        {strategy}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              
-              {/* WT Strategies */}
-              {actionPlan.weaknessesThreats && actionPlan.weaknessesThreats.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WT (Fraquezas + Ameaças)</h3>
-                  <p className="text-sm text-gray-600 italic mb-3">
-                    Ações para minimizar fraquezas e evitar ameaças
-                  </p>
-                  <ul className="space-y-2">
-                    {actionPlan.weaknessesThreats?.map((strategy, index) => (
-                      <li key={`wt-${index}`} className="bg-red-50 border border-red-100 p-3 rounded-md text-gray-700">
-                        {strategy}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+            <ActionPlanDisplay actionPlan={actionPlan} />
           )}
         </CardContent>
       </Card>
 
       {/* Hidden element for PDF generation */}
       <div className="hidden">
-        <div ref={pdfRef} className="swot-pdf-container p-8 bg-white">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-800">Plano de Ação SWOT</h1>
-            <p className="text-sm text-gray-600 mt-1">Baseado na sua análise SWOT</p>
-          </div>
-          
-          {/* SO Strategies */}
-          {actionPlan.strengthsOpportunities && actionPlan.strengthsOpportunities.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2 bg-green-50 p-2">Estratégias SO (Forças + Oportunidades)</h2>
-              <p className="text-sm text-gray-600 italic mb-3">
-                Ações para usar suas forças para aproveitar oportunidades
-              </p>
-              <ul className="space-y-1">
-                {actionPlan.strengthsOpportunities?.map((strategy, index) => (
-                  <li key={`pdf-so-${index}`} className="p-2 text-gray-700">
-                    • {strategy}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* ST Strategies */}
-          {actionPlan.strengthsThreats && actionPlan.strengthsThreats.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2 bg-yellow-50 p-2">Estratégias ST (Forças + Ameaças)</h2>
-              <p className="text-sm text-gray-600 italic mb-3">
-                Ações para usar suas forças para reduzir o impacto das ameaças
-              </p>
-              <ul className="space-y-1">
-                {actionPlan.strengthsThreats?.map((strategy, index) => (
-                  <li key={`pdf-st-${index}`} className="p-2 text-gray-700">
-                    • {strategy}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          {/* WO Strategies */}
-          {actionPlan.weaknessesOpportunities && actionPlan.weaknessesOpportunities.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2 bg-blue-50 p-2">Estratégias WO (Fraquezas + Oportunidades)</h2>
-              <p className="text-sm text-gray-600 italic mb-3">
-                Ações para superar fraquezas aproveitando oportunidades
-              </p>
-              <ul className="space-y-1">
-                {actionPlan.weaknessesOpportunities?.map((strategy, index) => (
-                  <li key={`pdf-wo-${index}`} className="p-2 text-gray-700">
-                    • {strategy}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          {/* WT Strategies */}
-          {actionPlan.weaknessesThreats && actionPlan.weaknessesThreats.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2 bg-red-50 p-2">Estratégias WT (Fraquezas + Ameaças)</h2>
-              <p className="text-sm text-gray-600 italic mb-3">
-                Ações para minimizar fraquezas e evitar ameaças
-              </p>
-              <ul className="space-y-1">
-                {actionPlan.weaknessesThreats?.map((strategy, index) => (
-                  <li key={`pdf-wt-${index}`} className="p-2 text-gray-700">
-                    • {strategy}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          {/* CTA Section in PDF */}
-          <div className="mt-12 border-t pt-6">
-            <div className="flex flex-col md:flex-row items-center gap-6 bg-gray-50 rounded-lg p-6">
-              <img 
-                src="/lovable-uploads/eefe48b8-a593-4c67-bc73-6a207ae52ace.png" 
-                alt="Transformação de negócio" 
-                className="w-full md:w-1/3 rounded-lg" 
-              />
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Transforme sua empresa em uma máquina de vendas</h2>
-                <p className="mt-2 text-gray-700">
-                  Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
-                </p>
-                <p className="mt-4 text-gray-700">
-                  Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
-                </p>
-                <a 
-                  href="https://soumanoelsantos.com.br" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="mt-6 inline-block py-3 px-6 bg-yellow-500 text-gray-900 font-medium rounded-md no-underline hover:bg-yellow-600 transition-colors"
-                >
-                  Agendar diagnóstico gratuito
-                </a>
-                <p className="mt-2 text-sm text-gray-600">
-                  Clique acima e agende agora – As vagas são limitadas!
-                </p>
-              </div>
-            </div>
-          </div>
+        <div ref={pdfRef}>
+          <SwotPdfPreview actionPlan={actionPlan} />
         </div>
       </div>
       
