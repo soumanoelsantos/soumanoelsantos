@@ -1,120 +1,73 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { loadMapaEquipeData } from './mapaEquipeUtils';
 
-// Check if user has data for specific tool
-export const checkUserToolCompletion = async (
-  userId: string,
-  dataKeys: string[]
-): Promise<Record<string, boolean>> => {
+// Check if specific tools have been completed by a user
+export const checkUserToolCompletion = async (userId: string, toolKeys: string[]): Promise<Record<string, boolean>> => {
   try {
+    const result: Record<string, boolean> = {};
+
     if (!userId) {
-      return {};
+      return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
     }
 
-    // Log the request for debugging
-    console.log(`Checking tool completion for user ${userId}, keys:`, dataKeys);
+    // Get the user's tools data
+    const { data, error } = await supabase
+      .from('user_tools_data')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
     
-    // First, try a direct query for all data
-    try {
-      const { data, error } = await supabase
-        .from('user_tools_data')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
-        
-      if (error && error.code !== 'PGRST116') {
-        console.error("Error in direct query:", error);
-        // Continue to fallback approach if this fails
+    if (error) {
+      console.error('Error checking tool completion:', error);
+      return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+    }
+
+    if (!data) {
+      return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
+    }
+
+    // Check each requested tool
+    for (const toolKey of toolKeys) {
+      let isCompleted = false;
+      
+      if (data[toolKey]) {
+        // For business map data, check if at least one field has content
+        if (toolKey === 'business_map_data') {
+          const businessMapData = data[toolKey];
+          isCompleted = businessMapData && 
+            Object.values(businessMapData).some(value => 
+              value && typeof value === 'string' && value.trim() !== ''
+            );
+        }
+        // For swot data, check if at least one quadrant has items
+        else if (toolKey === 'swot_data') {
+          const swotData = data[toolKey];
+          isCompleted = swotData && 
+            Object.keys(swotData).some(quadrant => 
+              Array.isArray(swotData[quadrant]) && swotData[quadrant].length > 0
+            );
+        }
+        // For mapa_equipe, check if there are any collaborators
+        else if (toolKey === 'mapa_equipe') {
+          const mapaEquipeData = data[toolKey];
+          isCompleted = mapaEquipeData && 
+                       mapaEquipeData.colaboradores && 
+                       Array.isArray(mapaEquipeData.colaboradores) && 
+                       mapaEquipeData.colaboradores.length > 0 &&
+                       mapaEquipeData.colaboradores.some(col => col.nome && col.nome.trim() !== '');
+        }
+        // For checklist and other tools, just check if data exists
+        else {
+          isCompleted = true;
+        }
       }
       
-      if (data) {
-        // Check which tools have data
-        const completionStatus = dataKeys.reduce((acc, key) => {
-          acc[key] = data[key] !== null && data[key] !== undefined;
-          return acc;
-        }, {} as Record<string, boolean>);
-        
-        console.log("Tool completion check results:", completionStatus);
-        
-        // Double check mapa_equipe data
-        if (dataKeys.includes('mapa_equipe') && !completionStatus.mapa_equipe) {
-          const mapaEquipeData = await loadMapaEquipeData(userId);
-          completionStatus.mapa_equipe = !!mapaEquipeData && 
-            !!mapaEquipeData.colaboradores && 
-            mapaEquipeData.colaboradores.length > 0 &&
-            !!mapaEquipeData.colaboradores[0].nome;
-          console.log("Updated mapa_equipe status:", completionStatus.mapa_equipe);
-        }
-        
-        return completionStatus;
-      }
-    } catch (e) {
-      console.error("Error checking all tools at once:", e);
-      // Fall through to the basic approach
+      result[toolKey] = isCompleted;
     }
     
-    // Fallback to basic approach if the direct query fails
-    return await checkToolCompletionBasic(userId, dataKeys);
-    
+    return result;
   } catch (error) {
-    console.error(`Error checking tool completion:`, error);
-    // Fall back to basic approach if there's an error
-    return await checkToolCompletionBasic(userId, dataKeys);
+    console.error('Error checking tool completion:', error);
+    return toolKeys.reduce((acc, key) => ({ ...acc, [key]: false }), {});
   }
-};
-
-// A more basic approach that checks one column at a time
-export const checkToolCompletionBasic = async (
-  userId: string, 
-  dataKeys: string[]
-): Promise<Record<string, boolean>> => {
-  console.log("Using basic tool completion check");
-  
-  const result: Record<string, boolean> = {};
-  
-  for (const key of dataKeys) {
-    try {
-      // Check one column at a time
-      const { data, error } = await supabase
-        .from('user_tools_data')
-        .select(`${key}`)
-        .eq('user_id', userId)
-        .maybeSingle();
-      
-      if (error) {
-        if (error.code === 'PGRST116') { // "No rows found"
-          result[key] = false;
-        } else if (error.code === '42703') { // Column not found
-          result[key] = false;
-          console.log(`Column ${key} does not exist in the table`);
-        } else {
-          console.error(`Error checking completion for ${key}:`, error);
-          result[key] = false;
-        }
-      } else {
-        result[key] = data && data[key] !== null && data[key] !== undefined;
-      }
-    } catch (e) {
-      console.error(`Exception checking completion for ${key}:`, e);
-      result[key] = false;
-    }
-  }
-  
-  // Double check mapa_equipe data
-  if (dataKeys.includes('mapa_equipe') && !result.mapa_equipe) {
-    try {
-      const mapaEquipeData = await loadMapaEquipeData(userId);
-      result.mapa_equipe = !!mapaEquipeData && 
-        !!mapaEquipeData.colaboradores && 
-        mapaEquipeData.colaboradores.length > 0 &&
-        !!mapaEquipeData.colaboradores[0].nome;
-      console.log("Basic check updated mapa_equipe status:", result.mapa_equipe);
-    } catch (e) {
-      console.error("Error checking mapa_equipe data:", e);
-    }
-  }
-  
-  console.log("Basic tool completion results:", result);
-  return result;
 };

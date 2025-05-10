@@ -36,6 +36,11 @@ export const useMapaNegocio = () => {
     errorMessage: "Não foi possível salvar seu Mapa de Negócio."
   });
 
+  // Check if any field has been filled
+  const hasAnyData = (data: BusinessMapData): boolean => {
+    return Object.values(data).some(value => value && value.trim() !== '');
+  };
+
   // Load saved business map data when component mounts
   useEffect(() => {
     const loadSavedBusinessMap = async () => {
@@ -43,6 +48,11 @@ export const useMapaNegocio = () => {
       if (savedData) {
         console.log("Loaded business map data:", savedData);
         setBusinessMap(savedData);
+        
+        // Show preview directly if data exists
+        if (hasAnyData(savedData)) {
+          setShowPreview(true);
+        }
       }
     };
 

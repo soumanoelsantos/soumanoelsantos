@@ -1,5 +1,5 @@
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useMapaNegocio } from "@/hooks/useMapaNegocio";
@@ -7,11 +7,13 @@ import MemberHeader from "@/components/MemberHeader";
 import MapaNegocioForm from "@/components/mapa-negocio/MapaNegocioForm";
 import MapaNegocioPreview from "@/components/mapa-negocio/MapaNegocioPreview";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import { useToast } from "@/hooks/use-toast";
 
 const MapaNegocio = () => {
   const navigate = useNavigate();
   const { userEmail, logout } = useAuth();
   const previewRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   const { 
     businessMap, 
     handleBusinessMapChange, 
@@ -31,6 +33,11 @@ const MapaNegocio = () => {
     const success = await saveBusinessMap();
     if (success) {
       togglePreview();
+      
+      toast({
+        title: "Dados salvos!",
+        description: "Mapa de Negócio salvo com sucesso!"
+      });
     }
   };
 
