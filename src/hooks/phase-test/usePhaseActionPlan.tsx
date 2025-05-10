@@ -134,10 +134,17 @@ export const usePhaseActionPlan = (userId: string | undefined, result: PhaseTest
     }
   };
 
+  // Add this handleRegenerateActionPlan function that the PhaseResult component is expecting
+  const handleRegenerateActionPlan = async () => {
+    // Re-use the same logic as handleGenerateActionPlan
+    await handleGenerateActionPlan();
+  };
+
   return {
     isGeneratingPlan,
     showEnhancedPlan,
     setShowEnhancedPlan,
-    handleGenerateActionPlan
+    handleGenerateActionPlan,
+    handleRegenerateActionPlan // Add this to the returned object
   };
 };
