@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, RefreshCw } from "lucide-react";
 import { SwotData } from "@/types/swot";
 import { useToast } from "@/hooks/use-toast";
+import { generateEnhancedActionPlan } from '@/utils/deepseekApi';
 
 interface SwotActionPlanProps {
   swotData: SwotData;
@@ -15,6 +15,7 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
   const { toast } = useToast();
   const [actionPlan, setActionPlan] = useState<Record<string, string[]>>({});
   const [generating, setGenerating] = useState(false);
+  const [isUsingAI, setIsUsingAI] = useState(false);
 
   // Generate action plan based on SWOT data
   useEffect(() => {
@@ -31,7 +32,79 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
   };
 
   // Generate action plan based on SWOT analysis
-  const generateActionPlan = (data: SwotData) => {
+  const generateActionPlan = async (data: SwotData) => {
+    setGenerating(true);
+    
+    try {
+      // Try to generate an enhanced plan with DeepSeek AI
+      if (!isUsingAI) {
+        const enhancedPlan = await generateEnhancedSwotPlan(data);
+        
+        if (enhancedPlan) {
+          setActionPlan(enhancedPlan);
+          setIsUsingAI(true);
+          setGenerating(false);
+          return;
+        }
+      }
+      
+      // Fallback to basic plan generation
+      const basicPlan = generateBasicActionPlan(data);
+      setActionPlan(basicPlan);
+    } catch (error) {
+      console.error("Error generating action plan:", error);
+      // Fallback to basic plan if AI fails
+      const basicPlan = generateBasicActionPlan(data);
+      setActionPlan(basicPlan);
+    } finally {
+      setGenerating(false);
+    }
+  };
+  
+  // Generate enhanced action plan using DeepSeek AI
+  const generateEnhancedSwotPlan = async (data: SwotData) => {
+    try {
+      const validStrengths = data.strengths.filter(s => s.text && s.text.trim() !== '').map(s => s.text);
+      const validWeaknesses = data.weaknesses.filter(w => w.text && w.text.trim() !== '').map(w => w.text);
+      const validOpportunities = data.opportunities.filter(o => o.text && o.text.trim() !== '').map(o => o.text);
+      const validThreats = data.threats.filter(t => t.text && t.text.trim() !== '').map(t => t.text);
+      
+      // Prepare SWOT data for API
+      const swotForApi = {
+        strengths: validStrengths,
+        weaknesses: validWeaknesses,
+        opportunities: validOpportunities,
+        threats: validThreats
+      };
+      
+      console.log("Sending SWOT data to DeepSeek API:", swotForApi);
+      
+      // Call the DeepSeek API
+      const enhancedPlan = await generateEnhancedActionPlan(swotForApi);
+      
+      if (enhancedPlan) {
+        console.log("Received enhanced action plan:", enhancedPlan);
+        
+        // Restructure the plan to match our expected format
+        const restructuredPlan = {
+          strengthsOpportunities: enhancedPlan.strengthsOpportunities || enhancedPlan.so || [],
+          strengthsThreats: enhancedPlan.strengthsThreats || enhancedPlan.st || [],
+          weaknessesOpportunities: enhancedPlan.weaknessesOpportunities || enhancedPlan.wo || [],
+          weaknessesThreats: enhancedPlan.weaknessesThreats || enhancedPlan.wt || []
+        };
+        
+        return restructuredPlan;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Error calling DeepSeek API:", error);
+      return null;
+    }
+  };
+
+  // Generate basic action plan without AI
+  const generateBasicActionPlan = (data: SwotData): Record<string, string[]> => {
     const plan: Record<string, string[]> = {
       strengthsOpportunities: [],
       strengthsThreats: [],
@@ -39,7 +112,7 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
       weaknessesThreats: []
     };
 
-    // Strength + Opportunities (SO strategies - using strengths to capitalize on opportunities)
+    // Strength + Opportunities (SO strategies)
     const validStrengths = data.strengths.filter(s => s.text && s.text.trim() !== '').map(s => s.text);
     const validOpportunities = data.opportunities.filter(o => o.text && o.text.trim() !== '').map(o => o.text);
     
@@ -47,24 +120,24 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
       plan.strengthsOpportunities = generateSOStrategies(validStrengths, validOpportunities);
     }
 
-    // Strength + Threats (ST strategies - using strengths to mitigate threats)
+    // Strength + Threats (ST strategies)
     const validThreats = data.threats.filter(t => t.text && t.text.trim() !== '').map(t => t.text);
     if (validStrengths.length > 0 && validThreats.length > 0) {
       plan.strengthsThreats = generateSTStrategies(validStrengths, validThreats);
     }
 
-    // Weaknesses + Opportunities (WO strategies - overcoming weaknesses by taking advantage of opportunities)
+    // Weaknesses + Opportunities (WO strategies)
     const validWeaknesses = data.weaknesses.filter(w => w.text && w.text.trim() !== '').map(w => w.text);
     if (validWeaknesses.length > 0 && validOpportunities.length > 0) {
       plan.weaknessesOpportunities = generateWOStrategies(validWeaknesses, validOpportunities);
     }
 
-    // Weaknesses + Threats (WT strategies - minimizing weaknesses and avoiding threats)
+    // Weaknesses + Threats (WT strategies)
     if (validWeaknesses.length > 0 && validThreats.length > 0) {
       plan.weaknessesThreats = generateWTStrategies(validWeaknesses, validThreats);
     }
 
-    setActionPlan(plan);
+    return plan;
   };
 
   // Generate SO strategies (strengths + opportunities)
@@ -150,6 +223,20 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
     
     return strategies;
   };
+  
+  // Regenerate the action plan with AI
+  const handleRegenerateActionPlan = async () => {
+    if (generating) return;
+    
+    setGenerating(true);
+    setIsUsingAI(false);
+    
+    try {
+      await generateActionPlan(swotData);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   // Handle "Download Plan" button click
   const handleDownloadPlan = () => {
@@ -201,7 +288,7 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
   };
 
   // Show loading state if no data or generating
-  if (isLoading || generating || !hasContent(swotData)) {
+  if (isLoading || !hasContent(swotData)) {
     return null; // Don't show anything if there's no data yet
   }
 
@@ -210,79 +297,108 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
       <CardHeader className="bg-gradient-to-r from-gray-100 to-gray-50">
         <CardTitle className="text-xl text-gray-800 flex justify-between items-center">
           <span>Plano de Ação baseado na sua análise SWOT</span>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex items-center gap-2" 
-            onClick={handleDownloadPlan}
-          >
-            <Download className="h-4 w-4" />
-            Baixar plano
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2" 
+              onClick={handleRegenerateActionPlan}
+              disabled={generating}
+            >
+              <RefreshCw className={`h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
+              {generating ? 'Gerando...' : 'Regenerar'}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2" 
+              onClick={handleDownloadPlan}
+            >
+              <Download className="h-4 w-4" />
+              Baixar plano
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
-        <div className="space-y-6">
-          {/* SO Strategies */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias SO (Forças + Oportunidades)</h3>
-            <p className="text-sm text-gray-600 italic mb-3">
-              Ações para usar suas forças para aproveitar oportunidades
-            </p>
-            <ul className="space-y-2">
-              {actionPlan.strengthsOpportunities?.map((strategy, index) => (
-                <li key={`so-${index}`} className="bg-green-50 border border-green-100 p-3 rounded-md text-gray-700">
-                  {strategy}
-                </li>
-              ))}
-            </ul>
+        {generating ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mx-auto mb-4"></div>
+              <p className="text-gray-600">Gerando plano de ação detalhado...</p>
+            </div>
           </div>
+        ) : (
+          <div className="space-y-6">
+            {/* SO Strategies */}
+            {actionPlan.strengthsOpportunities && actionPlan.strengthsOpportunities.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias SO (Forças + Oportunidades)</h3>
+                <p className="text-sm text-gray-600 italic mb-3">
+                  Ações para usar suas forças para aproveitar oportunidades
+                </p>
+                <ul className="space-y-2">
+                  {actionPlan.strengthsOpportunities?.map((strategy, index) => (
+                    <li key={`so-${index}`} className="bg-green-50 border border-green-100 p-3 rounded-md text-gray-700">
+                      {strategy}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-          {/* ST Strategies */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias ST (Forças + Ameaças)</h3>
-            <p className="text-sm text-gray-600 italic mb-3">
-              Ações para usar suas forças para reduzir o impacto das ameaças
-            </p>
-            <ul className="space-y-2">
-              {actionPlan.strengthsThreats?.map((strategy, index) => (
-                <li key={`st-${index}`} className="bg-yellow-50 border border-yellow-100 p-3 rounded-md text-gray-700">
-                  {strategy}
-                </li>
-              ))}
-            </ul>
+            {/* ST Strategies */}
+            {actionPlan.strengthsThreats && actionPlan.strengthsThreats.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias ST (Forças + Ameaças)</h3>
+                <p className="text-sm text-gray-600 italic mb-3">
+                  Ações para usar suas forças para reduzir o impacto das ameaças
+                </p>
+                <ul className="space-y-2">
+                  {actionPlan.strengthsThreats?.map((strategy, index) => (
+                    <li key={`st-${index}`} className="bg-yellow-50 border border-yellow-100 p-3 rounded-md text-gray-700">
+                      {strategy}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {/* WO Strategies */}
+            {actionPlan.weaknessesOpportunities && actionPlan.weaknessesOpportunities.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WO (Fraquezas + Oportunidades)</h3>
+                <p className="text-sm text-gray-600 italic mb-3">
+                  Ações para superar fraquezas aproveitando oportunidades
+                </p>
+                <ul className="space-y-2">
+                  {actionPlan.weaknessesOpportunities?.map((strategy, index) => (
+                    <li key={`wo-${index}`} className="bg-blue-50 border border-blue-100 p-3 rounded-md text-gray-700">
+                      {strategy}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {/* WT Strategies */}
+            {actionPlan.weaknessesThreats && actionPlan.weaknessesThreats.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WT (Fraquezas + Ameaças)</h3>
+                <p className="text-sm text-gray-600 italic mb-3">
+                  Ações para minimizar fraquezas e evitar ameaças
+                </p>
+                <ul className="space-y-2">
+                  {actionPlan.weaknessesThreats?.map((strategy, index) => (
+                    <li key={`wt-${index}`} className="bg-red-50 border border-red-100 p-3 rounded-md text-gray-700">
+                      {strategy}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
-          
-          {/* WO Strategies */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WO (Fraquezas + Oportunidades)</h3>
-            <p className="text-sm text-gray-600 italic mb-3">
-              Ações para superar fraquezas aproveitando oportunidades
-            </p>
-            <ul className="space-y-2">
-              {actionPlan.weaknessesOpportunities?.map((strategy, index) => (
-                <li key={`wo-${index}`} className="bg-blue-50 border border-blue-100 p-3 rounded-md text-gray-700">
-                  {strategy}
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          {/* WT Strategies */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Estratégias WT (Fraquezas + Ameaças)</h3>
-            <p className="text-sm text-gray-600 italic mb-3">
-              Ações para minimizar fraquezas e evitar ameaças
-            </p>
-            <ul className="space-y-2">
-              {actionPlan.weaknessesThreats?.map((strategy, index) => (
-                <li key={`wt-${index}`} className="bg-red-50 border border-red-100 p-3 rounded-md text-gray-700">
-                  {strategy}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

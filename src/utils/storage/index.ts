@@ -10,3 +10,4 @@ export * from './diagnosticUtils';
 export * from './mapaEquipeUtils';
 export * from './crmUtils';
 export * from './phaseTestUtils';
+export * from '../deepseekApi';
