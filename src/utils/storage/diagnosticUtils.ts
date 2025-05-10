@@ -6,17 +6,17 @@ import { isValidDiagnosticResults, isValidAnswersData, isValidActionPlan } from 
 
 export const loadDiagnosticDataFromSupabase = async (userId: string) => {
   try {
+    // Changed to avoid using .single() and handle array results
     const { data, error } = await supabase
       .from('diagnostic_results')
       .select('*')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 é o código para "nenhum resultado encontrado"
+    if (error) {
       throw error;
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       return {
         results: null,
         answersData: null,
@@ -25,13 +25,15 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
       };
     }
     
+    // Use the first result from the array (there should be only one per user)
+    const firstResult = data[0];
     let parsedResults = null;
     let parsedAnswersData = null;
     let parsedActionPlan = null;
     
     // Parse results
-    if (data.results && typeof data.results === 'object') {
-      const loadedResults = data.results as Json;
+    if (firstResult.results && typeof firstResult.results === 'object') {
+      const loadedResults = firstResult.results as Json;
       
       if (isValidDiagnosticResults(loadedResults)) {
         parsedResults = loadedResults;
@@ -39,8 +41,8 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
     }
     
     // Parse answers data
-    if (data.answers_data && typeof data.answers_data === 'object') {
-      const loadedAnswersData = data.answers_data as Json;
+    if (firstResult.answers_data && typeof firstResult.answers_data === 'object') {
+      const loadedAnswersData = firstResult.answers_data as Json;
       
       if (isValidAnswersData(loadedAnswersData)) {
         parsedAnswersData = loadedAnswersData;
@@ -48,8 +50,8 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
     }
     
     // Parse action plan
-    if (data.action_plan && typeof data.action_plan === 'object') {
-      const loadedActionPlan = data.action_plan as Json;
+    if (firstResult.action_plan && typeof firstResult.action_plan === 'object') {
+      const loadedActionPlan = firstResult.action_plan as Json;
       
       if (isValidActionPlan(loadedActionPlan)) {
         parsedActionPlan = loadedActionPlan;
@@ -60,7 +62,7 @@ export const loadDiagnosticDataFromSupabase = async (userId: string) => {
       results: parsedResults,
       answersData: parsedAnswersData,
       actionPlan: parsedActionPlan,
-      diagnosticId: data.id
+      diagnosticId: firstResult.id
     };
   } catch (error) {
     console.error("Erro ao carregar diagnóstico:", error);
@@ -106,15 +108,14 @@ export const saveDiagnosticToSupabase = async (
           action_plan: diagnosticData.action_plan
         });
         
-      // Get the new diagnostic ID
+      // Get the new diagnostic ID - changed to handle array results
       const { data, error } = await supabase
         .from('diagnostic_results')
         .select('id')
-        .eq('user_id', userId)
-        .single();
+        .eq('user_id', userId);
         
-      if (!error && data) {
-        return { result, diagnosticId: data.id };
+      if (!error && data && data.length > 0) {
+        return { result, diagnosticId: data[0].id };
       }
     }
     
@@ -161,23 +162,26 @@ export const isDiagnosticComplete = async (userId: string): Promise<boolean> => 
       return false;
     }
 
+    // Changed to handle array results
     const { data, error } = await supabase
       .from('diagnostic_results')
       .select('results, action_plan')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
     
     if (error) {
-      if (error.code === 'PGRST116') { // "No rows found"
-        return false;
-      }
       throw error;
     }
     
+    // Check if we have results and they have an action plan
+    if (!data || data.length === 0) {
+      return false;
+    }
+    
+    const firstEntry = data[0];
     // Verifica se há resultados e plano de ação
-    return !!(data && data.results && data.action_plan &&
-      typeof data.action_plan === 'object' && 
-      Object.keys(data.action_plan).length > 0);
+    return !!(firstEntry && firstEntry.results && firstEntry.action_plan &&
+      typeof firstEntry.action_plan === 'object' && 
+      Object.keys(firstEntry.action_plan).length > 0);
   } catch (error) {
     console.error("Erro ao verificar conclusão do diagnóstico:", error);
     return false;

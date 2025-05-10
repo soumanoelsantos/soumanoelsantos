@@ -23,20 +23,27 @@ export const useDiagnostic = () => {
       }
 
       try {
+        console.log("Attempting to load diagnostic results for user:", userId);
+        
+        // Changed to use .eq and removed .single() to avoid the 406 error
         const { data, error } = await supabase
           .from("diagnostic_results")
           .select("*")
-          .eq("user_id", userId)
-          .single();
+          .eq("user_id", userId);
 
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
+          console.error("Error fetching diagnostic results:", error);
           throw error;
         }
 
-        if (data) {
-          setResults(data.results);
-          setAnswersData(data.answers_data || {});
+        // Check if we got results back (as an array)
+        if (data && data.length > 0) {
+          console.log("Diagnostic results loaded successfully:", data[0]);
+          setResults(data[0].results);
+          setAnswersData(data[0].answers_data || {});
           setShowResults(true);
+        } else {
+          console.log("No diagnostic results found for user");
         }
       } catch (error) {
         console.error("Error loading diagnostic results:", error);
@@ -60,6 +67,8 @@ export const useDiagnostic = () => {
 
     if (userId) {
       try {
+        console.log("Saving diagnostic results for user:", userId);
+        
         // Check if a diagnostic exists for this user
         const { data, error } = await supabase
           .from("diagnostic_results")
@@ -76,13 +85,21 @@ export const useDiagnostic = () => {
 
         if (data && data.length > 0) {
           // Update existing diagnostic
-          await supabase
+          const { error: updateError } = await supabase
             .from("diagnostic_results")
             .update(diagnosticData)
             .eq("user_id", userId);
+            
+          if (updateError) throw updateError;
+          console.log("Updated existing diagnostic results");
         } else {
           // Create new diagnostic
-          await supabase.from("diagnostic_results").insert([diagnosticData]);
+          const { error: insertError } = await supabase
+            .from("diagnostic_results")
+            .insert([diagnosticData]);
+            
+          if (insertError) throw insertError;
+          console.log("Created new diagnostic results");
         }
       } catch (error) {
         console.error("Error saving diagnostic results:", error);

@@ -38,17 +38,21 @@ export const useDiagnosticData = () => {
       }
 
       try {
+        console.log("Loading diagnostic data for user:", userId);
         const loadedData = await loadDiagnosticDataFromSupabase(userId);
         
         if (loadedData.results) {
+          console.log("Loaded diagnostic results:", loadedData.results);
           setResults(loadedData.results);
         }
         
         if (loadedData.answersData) {
+          console.log("Loaded diagnostic answers data");
           setAnswersData(loadedData.answersData);
         }
         
         if (loadedData.diagnosticId) {
+          console.log("Loaded diagnostic ID:", loadedData.diagnosticId);
           setDiagnosticId(loadedData.diagnosticId);
         }
         
