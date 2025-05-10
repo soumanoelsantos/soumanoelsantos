@@ -30,8 +30,9 @@ export const generateEnhancedActionPlan = async (swotData: any) => {
 
 /**
  * Prepare SWOT data and generate an enhanced action plan
+ * This is renamed from generateEnhancedSwotPlan to avoid naming conflicts
  */
-export const generateEnhancedSwotPlan = async (data: SwotData, companyInfo?: CompanyInfoData | null) => {
+export const generateEnhancedPlan = async (data: SwotData, companyInfo?: CompanyInfoData | null) => {
   try {
     // Prepare SWOT data for API
     const swotForApi = prepareSwotDataForApi(data, companyInfo);
@@ -52,3 +53,7 @@ export const generateEnhancedSwotPlan = async (data: SwotData, companyInfo?: Com
     return null;
   }
 };
+
+// Re-export the function with the old name for backward compatibility
+// This is needed temporarily until we update all references
+export const generateEnhancedSwotPlan = generateEnhancedPlan;
