@@ -11,13 +11,39 @@ import { parseSwotActionPlan, parsePhaseTestActionPlan } from "./responseParser"
  */
 export const generateEnhancedActionPlan = async (data: any) => {
   try {
-    // Determine if we're dealing with SWOT data or Phase Test data
+    // Determine if we're dealing with SWOT data, Phase Test data, or Diagnostic data
     const isPhaseTestData = data.phaseResult !== undefined;
+    const isDiagnosticData = data.answersData !== undefined && !isPhaseTestData;
     
     let prompt;
     if (isPhaseTestData) {
       // Generate prompt for phase test data
       prompt = generatePhaseTestPrompt(data);
+    } else if (isDiagnosticData) {
+      // This is now diagnostic data, we should handle it appropriately
+      // Use the same approach as SwotData for now, or create a specific promptGenerator
+      prompt = generateSwotPrompt({
+        strengths: data.answersData ? Object.entries(data.answersData)
+          .flatMap(([section, sectionData]: [string, any]) => {
+            return sectionData.answers
+              .filter((a: any) => a.answer === 'satisfactory')
+              .map((a: any) => ({ text: a.question, area: section }));
+          }) : [],
+        weaknesses: data.answersData ? Object.entries(data.answersData)
+          .flatMap(([section, sectionData]: [string, any]) => {
+            return sectionData.answers
+              .filter((a: any) => a.answer === 'nonexistent')
+              .map((a: any) => ({ text: a.question, area: section }));
+          }) : [],
+        opportunities: data.answersData ? Object.entries(data.answersData)
+          .flatMap(([section, sectionData]: [string, any]) => {
+            return sectionData.answers
+              .filter((a: any) => a.answer === 'unsatisfactory')
+              .map((a: any) => ({ text: a.question, area: section }));
+          }) : [],
+        threats: [],
+        detailed: true
+      });
     } else {
       // Generate prompt for SWOT data
       prompt = generateSwotPrompt(data);

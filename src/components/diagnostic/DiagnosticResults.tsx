@@ -10,6 +10,7 @@ import CTASection from '../CTASection';
 import { useDiagnostic } from '@/hooks/useDiagnostic';
 import ActionButton from '../ui/action-button';
 import { FileEdit, Loader2 } from 'lucide-react';
+import { toast } from "sonner";
 
 interface DiagnosticResultsProps {
   results: {
@@ -32,6 +33,15 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
     resetDiagnostic();
   };
 
+  const handleRegenerateActionPlan = () => {
+    toast("Gerando plano de ação", {
+      description: "Aguarde enquanto geramos um novo plano personalizado baseado nas suas respostas...",
+      duration: 3000
+    });
+    
+    regenerateActionPlan();
+  };
+
   const hasActionPlan = actionPlan && Object.keys(actionPlan).length > 0 && 
     Object.values(actionPlan).some(items => items && items.length > 0);
 
@@ -52,7 +62,7 @@ const DiagnosticResults = ({ results, actionPlan, answersData, pdfRef }: Diagnos
             Gere um plano de ação detalhado e personalizado com base nos resultados do diagnóstico da sua empresa.
           </p>
           <ActionButton 
-            onClick={regenerateActionPlan} 
+            onClick={handleRegenerateActionPlan} 
             variant="primary"
             icon={isGeneratingPlan ? Loader2 : FileEdit}
             disabled={isGeneratingPlan}
