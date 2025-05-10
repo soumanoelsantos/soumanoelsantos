@@ -3,18 +3,15 @@ import { useState } from 'react';
 import { SwotData } from "@/types/swot";
 import { CompanyInfoData } from '@/types/companyInfo';
 import { generateEnhancedActionPlan } from '@/utils/deepseekApi';
-import { generateBasicActionPlan } from '@/utils/swot/actionPlanGenerator';
+import { generateBasicActionPlan, generateEnhancedSwotPlan } from '@/utils/swot/actionPlanGenerator';
+import { hasSwotContent } from '@/utils/swot/swotDataUtils';
 
 export const useActionPlanGeneration = () => {
   const [generating, setGenerating] = useState(false);
   const [isUsingAI, setIsUsingAI] = useState(false);
 
-  // Check if SWOT data has content
-  const hasContent = (data: SwotData): boolean => {
-    return Object.values(data).some(category => 
-      category.some(item => item.text && item.text.trim() !== '')
-    );
-  };
+  // Use the extracted utility function for checking content
+  const hasContent = hasSwotContent;
 
   // Generate action plan based on SWOT analysis and company info
   const generateActionPlan = async (data: SwotData, companyInfoData?: CompanyInfoData | null) => {
@@ -31,7 +28,8 @@ export const useActionPlanGeneration = () => {
       let generatedPlan;
       if (!isUsingAI) {
         try {
-          generatedPlan = await generateEnhancedActionPlan(enrichedData);
+          // Use the refactored enhancedSwotPlan function
+          generatedPlan = await generateEnhancedSwotPlan(data, companyInfoData);
           if (generatedPlan) {
             setIsUsingAI(true);
           }
