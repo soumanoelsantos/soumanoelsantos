@@ -9,6 +9,7 @@ export interface LeadData {
   notes: string | null;
   source: string | null;
   status_changed_at?: string; // Timestamp for when status was last changed
+  updated_at?: string;
 }
 
 export interface LeadFormValues {

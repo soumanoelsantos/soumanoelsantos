@@ -85,6 +85,10 @@ export const useKanbanOperations = ({
     // Prevent multiple concurrent updates
     if (isUpdatingStatus) {
       console.log("Já está atualizando o status, ignorando esta operação");
+      toast({
+        title: "Operação em andamento",
+        description: "Aguarde a conclusão da operação anterior",
+      });
       return;
     }
 
@@ -119,7 +123,11 @@ export const useKanbanOperations = ({
         description: "Ocorreu um erro ao atualizar o status. Tente novamente.",
       });
     } finally {
-      setIsUpdatingStatus(false);
+      // Add a small timeout before setting isUpdatingStatus to false
+      // to prevent rapid consecutive updates
+      setTimeout(() => {
+        setIsUpdatingStatus(false);
+      }, 500);
     }
   };
 

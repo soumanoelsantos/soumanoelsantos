@@ -150,9 +150,10 @@ export const useLeadOperations = (fetchLeads: () => Promise<void>) => {
 
   const updateLeadStatus = async (id: string, newStatus: string) => {
     try {
-      console.log(`Atualizando status do lead ${id} para ${newStatus}`);
+      // Add more detailed logging to diagnose the issue
+      console.log(`Iniciando atualização do status do lead ${id} para ${newStatus}`);
       
-      // Add more detailed error logging
+      // Validate input parameters
       if (!id) {
         console.error("ID do lead não fornecido");
         throw new Error("ID do lead não fornecido");
@@ -163,30 +164,34 @@ export const useLeadOperations = (fetchLeads: () => Promise<void>) => {
         throw new Error("Novo status não fornecido");
       }
       
+      // Add timeout to prevent race conditions and allow for UI updates
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Log the full update operation
       console.log("Dados da atualização:", {
-        id: id,
-        newStatus: newStatus,
+        id,
+        newStatus,
         timestamp: new Date().toISOString()
       });
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("leads")
         .update({ 
           status: newStatus,
-          status_changed_at: new Date().toISOString() // Update timestamp when status changes
+          status_changed_at: new Date().toISOString(), // Update timestamp when status changes
+          updated_at: new Date().toISOString()  // Update the general updated_at timestamp as well
         })
-        .eq("id", id)
-        .select();
+        .eq("id", id);
 
       if (error) {
         console.error("Erro ao atualizar status do lead no Supabase:", error);
         throw error;
       }
 
-      console.log("Status do lead atualizado com sucesso:", data);
+      console.log("Status do lead atualizado com sucesso");
       
-      // Refresh leads list to get updated data
+      // Refresh leads list to get updated data - with a small delay to ensure DB transaction completes
+      await new Promise(resolve => setTimeout(resolve, 300));
       await fetchLeads();
 
       return true;
