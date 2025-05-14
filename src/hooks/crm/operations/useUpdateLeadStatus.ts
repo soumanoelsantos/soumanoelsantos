@@ -52,7 +52,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         return true;
       }
       
-      // Perform the update
+      // Perform the update with the status_changed_at field
       const { error } = await supabase
         .from("leads")
         .update({ 
@@ -72,14 +72,14 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       // Verify the update
       const { data: verifyUpdate, error: verifyError } = await supabase
         .from("leads")
-        .select("status")
+        .select("status, status_changed_at")
         .eq("id", id)
         .single();
       
       if (verifyError) {
         console.error("Error verifying update:", verifyError);
       } else {
-        console.log("Verified new status:", verifyUpdate.status);
+        console.log("Verified new status:", verifyUpdate.status, "Changed at:", verifyUpdate.status_changed_at);
       }
       
       return true;

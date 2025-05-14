@@ -197,6 +197,7 @@ export type Database = {
           phone: string
           source: string | null
           status: string
+          status_changed_at: string | null
           updated_at: string
         }
         Insert: {
@@ -208,6 +209,7 @@ export type Database = {
           phone: string
           source?: string | null
           status?: string
+          status_changed_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -219,6 +221,7 @@ export type Database = {
           phone?: string
           source?: string | null
           status?: string
+          status_changed_at?: string | null
           updated_at?: string
         }
         Relationships: []
