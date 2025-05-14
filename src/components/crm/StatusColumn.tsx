@@ -14,11 +14,12 @@ interface StatusColumnProps {
 }
 
 const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }: StatusColumnProps) => {
-  // Add debug logging
+  // Add enhanced debug logging
   console.log(`StatusColumn render:`, { 
     columnId,
     columnName,
-    leadsCount: leads.length 
+    leadsCount: leads.length,
+    leadIds: leads.map(lead => lead.id).join(', ')
   });
   
   return (

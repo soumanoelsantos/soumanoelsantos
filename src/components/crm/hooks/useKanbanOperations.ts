@@ -24,6 +24,11 @@ export const useKanbanOperations = ({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editLead, setEditLead] = useState<LeadData | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [lastDragOperation, setLastDragOperation] = useState<{
+    leadId: string; 
+    destination: string;
+    timestamp: number;
+  } | null>(null);
 
   const handleAddSubmit = async (values: LeadFormValues) => {
     console.log("Submitting new lead:", values);
@@ -60,7 +65,7 @@ export const useKanbanOperations = ({
 
     // If dropped outside a droppable area
     if (!destination) {
-      console.log("Drop fora de uma área válida");
+      console.log("Drop outside a valid area", { draggableId, source });
       return;
     }
 
@@ -69,65 +74,90 @@ export const useKanbanOperations = ({
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
-      console.log("Drop no mesmo lugar, ignorando");
+      console.log("Drop in the same place, ignoring", { draggableId, source, destination });
       return;
     }
 
-    // Log more information to debug
-    console.log("Drag end event:", {
+    // Log more information for debugging
+    const currentTime = Date.now();
+    console.log("Drag end event with timestamps:", {
       draggableId,
       sourceId: source.droppableId,
       destinationId: destination.droppableId,
       sourceIndex: source.index,
-      destinationIndex: destination.index
+      destinationIndex: destination.index,
+      currentTime,
+      lastOperation: lastDragOperation
     });
+
+    // Check if this is a rapid duplicate operation (within 1 second)
+    if (
+      lastDragOperation && 
+      lastDragOperation.leadId === draggableId && 
+      lastDragOperation.destination === destination.droppableId && 
+      currentTime - lastDragOperation.timestamp < 1000
+    ) {
+      console.log("Detected duplicate drag operation within 1 second, ignoring");
+      return;
+    }
 
     // Prevent multiple concurrent updates
     if (isUpdatingStatus) {
-      console.log("Já está atualizando o status, ignorando esta operação");
+      console.log("Already updating status, ignoring this operation");
       toast({
         title: "Operação em andamento",
         description: "Aguarde a conclusão da operação anterior",
+        duration: 2000,
       });
       return;
     }
 
+    // Record this operation
+    setLastDragOperation({
+      leadId: draggableId, 
+      destination: destination.droppableId,
+      timestamp: currentTime
+    });
+
     // Update the lead's status in the database
     try {
       setIsUpdatingStatus(true);
-      console.log(`Movendo lead ${draggableId} para ${destination.droppableId}`);
+      console.log(`Moving lead ${draggableId} to ${destination.droppableId}`);
       
       const success = await updateLeadStatus(draggableId, destination.droppableId);
       
       if (success) {
         // Refresh the leads list to get the updated data
-        console.log("Status atualizado com sucesso, atualizando lista de leads...");
+        console.log("Status updated successfully, refreshing leads list...");
         await fetchLeads();
         toast({
           title: "Status atualizado",
           description: `Lead movido para ${destination.droppableId}`,
+          duration: 2000,
         });
       } else {
-        console.error("Falha ao atualizar status do lead");
+        console.error("Failed to update lead status");
         toast({
           variant: "destructive",
           title: "Erro ao atualizar status",
           description: "Não foi possível atualizar o status do lead. Tente novamente.",
+          duration: 3000,
         });
       }
     } catch (error) {
-      console.error("Erro em handleDragEnd:", error);
+      console.error("Error in handleDragEnd:", error);
       toast({
         variant: "destructive",
         title: "Erro ao atualizar status",
         description: "Ocorreu um erro ao atualizar o status. Tente novamente.",
+        duration: 3000,
       });
     } finally {
       // Add a small timeout before setting isUpdatingStatus to false
       // to prevent rapid consecutive updates
       setTimeout(() => {
         setIsUpdatingStatus(false);
-      }, 500);
+      }, 800);
     }
   };
 

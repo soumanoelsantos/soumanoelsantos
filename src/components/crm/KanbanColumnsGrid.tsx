@@ -20,21 +20,28 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   onEditLead, 
   onDeleteLead 
 }) => {
-  // Debugging to check props
+  // Enhanced debugging to check props
   console.log("KanbanColumnsGrid render:", { 
     columnsCount: columns.length, 
     leadsCount: leads.length,
     columnIds: columns.map(c => c.id),
-    columnNames: columns.map(c => c.name)
+    columnNames: columns.map(c => c.name),
+    leadsPerStatus: Object.fromEntries(
+      columns.map(col => [
+        col.name, 
+        leads.filter(lead => lead.status === col.name).length
+      ])
+    )
   });
 
   const handleDragEnd = (result: any) => {
-    // Enhanced logging for drag events
+    // More comprehensive logging for drag events
     console.log("Drag end event details:", {
       draggableId: result.draggableId,
       source: result.source,
       destination: result.destination,
       type: result.type,
+      timestamp: new Date().toISOString()
     });
     
     // Call the parent component's onDragEnd handler
