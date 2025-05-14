@@ -20,7 +20,7 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   onEditLead, 
   onDeleteLead 
 }) => {
-  // Enhanced debugging to check props
+  // Debug logging
   console.log("KanbanColumnsGrid render:", { 
     columnsCount: columns.length, 
     leadsCount: leads.length,
@@ -35,7 +35,7 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   });
 
   const handleDragEnd = (result: any) => {
-    // More comprehensive logging for drag events
+    // More detailed logging
     console.log("Drag end event details:", {
       draggableId: result.draggableId,
       source: result.source,

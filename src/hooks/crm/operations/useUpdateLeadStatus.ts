@@ -8,10 +8,10 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
 
   const updateLeadStatus = async (id: string, newStatus: string) => {
     try {
-      // Enhanced logging for debugging
+      // Log detalhado para debugging
       console.log(`Starting lead status update: ${id} to ${newStatus} at ${new Date().toISOString()}`);
       
-      // Input validation with detailed errors
+      // Validação de entrada com erros detalhados
       if (!id || typeof id !== 'string') {
         console.error("Invalid lead ID:", id);
         throw new Error("ID do lead inválido ou não fornecido");
@@ -22,16 +22,16 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         throw new Error("Novo status inválido ou não fornecido");
       }
       
-      // Validate that the status is one of the allowed statuses
+      // Validar que o status é um dos status permitidos
       if (!LEAD_STATUSES.includes(newStatus)) {
-        console.error("Invalid status value:", newStatus);
+        console.error("Invalid status value:", newStatus, "Available statuses:", LEAD_STATUSES);
         throw new Error(`Status '${newStatus}' não é válido. Valores permitidos: ${LEAD_STATUSES.join(', ')}`);
       }
       
-      // Add timeout to prevent race conditions
+      // Adicionar timeout para prevenir condições de corrida
       await new Promise(resolve => setTimeout(resolve, 200));
       
-      // First verify the lead exists to avoid "no row found" errors
+      // Primeiro verificar se o lead existe para evitar erros de "no row found"
       const { data: leadExists, error: checkError } = await supabase
         .from("leads")
         .select("id, status")
@@ -45,18 +45,18 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       
       if (!leadExists) {
         console.error("Lead not found:", id);
-        throw new Error(`Lead with ID ${id} not found`);
+        throw new Error(`Lead com ID ${id} não encontrado`);
       }
       
       console.log("Found lead, current status:", leadExists.status);
       
-      // If the status is already set to the new status, no need to update
+      // Se o status já estiver definido para o novo status, não há necessidade de atualizar
       if (leadExists.status === newStatus) {
         console.log("Lead already has the requested status, skipping update");
         return true;
       }
       
-      // Update with more explicit logging
+      // Atualizar com logs mais explícitos
       console.log("Updating lead status with data:", {
         id,
         newStatus,
@@ -79,7 +79,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
 
       console.log("Lead status updated successfully");
       
-      // Verify the update was successful
+      // Verificar se a atualização foi bem-sucedida
       const { data: verifyUpdate, error: verifyError } = await supabase
         .from("leads")
         .select("status")
@@ -92,10 +92,9 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         console.log("Verified lead status is now:", verifyUpdate.status);
       }
       
-      // Refresh leads list with delay to ensure DB transaction completes
+      // Atualizar a lista de leads com atraso para garantir que a transação do banco de dados seja concluída
       await new Promise(resolve => setTimeout(resolve, 500));
-      await fetchLeads();
-
+      
       return true;
     } catch (error: any) {
       console.error("Error updating lead status:", error);

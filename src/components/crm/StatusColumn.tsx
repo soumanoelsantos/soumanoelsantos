@@ -14,7 +14,7 @@ interface StatusColumnProps {
 }
 
 const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }: StatusColumnProps) => {
-  // Add enhanced debug logging
+  // Debug logging
   console.log(`StatusColumn render:`, { 
     columnId,
     columnName,

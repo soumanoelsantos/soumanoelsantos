@@ -63,13 +63,16 @@ export const useKanbanOperations = ({
   const handleDragEnd = async (result: any) => {
     const { destination, source, draggableId } = result;
 
-    // If dropped outside a droppable area
+    // Log the complete drag operation for debugging
+    console.log("Complete drag operation:", { result, draggableId, source, destination });
+
+    // Se não foi largado em uma área válida
     if (!destination) {
       console.log("Drop outside a valid area", { draggableId, source });
       return;
     }
 
-    // If dropped back to the same place
+    // Se foi largado de volta no mesmo lugar
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -78,10 +81,10 @@ export const useKanbanOperations = ({
       return;
     }
 
-    // Log more information for debugging
+    // Log mais informações para debugging
     const currentTime = Date.now();
-    console.log("Drag end event with timestamps:", {
-      draggableId,
+    console.log("Processing drag end event:", {
+      leadId: draggableId,
       sourceId: source.droppableId,
       destinationId: destination.droppableId,
       sourceIndex: source.index,
@@ -90,7 +93,7 @@ export const useKanbanOperations = ({
       lastOperation: lastDragOperation
     });
 
-    // Check if this is a rapid duplicate operation (within 1 second)
+    // Verificar se é uma operação duplicada (dentro de 1 segundo)
     if (
       lastDragOperation && 
       lastDragOperation.leadId === draggableId && 
@@ -101,7 +104,7 @@ export const useKanbanOperations = ({
       return;
     }
 
-    // Prevent multiple concurrent updates
+    // Impedir atualizações concorrentes
     if (isUpdatingStatus) {
       console.log("Already updating status, ignoring this operation");
       toast({
@@ -112,14 +115,14 @@ export const useKanbanOperations = ({
       return;
     }
 
-    // Record this operation
+    // Registrar esta operação
     setLastDragOperation({
       leadId: draggableId, 
       destination: destination.droppableId,
       timestamp: currentTime
     });
 
-    // Update the lead's status in the database
+    // Atualizar o status do lead no banco de dados
     try {
       setIsUpdatingStatus(true);
       console.log(`Moving lead ${draggableId} to ${destination.droppableId}`);
@@ -127,7 +130,7 @@ export const useKanbanOperations = ({
       const success = await updateLeadStatus(draggableId, destination.droppableId);
       
       if (success) {
-        // Refresh the leads list to get the updated data
+        // Atualizar a lista de leads para obter os dados atualizados
         console.log("Status updated successfully, refreshing leads list...");
         await fetchLeads();
         toast({
@@ -153,8 +156,8 @@ export const useKanbanOperations = ({
         duration: 3000,
       });
     } finally {
-      // Add a small timeout before setting isUpdatingStatus to false
-      // to prevent rapid consecutive updates
+      // Pequeno timeout antes de definir isUpdatingStatus como false
+      // para evitar atualizações consecutivas rápidas
       setTimeout(() => {
         setIsUpdatingStatus(false);
       }, 800);

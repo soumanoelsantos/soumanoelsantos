@@ -8,7 +8,7 @@ export interface LeadData {
   created_at: string;
   notes: string | null;
   source: string | null;
-  status_changed_at?: string; // Timestamp for when status was last changed
+  status_changed_at?: string; // Timestamp para quando o status foi alterado pela última vez
   updated_at?: string;
 }
 
