@@ -14,14 +14,6 @@ interface StatusColumnProps {
 }
 
 const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }: StatusColumnProps) => {
-  // Debug logging
-  console.log(`StatusColumn render:`, { 
-    columnId,
-    columnName,
-    leadsCount: leads.length,
-    leadIds: leads.map(lead => lead.id).join(', ')
-  });
-  
   return (
     <div className="bg-gray-50 rounded-lg p-4 flex flex-col h-full">
       <h2 className="font-semibold text-lg mb-3 text-gray-700 flex justify-between items-center">
@@ -32,12 +24,12 @@ const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }:
       </h2>
       
       <Droppable droppableId={columnName}>
-        {(provided) => (
+        {(provided, snapshot) => (
           <ScrollArea className="flex-grow overflow-y-auto h-[calc(100vh-220px)]">
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
-              className="min-h-[100px] pb-4"
+              className={`min-h-[100px] pb-4 ${snapshot.isDraggingOver ? 'bg-blue-50' : ''}`}
               data-column-id={columnId}
               data-column-name={columnName}
             >

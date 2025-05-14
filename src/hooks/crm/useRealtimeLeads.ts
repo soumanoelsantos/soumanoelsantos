@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useRealtimeLeads = (fetchLeads: () => Promise<void>) => {
   useEffect(() => {
-    console.log("Setting up realtime subscription for lead updates");
+    console.log("Setting up realtime subscription for leads");
     
     const channel = supabase
       .channel('schema-db-changes')
@@ -20,9 +20,9 @@ export const useRealtimeLeads = (fetchLeads: () => Promise<void>) => {
           fetchLeads();
         }
       )
-      .subscribe();
-
-    console.log("Subscription to realtime updates initialized");
+      .subscribe((status) => {
+        console.log("Realtime subscription status:", status);
+      });
 
     return () => {
       console.log("Removing realtime subscription");

@@ -24,11 +24,7 @@ export const useKanbanOperations = ({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editLead, setEditLead] = useState<LeadData | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [lastDragOperation, setLastDragOperation] = useState<{
-    leadId: string; 
-    destination: string;
-    timestamp: number;
-  } | null>(null);
+  const [dragOperationInProgress, setDragOperationInProgress] = useState(false);
 
   const handleAddSubmit = async (values: LeadFormValues) => {
     console.log("Submitting new lead:", values);
@@ -63,75 +59,55 @@ export const useKanbanOperations = ({
   const handleDragEnd = async (result: any) => {
     const { destination, source, draggableId } = result;
 
-    // Log the complete drag operation for debugging
-    console.log("Complete drag operation:", { result, draggableId, source, destination });
+    // Log the drag operation details
+    console.log("Drag operation details:", {
+      leadId: draggableId,
+      source: source?.droppableId,
+      destination: destination?.droppableId,
+      timestamp: new Date().toISOString()
+    });
 
-    // Se não foi largado em uma área válida
+    // If dropped outside a droppable area
     if (!destination) {
-      console.log("Drop outside a valid area", { draggableId, source });
+      console.log("Dropped outside valid area", { draggableId });
       return;
     }
 
-    // Se foi largado de volta no mesmo lugar
+    // If dropped in the same place
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
-      console.log("Drop in the same place, ignoring", { draggableId, source, destination });
+      console.log("Dropped in same position, ignoring");
       return;
     }
 
-    // Log mais informações para debugging
-    const currentTime = Date.now();
-    console.log("Processing drag end event:", {
-      leadId: draggableId,
-      sourceId: source.droppableId,
-      destinationId: destination.droppableId,
-      sourceIndex: source.index,
-      destinationIndex: destination.index,
-      currentTime,
-      lastOperation: lastDragOperation
-    });
-
-    // Verificar se é uma operação duplicada (dentro de 1 segundo)
-    if (
-      lastDragOperation && 
-      lastDragOperation.leadId === draggableId && 
-      lastDragOperation.destination === destination.droppableId && 
-      currentTime - lastDragOperation.timestamp < 1000
-    ) {
-      console.log("Detected duplicate drag operation within 1 second, ignoring");
-      return;
-    }
-
-    // Impedir atualizações concorrentes
-    if (isUpdatingStatus) {
-      console.log("Already updating status, ignoring this operation");
+    // Prevent concurrent drag operations
+    if (dragOperationInProgress || isUpdatingStatus) {
+      console.log("Operation already in progress, ignoring this drag");
       toast({
-        title: "Operação em andamento",
-        description: "Aguarde a conclusão da operação anterior",
+        title: "Aguarde",
+        description: "Já existe uma operação em andamento",
         duration: 2000,
       });
       return;
     }
 
-    // Registrar esta operação
-    setLastDragOperation({
-      leadId: draggableId, 
-      destination: destination.droppableId,
-      timestamp: currentTime
-    });
-
-    // Atualizar o status do lead no banco de dados
     try {
+      setDragOperationInProgress(true);
       setIsUpdatingStatus(true);
-      console.log(`Moving lead ${draggableId} to ${destination.droppableId}`);
+      
+      // Important: Log exactly what we're sending to updateLeadStatus
+      console.log("Updating lead status with:", {
+        id: draggableId,
+        newStatus: destination.droppableId,
+        time: new Date().toISOString()
+      });
       
       const success = await updateLeadStatus(draggableId, destination.droppableId);
       
       if (success) {
-        // Atualizar a lista de leads para obter os dados atualizados
-        console.log("Status updated successfully, refreshing leads list...");
+        console.log("Status update successful, refreshing data");
         await fetchLeads();
         toast({
           title: "Status atualizado",
@@ -139,28 +115,28 @@ export const useKanbanOperations = ({
           duration: 2000,
         });
       } else {
-        console.error("Failed to update lead status");
+        console.error("Status update failed");
         toast({
           variant: "destructive",
-          title: "Erro ao atualizar status",
-          description: "Não foi possível atualizar o status do lead. Tente novamente.",
+          title: "Falha na atualização",
+          description: "Não foi possível mover o lead. Tente novamente.",
           duration: 3000,
         });
       }
     } catch (error) {
-      console.error("Error in handleDragEnd:", error);
+      console.error("Error in drag end handler:", error);
       toast({
         variant: "destructive",
-        title: "Erro ao atualizar status",
-        description: "Ocorreu um erro ao atualizar o status. Tente novamente.",
+        title: "Erro na operação",
+        description: "Ocorreu um erro ao mover o lead",
         duration: 3000,
       });
     } finally {
-      // Pequeno timeout antes de definir isUpdatingStatus como false
-      // para evitar atualizações consecutivas rápidas
+      // Use a timeout to avoid race conditions
       setTimeout(() => {
         setIsUpdatingStatus(false);
-      }, 800);
+        setDragOperationInProgress(false);
+      }, 500);
     }
   };
 

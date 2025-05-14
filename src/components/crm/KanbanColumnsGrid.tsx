@@ -20,23 +20,9 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   onEditLead, 
   onDeleteLead 
 }) => {
-  // Debug logging
-  console.log("KanbanColumnsGrid render:", { 
-    columnsCount: columns.length, 
-    leadsCount: leads.length,
-    columnIds: columns.map(c => c.id),
-    columnNames: columns.map(c => c.name),
-    leadsPerStatus: Object.fromEntries(
-      columns.map(col => [
-        col.name, 
-        leads.filter(lead => lead.status === col.name).length
-      ])
-    )
-  });
-
+  // Enhance logging to troubleshoot drag and drop issues
   const handleDragEnd = (result: any) => {
-    // More detailed logging
-    console.log("Drag end event details:", {
+    console.log("Drag end event detected:", {
       draggableId: result.draggableId,
       source: result.source,
       destination: result.destination,
@@ -44,23 +30,34 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
       timestamp: new Date().toISOString()
     });
     
-    // Call the parent component's onDragEnd handler
-    onDragEnd(result);
+    // Call the parent component's onDragEnd handler with proper error handling
+    try {
+      onDragEnd(result);
+    } catch (error) {
+      console.error("Error in KanbanColumnsGrid handleDragEnd:", error);
+    }
   };
   
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 h-[calc(100vh-180px)]">
-        {columns.sort((a, b) => a.order - b.order).map(column => (
-          <StatusColumn
-            key={column.id}
-            columnId={column.id}
-            columnName={column.name}
-            leads={leads.filter(lead => lead.status === column.name)}
-            onEditLead={onEditLead}
-            onDeleteLead={onDeleteLead}
-          />
-        ))}
+        {columns.sort((a, b) => a.order - b.order).map(column => {
+          // Get leads for this column
+          const columnLeads = leads.filter(lead => lead.status === column.name);
+          
+          console.log(`Rendering column ${column.name} with ${columnLeads.length} leads`);
+          
+          return (
+            <StatusColumn
+              key={column.id}
+              columnId={column.id}
+              columnName={column.name}
+              leads={columnLeads}
+              onEditLead={onEditLead}
+              onDeleteLead={onDeleteLead}
+            />
+          );
+        })}
         {columns.length === 0 && (
           <div className="col-span-full flex items-center justify-center h-40 bg-gray-50 rounded-lg border border-dashed border-gray-300">
             <p className="text-gray-500">Nenhuma coluna definida. Adicione colunas para começar.</p>
