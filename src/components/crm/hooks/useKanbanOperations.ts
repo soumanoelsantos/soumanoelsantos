@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { LeadData } from "@/types/crm";
 import { LeadFormValues } from "../schemas/leadFormSchema";
 import { useToast } from "@/hooks/use-toast";
@@ -56,16 +56,9 @@ export const useKanbanOperations = ({
     setIsEditDialogOpen(true);
   };
 
-  const handleDragEnd = async (result: any) => {
+  // Optimized drag end handler with debounce protection
+  const handleDragEnd = useCallback(async (result: any) => {
     const { destination, source, draggableId } = result;
-
-    // Log the drag operation details
-    console.log("Drag operation details:", {
-      leadId: draggableId,
-      source: source?.droppableId,
-      destination: destination?.droppableId,
-      timestamp: new Date().toISOString()
-    });
 
     // If dropped outside a droppable area
     if (!destination) {
@@ -85,11 +78,6 @@ export const useKanbanOperations = ({
     // Prevent concurrent drag operations
     if (dragOperationInProgress || isUpdatingStatus) {
       console.log("Operation already in progress, ignoring this drag");
-      toast({
-        title: "Aguarde",
-        description: "Já existe uma operação em andamento",
-        duration: 2000,
-      });
       return;
     }
 
@@ -109,36 +97,19 @@ export const useKanbanOperations = ({
       if (success) {
         console.log("Status update successful, refreshing data");
         await fetchLeads();
-        toast({
-          title: "Status atualizado",
-          description: `Lead movido para ${destination.droppableId}`,
-          duration: 2000,
-        });
       } else {
         console.error("Status update failed");
-        toast({
-          variant: "destructive",
-          title: "Falha na atualização",
-          description: "Não foi possível mover o lead. Tente novamente.",
-          duration: 3000,
-        });
       }
     } catch (error) {
       console.error("Error in drag end handler:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro na operação",
-        description: "Ocorreu um erro ao mover o lead",
-        duration: 3000,
-      });
     } finally {
       // Use a timeout to avoid race conditions
       setTimeout(() => {
         setIsUpdatingStatus(false);
         setDragOperationInProgress(false);
-      }, 500);
+      }, 300);
     }
-  };
+  }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads]);
 
   return {
     isAddDialogOpen,

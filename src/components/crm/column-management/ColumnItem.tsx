@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { TableRow, TableCell } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-import { Edit, Trash2, MoveVertical } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Edit2, Trash2, Save, X, GripVertical } from 'lucide-react';
 import { CrmColumn } from '@/hooks/crm/useCrmColumns';
 import { Draggable } from 'react-beautiful-dnd';
 
@@ -23,85 +23,105 @@ const ColumnItem: React.FC<ColumnItemProps> = ({
   isSubmitting
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editingName, setEditingName] = useState(column.name);
+  const [editValue, setEditValue] = useState(column.name);
+  const [isProcessing, setIsProcessing] = useState(false);
   
-  const handleStartEdit = () => {
+  const handleEditClick = () => {
+    setEditValue(column.name);
     setIsEditing(true);
-    setEditingName(column.name);
   };
   
-  const handleCancelEdit = () => {
+  const handleCancelClick = () => {
     setIsEditing(false);
+    setEditValue(column.name);
   };
   
-  const handleSaveEdit = async () => {
-    if (!editingName.trim()) return;
+  const handleSaveClick = async () => {
+    if (editValue.trim() === '') return;
     
-    const success = await onEdit(column.id, editingName.trim());
+    setIsProcessing(true);
+    const success = await onEdit(column.id, editValue.trim());
+    setIsProcessing(false);
+    
     if (success) {
       setIsEditing(false);
     }
   };
   
+  const handleDeleteClick = async () => {
+    if (confirm('Tem certeza que deseja excluir esta coluna?')) {
+      setIsProcessing(true);
+      await onDelete(column.id);
+      setIsProcessing(false);
+    }
+  };
+  
   return (
-    <Draggable key={column.id} draggableId={column.id} index={index}>
-      {(provided) => (
+    <Draggable draggableId={column.id} index={index}>
+      {(provided, snapshot) => (
         <TableRow 
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className="cursor-move"
+          className={`${snapshot.isDragging ? 'bg-blue-100' : ''} transition-all duration-200`}
         >
-          <TableCell className="w-[40px] p-2">
-            <div {...provided.dragHandleProps} className="flex justify-center">
-              <MoveVertical size={16} className="text-gray-400" />
+          <TableCell>
+            <div {...provided.dragHandleProps} className="cursor-grab">
+              <GripVertical className="h-4 w-4 text-gray-400" />
             </div>
           </TableCell>
           <TableCell>
             {isEditing ? (
               <Input
-                value={editingName}
-                onChange={(e) => setEditingName(e.target.value)}
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="w-full"
+                placeholder="Nome da coluna"
                 autoFocus
               />
             ) : (
-              column.name
+              <span className="font-medium">{column.name}</span>
             )}
           </TableCell>
           <TableCell className="text-right">
             {isEditing ? (
-              <div className="flex justify-end gap-2">
+              <div className="flex items-center justify-end space-x-2">
                 <Button
+                  variant="ghost"
                   size="sm"
-                  onClick={handleSaveEdit}
-                  disabled={isSubmitting || !editingName.trim()}
+                  onClick={handleCancelClick}
+                  disabled={isProcessing || isSubmitting}
                 >
-                  Salvar
+                  <X className="h-4 w-4" />
                 </Button>
                 <Button
+                  variant="default"
                   size="sm"
-                  variant="outline"
-                  onClick={handleCancelEdit}
-                  disabled={isSubmitting}
+                  onClick={handleSaveClick}
+                  disabled={!editValue.trim() || isProcessing || isSubmitting}
                 >
-                  Cancelar
+                  <Save className="h-4 w-4 mr-1" />
+                  Salvar
                 </Button>
               </div>
             ) : (
-              <div className="flex justify-end gap-2">
+              <div className="flex items-center justify-end space-x-2">
                 <Button
-                  size="icon"
                   variant="ghost"
-                  onClick={handleStartEdit}
+                  size="icon"
+                  onClick={handleEditClick}
+                  disabled={isProcessing || isSubmitting}
+                  className="h-8 w-8"
                 >
-                  <Edit size={16} />
+                  <Edit2 className="h-4 w-4" />
                 </Button>
                 <Button
-                  size="icon"
                   variant="ghost"
-                  className="text-red-500 hover:text-red-600"
-                  onClick={() => onDelete(column.id)}
+                  size="icon"
+                  onClick={handleDeleteClick}
+                  disabled={isProcessing || isSubmitting}
+                  className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             )}

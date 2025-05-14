@@ -20,7 +20,7 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   onEditLead, 
   onDeleteLead 
 }) => {
-  // Enhance logging to troubleshoot drag and drop issues
+  // Enhanced drag end handler with additional logging
   const handleDragEnd = (result: any) => {
     console.log("Drag end event detected:", {
       draggableId: result.draggableId,
@@ -47,8 +47,6 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
         {sortedColumns.map(column => {
           // Get leads for this column
           const columnLeads = leads.filter(lead => lead.status === column.name);
-          
-          console.log(`Rendering column ${column.name} with ${columnLeads.length} leads`);
           
           return (
             <StatusColumn

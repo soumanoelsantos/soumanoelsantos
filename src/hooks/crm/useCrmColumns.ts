@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { loadCrmColumns, saveCrmColumns } from '@/utils/storage';
@@ -29,7 +29,9 @@ export const useCrmColumns = () => {
         const savedColumns = await loadCrmColumns(userId);
         
         if (savedColumns && savedColumns.length > 0) {
-          setColumns(savedColumns);
+          // Ensure the columns are sorted by order
+          const sortedColumns = [...savedColumns].sort((a, b) => a.order - b.order);
+          setColumns(sortedColumns);
         } else {
           // Use default columns if none are saved
           const defaultColumns = LEAD_STATUSES.map((status, index) => ({
@@ -49,7 +51,7 @@ export const useCrmColumns = () => {
     loadColumns();
   }, [userId]);
   
-  const saveColumns = async (newColumns: CrmColumn[]) => {
+  const saveColumns = useCallback(async (newColumns: CrmColumn[]) => {
     if (!userId) return false;
     
     try {
@@ -65,7 +67,7 @@ export const useCrmColumns = () => {
       console.error('Error saving CRM columns:', error);
       return false;
     }
-  };
+  }, [userId]);
   
   const addColumn = async (name: string) => {
     const newColumn: CrmColumn = {
@@ -133,10 +135,18 @@ export const useCrmColumns = () => {
       order: index
     }));
     
+    // Update local state immediately for optimistic UI update
+    setColumns(reorderedColumns);
+    
     const success = await saveColumns(reorderedColumns);
     
     if (!success) {
       console.error('Error reordering columns');
+      // If save failed, revert to previous state
+      const savedColumns = await loadCrmColumns(userId || '');
+      if (savedColumns) {
+        setColumns(savedColumns);
+      }
     }
     
     return success;

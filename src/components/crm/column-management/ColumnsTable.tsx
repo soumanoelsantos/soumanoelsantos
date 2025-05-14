@@ -42,7 +42,7 @@ const ColumnsTable: React.FC<ColumnsTableProps> = ({
     // Insert the item at the new position
     reorderedColumns.splice(result.destination.index, 0, movedColumn);
     
-    // Save the changes
+    // Save the changes with optimistic UI update
     await onReorderColumns(reorderedColumns);
   };
 
@@ -51,11 +51,11 @@ const ColumnsTable: React.FC<ColumnsTableProps> = ({
       <h3 className="mb-2 font-medium">Colunas existentes</h3>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="columns-list">
-          {(provided) => (
+          {(provided, snapshot) => (
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className="rounded-md border"
+              className={`rounded-md border ${snapshot.isDraggingOver ? 'bg-blue-50' : ''} transition-colors duration-200`}
             >
               <Table>
                 <TableHeader>

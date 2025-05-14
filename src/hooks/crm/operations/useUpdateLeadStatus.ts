@@ -68,28 +68,9 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       }
 
       console.log("Lead status updated successfully");
-      
-      // Verify the update
-      const { data: verifyUpdate, error: verifyError } = await supabase
-        .from("leads")
-        .select("status, status_changed_at")
-        .eq("id", id)
-        .single();
-      
-      if (verifyError) {
-        console.error("Error verifying update:", verifyError);
-      } else {
-        console.log("Verified new status:", verifyUpdate.status, "Changed at:", verifyUpdate.status_changed_at);
-      }
-      
       return true;
     } catch (error: any) {
       console.error("Error in updateLeadStatus:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao atualizar status",
-        description: error.message || "Não foi possível atualizar o status do lead",
-      });
       return false;
     }
   };
