@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import LeadFormDialog from "./LeadFormDialog";
@@ -10,7 +9,7 @@ import KanbanHeader from "./KanbanHeader";
 import KanbanColumnsGrid from "./KanbanColumnsGrid";
 import { useKanbanOperations } from "./hooks/useKanbanOperations";
 import { useCrmColumns } from "@/hooks/crm/useCrmColumns";
-import ColumnManagementDialog from "./ColumnManagementDialog";
+import ColumnManagementDialog from "./column-management/ColumnManagementDialog";
 
 const KanbanBoard = () => {
   const { isAuthenticated } = useAuth();
