@@ -29,7 +29,8 @@ const KanbanBoard = () => {
     isLoading: isColumnsLoading,
     addColumn,
     editColumn,
-    deleteColumn
+    deleteColumn,
+    reorderColumns
   } = useCrmColumns();
   
   const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
@@ -101,6 +102,7 @@ const KanbanBoard = () => {
         onAddColumn={addColumn}
         onEditColumn={editColumn}
         onDeleteColumn={deleteColumn}
+        onReorderColumns={reorderColumns}
       />
       
       <KanbanColumnsGrid

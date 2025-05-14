@@ -38,10 +38,13 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
     }
   };
   
+  // Sort columns by their order property
+  const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+  
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 h-[calc(100vh-180px)]">
-        {columns.sort((a, b) => a.order - b.order).map(column => {
+        {sortedColumns.map(column => {
           // Get leads for this column
           const columnLeads = leads.filter(lead => lead.status === column.name);
           

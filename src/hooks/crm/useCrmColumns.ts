@@ -77,17 +77,8 @@ export const useCrmColumns = () => {
     const newColumns = [...columns, newColumn];
     const success = await saveColumns(newColumns);
     
-    if (success) {
-      toast({
-        title: 'Coluna adicionada',
-        description: `A coluna "${name}" foi adicionada com sucesso.`
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao adicionar coluna',
-        description: 'Não foi possível adicionar a coluna.'
-      });
+    if (!success) {
+      console.error('Error adding column:', name);
     }
     
     return success;
@@ -106,17 +97,8 @@ export const useCrmColumns = () => {
     
     const success = await saveColumns(newColumns);
     
-    if (success) {
-      toast({
-        title: 'Coluna atualizada',
-        description: `A coluna foi renomeada para "${newName}" com sucesso.`
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao renomear coluna',
-        description: 'Não foi possível renomear a coluna.'
-      });
+    if (!success) {
+      console.error('Error renaming column:', id);
     }
     
     return success;
@@ -137,17 +119,24 @@ export const useCrmColumns = () => {
     
     const success = await saveColumns(reorderedColumns);
     
-    if (success) {
-      toast({
-        title: 'Coluna removida',
-        description: `A coluna "${columnToDelete.name}" foi removida com sucesso.`
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao remover coluna',
-        description: 'Não foi possível remover a coluna.'
-      });
+    if (!success) {
+      console.error('Error removing column:', id);
+    }
+    
+    return success;
+  };
+  
+  const reorderColumns = async (newOrder: CrmColumn[]) => {
+    // Update the order property for each column
+    const reorderedColumns = newOrder.map((col, index) => ({
+      ...col,
+      order: index
+    }));
+    
+    const success = await saveColumns(reorderedColumns);
+    
+    if (!success) {
+      console.error('Error reordering columns');
     }
     
     return success;
@@ -158,6 +147,7 @@ export const useCrmColumns = () => {
     isLoading,
     addColumn,
     editColumn,
-    deleteColumn
+    deleteColumn,
+    reorderColumns
   };
 };
