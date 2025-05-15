@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Nome precisa ter no mínimo 2 caracteres" }),
@@ -38,7 +37,6 @@ const LeadCaptureForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -89,10 +87,10 @@ const LeadCaptureForm = ({
         onSuccess();
       }
       
-      // Navegar para página de agendamento interna com o nome do lead
+      // Redirect to Google Calendar scheduling page
       setTimeout(() => {
-        navigate('/agendamento', { state: { leadName: values.name } });
-      }, 1500); // Pequeno atraso para o toast ser visível
+        window.location.href = "https://calendar.app.google/24nP9V5SPd4gLF3v5";
+      }, 1500); // Short delay for the toast to be visible
       
     } catch (error) {
       console.error("Error submitting lead:", error);
