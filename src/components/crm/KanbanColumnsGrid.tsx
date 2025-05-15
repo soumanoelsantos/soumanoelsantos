@@ -43,8 +43,8 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="h-[calc(100vh-180px)] overflow-hidden">
-        <div className="h-full overflow-x-auto">
+      <div className="h-[calc(100vh-180px)] overflow-x-auto">
+        <div className="h-full">
           <div className="flex space-x-4 pb-4 min-w-max">
             {sortedColumns.map(column => {
               // Get leads for this column
