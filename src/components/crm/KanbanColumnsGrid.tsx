@@ -20,7 +20,7 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   onEditLead, 
   onDeleteLead 
 }) => {
-  // Enhanced drag end handler with additional logging
+  // Enhanced drag end handler with additional logging and error handling
   const handleDragEnd = (result: any) => {
     console.log("Drag end event detected:", {
       draggableId: result.draggableId,

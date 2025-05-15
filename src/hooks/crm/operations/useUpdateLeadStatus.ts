@@ -21,9 +21,18 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         throw new Error("Novo status não fornecido");
       }
       
-      // Validate status is one of the allowed values
-      if (!LEAD_STATUSES.includes(newStatus)) {
+      // Verify if status is in the allowed list (case-insensitive check)
+      const validStatus = LEAD_STATUSES.find(
+        status => status.toLowerCase() === newStatus.toLowerCase()
+      );
+      
+      if (!validStatus) {
         console.error(`Invalid status value "${newStatus}". Valid values are: ${LEAD_STATUSES.join(', ')}`);
+        toast({
+          variant: "destructive",
+          title: "Status inválido",
+          description: `Status '${newStatus}' não é válido. Valores permitidos: ${LEAD_STATUSES.join(', ')}`,
+        });
         throw new Error(`Status '${newStatus}' não é válido`);
       }
 
@@ -44,10 +53,10 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         throw new Error(`Lead com ID ${id} não encontrado`);
       }
       
-      console.log("Found lead, current status:", existingLead.status, "New status:", newStatus);
+      console.log("Found lead, current status:", existingLead.status, "New status:", validStatus);
       
       // If status already set to new status, no need to update
-      if (existingLead.status === newStatus) {
+      if (existingLead.status === validStatus) {
         console.log("Lead already has the requested status, skipping update");
         return true;
       }
@@ -56,7 +65,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       const { error } = await supabase
         .from("leads")
         .update({ 
-          status: newStatus,
+          status: validStatus,
           status_changed_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
@@ -64,6 +73,11 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
 
       if (error) {
         console.error("Supabase update error:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao atualizar status",
+          description: error.message,
+        });
         throw error;
       }
 

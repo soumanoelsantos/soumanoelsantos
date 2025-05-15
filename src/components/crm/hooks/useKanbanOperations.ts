@@ -100,11 +100,30 @@ export const useKanbanOperations = ({
       
       if (success) {
         console.log("Status update successful");
+        toast({
+          title: "Status atualizado",
+          description: `Lead movido para ${destination.droppableId}`,
+          duration: 2000,
+        });
       } else {
         console.error("Status update failed");
+        toast({
+          variant: "destructive",
+          title: "Falha na atualização",
+          description: "Não foi possível atualizar o status do lead",
+        });
+        // Force refresh to ensure UI is consistent with backend state
+        await fetchLeads();
       }
     } catch (error) {
       console.error("Error in drag end handler:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao mover card",
+        description: error instanceof Error ? error.message : "Erro desconhecido",
+      });
+      // Force refresh to ensure UI is consistent with backend state
+      await fetchLeads();
     } finally {
       // Quick timeout to avoid race conditions
       setTimeout(() => {
@@ -112,7 +131,7 @@ export const useKanbanOperations = ({
         setDragOperationInProgress(false);
       }, 100);
     }
-  }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads]);
+  }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads, toast]);
 
   return {
     isAddDialogOpen,
