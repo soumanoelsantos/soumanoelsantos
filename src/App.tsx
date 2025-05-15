@@ -19,6 +19,7 @@ import PropostaUnicaValor from "./pages/PropostaUnicaValor";
 import MapaEquipe from "./pages/MapaEquipe";
 import CrmPage from "./pages/CrmPage";
 import Ferramentas from "./pages/Ferramentas";
+import Agendamento from "./pages/Agendamento";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/mapa-negocio" element={<MapaNegocio />} />
             <Route path="/proposta-unica-valor" element={<PropostaUnicaValor />} />
             <Route path="/mapa-equipe" element={<MapaEquipe />} />
+            <Route path="/agendamento" element={<Agendamento />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
