@@ -25,28 +25,30 @@ const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }:
       
       <Droppable droppableId={columnName}>
         {(provided, snapshot) => (
-          <ScrollArea className="flex-grow overflow-y-auto h-[calc(100vh-220px)]">
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className={`min-h-[100px] pb-4 transition-colors duration-300 ${
-                snapshot.isDraggingOver ? 'bg-blue-50 border border-blue-200 rounded-md p-2' : 'p-2'
-              }`}
-              data-column-id={columnId}
-              data-column-name={columnName}
-            >
-              {leads.map((lead, index) => (
-                <DraggableLeadCard 
-                  key={lead.id} 
-                  lead={lead} 
-                  index={index}
-                  onEdit={onEditLead} 
-                  onDelete={onDeleteLead} 
-                />
-              ))}
-              {provided.placeholder}
-            </div>
-          </ScrollArea>
+          <div className="flex-grow h-[calc(100vh-260px)] relative">
+            <ScrollArea className="h-full">
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className={`min-h-[100px] pb-4 transition-colors duration-300 ${
+                  snapshot.isDraggingOver ? 'bg-blue-50 border border-blue-200 rounded-md p-2' : 'p-2'
+                }`}
+                data-column-id={columnId}
+                data-column-name={columnName}
+              >
+                {leads.map((lead, index) => (
+                  <DraggableLeadCard 
+                    key={lead.id} 
+                    lead={lead} 
+                    index={index}
+                    onEdit={onEditLead} 
+                    onDelete={onDeleteLead} 
+                  />
+                ))}
+                {provided.placeholder}
+              </div>
+            </ScrollArea>
+          </div>
         )}
       </Droppable>
     </div>

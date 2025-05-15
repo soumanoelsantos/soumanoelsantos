@@ -4,6 +4,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import StatusColumn from "./StatusColumn";
 import { LeadData } from "@/types/crm";
 import { CrmColumn } from "@/hooks/crm/useCrmColumns";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface KanbanColumnsGridProps {
   columns: CrmColumn[];
@@ -43,27 +44,33 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 h-[calc(100vh-180px)]">
-        {sortedColumns.map(column => {
-          // Get leads for this column
-          const columnLeads = leads.filter(lead => lead.status === column.name);
-          
-          return (
-            <StatusColumn
-              key={column.id}
-              columnId={column.id}
-              columnName={column.name}
-              leads={columnLeads}
-              onEditLead={onEditLead}
-              onDeleteLead={onDeleteLead}
-            />
-          );
-        })}
-        {columns.length === 0 && (
-          <div className="col-span-full flex items-center justify-center h-40 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-            <p className="text-gray-500">Nenhuma coluna definida. Adicione colunas para começar.</p>
+      <div className="h-[calc(100vh-180px)] overflow-hidden">
+        {/* Horizontal ScrollArea para permitir rolagem horizontal quando há muitas colunas */}
+        <ScrollArea className="h-full" orientation="horizontal">
+          <div className="flex space-x-4 pb-4 min-w-max">
+            {sortedColumns.map(column => {
+              // Get leads for this column
+              const columnLeads = leads.filter(lead => lead.status === column.name);
+              
+              return (
+                <div key={column.id} className="w-80 flex-shrink-0">
+                  <StatusColumn
+                    columnId={column.id}
+                    columnName={column.name}
+                    leads={columnLeads}
+                    onEditLead={onEditLead}
+                    onDeleteLead={onDeleteLead}
+                  />
+                </div>
+              );
+            })}
+            {columns.length === 0 && (
+              <div className="w-full flex items-center justify-center h-40 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                <p className="text-gray-500">Nenhuma coluna definida. Adicione colunas para começar.</p>
+              </div>
+            )}
           </div>
-        )}
+        </ScrollArea>
       </div>
     </DragDropContext>
   );
