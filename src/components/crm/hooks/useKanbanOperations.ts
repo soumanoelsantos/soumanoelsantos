@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 import { LeadData } from "@/types/crm";
 import { LeadFormValues } from "../schemas/leadFormSchema";
@@ -77,6 +78,10 @@ export const useKanbanOperations = ({
     // Prevent concurrent drag operations
     if (dragOperationInProgress || isUpdatingStatus) {
       console.log("Operation already in progress, ignoring this drag");
+      toast({
+        title: "Operação em andamento",
+        description: "Por favor, aguarde a conclusão da operação atual",
+      });
       return;
     }
 
@@ -130,7 +135,7 @@ export const useKanbanOperations = ({
       setTimeout(() => {
         setIsUpdatingStatus(false);
         setDragOperationInProgress(false);
-      }, 30); // Very short timeout for faster response
+      }, 100); // Slightly longer timeout for better stability
     }
   }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads, toast]);
 

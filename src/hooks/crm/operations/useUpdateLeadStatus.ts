@@ -1,7 +1,6 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LEAD_STATUSES } from "@/constants/crmConstants";
 
 export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
   const { toast } = useToast();
@@ -21,22 +20,6 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         throw new Error("Novo status não fornecido");
       }
       
-      // Normalize status case for validation (case-insensitive comparison)
-      const normalizedNewStatus = newStatus.trim();
-      const validStatus = LEAD_STATUSES.find(
-        status => status === normalizedNewStatus
-      );
-      
-      if (!validStatus) {
-        console.error(`Status inválido "${normalizedNewStatus}". Valores válidos: ${LEAD_STATUSES.join(', ')}`);
-        toast({
-          variant: "destructive",
-          title: "Status inválido",
-          description: `Status '${normalizedNewStatus}' não é válido. Valores permitidos: ${LEAD_STATUSES.join(', ')}`,
-        });
-        throw new Error(`Status '${normalizedNewStatus}' não é válido`);
-      }
-
       // First check if the lead exists
       const { data: existingLead, error: checkError } = await supabase
         .from("leads")
@@ -54,10 +37,10 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         throw new Error(`Lead com ID ${id} não encontrado`);
       }
       
-      console.log("Found lead, current status:", existingLead.status, "New status:", validStatus);
+      console.log("Found lead, current status:", existingLead.status, "New status:", newStatus);
       
       // If status already set to new status, no need to update
-      if (existingLead.status === validStatus) {
+      if (existingLead.status === newStatus) {
         console.log("Lead already has the requested status, skipping update");
         return true;
       }
@@ -66,7 +49,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       const { error } = await supabase
         .from("leads")
         .update({ 
-          status: validStatus,
+          status: newStatus,
           status_changed_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
@@ -82,7 +65,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         throw error;
       }
 
-      console.log("Lead status updated successfully to:", validStatus);
+      console.log("Lead status updated successfully to:", newStatus);
       
       // Return success
       return true;
