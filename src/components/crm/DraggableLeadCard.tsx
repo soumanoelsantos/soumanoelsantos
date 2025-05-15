@@ -19,13 +19,17 @@ const DraggableLeadCard = ({ lead, index, onEdit, onDelete }: DraggableLeadCardP
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`transition-transform duration-200 ${snapshot.isDragging ? 'scale-105 rotate-1 z-10 shadow-lg' : ''}`}
+          className={`mb-3 transition-all duration-200 ${
+            snapshot.isDragging ? 'scale-105 rotate-1 z-10 shadow-lg opacity-90' : ''
+          }`}
+          data-lead-id={lead.id}
+          data-lead-status={lead.status}
           style={{
             ...provided.draggableProps.style,
-            // Add transition for smooth return to position when dropped
+            // Add smooth transition for drag operations
             transition: snapshot.isDragging
               ? provided.draggableProps.style?.transition
-              : 'all 0.3s ease'
+              : 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)'
           }}
         >
           <LeadCard lead={lead} onEdit={onEdit} onDelete={onDelete} />

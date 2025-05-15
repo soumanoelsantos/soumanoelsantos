@@ -68,6 +68,10 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       }
 
       console.log("Lead status updated successfully");
+      
+      // Call fetchLeads directly after successful update to refresh the data
+      await fetchLeads();
+      
       return true;
     } catch (error: any) {
       console.error("Error in updateLeadStatus:", error);

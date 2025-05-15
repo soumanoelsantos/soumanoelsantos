@@ -29,7 +29,9 @@ const StatusColumn = ({ columnId, columnName, leads, onEditLead, onDeleteLead }:
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
-              className={`min-h-[100px] pb-4 transition-colors duration-200 ${snapshot.isDraggingOver ? 'bg-blue-50 rounded-md' : ''}`}
+              className={`min-h-[100px] pb-4 transition-colors duration-300 ${
+                snapshot.isDraggingOver ? 'bg-blue-50 border border-blue-200 rounded-md p-2' : 'p-2'
+              }`}
               data-column-id={columnId}
               data-column-name={columnName}
             >

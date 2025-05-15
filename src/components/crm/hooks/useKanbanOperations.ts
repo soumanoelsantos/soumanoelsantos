@@ -56,7 +56,7 @@ export const useKanbanOperations = ({
     setIsEditDialogOpen(true);
   };
 
-  // Optimized drag end handler with debounce protection
+  // Optimized drag end handler
   const handleDragEnd = useCallback(async (result: any) => {
     const { destination, source, draggableId } = result;
 
@@ -85,29 +85,32 @@ export const useKanbanOperations = ({
       setDragOperationInProgress(true);
       setIsUpdatingStatus(true);
       
-      // Important: Log exactly what we're sending to updateLeadStatus
-      console.log("Updating lead status with:", {
-        id: draggableId,
-        newStatus: destination.droppableId,
-        time: new Date().toISOString()
+      // Log details of the drag operation
+      console.log("Drag operation detected:", {
+        leadId: draggableId,
+        fromStatus: source.droppableId,
+        toStatus: destination.droppableId,
+        fromIndex: source.index,
+        toIndex: destination.index,
+        timestamp: new Date().toISOString()
       });
       
+      // Update the lead status
       const success = await updateLeadStatus(draggableId, destination.droppableId);
       
       if (success) {
-        console.log("Status update successful, refreshing data");
-        await fetchLeads();
+        console.log("Status update successful");
       } else {
         console.error("Status update failed");
       }
     } catch (error) {
       console.error("Error in drag end handler:", error);
     } finally {
-      // Use a timeout to avoid race conditions
+      // Quick timeout to avoid race conditions
       setTimeout(() => {
         setIsUpdatingStatus(false);
         setDragOperationInProgress(false);
-      }, 300);
+      }, 100);
     }
   }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads]);
 
