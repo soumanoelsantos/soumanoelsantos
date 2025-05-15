@@ -43,7 +43,7 @@ const KanbanColumnsGrid: React.FC<KanbanColumnsGridProps> = ({
   
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 h-[calc(100vh-180px)]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 h-[calc(100vh-180px)]">
         {sortedColumns.map(column => {
           // Get leads for this column
           const columnLeads = leads.filter(lead => lead.status === column.name);

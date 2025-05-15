@@ -56,7 +56,7 @@ export const useKanbanOperations = ({
     setIsEditDialogOpen(true);
   };
 
-  // Optimized drag end handler
+  // Optimized drag end handler with improved error handling
   const handleDragEnd = useCallback(async (result: any) => {
     const { destination, source, draggableId } = result;
 
@@ -95,7 +95,7 @@ export const useKanbanOperations = ({
         timestamp: new Date().toISOString()
       });
       
-      // Update the lead status
+      // Update the lead status - explicitly pass the exact status name
       const success = await updateLeadStatus(draggableId, destination.droppableId);
       
       if (success) {
@@ -105,6 +105,8 @@ export const useKanbanOperations = ({
           description: `Lead movido para ${destination.droppableId}`,
           duration: 2000,
         });
+        // Refresh leads to ensure UI is consistent
+        await fetchLeads();
       } else {
         console.error("Status update failed");
         toast({
@@ -129,7 +131,7 @@ export const useKanbanOperations = ({
       setTimeout(() => {
         setIsUpdatingStatus(false);
         setDragOperationInProgress(false);
-      }, 100);
+      }, 50); // Reduced timeout for faster response
     }
   }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads, toast]);
 
