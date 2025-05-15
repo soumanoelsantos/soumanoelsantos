@@ -77,7 +77,7 @@ const LeadCaptureForm = ({
       
       toast({
         title: "Solicitação enviada!",
-        description: "Entraremos em contato em breve.",
+        description: "Redirecionando para agendar sua consulta...",
       });
       
       form.reset();
@@ -86,6 +86,12 @@ const LeadCaptureForm = ({
       if (onSuccess) {
         onSuccess();
       }
+      
+      // Redirect to Google Calendar scheduling page
+      setTimeout(() => {
+        window.location.href = "https://calendar.app.google/24nP9V5SPd4gLF3v5";
+      }, 1500); // Short delay for the toast to be visible
+      
     } catch (error) {
       console.error("Error submitting lead:", error);
       toast({
