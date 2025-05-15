@@ -21,19 +21,20 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         throw new Error("Novo status não fornecido");
       }
       
-      // Verify if status is in the allowed list (case-insensitive check)
+      // Normalize status case for validation (case-insensitive comparison)
+      const normalizedNewStatus = newStatus.trim();
       const validStatus = LEAD_STATUSES.find(
-        status => status.toLowerCase() === newStatus.toLowerCase()
+        status => status === normalizedNewStatus
       );
       
       if (!validStatus) {
-        console.error(`Invalid status value "${newStatus}". Valid values are: ${LEAD_STATUSES.join(', ')}`);
+        console.error(`Status inválido "${normalizedNewStatus}". Valores válidos: ${LEAD_STATUSES.join(', ')}`);
         toast({
           variant: "destructive",
           title: "Status inválido",
-          description: `Status '${newStatus}' não é válido. Valores permitidos: ${LEAD_STATUSES.join(', ')}`,
+          description: `Status '${normalizedNewStatus}' não é válido. Valores permitidos: ${LEAD_STATUSES.join(', ')}`,
         });
-        throw new Error(`Status '${newStatus}' não é válido`);
+        throw new Error(`Status '${normalizedNewStatus}' não é válido`);
       }
 
       // First check if the lead exists
@@ -81,14 +82,17 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         throw error;
       }
 
-      console.log("Lead status updated successfully");
+      console.log("Lead status updated successfully to:", validStatus);
       
-      // Call fetchLeads directly after successful update to refresh the data
-      await fetchLeads();
-      
+      // Return success
       return true;
     } catch (error: any) {
       console.error("Error in updateLeadStatus:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar status",
+        description: error.message || "Ocorreu um erro ao atualizar o status do lead",
+      });
       return false;
     }
   };

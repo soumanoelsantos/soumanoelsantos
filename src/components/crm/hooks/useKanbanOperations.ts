@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { LeadData } from "@/types/crm";
 import { LeadFormValues } from "../schemas/leadFormSchema";
@@ -56,7 +55,7 @@ export const useKanbanOperations = ({
     setIsEditDialogOpen(true);
   };
 
-  // Optimized drag end handler with improved error handling
+  // Enhanced drag end handler with improved error handling and logging
   const handleDragEnd = useCallback(async (result: any) => {
     const { destination, source, draggableId } = result;
 
@@ -85,8 +84,8 @@ export const useKanbanOperations = ({
       setDragOperationInProgress(true);
       setIsUpdatingStatus(true);
       
-      // Log details of the drag operation
-      console.log("Drag operation detected:", {
+      // Enhanced logging with more details
+      console.log("Starting drag operation:", {
         leadId: draggableId,
         fromStatus: source.droppableId,
         toStatus: destination.droppableId,
@@ -95,20 +94,20 @@ export const useKanbanOperations = ({
         timestamp: new Date().toISOString()
       });
       
-      // Update the lead status - explicitly pass the exact status name
+      // Update the lead status - pass the exact destination droppableId as status
       const success = await updateLeadStatus(draggableId, destination.droppableId);
       
       if (success) {
-        console.log("Status update successful");
+        console.log(`Status updated successfully from ${source.droppableId} to ${destination.droppableId}`);
         toast({
           title: "Status atualizado",
           description: `Lead movido para ${destination.droppableId}`,
           duration: 2000,
         });
-        // Refresh leads to ensure UI is consistent
+        // Always refresh leads to ensure UI is consistent with backend
         await fetchLeads();
       } else {
-        console.error("Status update failed");
+        console.error(`Status update failed: ${draggableId} to ${destination.droppableId}`);
         toast({
           variant: "destructive",
           title: "Falha na atualização",
@@ -127,11 +126,11 @@ export const useKanbanOperations = ({
       // Force refresh to ensure UI is consistent with backend state
       await fetchLeads();
     } finally {
-      // Quick timeout to avoid race conditions
+      // Reduced timeout to make the UI more responsive
       setTimeout(() => {
         setIsUpdatingStatus(false);
         setDragOperationInProgress(false);
-      }, 50); // Reduced timeout for faster response
+      }, 30); // Very short timeout for faster response
     }
   }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads, toast]);
 
