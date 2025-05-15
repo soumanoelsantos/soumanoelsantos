@@ -18,6 +18,7 @@ import MapaNegocio from "./pages/MapaNegocio";
 import PropostaUnicaValor from "./pages/PropostaUnicaValor";
 import MapaEquipe from "./pages/MapaEquipe";
 import CrmPage from "./pages/CrmPage";
+import Ferramentas from "./pages/Ferramentas";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Register />} />
+            <Route path="/ferramentas" element={<Ferramentas />} />
             <Route path="/membros" element={<MemberArea />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/crm" element={<CrmPage />} />
