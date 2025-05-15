@@ -4,7 +4,6 @@ import { DragDropContext } from "react-beautiful-dnd";
 import StatusColumn from "./StatusColumn";
 import { LeadData } from "@/types/crm";
 import { CrmColumn } from "@/hooks/crm/useCrmColumns";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface KanbanColumnsGridProps {
   columns: CrmColumn[];
