@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -13,7 +12,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isNewUser, setIsNewUser] = useState<boolean>(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loginRedirectPath, setLoginRedirectPath] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Inicialização
   useEffect(() => {
@@ -55,8 +54,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserId(session.user.id);
         loadUserProfile(session.user.id);
       }
-      
-      setIsLoading(false);
     });
 
     return () => {
@@ -173,10 +170,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw error;
     }
   };
-
-  if (isLoading) {
-    return <div>Carregando autenticação...</div>;
-  }
 
   return (
     <AuthContext.Provider value={{ 
