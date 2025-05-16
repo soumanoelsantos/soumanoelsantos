@@ -20,6 +20,12 @@ const Hero = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10 pt-12 lg:pt-20">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-dark-text max-w-3xl mx-auto">
+            Em 30 minutos farei um <span className="text-dark-primary">PLANO DE AÇÃO GRATUITO</span> para sua empresa <span className="text-dark-primary">DOBRAR</span> o faturamento em 90 dias!
+          </h2>
+        </div>
+
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
           <div className="lg:w-1/2 space-y-4 lg:space-y-6">
             <div className="space-y-3 lg:space-y-4 text-center lg:text-left">
