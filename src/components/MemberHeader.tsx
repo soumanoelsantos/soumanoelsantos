@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { UserIcon, LogOut, Settings, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,9 +12,13 @@ interface MemberHeaderProps {
 
 const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAdmin, isLoading } = useAuth();
   const [isAdminViewingAsUser, setIsAdminViewingAsUser] = useState(false);
   const [originalAdminEmail, setOriginalAdminEmail] = useState<string | null>(null);
+  
+  // Check if we're on the members page
+  const isMembersPage = location.pathname === "/membros";
   
   useEffect(() => {
     const adminViewingFlag = localStorage.getItem('adminViewingAsUser') === 'true';
@@ -73,16 +77,18 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
               </Button>
             )}
             
-            <Button 
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/admin")}
-              className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
-              disabled={isLoading}
-            >
-              <Settings className="mr-2 h-4 w-4" />
-              Admin
-            </Button>
+            {!isMembersPage && (
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin")}
+                className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
+                disabled={isLoading}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                Admin
+              </Button>
+            )}
             
             <Button 
               variant="outline"
