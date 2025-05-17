@@ -27,7 +27,7 @@ const Hero = () => {
                 Transforme sua empresa em uma <span className="text-dark-primary">máquina de vendas</span>
               </h1>
               
-              <div className="glass-morphism p-4 sm:p-6 rounded-lg space-y-4 text-left mb-4">
+              <div className="text-center">
                 <p className="text-base sm:text-lg text-dark-text/80">
                   Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
                 </p>

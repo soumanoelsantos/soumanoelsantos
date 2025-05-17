@@ -109,9 +109,9 @@ const LeadCaptureForm = ({
       <DialogTrigger asChild>
         <Button className={buttonClassName}>{buttonText}</Button>
       </DialogTrigger>
-      <DialogContent className={`${isMobile ? 'w-[calc(100%-16px)] mx-2 max-h-[92vh] overflow-y-auto p-4' : 'sm:max-w-[425px]'}`}>
+      <DialogContent className="sm:max-w-[425px] w-[calc(100%-32px)] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className={`text-2xl text-center ${isMobile ? 'text-xl mb-2' : ''}`}>
+          <DialogTitle className="text-2xl text-center">
             Agendar diagnóstico gratuito
           </DialogTitle>
         </DialogHeader>
@@ -123,9 +123,9 @@ const LeadCaptureForm = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={isMobile ? "text-sm" : ""}>Nome completo</FormLabel>
+                  <FormLabel>Nome completo</FormLabel>
                   <FormControl>
-                    <Input placeholder="Seu nome" {...field} className={isMobile ? "text-base h-9" : ""} />
+                    <Input placeholder="Seu nome" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,9 +137,9 @@ const LeadCaptureForm = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={isMobile ? "text-sm" : ""}>Email</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="seu@email.com" {...field} className={isMobile ? "text-base h-9" : ""} />
+                    <Input type="email" placeholder="seu@email.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,9 +151,9 @@ const LeadCaptureForm = ({
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={isMobile ? "text-sm" : ""}>Telefone</FormLabel>
+                  <FormLabel>Telefone</FormLabel>
                   <FormControl>
-                    <Input placeholder="(00) 00000-0000" {...field} className={isMobile ? "text-base h-9" : ""} />
+                    <Input placeholder="(00) 00000-0000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -177,7 +177,7 @@ const LeadCaptureForm = ({
           </form>
         </Form>
         
-        <p className={`text-sm text-center text-gray-500 ${isMobile ? 'mt-1 text-xs' : 'mt-2'}`}>
+        <p className="text-sm text-center text-gray-500 mt-2">
           Seus dados estão seguros e não serão compartilhados com terceiros.
         </p>
       </DialogContent>
