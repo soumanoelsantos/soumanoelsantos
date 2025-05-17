@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminData } from "@/hooks/useAdminData";
@@ -16,8 +16,23 @@ import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButt
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const { userEmail } = useAuth();
+  const { userEmail, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState("users");
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+  
+  // Check admin privileges
+  useEffect(() => {
+    // Small delay to ensure auth state is loaded
+    const timer = setTimeout(() => {
+      setIsPageLoaded(true);
+      if (!isAdmin) {
+        console.log("User is not admin, redirecting to members area");
+        navigate("/membros");
+      }
+    }, 200);
+    
+    return () => clearTimeout(timer);
+  }, [isAdmin, navigate]);
   
   const { 
     users, 
@@ -48,7 +63,8 @@ const AdminPage = () => {
     }
   }, [refreshData]);
 
-  if (isLoading) {
+  // If not fully loaded or checking admin status, show loading
+  if (!isPageLoaded || isLoading) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <AdminHeader userEmail={userEmail} onLogout={handleLogout} />
