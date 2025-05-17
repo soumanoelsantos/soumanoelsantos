@@ -13,33 +13,63 @@ import DatabaseAdmin from "@/components/admin/DatabaseAdmin";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, ArrowLeft } from "lucide-react";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const { userEmail, isAdmin } = useAuth();
+  const { userEmail, isAdmin, userId } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("users");
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [adminCheckAttempts, setAdminCheckAttempts] = useState(0);
   
-  // Enhanced admin check with immediate redirection
+  // Enhanced admin check with better error handling
   useEffect(() => {
-    console.log("Admin page - checking admin status:", isAdmin);
+    console.log("Admin page - checking admin status:", { isAdmin, userEmail, userId });
+    
+    // Only allow a reasonable number of admin check attempts
+    if (adminCheckAttempts > 5) {
+      console.log("Exceeded maximum admin check attempts");
+      navigate("/membros");
+      toast({
+        title: "Acesso negado",
+        description: "Você não tem permissões de administrador.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     const checkAdmin = () => {
       setIsPageLoaded(true);
+      setAdminCheckAttempts(prev => prev + 1);
       
-      if (isAdmin === false) { // Explicitly check for false (not undefined/null)
+      // If admin status is definitively false, redirect
+      if (isAdmin === false) {
         console.log("User is NOT admin, redirecting to members area");
         navigate("/membros");
-      } else {
-        console.log("User is admin or status still loading");
+        toast({
+          title: "Acesso negado",
+          description: "Você não tem permissões de administrador.",
+          variant: "destructive"
+        });
+      } 
+      // If admin status is true, allow access
+      else if (isAdmin === true) {
+        console.log("User confirmed as admin, granting access");
+      }
+      // If admin status is still undetermined, try again after a delay
+      else {
+        console.log(`Admin status undetermined (attempt ${adminCheckAttempts + 1}), checking again...`);
+        // Retry with backoff
+        setTimeout(checkAdmin, 800);
       }
     };
     
-    // Initial check with small delay to ensure auth state is loaded
-    const timer = setTimeout(checkAdmin, 500);
+    if (userId) {
+      checkAdmin();
+    }
     
-    return () => clearTimeout(timer);
-  }, [isAdmin, navigate]);
+  }, [isAdmin, navigate, adminCheckAttempts, userId, toast, userEmail]);
   
   const { 
     users, 
@@ -71,7 +101,7 @@ const AdminPage = () => {
   }, [refreshData]);
 
   // If still checking admin status or loading data, show loading screen
-  if (!isPageLoaded || isLoading) {
+  if (!isPageLoaded || isLoading || isAdmin !== true) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <AdminHeader userEmail={userEmail} onLogout={handleLogout} />

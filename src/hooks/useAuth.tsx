@@ -11,7 +11,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isNewUser, setIsNewUser] = useState<boolean>(true);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loginRedirectPath, setLoginRedirectPath] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Usar setTimeout para evitar problemas de recursão
           setTimeout(() => {
             loadUserProfile(session.user.id);
-          }, 0);
+          }, 100);
         } else {
           resetUserState();
         }
@@ -63,23 +63,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // Load user profile
+  // Load user profile with better error handling
   const loadUserProfile = async (userId: string) => {
     try {
       console.log("Loading user profile for:", userId);
-      const profile = await fetchUserProfile(userId);
-      if (profile) {
-        console.log("Profile loaded:", profile);
-        setIsNewUser(profile.is_new_user);
-        setIsAdmin(profile.is_admin);
+      
+      // Direct database query to check admin status
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_admin, is_new_user')
+        .eq('id', userId)
+        .single();
+      
+      if (profileError) {
+        console.error("Error fetching profile directly:", profileError);
+        setIsAdmin(false);
+        return;
+      }
+      
+      if (profileData) {
+        console.log("Profile loaded directly:", profileData);
+        setIsNewUser(profileData.is_new_user);
+        setIsAdmin(profileData.is_admin);
       } else {
         console.log("No profile found for user:", userId);
-        // In case of no profile, ensure admin is false
         setIsAdmin(false);
       }
     } catch (error) {
       console.error("Error loading user profile:", error);
-      // In case of error, ensure admin is false
       setIsAdmin(false);
     }
   };
@@ -185,7 +196,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAuthenticated, 
       userEmail, 
       isNewUser, 
-      isAdmin, 
+      isAdmin: isAdmin === true, // Ensure isAdmin is always a boolean
       login, 
       logout, 
       setUserAsAdmin,
