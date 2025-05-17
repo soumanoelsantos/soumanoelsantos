@@ -96,18 +96,16 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
               </Button>
             )}
             
-            {isAdmin && !isAdminViewingAsUser && (
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/admin")}
-                className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
-                disabled={isLoading}
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                Admin
-              </Button>
-            )}
+            <Button 
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/admin")}
+              className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
+              disabled={isLoading}
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              Admin
+            </Button>
             
             <Button 
               variant="outline"
