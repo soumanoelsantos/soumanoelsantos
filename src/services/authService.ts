@@ -133,15 +133,32 @@ export const authService = {
         return null;
       }
       
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_admin, is_new_user')
-        .eq('id', userId)
-        .single();
+      // Use edge function to bypass RLS policy recursion issue
+      const { data, error } = await supabase.functions.invoke('get-user-profile', {
+        body: { userId }
+      });
       
       if (error) {
-        console.error("Auth service: Error fetching profile:", error);
-        return null;
+        console.error("Auth service: Error fetching profile via edge function:", error);
+        
+        // Fallback to direct query with limited fields as a backup strategy
+        // This should avoid the recursion issue by not triggering complex RLS checks
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', userId)
+          .single();
+        
+        if (profileError) {
+          console.error("Auth service: Fallback profile query failed:", profileError);
+          return { id: userId, is_admin: false, is_new_user: true } as UserProfile;
+        }
+        
+        return {
+          id: userId,
+          is_admin: profileData?.is_admin || false,
+          is_new_user: true // Default to true if we're only getting partial data
+        } as UserProfile;
       }
       
       if (!data) {
@@ -153,7 +170,8 @@ export const authService = {
       return data as UserProfile;
     } catch (error) {
       console.error('Auth service: Error in fetchUserProfile:', error);
-      return null;
+      // Return default profile with admin set to false to prevent access issues
+      return { id: userId, is_admin: false, is_new_user: true } as UserProfile;
     }
   },
 
