@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useAdminData } from "@/hooks/useAdminData";
 import AdminHeader from "@/components/admin/AdminHeader";
 import UsersManagement from "@/components/admin/UsersManagement";
-import AdminInfoCard from "@/components/admin/AdminInfoCard";
 import { transformUsersToAdminUsers } from "@/services/adminService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -113,8 +112,6 @@ const AdminPage = () => {
             </CardContent>
           </Card>
         </div>
-
-        <AdminInfoCard />
       </div>
     </div>
   );
