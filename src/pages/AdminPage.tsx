@@ -20,16 +20,23 @@ const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("users");
   const [isPageLoaded, setIsPageLoaded] = useState(false);
   
-  // Check admin privileges
+  // Enhanced admin check with immediate redirection
   useEffect(() => {
-    // Small delay to ensure auth state is loaded
-    const timer = setTimeout(() => {
+    console.log("Admin page - checking admin status:", isAdmin);
+    
+    const checkAdmin = () => {
       setIsPageLoaded(true);
-      if (!isAdmin) {
-        console.log("User is not admin, redirecting to members area");
+      
+      if (isAdmin === false) { // Explicitly check for false (not undefined/null)
+        console.log("User is NOT admin, redirecting to members area");
         navigate("/membros");
+      } else {
+        console.log("User is admin or status still loading");
       }
-    }, 200);
+    };
+    
+    // Initial check with small delay to ensure auth state is loaded
+    const timer = setTimeout(checkAdmin, 500);
     
     return () => clearTimeout(timer);
   }, [isAdmin, navigate]);
@@ -63,7 +70,7 @@ const AdminPage = () => {
     }
   }, [refreshData]);
 
-  // If not fully loaded or checking admin status, show loading
+  // If still checking admin status or loading data, show loading screen
   if (!isPageLoaded || isLoading) {
     return (
       <div className="min-h-screen bg-white flex flex-col">

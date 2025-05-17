@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +17,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Inicialização
   useEffect(() => {
+    console.log("Auth Provider initializing...");
     // Recuperar path de redirecionamento do localStorage (se existir)
     const storedRedirectPath = localStorage.getItem('loginRedirectPath');
     if (storedRedirectPath) {
@@ -64,15 +66,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Load user profile
   const loadUserProfile = async (userId: string) => {
     try {
+      console.log("Loading user profile for:", userId);
       const profile = await fetchUserProfile(userId);
       if (profile) {
+        console.log("Profile loaded:", profile);
         setIsNewUser(profile.is_new_user);
         setIsAdmin(profile.is_admin);
       } else {
         console.log("No profile found for user:", userId);
+        // In case of no profile, ensure admin is false
+        setIsAdmin(false);
       }
     } catch (error) {
       console.error("Error loading user profile:", error);
+      // In case of error, ensure admin is false
+      setIsAdmin(false);
     }
   };
 
@@ -84,6 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAdmin(false);
   };
 
+  // Login function
   const login = async (email: string, password: string, redirectPath: string | null): Promise<void> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
