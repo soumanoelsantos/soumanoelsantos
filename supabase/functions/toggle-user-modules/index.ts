@@ -23,21 +23,12 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log(`Toggle modules request: userId=${userId}, enableAll=${enableAll}, moduleIds=`, moduleIds)
-
     if (enableAll) {
       // First delete existing modules to avoid duplicates
-      const { error: deleteError } = await supabase
+      await supabase
         .from('user_modules')
         .delete()
         .eq('user_id', userId)
-      
-      if (deleteError) {
-        console.error("Error deleting existing modules:", deleteError)
-        throw deleteError
-      }
-      
-      console.log(`Deleted existing modules for user ${userId}`)
       
       // Then add all modules
       if (moduleIds.length > 0) {
@@ -46,18 +37,11 @@ Deno.serve(async (req) => {
           module_id: moduleId
         }))
         
-        console.log(`Inserting ${modulesToInsert.length} modules for user ${userId}:`, modulesToInsert)
-        
         const { error } = await supabase
           .from('user_modules')
           .insert(modulesToInsert)
         
-        if (error) {
-          console.error("Error inserting modules:", error)
-          throw error
-        }
-        
-        console.log(`Successfully inserted modules for user ${userId}`)
+        if (error) throw error
       }
     } else {
       // Remove all modules
@@ -66,12 +50,7 @@ Deno.serve(async (req) => {
         .delete()
         .eq('user_id', userId)
       
-      if (error) {
-        console.error("Error removing all modules:", error)
-        throw error
-      }
-      
-      console.log(`Removed all modules for user ${userId}`)
+      if (error) throw error
     }
 
     return new Response(
