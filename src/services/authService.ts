@@ -42,15 +42,20 @@ export const authService = {
       
       if (response.error) {
         console.error('Auth service: Login error:', response.error);
-        const errorMessage = getAuthErrorMessage(response.error);
-        return { ...response, friendlyError: errorMessage };
+        // Enhance the response with a better error message
+        response.error.message = getAuthErrorMessage(response.error);
       }
       
       return response;
     } catch (error: any) {
       console.error('Auth service: Unexpected login error:', error);
       const errorMessage = getAuthErrorMessage(error);
-      return { data: { session: null, user: null }, error, friendlyError: errorMessage };
+      
+      // Return an object that matches the structure that's expected
+      return { 
+        data: { session: null, user: null }, 
+        error: { message: errorMessage } as AuthError
+      };
     }
   },
 
@@ -63,15 +68,19 @@ export const authService = {
       
       if (response.error) {
         console.error('Auth service: Logout error:', response.error);
-        const errorMessage = getAuthErrorMessage(response.error);
-        return { ...response, friendlyError: errorMessage };
+        // Enhance the response with a better error message
+        response.error.message = getAuthErrorMessage(response.error);
       }
       
       return response;
     } catch (error: any) {
       console.error('Auth service: Unexpected logout error:', error);
       const errorMessage = getAuthErrorMessage(error);
-      return { error, friendlyError: errorMessage };
+      
+      // Return an object that matches the structure that's expected
+      return { 
+        error: { message: errorMessage } as AuthError
+      };
     }
   },
 
@@ -155,7 +164,7 @@ export const authService = {
     try {
       if (!userId) {
         console.error("Auth service: Invalid user ID provided");
-        return { error: new Error("Invalid user ID"), friendlyError: "ID de usuário inválido" };
+        return { error: { message: "ID de usuário inválido" } };
       }
       
       const response = await supabase
@@ -165,13 +174,15 @@ export const authService = {
       
       if (response.error) {
         console.error("Auth service: Error updating admin status:", response.error);
-        return { ...response, friendlyError: "Falha ao atualizar status de administrador" };
+        response.error.message = "Falha ao atualizar status de administrador";
       }
       
       return response;
     } catch (error: any) {
       console.error('Auth service: Unexpected error updating admin status:', error);
-      return { error, friendlyError: "Erro inesperado ao atualizar status de administrador" };
+      return { 
+        error: { message: "Erro inesperado ao atualizar status de administrador" }
+      };
     }
   }
 };

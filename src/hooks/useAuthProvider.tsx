@@ -125,8 +125,9 @@ export const useAuthProvider = () => {
       const response = await authService.signInWithPassword(email, password);
       
       if (response.error) {
-        // Use the friendly error message if available
-        throw new Error(response.friendlyError || response.error.message);
+        // Use the error message from the response
+        const errorMessage = response.error.message || "Falha na autenticação";
+        throw new Error(errorMessage);
       }
 
       // Store redirect path in localStorage
@@ -164,7 +165,8 @@ export const useAuthProvider = () => {
       const response = await authService.updateUserAdminStatus(userId, value);
 
       if (response.error) {
-        throw new Error(response.friendlyError || response.error.message);
+        const errorMessage = response.error.message || "Não foi possível atualizar as permissões de administrador";
+        throw new Error(errorMessage);
       }
 
       setIsAdmin(value);
@@ -189,7 +191,8 @@ export const useAuthProvider = () => {
       const response = await authService.signOut();
       
       if (response.error) {
-        throw new Error(response.friendlyError || response.error.message);
+        const errorMessage = response.error.message || "Não foi possível sair da conta";
+        throw new Error(errorMessage);
       }
       
       // Clear localStorage data
