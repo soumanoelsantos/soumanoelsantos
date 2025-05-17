@@ -13,7 +13,7 @@ export const useDeleteUser = () => {
       if (!userToDelete) return { success: false };
       
       // Chamar a edge function para excluir o usuário
-      const { error } = await supabase.functions.invoke('delete-user', {
+      const { data, error } = await supabase.functions.invoke('delete-user', {
         body: { user_id: userId }
       });
         

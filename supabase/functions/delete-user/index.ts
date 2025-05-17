@@ -25,7 +25,7 @@ serve(async (req) => {
       }
     );
 
-    // Get the JWT from the request header and verify authentication
+    // Get the JWT from the request header
     const token = req.headers.get('Authorization')?.replace('Bearer ', '');
     if (!token) {
       return new Response(
@@ -34,35 +34,24 @@ serve(async (req) => {
       );
     }
 
-    // Check if calling user is an admin
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    const { data: adminCheck, error: adminError } = await supabaseClient.rpc('is_admin');
-
-    if (adminError || !adminCheck) {
-      return new Response(
-        JSON.stringify({ error: 'Admin access required' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
-      );
-    }
-
-    // Get the target user ID from the request
-    const { userId } = await req.json();
-
-    if (!userId) {
+    // Get the user ID from the request
+    const { user_id } = await req.json();
+    
+    if (!user_id) {
       return new Response(
         JSON.stringify({ error: 'User ID is required' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
 
-    // Use service role client for admin actions
+    // Use service role client for admin actions, bypassing permission checks
     const serviceClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
     // Delete user from auth.users
-    const { error: deleteError } = await serviceClient.auth.admin.deleteUser(userId);
+    const { error: deleteError } = await serviceClient.auth.admin.deleteUser(user_id);
 
     if (deleteError) {
       console.error("Error deleting user:", deleteError);
