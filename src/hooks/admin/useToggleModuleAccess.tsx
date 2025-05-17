@@ -32,12 +32,6 @@ export const useToggleModuleAccess = () => {
       return { success: true, hasModule };
     } catch (error: any) {
       console.error("Error toggling module access:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao modificar acesso",
-        description: error.message || "Não foi possível modificar o acesso ao módulo.",
-        className: "bg-white border-red-200"
-      });
       return { success: false };
     }
   };
@@ -47,8 +41,8 @@ export const useToggleModuleAccess = () => {
       const user = users.find(u => u.id === userId);
       if (!user) return { success: false };
       
-      // Use an edge function to avoid recursion issues with RLS policies
-      const { error, data } = await supabase.functions.invoke('toggle-user-modules', {
+      // Use the edge function to handle toggling all modules
+      const { error } = await supabase.functions.invoke('toggle-user-modules', {
         body: { 
           userId, 
           enableAll, 
@@ -58,11 +52,7 @@ export const useToggleModuleAccess = () => {
       
       if (error) throw error;
       
-      toast({
-        title: enableAll ? "Todos os módulos liberados" : "Acesso aos módulos removido",
-        description: `${enableAll ? "Acesso completo concedido" : "Acesso removido"} com sucesso`,
-        className: "bg-white"
-      });
+      console.log(`All modules ${enableAll ? 'enabled' : 'disabled'} for user ${userId}`);
       
       return { 
         success: true,
@@ -70,12 +60,6 @@ export const useToggleModuleAccess = () => {
       };
     } catch (error: any) {
       console.error("Error toggling all modules access:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao modificar acesso",
-        description: error.message || "Não foi possível atualizar o acesso aos módulos.",
-        className: "bg-white border-red-200"
-      });
       return { success: false };
     }
   };
