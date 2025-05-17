@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { fetchUserProfile } from '@/utils/authUtils';
+import { authService } from '@/services/authService';
 
 export const useAuthProvider = () => {
   const { toast } = useToast();
@@ -19,21 +18,10 @@ export const useAuthProvider = () => {
     try {
       console.log("Loading user profile for:", userId);
       
-      // Direct database query to check admin status
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('is_admin, is_new_user')
-        .eq('id', userId)
-        .single();
-      
-      if (profileError) {
-        console.error("Error fetching profile directly:", profileError);
-        setIsAdmin(false);
-        return;
-      }
+      const profileData = await authService.fetchUserProfile(userId);
       
       if (profileData) {
-        console.log("Profile loaded directly:", profileData);
+        console.log("Profile loaded:", profileData);
         setIsNewUser(profileData.is_new_user);
         setIsAdmin(profileData.is_admin);
       } else {
@@ -74,8 +62,8 @@ export const useAuthProvider = () => {
     }
 
     // Set up listener for authentication changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+    const { data: { subscription } } = authService.onAuthStateChange(
+      (event: any, session: any) => {
         console.log("Auth state changed:", event, session?.user?.email);
         const isAuth = !!session;
         setIsAuthenticated(isAuth);
@@ -95,7 +83,7 @@ export const useAuthProvider = () => {
     );
 
     // Check existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    authService.getSession().then(({ data: { session } }) => {
       console.log("Current session:", session?.user?.email);
       const isAuth = !!session;
       setIsAuthenticated(isAuth);
@@ -115,10 +103,7 @@ export const useAuthProvider = () => {
   // Login function
   const login = async (email: string, password: string, redirectPath: string | null): Promise<void> => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const { error } = await authService.signInWithPassword(email, password);
 
       if (error) throw error;
 
@@ -145,10 +130,7 @@ export const useAuthProvider = () => {
     if (!userId) return;
     
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_admin: value })
-        .eq('id', userId);
+      const { error } = await authService.updateUserAdminStatus(userId, value);
 
       if (error) throw error;
 
@@ -171,7 +153,7 @@ export const useAuthProvider = () => {
   // Logout function
   const logout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await authService.signOut();
       if (error) throw error;
       
       // Clear localStorage data
