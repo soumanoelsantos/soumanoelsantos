@@ -1,6 +1,6 @@
 
 import { useToast } from '@/hooks/use-toast';
-import { authService } from '@/services/authService';
+import { authService } from '@/services/auth';
 
 /**
  * Hook for user profile management
