@@ -1,6 +1,6 @@
 
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import MemberAreaContent from "@/components/member/MemberAreaContent";
@@ -8,12 +8,13 @@ import { useAuth } from "@/hooks/useAuth";
 
 const MemberArea = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { isAuthenticated, userEmail, userId, logout } = useAuth();
 
-  // Check authentication status
+  // Check authentication status but don't redirect if we're on the admin page
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && location.pathname !== '/admin') {
       toast({
         variant: "destructive",
         title: "Acesso negado",
@@ -21,7 +22,7 @@ const MemberArea = () => {
       });
       navigate("/login", { state: { from: "/membros" } });
     }
-  }, [isAuthenticated, navigate, toast]);
+  }, [isAuthenticated, navigate, toast, location.pathname]);
 
   const handleLogout = async () => {
     try {

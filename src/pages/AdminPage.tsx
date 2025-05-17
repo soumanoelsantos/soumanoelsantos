@@ -1,7 +1,6 @@
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { useAdminData } from "@/hooks/useAdminData";
 import AdminHeader from "@/components/admin/AdminHeader";
 import UsersManagement from "@/components/admin/UsersManagement";
@@ -18,15 +17,10 @@ import { useToast } from "@/hooks/use-toast";
 const AdminPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { userEmail, userId } = useAuth();
   const [activeTab, setActiveTab] = useState("users");
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
   
-  // Carregar página imediatamente sem verificações
-  useEffect(() => {
-    console.log("Admin page - acesso direto concedido");
-    setIsPageLoaded(true);
-  }, []);
+  // Use localStorage to get user email if available
+  const userEmail = localStorage.getItem("userEmail") || "admin@example.com";
   
   const { 
     users, 
@@ -56,19 +50,16 @@ const AdminPage = () => {
     }
   }, [refreshData]);
 
-  // Mostrar mensagem se os dados não estiverem carregando corretamente
-  useEffect(() => {
-    if (isPageLoaded && !isLoading && users.length === 0) {
-      toast({
-        title: "Informação",
-        description: "Você está acessando a área administrativa, mas pode não ter todas as permissões necessárias.",
-        duration: 5000,
-      });
-    }
-  }, [isPageLoaded, isLoading, users, toast]);
+  // Show toast if data might be limited
+  React.useEffect(() => {
+    toast({
+      title: "Área Administrativa",
+      description: "Você está acessando a área administrativa sem restrições.",
+      duration: 3000,
+    });
+  }, [toast]);
 
-  // Mostrar apenas tela de carregamento enquanto os dados são carregados
-  if (!isPageLoaded || isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <AdminHeader userEmail={userEmail} onLogout={handleLogout} />

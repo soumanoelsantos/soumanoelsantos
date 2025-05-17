@@ -12,6 +12,10 @@ interface AdminHeaderProps {
 const AdminHeader: React.FC<AdminHeaderProps> = ({ userEmail, onLogout }) => {
   const navigate = useNavigate();
 
+  const handleMemberArea = () => {
+    navigate("/membros");
+  };
+
   return (
     <>
       <MemberHeader userEmail={userEmail} onLogout={onLogout} />
@@ -19,7 +23,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ userEmail, onLogout }) => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Administração de Usuários</h1>
           <Button 
-            onClick={() => navigate("/membros")}
+            onClick={handleMemberArea}
             variant="outline"
             className="border-dark-primary/30 text-dark-primary hover:bg-dark-primary/10"
           >
