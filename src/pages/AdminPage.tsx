@@ -11,16 +11,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DatabaseAdmin from "@/components/admin/DatabaseAdmin";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw, ArrowLeft } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { userEmail, userId } = useAuth();
   const [activeTab, setActiveTab] = useState("users");
   const [isPageLoaded, setIsPageLoaded] = useState(false);
   
-  // Remover verificação de admin e carregar página imediatamente
+  // Carregar página imediatamente sem verificações
   useEffect(() => {
     console.log("Admin page - acesso direto concedido");
     setIsPageLoaded(true);
@@ -53,6 +55,17 @@ const AdminPage = () => {
       window.location.reload();
     }
   }, [refreshData]);
+
+  // Mostrar mensagem se os dados não estiverem carregando corretamente
+  useEffect(() => {
+    if (isPageLoaded && !isLoading && users.length === 0) {
+      toast({
+        title: "Informação",
+        description: "Você está acessando a área administrativa, mas pode não ter todas as permissões necessárias.",
+        duration: 5000,
+      });
+    }
+  }, [isPageLoaded, isLoading, users, toast]);
 
   // Mostrar apenas tela de carregamento enquanto os dados são carregados
   if (!isPageLoaded || isLoading) {
