@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 
 interface WhatsAppModalProps {
   isOpen: boolean;
@@ -15,18 +14,12 @@ interface WhatsAppModalProps {
 const WhatsAppModal = ({ isOpen, onClose, onSubmit }: WhatsAppModalProps) => {
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Basic validation
     if (!whatsappNumber || whatsappNumber.length < 10) {
-      toast({
-        title: "Número inválido",
-        description: "Por favor, insira um número de WhatsApp válido.",
-        variant: "destructive",
-      });
       return;
     }
 

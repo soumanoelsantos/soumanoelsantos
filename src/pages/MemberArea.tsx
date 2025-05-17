@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import MemberAreaContent from "@/components/member/MemberAreaContent";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,16 +8,14 @@ import { useAuth } from "@/hooks/useAuth";
 const MemberArea = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
   const { isAuthenticated, userEmail, userId, logout } = useAuth();
 
   // Check authentication status but don't redirect if we're on the admin page
   useEffect(() => {
     if (!isAuthenticated && location.pathname !== '/admin') {
-      // Removed the toast notification that was here
       navigate("/login", { state: { from: "/membros" } });
     }
-  }, [isAuthenticated, navigate, toast, location.pathname]);
+  }, [isAuthenticated, navigate, location.pathname]);
 
   const handleLogout = async () => {
     try {
@@ -26,7 +23,6 @@ const MemberArea = () => {
       navigate("/login");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
-      // Removed the toast notification that was here
     }
   };
 

@@ -1,6 +1,6 @@
+
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 import MemberHeader from "@/components/MemberHeader";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,7 +10,6 @@ import { usePhaseTest } from "@/hooks/phase-test/usePhaseTest";
 
 const TesteFase = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { isAuthenticated, userEmail, logout } = useAuth();
   
   const {
@@ -29,14 +28,9 @@ const TesteFase = () => {
   useEffect(() => {
     // Check if user is authenticated using the useAuth hook
     if (!isAuthenticated) {
-      toast({
-        variant: "destructive",
-        title: "Acesso negado",
-        description: "Você precisa fazer login para acessar esta página",
-      });
       navigate("/login", { state: { from: "/teste-fase" } });
     }
-  }, [isAuthenticated, navigate, toast]);
+  }, [isAuthenticated, navigate]);
   
   const handleLogout = async () => {
     try {
@@ -44,11 +38,6 @@ const TesteFase = () => {
       navigate("/login");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro no logout",
-        description: "Não foi possível sair da sua conta",
-      });
     }
   };
   

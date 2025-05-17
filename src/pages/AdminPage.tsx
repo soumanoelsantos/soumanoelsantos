@@ -9,11 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
-import { useToast } from "@/hooks/use-toast";
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   
   // Use localStorage to get user email if available
   const userEmail = localStorage.getItem("userEmail") || "admin@example.com";
@@ -45,8 +43,6 @@ const AdminPage = () => {
       window.location.reload();
     }
   }, [refreshData]);
-
-  // Removing the system toast notification that was here
 
   if (isLoading) {
     return (

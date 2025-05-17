@@ -2,7 +2,6 @@
 import { useState, useCallback } from "react";
 import { LeadData } from "@/types/crm";
 import { LeadFormValues } from "../schemas/leadFormSchema";
-import { useToast } from "@/hooks/use-toast";
 
 interface UseKanbanOperationsProps {
   addLead: (values: LeadFormValues) => Promise<boolean>;
@@ -19,7 +18,6 @@ export const useKanbanOperations = ({
   updateLeadStatus,
   fetchLeads
 }: UseKanbanOperationsProps) => {
-  const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editLead, setEditLead] = useState<LeadData | null>(null);
@@ -78,10 +76,6 @@ export const useKanbanOperations = ({
     // Prevent concurrent drag operations
     if (dragOperationInProgress || isUpdatingStatus) {
       console.log("Operation already in progress, ignoring this drag");
-      toast({
-        title: "Operação em andamento",
-        description: "Por favor, aguarde a conclusão da operação atual",
-      });
       return;
     }
 
@@ -104,30 +98,15 @@ export const useKanbanOperations = ({
       
       if (success) {
         console.log(`Status updated successfully from ${source.droppableId} to ${destination.droppableId}`);
-        toast({
-          title: "Status atualizado",
-          description: `Lead movido para ${destination.droppableId}`,
-          duration: 2000,
-        });
         // Always refresh leads to ensure UI is consistent with backend
         await fetchLeads();
       } else {
         console.error(`Status update failed: ${draggableId} to ${destination.droppableId}`);
-        toast({
-          variant: "destructive",
-          title: "Falha na atualização",
-          description: "Não foi possível atualizar o status do lead",
-        });
         // Force refresh to ensure UI is consistent with backend state
         await fetchLeads();
       }
     } catch (error) {
       console.error("Error in drag end handler:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao mover card",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
-      });
       // Force refresh to ensure UI is consistent with backend state
       await fetchLeads();
     } finally {
@@ -137,7 +116,7 @@ export const useKanbanOperations = ({
         setDragOperationInProgress(false);
       }, 100); // Slightly longer timeout for better stability
     }
-  }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads, toast]);
+  }, [dragOperationInProgress, isUpdatingStatus, updateLeadStatus, fetchLeads]);
 
   return {
     isAddDialogOpen,

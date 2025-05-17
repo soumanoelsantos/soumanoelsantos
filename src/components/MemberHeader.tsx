@@ -2,10 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { UserIcon, LogOut, Settings, ArrowLeft, AlertCircle } from "lucide-react";
+import { UserIcon, LogOut, Settings, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { Alert } from "@/components/ui/alert";
 
 interface MemberHeaderProps {
   userEmail: string | null;
@@ -15,10 +13,8 @@ interface MemberHeaderProps {
 const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
   const navigate = useNavigate();
   const { isAdmin, isLoading } = useAuth();
-  const { toast } = useToast();
   const [isAdminViewingAsUser, setIsAdminViewingAsUser] = useState(false);
   const [originalAdminEmail, setOriginalAdminEmail] = useState<string | null>(null);
-  const [logoutError, setLogoutError] = useState<string | null>(null);
   
   useEffect(() => {
     const adminViewingFlag = localStorage.getItem('adminViewingAsUser') === 'true';
@@ -38,24 +34,15 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
     localStorage.removeItem('adminViewingAsUser');
     localStorage.removeItem('adminOriginalEmail');
     
-    // Removed the toast notification that was here
-    
     // Navigate to admin page
     navigate('/admin');
   };
   
   const handleLogout = async () => {
-    setLogoutError(null);
     try {
       await onLogout();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error during logout:", error);
-      setLogoutError(error.message || "Não foi possível realizar o logout. Tente novamente.");
-      
-      // Auto-dismiss the error after 5 seconds
-      setTimeout(() => {
-        setLogoutError(null);
-      }, 5000);
     }
   };
   
@@ -72,13 +59,6 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
               <UserIcon className="h-4 w-4" />
               <span>{userEmail}</span>
             </div>
-            
-            {logoutError && (
-              <Alert variant="destructive" className="absolute top-16 right-4 w-auto max-w-sm p-2 text-sm shadow-lg">
-                <AlertCircle className="h-4 w-4 mr-2" />
-                {logoutError}
-              </Alert>
-            )}
             
             {isAdminViewingAsUser && (
               <Button 
