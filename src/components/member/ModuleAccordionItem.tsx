@@ -42,8 +42,7 @@ const ModuleAccordionItem: React.FC<ModuleAccordionItemProps> = ({
           
           {(isToolsModule || isUnlocked) ? (
             <ModuleContent 
-              moduleId={module.id} 
-              lessons={module.lessons || []} 
+              module={module} 
               completedTools={completedTools}
             />
           ) : (

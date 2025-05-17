@@ -36,8 +36,9 @@ const UsersTable: React.FC<UsersTableProps> = ({
       <Table>
         <TableHeader className="bg-gray-50">
           <TableRow className="hover:bg-gray-100 border-gray-200">
-            <TableHead className="text-gray-700 w-[250px]">Usuário</TableHead>
-            <TableHead className="text-gray-700 w-[150px]">Novo Usuário</TableHead>
+            <TableHead className="text-gray-700 w-[250px]">E-mail</TableHead>
+            <TableHead className="text-gray-700 w-[200px]">Nome</TableHead>
+            <TableHead className="text-gray-700 w-[150px]">Telefone</TableHead>
             <TableHead className="text-gray-700 text-center">Acesso aos Módulos</TableHead>
             <TableHead className="text-gray-700 text-right">Ações</TableHead>
           </TableRow>

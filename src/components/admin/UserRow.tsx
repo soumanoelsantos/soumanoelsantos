@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
 import { TableRow, TableCell } from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { UserIcon, Edit, Trash2, X, Check, LogIn } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -90,16 +89,11 @@ const UserRow: React.FC<UserRowProps> = ({
           </div>
         )}
       </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <Switch
-            checked={user.is_new_user}
-            onCheckedChange={() => toggleNewUserStatus(user.id)}
-          />
-          <span className="text-gray-700">
-            {user.is_new_user ? "Sim" : "Não"}
-          </span>
-        </div>
+      <TableCell className="text-gray-700">
+        {user.name || "---"}
+      </TableCell>
+      <TableCell className="text-gray-700">
+        {user.phone || "---"}
       </TableCell>
       <TableCell className="text-center">
         <div className="flex items-center justify-center gap-2">

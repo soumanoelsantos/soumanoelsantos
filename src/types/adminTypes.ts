@@ -8,6 +8,8 @@ export interface AdminUser {
   is_admin?: boolean;
   unlockedModules?: number[];
   modules?: AdminModule[];
+  name?: string;
+  phone?: string;
 }
 
 export interface AdminState {
