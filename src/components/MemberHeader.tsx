@@ -38,10 +38,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
     localStorage.removeItem('adminViewingAsUser');
     localStorage.removeItem('adminOriginalEmail');
     
-    toast({
-      title: "Retornando para admin",
-      description: "Você retornou para sua visão de administrador",
-    });
+    // Removed the toast notification that was here
     
     // Navigate to admin page
     navigate('/admin');

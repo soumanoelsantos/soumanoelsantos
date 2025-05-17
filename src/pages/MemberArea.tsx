@@ -15,11 +15,7 @@ const MemberArea = () => {
   // Check authentication status but don't redirect if we're on the admin page
   useEffect(() => {
     if (!isAuthenticated && location.pathname !== '/admin') {
-      toast({
-        variant: "destructive",
-        title: "Acesso negado",
-        description: "Você precisa fazer login para acessar esta página",
-      });
+      // Removed the toast notification that was here
       navigate("/login", { state: { from: "/membros" } });
     }
   }, [isAuthenticated, navigate, toast, location.pathname]);
@@ -30,11 +26,7 @@ const MemberArea = () => {
       navigate("/login");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro no logout",
-        description: "Não foi possível sair da sua conta",
-      });
+      // Removed the toast notification that was here
     }
   };
 

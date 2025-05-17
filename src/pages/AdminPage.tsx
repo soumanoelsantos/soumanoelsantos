@@ -47,14 +47,7 @@ const AdminPage = () => {
     }
   }, [refreshData]);
 
-  // Show toast if data might be limited
-  React.useEffect(() => {
-    toast({
-      title: "Área Administrativa",
-      description: "Você está acessando a área administrativa sem restrições.",
-      duration: 3000,
-    });
-  }, [toast]);
+  // Removing the system toast notification that was here
 
   if (isLoading) {
     return (

@@ -19,21 +19,12 @@ export const useDeleteUser = () => {
         
       if (error) throw error;
       
-      toast({
-        title: "Usuário excluído",
-        description: `${userToDelete.email} foi removido com sucesso`,
-        className: "bg-white"
-      });
+      // Removed the toast notification that was here
       
       return { success: true };
     } catch (error: any) {
       console.error("Erro ao excluir usuário:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao excluir usuário",
-        description: error.message || "Não foi possível excluir o usuário.",
-        className: "bg-white border-red-200"
-      });
+      // Removed the toast notification that was here
       return { success: false };
     }
   };
