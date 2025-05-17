@@ -16,7 +16,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout: auth.logout, 
       setUserAsAdmin: auth.setUserAsAdmin,
       loginRedirectPath: auth.loginRedirectPath,
-      userId: auth.userId
+      userId: auth.userId,
+      isLoading: auth.isLoading
     }}>
       {children}
     </AuthContext.Provider>

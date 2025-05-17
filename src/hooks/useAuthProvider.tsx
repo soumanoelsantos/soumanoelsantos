@@ -18,6 +18,11 @@ export const useAuthProvider = () => {
     try {
       console.log("Loading user profile for:", userId);
       
+      if (!userId) {
+        console.error("Cannot load profile: User ID is missing");
+        return;
+      }
+      
       const profileData = await authService.fetchUserProfile(userId);
       
       if (profileData) {
@@ -30,6 +35,11 @@ export const useAuthProvider = () => {
       }
     } catch (error) {
       console.error("Error loading user profile:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar perfil",
+        description: "Não foi possível carregar seu perfil de usuário",
+      });
       setIsAdmin(false);
     }
   };
@@ -100,12 +110,24 @@ export const useAuthProvider = () => {
     };
   }, []);
 
-  // Login function
+  // Login function with improved error handling
   const login = async (email: string, password: string, redirectPath: string | null): Promise<void> => {
+    setIsLoading(true);
     try {
-      const { error } = await authService.signInWithPassword(email, password);
-
-      if (error) throw error;
+      if (!email || !email.trim()) {
+        throw new Error("O email é obrigatório");
+      }
+      
+      if (!password) {
+        throw new Error("A senha é obrigatória");
+      }
+      
+      const response = await authService.signInWithPassword(email, password);
+      
+      if (response.error) {
+        // Use the friendly error message if available
+        throw new Error(response.friendlyError || response.error.message);
+      }
 
       // Store redirect path in localStorage
       handleRedirectPath(redirectPath);
@@ -122,17 +144,28 @@ export const useAuthProvider = () => {
         description: error.message || "Falha na autenticação",
       });
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Set user as admin
+  // Set user as admin with improved error handling
   const setUserAsAdmin = async (value: boolean) => {
-    if (!userId) return;
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        title: "Erro de operação",
+        description: "Você precisa estar logado para realizar esta ação",
+      });
+      return;
+    }
     
     try {
-      const { error } = await authService.updateUserAdminStatus(userId, value);
+      const response = await authService.updateUserAdminStatus(userId, value);
 
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.friendlyError || response.error.message);
+      }
 
       setIsAdmin(value);
       
@@ -150,11 +183,14 @@ export const useAuthProvider = () => {
     }
   };
 
-  // Logout function
+  // Logout function with improved error handling
   const logout = async () => {
     try {
-      const { error } = await authService.signOut();
-      if (error) throw error;
+      const response = await authService.signOut();
+      
+      if (response.error) {
+        throw new Error(response.friendlyError || response.error.message);
+      }
       
       // Clear localStorage data
       localStorage.removeItem('loginRedirectPath');
@@ -184,5 +220,6 @@ export const useAuthProvider = () => {
     logout,
     setUserAsAdmin,
     loginRedirectPath,
+    isLoading,
   };
 };

@@ -13,6 +13,7 @@ const AuthContext = createContext<AuthContextType>({
   setUserAsAdmin: async () => {},
   loginRedirectPath: null,
   userId: null,
+  isLoading: false,
 });
 
 export default AuthContext;

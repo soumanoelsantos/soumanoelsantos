@@ -11,6 +11,7 @@ export interface AuthContextType {
   setUserAsAdmin: (value: boolean) => Promise<void>;
   loginRedirectPath: string | null;
   userId: string | null;
+  isLoading: boolean;
 }
 
 export interface UserProfile {

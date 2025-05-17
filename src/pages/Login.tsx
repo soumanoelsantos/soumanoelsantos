@@ -4,11 +4,12 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ArrowRight, LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, LogIn, Mail, Lock, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -25,9 +26,9 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isAuthenticated, loginRedirectPath } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, isAuthenticated, loginRedirectPath, isLoading } = useAuth();
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [isTryingLogin, setIsTryingLogin] = useState(false);
   
   // Get the redirect path from the search params or state
   const searchParams = new URLSearchParams(location.search);
@@ -49,11 +50,12 @@ const Login = () => {
     },
   });
 
-  // Form submission handler
+  // Form submission handler with improved error handling
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      setIsLoading(true);
       setLoginError(null);
+      setIsTryingLogin(true);
+      
       console.log("Login attempted with:", values.email);
       
       await login(values.email, values.password, redirectPath);
@@ -66,23 +68,9 @@ const Login = () => {
     } catch (error: any) {
       console.error("Login error:", error);
       
-      let errorMessage = "Credenciais inválidas. Verifique seu email e senha.";
-      
-      if (error.message === "Invalid login credentials") {
-        errorMessage = "Email ou senha incorretos. Verifique suas credenciais.";
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      setLoginError(errorMessage);
-      
-      toast({
-        variant: "destructive",
-        title: "Erro no login",
-        description: errorMessage,
-      });
+      setLoginError(error.message || "Credenciais inválidas. Verifique seu email e senha.");
     } finally {
-      setIsLoading(false);
+      setIsTryingLogin(false);
     }
   };
 
@@ -99,9 +87,13 @@ const Login = () => {
         </CardHeader>
         <CardContent>
           {loginError && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-sm">
-              {loginError}
-            </div>
+            <Alert variant="destructive" className="mb-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Erro no login</AlertTitle>
+              <AlertDescription>
+                {loginError}
+              </AlertDescription>
+            </Alert>
           )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -118,6 +110,7 @@ const Login = () => {
                           placeholder="seu@email.com" 
                           className="pl-10 bg-dark-background border-dark-primary/20 text-dark-text" 
                           {...field} 
+                          disabled={isTryingLogin || isLoading}
                         />
                       </div>
                     </FormControl>
@@ -139,6 +132,7 @@ const Login = () => {
                           placeholder="********" 
                           className="pl-10 bg-dark-background border-dark-primary/20 text-dark-text" 
                           {...field} 
+                          disabled={isTryingLogin || isLoading}
                         />
                         <Button 
                           type="button" 
@@ -146,6 +140,7 @@ const Login = () => {
                           size="sm" 
                           className="absolute right-1 top-1 h-8 w-8 p-0" 
                           onClick={toggleShowPassword}
+                          disabled={isTryingLogin || isLoading}
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4 text-dark-text/40" />
@@ -163,9 +158,9 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-dark-primary hover:bg-dark-primary/90 text-dark-background"
-                disabled={isLoading}
+                disabled={isTryingLogin || isLoading}
               >
-                {isLoading ? (
+                {isTryingLogin || isLoading ? (
                   "Autenticando..."
                 ) : (
                   <>
