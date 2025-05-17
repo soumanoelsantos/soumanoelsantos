@@ -7,8 +7,6 @@ import UsersManagement from "@/components/admin/UsersManagement";
 import AdminInfoCard from "@/components/admin/AdminInfoCard";
 import { transformUsersToAdminUsers } from "@/services/adminService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DatabaseAdmin from "@/components/admin/DatabaseAdmin";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
@@ -17,7 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 const AdminPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("users");
   
   // Use localStorage to get user email if available
   const userEmail = localStorage.getItem("userEmail") || "admin@example.com";
@@ -90,54 +87,41 @@ const AdminPage = () => {
         <div className="mb-6">
           <Card className="bg-white border-dark-primary/20 shadow-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-2xl text-gray-800">Painel de Administração Completo</CardTitle>
+              <CardTitle className="text-2xl text-gray-800">Painel de Administração</CardTitle>
               <CardDescription className="text-gray-600">
-                Acesso total ao banco de dados e gerenciamento de usuários
+                Gerenciamento de usuários e acesso ao sistema
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="users" className="w-full" onValueChange={setActiveTab}>
-                <TabsList className="grid grid-cols-2 mb-4">
-                  <TabsTrigger value="users">Gerenciar Usuários</TabsTrigger>
-                  <TabsTrigger value="database">Banco de Dados</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="users" className="pt-2">
-                  <div className="flex justify-end mb-4">
-                    <Button 
-                      onClick={handleRefresh} 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex items-center gap-2"
-                    >
-                      <RefreshCcw className="h-4 w-4" />
-                      Atualizar dados
-                    </Button>
-                  </div>
-                  <UsersManagement 
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    filteredUsers={filteredAdminUsers}
-                    totalUsers={users.length}
-                    modules={modules}
-                    toggleNewUserStatus={toggleNewUserStatus}
-                    toggleModuleAccess={toggleModuleAccess}
-                    deleteUser={deleteUser}
-                    editUserEmail={editUserEmail}
-                    viewAsUser={viewAsUser}
-                    toggleAllModules={toggleAllModules}
-                  />
-                </TabsContent>
-                
-                <TabsContent value="database" className="pt-2">
-                  <DatabaseAdmin />
-                </TabsContent>
-              </Tabs>
+              <div className="flex justify-end mb-4">
+                <Button 
+                  onClick={handleRefresh} 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCcw className="h-4 w-4" />
+                  Atualizar dados
+                </Button>
+              </div>
+              <UsersManagement 
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                filteredUsers={filteredAdminUsers}
+                totalUsers={users.length}
+                modules={modules}
+                toggleNewUserStatus={toggleNewUserStatus}
+                toggleModuleAccess={toggleModuleAccess}
+                deleteUser={deleteUser}
+                editUserEmail={editUserEmail}
+                viewAsUser={viewAsUser}
+                toggleAllModules={toggleAllModules}
+              />
             </CardContent>
           </Card>
         </div>
 
-        {activeTab === "users" && <AdminInfoCard />}
+        <AdminInfoCard />
       </div>
     </div>
   );
