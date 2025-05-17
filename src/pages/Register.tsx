@@ -10,19 +10,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
-// Form schema validation using Zod
+// Form schema validation using Zod - removed acceptTerms field
 const formSchema = z.object({
   name: z.string().min(3, { message: "Nome precisa ter pelo menos 3 caracteres" }),
   email: z.string().email({ message: "Email inválido" }),
   password: z.string().min(6, { message: "A senha precisa ter pelo menos 6 caracteres" }),
   confirmPassword: z.string(),
-  acceptTerms: z.boolean().refine(val => val === true, {
-    message: "Você precisa aceitar os termos de uso"
-  })
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não conferem",
   path: ["confirmPassword"],
@@ -46,7 +42,7 @@ const Register = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  // Initialize form with react-hook-form
+  // Initialize form with react-hook-form - removed acceptTerms default value
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,7 +50,6 @@ const Register = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      acceptTerms: false,
     },
   });
 
@@ -254,27 +249,6 @@ const Register = () => {
                       </div>
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="acceptTerms"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel className="text-dark-text text-sm">
-                        Eu aceito os termos de uso e políticas de privacidade
-                      </FormLabel>
-                      <FormMessage />
-                    </div>
                   </FormItem>
                 )}
               />
