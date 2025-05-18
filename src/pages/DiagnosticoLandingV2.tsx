@@ -1,9 +1,9 @@
-
 import React, { useState } from "react";
 import { Check, Calendar, Clock, MessageSquare, PlayCircle, Target, TrendingUp, Users, Briefcase, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 import CountdownTimer from "@/components/CountdownTimer";
+import MarketingPainSection from "@/components/marketing/MarketingPainSection";
 
 const DiagnosticoLandingV2 = () => {
   const [showUrgency, setShowUrgency] = useState(false);
@@ -242,6 +242,9 @@ const DiagnosticoLandingV2 = () => {
           </div>
         </div>
       </section>
+
+      {/* NEW: Marketing Pain Section */}
+      <MarketingPainSection />
 
       {/* Enhanced Solution Section */}
       <section className="py-16 bg-[#0d1829]">
