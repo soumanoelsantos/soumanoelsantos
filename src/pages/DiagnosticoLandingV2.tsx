@@ -183,7 +183,7 @@ const DiagnosticoLandingV2 = () => {
                   </li>
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2">•</span> 
-                    <span>Gestão de <strong>empresas que faturam mais de 1 milhão/mês</strong></span>
+                    <span>Atualmente acompanhamos várias operações no digital que faturam mais de 1 milhão/mês</span>
                   </li>
                 </ul>
               </div>
