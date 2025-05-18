@@ -3,7 +3,11 @@ import React from "react";
 import { Calendar } from "lucide-react";
 import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
-const CTASection = () => {
+interface CTASectionProps {
+  source?: string;
+}
+
+const CTASection = ({ source = "diagnostico_landing_bottom" }: CTASectionProps) => {
   return (
     <section className="py-10 sm:py-16 bg-gradient-to-b from-[#1a1a2e] to-[#0d112b]">
       <div className="container mx-auto px-3 sm:px-4">
@@ -17,7 +21,7 @@ const CTASection = () => {
           
           <div className="mb-6 sm:mb-8">
             <LeadCaptureForm 
-              source="diagnostico_landing_v2_bottom"
+              source={source}
               buttonClassName="w-full sm:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xs sm:text-base py-3 sm:py-4 px-2 sm:px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
               buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
             />
