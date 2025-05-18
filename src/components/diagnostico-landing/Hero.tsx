@@ -1,7 +1,6 @@
 
 import React from "react";
 import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
-import CountdownTimer from "@/components/CountdownTimer";
 
 interface HeroProps {
   showUrgency: boolean;
@@ -23,11 +22,6 @@ const Hero = ({ showUrgency }: HeroProps) => {
           {showUrgency && (
             <div className="mb-6 flex flex-col items-center">
               <p className="text-yellow-400 font-medium mb-2">Vagas limitadas para hoje</p>
-              <CountdownTimer 
-                initialMinutes={30} 
-                initialSeconds={0} 
-                className="mb-4 text-yellow-400"
-              />
             </div>
           )}
           
