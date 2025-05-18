@@ -1,5 +1,6 @@
 
 import React from "react";
+import LeadCaptureForm from "@/components/LeadCaptureForm";
 
 const WastedMoneySection = () => {
   return (
@@ -53,9 +54,21 @@ const WastedMoneySection = () => {
               </div>
             </div>
             
-            <p className="text-lg bg-yellow-900/20 p-4 rounded-lg border border-yellow-800/30 mt-6">
+            <p className="text-lg bg-yellow-900/20 p-4 rounded-lg border border-yellow-800/30 mt-6 mb-8">
               <strong className="text-yellow-400">A verdade inconveniente:</strong> Seu negócio não tem um problema de tráfego, mas sim um problema de <strong>estrutura comercial profissional</strong>. Sem isso, qualquer investimento em marketing é praticamente dinheiro desperdiçado.
             </p>
+            
+            <div className="text-center">
+              <LeadCaptureForm 
+                source="diagnostico_landing_v2_wasted_money"
+                showChallengeField={true}
+                buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-4 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+                buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
+              />
+              <p className="mt-3 text-sm text-gray-400">
+                Você será redirecionado para agendar seu melhor horário
+              </p>
+            </div>
           </div>
         </div>
       </div>

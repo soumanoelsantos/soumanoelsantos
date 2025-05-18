@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Check, Clock, Handshake } from "lucide-react";
+import LeadCaptureForm from "@/components/LeadCaptureForm";
 
 const SolutionSection = () => {
   return (
@@ -45,6 +46,18 @@ const SolutionSection = () => {
                   Como <strong>conselheiro e estrategista digital</strong>, já implementei estas estratégias em mais de 160 empresas no Brasil e Portugal, desde pequenos negócios até players que faturam mais de 1 milhão por mês, resultando em crescimentos de até <strong>900% em apenas 8 meses</strong>.
                 </p>
               </div>
+            </div>
+            
+            <div className="text-center mt-8">
+              <LeadCaptureForm 
+                source="diagnostico_landing_v2_solution_section"
+                showChallengeField={true}
+                buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-4 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+                buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
+              />
+              <p className="mt-3 text-sm text-gray-400">
+                Você será redirecionado para agendar seu melhor horário
+              </p>
             </div>
           </div>
         </div>

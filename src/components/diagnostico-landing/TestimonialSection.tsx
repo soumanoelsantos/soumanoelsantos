@@ -1,6 +1,7 @@
 
 import React from "react";
 import { PlayCircle, MessageSquare } from "lucide-react";
+import LeadCaptureForm from "@/components/LeadCaptureForm";
 
 const TestimonialSection = () => {
   return (
@@ -25,6 +26,18 @@ const TestimonialSection = () => {
           <div className="flex items-center justify-center mt-6 mb-8">
             <PlayCircle className="h-6 w-6 text-dark-primary mr-3" />
             <p className="text-lg text-gray-300">Assista o depoimento completo e descubra como transformamos os resultados</p>
+          </div>
+          
+          <div className="text-center mb-12">
+            <LeadCaptureForm 
+              source="diagnostico_landing_v2_testimonial_video"
+              showChallengeField={true}
+              buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-4 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+              buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
+            />
+            <p className="mt-3 text-sm text-gray-400">
+              Você será redirecionado para agendar seu melhor horário
+            </p>
           </div>
         </div>
       </div>
