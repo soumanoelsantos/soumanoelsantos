@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Check, Calendar, Clock, MessageSquare } from "lucide-react";
+import { Check, Calendar, Clock, MessageSquare, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 import CountdownTimer from "@/components/CountdownTimer";
@@ -153,7 +153,34 @@ const DiagnosticoLandingV2 = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Video Testimonial Section */}
+      <section className="py-16 bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-10 text-center">
+              <span className="text-yellow-500">Depoimento</span> real de um cliente
+            </h2>
+            
+            <div className="aspect-video w-full mb-8 rounded-lg overflow-hidden shadow-xl">
+              <iframe 
+                className="w-full h-full"
+                src="https://www.youtube.com/embed/D4NPk7ZgmGU?si=YWF7se3PVbrb-N6D" 
+                title="Depoimento de cliente" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+              ></iframe>
+            </div>
+            
+            <div className="flex items-center justify-center mt-6 mb-8">
+              <PlayCircle className="h-6 w-6 text-dark-primary mr-3" />
+              <p className="text-lg text-gray-300">Assista o depoimento completo e descubra como transformamos os resultados</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Text Testimonials */}
       <section className="py-16 bg-gray-900">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
