@@ -1,6 +1,7 @@
 
 import React from "react";
-import { BarChart4, TrendingUp, LineChart, BarChart, Activity, PieChart, BarChart2, ArrowUpCircle } from "lucide-react";
+import { BarChart4, TrendingUp, LineChart, BarChart, Activity, PieChart, BarChart2, ArrowUpCircle, Calendar, ArrowRight } from "lucide-react";
+import LeadCaptureForm from "@/components/LeadCaptureForm";
 
 const MarketingPainSection = () => {
   return (
@@ -184,6 +185,20 @@ const MarketingPainSection = () => {
               <p className="text-lg">
                 <span className="text-yellow-400 font-bold">A verdade:</span> Sem um sistema profissional de controle de indicadores, você está <strong className="text-red-400">apostando</strong>, não investindo. Meu trabalho é transformar seu marketing em uma máquina previsível de resultados, com <strong className="text-green-400">dados claros</strong> que permitem escalar com segurança.
               </p>
+            </div>
+
+            <div className="flex justify-center mt-8">
+              <LeadCaptureForm 
+                source="marketing_pain_section"
+                buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-6 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center"
+                buttonText={
+                  <>
+                    <Calendar className="mr-2 h-5 w-5" />
+                    QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </>
+                }
+              />
             </div>
           </div>
           

@@ -40,7 +40,7 @@ const Hero = () => {
                   buttonText={
                     <>
                       <Calendar className="mr-2 h-5 w-5" />
-                      Agendar diagnóstico gratuito
+                      QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </>
                   }

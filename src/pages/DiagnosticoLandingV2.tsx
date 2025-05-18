@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { Check, Calendar, Clock, MessageSquare, PlayCircle, Target, TrendingUp, Users, Briefcase, Handshake } from "lucide-react";
+import { Check, Calendar, Clock, MessageSquare, PlayCircle, Target, TrendingUp, Users, Briefcase, Handshake, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 import CountdownTimer from "@/components/CountdownTimer";
@@ -63,6 +62,9 @@ const DiagnosticoLandingV2 = () => {
                 alt="Estrategista Digital - Manoel Santos"
                 className="w-64 h-64 rounded-full object-cover border-4 border-dark-primary shadow-2xl"
               />
+            </div>
+            <div className="text-center mt-3">
+              <p className="font-medium text-xl text-dark-primary">CRO - Manoel Santos</p>
             </div>
           </div>
         </div>
