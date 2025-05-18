@@ -22,10 +22,10 @@ const LeadFormFields = ({ form }: LeadFormFieldsProps) => {
         control={form.control}
         name="name"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Nome completo</FormLabel>
+          <FormItem className="mb-4">
+            <FormLabel className="text-base">Nome completo</FormLabel>
             <FormControl>
-              <Input placeholder="Seu nome" {...field} />
+              <Input placeholder="Seu nome" {...field} className="py-2" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -36,10 +36,10 @@ const LeadFormFields = ({ form }: LeadFormFieldsProps) => {
         control={form.control}
         name="email"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
+          <FormItem className="mb-4">
+            <FormLabel className="text-base">Email</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="seu@email.com" {...field} />
+              <Input type="email" placeholder="seu@email.com" {...field} className="py-2" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -50,10 +50,10 @@ const LeadFormFields = ({ form }: LeadFormFieldsProps) => {
         control={form.control}
         name="phone"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Telefone</FormLabel>
+          <FormItem className="mb-2">
+            <FormLabel className="text-base">Telefone</FormLabel>
             <FormControl>
-              <Input placeholder="(00) 00000-0000" {...field} />
+              <Input placeholder="(00) 00000-0000" {...field} className="py-2" />
             </FormControl>
             <FormMessage />
           </FormItem>

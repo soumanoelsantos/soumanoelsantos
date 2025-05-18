@@ -40,7 +40,7 @@ const LeadCaptureForm = ({
       <DialogTrigger asChild>
         <Button className={buttonClassName}>{buttonText}</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] w-[calc(100%-32px)] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[425px] w-[calc(100%-32px)] max-h-[90vh] overflow-y-auto mx-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl text-center">
             Agendar reunião gratuita
