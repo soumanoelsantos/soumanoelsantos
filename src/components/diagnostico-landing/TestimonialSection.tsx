@@ -23,15 +23,15 @@ const TestimonialSection = () => {
           </div>
           
           <div className="flex items-center justify-center mt-6 mb-8">
-            <PlayCircle className="h-6 w-6 text-dark-primary mr-3" />
-            <p className="text-lg text-gray-300">Assista o depoimento completo e veja os resultados reais</p>
+            <PlayCircle className="h-5 w-5 sm:h-6 sm:w-6 text-dark-primary mr-2 sm:mr-3" />
+            <p className="text-base sm:text-lg text-gray-300">Assista o depoimento completo e veja os resultados reais</p>
           </div>
           
           <div className="text-center mb-12">
             <LeadCaptureForm 
               source="diagnostico_landing_v2_testimonial_video"
               showChallengeField={true}
-              buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-4 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+              buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xs sm:text-lg py-3 sm:py-4 px-4 sm:px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
               buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
             />
             <p className="mt-3 text-sm text-gray-400">

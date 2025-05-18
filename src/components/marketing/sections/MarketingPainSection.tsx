@@ -34,21 +34,21 @@ const MarketingPainSection = () => {
             <div className="flex justify-center mt-8">
               <LeadCaptureForm 
                 source="marketing_pain_section"
-                buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-6 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center"
+                buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xs sm:text-lg py-4 sm:py-6 px-4 sm:px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center"
                 buttonText={
                   <>
-                    <span className="mr-2">
+                    <span className="mr-1 sm:mr-2">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
+                        width="16"
+                        height="16"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="lucide lucide-calendar"
+                        className="lucide lucide-calendar sm:w-5 sm:h-5"
                       >
                         <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
                         <line x1="16" x2="16" y1="2" y2="6" />
@@ -56,19 +56,19 @@ const MarketingPainSection = () => {
                         <line x1="3" x2="21" y1="10" y2="10" />
                       </svg>
                     </span>
-                    QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO
-                    <span className="ml-2">
+                    <span className="text-xs sm:text-base">QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO</span>
+                    <span className="ml-1 sm:ml-2">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
+                        width="16"
+                        height="16"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="lucide lucide-arrow-right transition-transform group-hover:translate-x-1"
+                        className="lucide lucide-arrow-right transition-transform group-hover:translate-x-1 sm:w-5 sm:h-5"
                       >
                         <path d="M5 12h14" />
                         <path d="m12 5 7 7-7 7" />
@@ -81,8 +81,8 @@ const MarketingPainSection = () => {
           </div>
           
           <div className="flex justify-center items-center space-x-3 mb-6 bg-blue-900/20 p-4 rounded-lg">
-            <Activity className="text-dark-primary h-6 w-6" />
-            <p className="text-lg">
+            <Activity className="text-dark-primary h-5 w-5 sm:h-6 sm:w-6" />
+            <p className="text-base sm:text-lg">
               <strong>Metodologia comprovada</strong> para transformar incertezas em previsibilidade de resultados
             </p>
           </div>
