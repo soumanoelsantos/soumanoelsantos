@@ -1,3 +1,4 @@
+
 import React from "react";
 import { TrendingUp, Briefcase, Users } from "lucide-react";
 import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
@@ -35,7 +36,7 @@ const StatsSection = () => {
             <LeadCaptureForm 
               source="diagnostico_landing_v2_stats_section"
               showChallengeField={true}
-              buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-4 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+              buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xs sm:text-base py-3 sm:py-4 px-2 sm:px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
               buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
             />
             <p className="mt-3 text-sm text-gray-400">
