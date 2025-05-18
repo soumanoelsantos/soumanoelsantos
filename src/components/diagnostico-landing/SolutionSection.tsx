@@ -36,7 +36,7 @@ const SolutionSection = () => {
             
             <div className="mt-8 flex items-center justify-center text-gray-300">
               <Clock className="h-5 w-5 mr-2" />
-              <span>Duração: 30 minutos | Online | Sem compromisso</span>
+              <span>Duração: 45 minutos | Online | Sem compromisso</span>
             </div>
 
             <div className="mt-8 p-4 bg-blue-900/20 rounded-lg border border-blue-800/50">
