@@ -8,7 +8,7 @@ const ProblemSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-            <span className="text-dark-primary">Aumentando seu faturamento</span> através de um comercial estruturado
+            <span className="text-dark-primary">Aumente seu faturamento</span> através de um plano comercial estruturado
           </h2>
           
           <div className="grid md:grid-cols-2 gap-6 mb-14">
@@ -31,19 +31,19 @@ const ProblemSection = () => {
             </div>
             
             <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg">
-              <h3 className="font-bold text-xl mb-4 text-green-400">Com nossa consultoria você terá...</h3>
+              <h3 className="font-bold text-xl mb-4 text-green-400">Seu plano de ação gratuito incluirá...</h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✓</span> Processos comerciais estruturados e profissionais
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span> Equipe treinada e focada em resultados
+                  <span className="text-green-500 mr-2">✓</span> Estratégias para treinar e focar sua equipe em resultados
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span> Melhoria na conversão de leads em vendas
+                  <span className="text-green-500 mr-2">✓</span> Táticas para melhorar a conversão de leads em vendas
                 </li>
                 <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span> Acompanhamento consistente de KPIs comerciais
+                  <span className="text-green-500 mr-2">✓</span> Método de acompanhamento consistente de KPIs comerciais
                 </li>
               </ul>
             </div>

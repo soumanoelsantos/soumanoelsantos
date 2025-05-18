@@ -18,7 +18,7 @@ const CTASection = ({ showUrgency, setShowUrgency }: CTASectionProps) => {
             <Calendar className="h-10 w-10 text-dark-primary" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Escale seu negócio digital profissionalmente — garanta sua vaga agora
+            Receba seu plano de ação comercial personalizado — garanta sua vaga agora
           </h2>
           
           <Button
@@ -33,7 +33,7 @@ const CTASection = ({ showUrgency, setShowUrgency }: CTASectionProps) => {
               source="diagnostico_landing_v2_bottom"
               showChallengeField={true}
               buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xl py-6 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
-              buttonText="QUERO ESTRUTURAR MEU NEGÓCIO DIGITAL"
+              buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
             />
             <p className="mt-3 text-sm text-gray-400">
               Você será redirecionado para agendar seu melhor horário

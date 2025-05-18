@@ -8,7 +8,7 @@ const IdealForSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-            <span className="text-dark-primary">Quem Deve</span> Estruturar o Comercial?
+            <span className="text-dark-primary">Quem Deve</span> Solicitar o Plano de Ação?
           </h2>
           
           <div className="grid md:grid-cols-2 gap-8">

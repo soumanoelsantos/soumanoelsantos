@@ -9,7 +9,7 @@ const SolutionSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-            <span className="text-yellow-400">A Solução Completa</span> para escalar seu negócio digital
+            <span className="text-yellow-400">O Plano de Ação Completo</span> para escalar seu negócio digital
           </h2>
 
           <div className="bg-gray-800 rounded-lg p-8 shadow-lg mb-8">
@@ -23,7 +23,7 @@ const SolutionSection = () => {
             </div>
             
             <p className="text-xl mb-6">
-              A <strong>estruturação profissional completa</strong> que farei para sua empresa:
+              O <strong>plano de ação profissional completo</strong> que você receberá gratuitamente:
             </p>
             
             <SolutionColumns />

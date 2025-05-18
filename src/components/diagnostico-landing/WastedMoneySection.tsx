@@ -18,44 +18,44 @@ const WastedMoneySection = () => {
             
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div className="bg-red-900/20 p-5 rounded-lg border border-red-800/30">
-                <h3 className="font-bold text-xl mb-3 text-red-400">O que empresários fazem:</h3>
+                <h3 className="font-bold text-xl mb-3 text-red-400">O que está acontecendo:</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start">
-                    <span className="text-red-500 mr-2">✗</span> Aumentam investimento em tráfego constantemente
+                    <span className="text-red-500 mr-2">✗</span> Aumento constante do investimento em tráfego
                   </li>
                   <li className="flex items-start">
-                    <span className="text-red-500 mr-2">✗</span> Trocam de agência ou consultor frequentemente
+                    <span className="text-red-500 mr-2">✗</span> Troca frequente de agência ou consultor
                   </li>
                   <li className="flex items-start">
-                    <span className="text-red-500 mr-2">✗</span> Culpam a "qualidade dos leads" pelo baixo resultado
+                    <span className="text-red-500 mr-2">✗</span> Culpa atribuída à "qualidade dos leads"
                   </li>
                   <li className="flex items-start">
-                    <span className="text-red-500 mr-2">✗</span> Ignoram as falhas no processo comercial interno
+                    <span className="text-red-500 mr-2">✗</span> Falhas ignoradas no processo comercial interno
                   </li>
                 </ul>
               </div>
               
               <div className="bg-green-900/20 p-5 rounded-lg border border-green-800/30">
-                <h3 className="font-bold text-xl mb-3 text-green-400">O que realmente funciona:</h3>
+                <h3 className="font-bold text-xl mb-3 text-green-400">O que seu plano de ação incluirá:</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span> Estruturar processos comerciais profissionais
+                    <span className="text-green-500 mr-2">✓</span> Estruturação de processos comerciais profissionais
                   </li>
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span> Implementar treinamento constante de vendedores
+                    <span className="text-green-500 mr-2">✓</span> Estratégias para treinamento constante de vendedores
                   </li>
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span> Criar sistemas de gestão e acompanhamento
+                    <span className="text-green-500 mr-2">✓</span> Sistemas de gestão e acompanhamento
                   </li>
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span> Alinhar marketing e vendas com estratégia integrada
+                    <span className="text-green-500 mr-2">✓</span> Alinhamento entre marketing e vendas com estratégia integrada
                   </li>
                 </ul>
               </div>
             </div>
             
             <p className="text-lg bg-yellow-900/20 p-4 rounded-lg border border-yellow-800/30 mt-6 mb-8">
-              <strong className="text-yellow-400">A verdade inconveniente:</strong> Seu negócio não tem um problema de tráfego, mas sim um problema de <strong>estrutura comercial profissional</strong>. Sem isso, qualquer investimento em marketing é praticamente dinheiro desperdiçado.
+              <strong className="text-yellow-400">A verdade inconveniente:</strong> Seu negócio não tem um problema de tráfego, mas sim um problema de <strong>estrutura comercial profissional</strong>. No plano de ação gratuito, você descobrirá como resolver isso de uma vez por todas.
             </p>
             
             <div className="text-center">
