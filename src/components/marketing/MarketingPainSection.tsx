@@ -76,7 +76,7 @@ const MarketingPainSection = () => {
                 <span className="bg-blue-900/40 p-2 rounded-full mr-3">
                   <PieChart className="h-5 w-5 text-blue-300" />
                 </span>
-                Algumas das soluções que colocarei de forma personalizada para sua empresa no seu plano de ação gratuito que farei
+                Algumas das soluções que colocarei de forma personalizada para sua empresa no seu plano de ação gratuito
               </h3>
               
               <div className="grid md:grid-cols-2 gap-4">
