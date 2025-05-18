@@ -1,6 +1,6 @@
 
 import React from "react";
-import LeadCaptureForm from "@/components/LeadCaptureForm";
+import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 import CountdownTimer from "@/components/CountdownTimer";
 
 interface HeroProps {

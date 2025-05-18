@@ -1,6 +1,5 @@
-
 import React from "react";
-import LeadCaptureForm from "@/components/LeadCaptureForm";
+import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
 const ProblemSection = () => {
   return (

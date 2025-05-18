@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Calendar, TrendingUp, Users, MessageSquare, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import LeadCaptureForm from "./LeadCaptureForm";
+import LeadCaptureForm from "./lead-form/LeadCaptureForm";
 
 const Hero = () => {
   return (

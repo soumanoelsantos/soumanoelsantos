@@ -1,7 +1,6 @@
-
 import React from "react";
 import { TrendingUp, Briefcase, Users } from "lucide-react";
-import LeadCaptureForm from "@/components/LeadCaptureForm";
+import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
 const StatsSection = () => {
   return (

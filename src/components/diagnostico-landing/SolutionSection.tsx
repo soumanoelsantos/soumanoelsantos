@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Check, Clock, Handshake } from "lucide-react";
-import LeadCaptureForm from "@/components/LeadCaptureForm";
+import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
 const SolutionSection = () => {
   return (
