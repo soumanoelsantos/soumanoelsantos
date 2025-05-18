@@ -3,12 +3,7 @@ import React from "react";
 import { Calendar } from "lucide-react";
 import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
-interface CTASectionProps {
-  showUrgency: boolean;
-  setShowUrgency: (show: boolean) => void;
-}
-
-const CTASection = ({ showUrgency, setShowUrgency }: CTASectionProps) => {
+const CTASection = () => {
   return (
     <section className="py-10 sm:py-16 bg-gradient-to-b from-[#1a1a2e] to-[#0d112b]">
       <div className="container mx-auto px-3 sm:px-4">
