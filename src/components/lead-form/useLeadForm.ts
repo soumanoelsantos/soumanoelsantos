@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { leadFormSchema, LeadFormValues } from "./LeadFormSchema";
 
 interface UseLeadFormProps {
@@ -13,7 +12,6 @@ interface UseLeadFormProps {
 
 export const useLeadForm = ({ source, onSuccess }: UseLeadFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
@@ -53,29 +51,20 @@ export const useLeadForm = ({ source, onSuccess }: UseLeadFormProps) => {
       
       console.log("Lead cadastrado com sucesso:", data);
       
-      toast({
-        title: "Solicitação enviada!",
-        description: "Redirecionando para agendar sua consulta...",
-      });
-      
       form.reset();
       
       if (onSuccess) {
         onSuccess();
       }
       
-      // Redirect to Google Calendar scheduling page
+      // Redirect to Google Calendar scheduling page without showing toast
       setTimeout(() => {
         window.location.href = "https://calendar.app.google/24nP9V5SPd4gLF3v5";
-      }, 1500); // Short delay for the toast to be visible
+      }, 500); // Shorter delay since we're not showing toast
       
     } catch (error) {
       console.error("Error submitting lead:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao enviar",
-        description: "Não foi possível enviar sua solicitação. Tente novamente.",
-      });
+      // Removed error toast
     } finally {
       setIsSubmitting(false);
     }
