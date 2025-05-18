@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Check, Calendar, Clock, MessageSquare, PlayCircle, Target, TrendingUp, Users, Briefcase, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -221,12 +220,12 @@ const DiagnosticoLandingV2 = () => {
         </div>
       </section>
 
-      {/* Solution Section */}
+      {/* Enhanced Solution Section */}
       <section className="py-16 bg-[#0d1829]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-              <span className="text-yellow-400">A Solução</span> para seu comercial de alta performance
+              <span className="text-yellow-400">A Solução Completa</span> para escalar seu negócio digital
             </h2>
 
             <div className="bg-gray-800 rounded-lg p-8 shadow-lg mb-8">
@@ -240,35 +239,106 @@ const DiagnosticoLandingV2 = () => {
               </div>
               
               <p className="text-xl mb-6">
-                Na consultoria gratuita, você vai receber:
+                A <strong>estruturação profissional completa</strong> que farei para sua empresa:
               </p>
               
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
-                    <Check className="h-4 w-4 text-black" />
-                  </div>
-                  <span>Um diagnóstico completo da sua estrutura comercial atual</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
-                    <Check className="h-4 w-4 text-black" />
-                  </div>
-                  <span>Um plano de ação para estruturar processos comerciais profissionais</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
-                    <Check className="h-4 w-4 text-black" />
-                  </div>
-                  <span>Estratégias para implementar treinamento e acompanhamento de vendedores</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
-                    <Check className="h-4 w-4 text-black" />
-                  </div>
-                  <span>Sistemas de gestão comercial que aumentam drasticamente as conversões</span>
-                </li>
-              </ul>
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-gray-700/50 p-6 rounded-lg border border-blue-900/30">
+                  <h3 className="font-bold text-xl mb-4 text-blue-300">Comercial</h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Estruturação de processos comerciais</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Treinamento de SDRs e Closers</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Processo seletivo para equipe</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Acompanhamento de métricas</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-gray-700/50 p-6 rounded-lg border border-green-900/30">
+                  <h3 className="font-bold text-xl mb-4 text-green-300">Marketing</h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Criação de funis de vendas otimizados</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Otimização de tráfego pago</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Estratégias de captação de leads</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Alinhamento entre MKT e vendas</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-gray-700/50 p-6 rounded-lg border border-purple-900/30">
+                  <h3 className="font-bold text-xl mb-4 text-purple-300">Produto</h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Estruturação de ofertas high ticket</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Definição de proposta de valor única</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Posicionamento estratégico</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                        <Check className="h-4 w-4 text-black" />
+                      </div>
+                      <span>Modelo de negócio escalável</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="bg-blue-900/20 p-5 rounded-lg border border-blue-800/30 mb-6">
+                <p className="text-lg">
+                  Na consultoria gratuita, você receberá um diagnóstico completo e um <strong>plano de ação personalizado</strong> para estruturar seu negócio digital profissionalmente, garantindo o máximo de ROI em seus investimentos.
+                </p>
+              </div>
               
               <div className="mt-8 flex items-center justify-center text-gray-300">
                 <Clock className="h-5 w-5 mr-2" />
@@ -279,9 +349,98 @@ const DiagnosticoLandingV2 = () => {
                 <div className="flex">
                   <Handshake className="h-6 w-6 text-blue-400 mr-3 flex-shrink-0 mt-1" />
                   <p className="text-blue-200">
-                    Como <strong>conselheiro e estrategista digital</strong>, já implementei estas estratégias em mais de 160 empresas, desde pequenos negócios até players que faturam milhões mensalmente.
+                    Como <strong>conselheiro e estrategista digital</strong>, já implementei estas estratégias em mais de 160 empresas no Brasil e Portugal, desde pequenos negócios até players que faturam mais de 1 milhão por mês, resultando em crescimentos de até <strong>900% em apenas 8 meses</strong>.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Ideal For Section - Enhanced */}
+      <section className="py-16 bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
+              <span className="text-dark-primary">Quem Deve</span> Estruturar o Comercial?
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h3 className="text-xl font-bold mb-6 text-center text-dark-primary border-b border-gray-700 pb-3">
+                  Tipos de Negócios
+                </h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span>Empresas que vendem <strong>mentorias e cursos high ticket</strong></span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span>Empresas que fazem <strong>lançamentos digitais</strong></span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span><strong>Escritórios de advocacia e contabilidade</strong> que querem escalar</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span><strong>Agências e consultorias</strong> que buscam aumentar ticket médio</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span>Qualquer empresa que queira <strong>vender no digital de forma profissional</strong></span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <h3 className="text-xl font-bold mb-6 text-center text-dark-primary border-b border-gray-700 pb-3">
+                  Cenários de Empresas
+                </h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span>Empresas que <strong>investem em tráfego</strong> mas não convertem os leads</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span>Empresas que <strong>precisam contratar e treinar</strong> time de vendas</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span>Empresas que <strong>já perderam dinheiro</strong> tentando vender high ticket</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span>Empresas que <strong>precisam criar novos funis</strong> de vendas no marketing</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
+                      <Check className="h-4 w-4 text-dark-primary" />
+                    </div>
+                    <span>Empresas que <strong>querem escalar resultados</strong> de forma profissional</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -407,7 +566,7 @@ const DiagnosticoLandingV2 = () => {
               <Calendar className="h-10 w-10 text-dark-primary" />
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Vagas limitadas por semana — garanta a sua agora
+              Escale seu negócio digital profissionalmente — garanta sua vaga agora
             </h2>
             
             <Button
@@ -422,7 +581,7 @@ const DiagnosticoLandingV2 = () => {
                 source="diagnostico_landing_v2_bottom"
                 showChallengeField={true}
                 buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xl py-6 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
-                buttonText="QUERO PARAR DE RASGAR DINHEIRO COM MARKETING"
+                buttonText="QUERO ESTRUTURAR MEU NEGÓCIO DIGITAL"
               />
               <p className="mt-3 text-sm text-gray-400">
                 Você será redirecionado para agendar seu melhor horário
