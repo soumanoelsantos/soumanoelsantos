@@ -2,11 +2,7 @@
 import React from "react";
 import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
-interface HeroProps {
-  showUrgency: boolean;
-}
-
-const Hero = ({ showUrgency }: HeroProps) => {
+const Hero = () => {
   return (
     <section className="py-8 sm:py-16 bg-gradient-to-b from-[#0d112b] to-[#1a1a2e] relative overflow-hidden">
       <div className="container mx-auto px-3 sm:px-4">
@@ -18,12 +14,6 @@ const Hero = ({ showUrgency }: HeroProps) => {
           <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-gray-300 px-1">
             Em uma reunião gratuita de 45 minutos comigo você receberá um <strong>PLANO DE AÇÃO</strong> personalizado para estruturar seu comercial e marketing profissionalmente e <strong>DOBRAR</strong> seu faturamento em 90 dias!
           </p>
-          
-          {showUrgency && (
-            <div className="mb-4 sm:mb-6 flex flex-col items-center">
-              <p className="text-yellow-400 font-medium mb-2">Vagas limitadas para hoje</p>
-            </div>
-          )}
           
           <div className="mb-6">
             <LeadCaptureForm 

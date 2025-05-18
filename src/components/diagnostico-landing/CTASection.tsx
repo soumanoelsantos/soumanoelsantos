@@ -2,7 +2,6 @@
 import React from "react";
 import { Calendar } from "lucide-react";
 import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
-import { Button } from "@/components/ui/button";
 
 interface CTASectionProps {
   showUrgency: boolean;
@@ -20,13 +19,6 @@ const CTASection = ({ showUrgency, setShowUrgency }: CTASectionProps) => {
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 px-1">
             Receba seu plano de ação comercial personalizado — garanta sua vaga agora
           </h2>
-          
-          <Button
-            onClick={() => setShowUrgency(!showUrgency)}
-            className="mb-4 sm:mb-6 text-xs sm:text-sm bg-transparent border border-gray-600 hover:bg-gray-800 text-gray-400"
-          >
-            {showUrgency ? "Ocultar contador" : "Mostrar urgência com contador"}
-          </Button>
           
           <div className="mb-6 sm:mb-8">
             <LeadCaptureForm 

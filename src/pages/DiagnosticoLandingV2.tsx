@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import Header from "@/components/diagnostico-landing/Header";
 import Hero from "@/components/diagnostico-landing/Hero";
 import ProblemSection from "@/components/diagnostico-landing/ProblemSection";
@@ -13,12 +13,10 @@ import Footer from "@/components/diagnostico-landing/Footer";
 import MarketingPainSection from "@/components/marketing/sections/MarketingPainSection";
 
 const DiagnosticoLandingV2 = () => {
-  const [showUrgency, setShowUrgency] = useState(false);
-  
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Header />
-      <Hero showUrgency={showUrgency} />
+      <Hero />
       <ProblemSection />
       <WastedMoneySection />
       <MarketingPainSection />
@@ -26,7 +24,7 @@ const DiagnosticoLandingV2 = () => {
       <IdealForSection />
       <TestimonialSection />
       <StatsSection />
-      <CTASection showUrgency={showUrgency} setShowUrgency={setShowUrgency} />
+      <CTASection />
       <Footer />
     </div>
   );
