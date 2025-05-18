@@ -15,9 +15,11 @@ interface LeadFormContentProps {
 const LeadFormContent = ({ form, onSubmit, isSubmitting }: LeadFormContentProps) => {
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 py-2 pb-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 py-2 pb-2">
         <LeadFormFields form={form} />
-        <LeadFormActions isSubmitting={isSubmitting} />
+        <div className="mt-4 pb-2">
+          <LeadFormActions isSubmitting={isSubmitting} />
+        </div>
       </form>
     </Form>
   );
