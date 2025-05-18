@@ -1,6 +1,5 @@
 
 import React, { useState } from "react";
-import MarketingPainSection from "@/components/marketing/MarketingPainSection";
 import Header from "@/components/diagnostico-landing/Header";
 import Hero from "@/components/diagnostico-landing/Hero";
 import ProblemSection from "@/components/diagnostico-landing/ProblemSection";
@@ -11,6 +10,7 @@ import TestimonialSection from "@/components/diagnostico-landing/TestimonialSect
 import StatsSection from "@/components/diagnostico-landing/StatsSection";
 import CTASection from "@/components/diagnostico-landing/CTASection";
 import Footer from "@/components/diagnostico-landing/Footer";
+import MarketingPainSection from "@/components/marketing/sections/MarketingPainSection";
 
 const DiagnosticoLandingV2 = () => {
   const [showUrgency, setShowUrgency] = useState(false);
