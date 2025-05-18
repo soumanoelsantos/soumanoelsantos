@@ -142,7 +142,7 @@ const DiagnosticoLandingV2 = () => {
                 <ul className="space-y-3">
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2">•</span> 
-                    <span>Vendedores de <strong>mentorias e cursos high ticket</strong></span>
+                    <span>Mentores que vendem <strong>produtos high ticket</strong> online</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2">•</span> 
@@ -155,6 +155,10 @@ const DiagnosticoLandingV2 = () => {
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2">•</span> 
                     <span>Empresas que fazem <strong>lançamentos digitais</strong></span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span> 
+                    <span>Clínicas de <strong>estética e odontologia</strong>, <strong>energia solar</strong> e empresas que querem vender pela internet</span>
                   </li>
                 </ul>
               </div>
@@ -402,7 +406,7 @@ const DiagnosticoLandingV2 = () => {
                     <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
                       <Check className="h-4 w-4 text-dark-primary" />
                     </div>
-                    <span>Empresas que vendem <strong>mentorias e cursos high ticket</strong></span>
+                    <span>Mentores que vendem <strong>produtos high ticket</strong> online</span>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
@@ -426,7 +430,7 @@ const DiagnosticoLandingV2 = () => {
                     <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
                       <Check className="h-4 w-4 text-dark-primary" />
                     </div>
-                    <span>Qualquer empresa que queira <strong>vender no digital de forma profissional</strong></span>
+                    <span><strong>Clínicas de estética, odontologia, empresas de energia solar</strong> e qualquer empresa que queira vender na internet</span>
                   </li>
                 </ul>
               </div>
