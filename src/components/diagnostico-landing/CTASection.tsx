@@ -31,7 +31,6 @@ const CTASection = ({ showUrgency, setShowUrgency }: CTASectionProps) => {
           <div className="mb-8">
             <LeadCaptureForm 
               source="diagnostico_landing_v2_bottom"
-              showChallengeField={true}
               buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xl py-6 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
               buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
             />

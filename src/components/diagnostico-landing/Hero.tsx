@@ -38,7 +38,6 @@ const Hero = ({ showUrgency }: HeroProps) => {
           <div className="mb-6">
             <LeadCaptureForm 
               source="diagnostico_landing_v2"
-              showChallengeField={true}
               buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-6 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
               buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
             />

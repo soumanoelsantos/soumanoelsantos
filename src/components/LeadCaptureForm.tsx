@@ -32,7 +32,7 @@ interface LeadCaptureFormProps {
 
 const LeadCaptureForm = ({ 
   source = "website", 
-  buttonText = "Agendar diagnóstico gratuito", 
+  buttonText = "Agendar reunião gratuita", 
   buttonClassName = "",
   showChallengeField = false,
   onSuccess 
@@ -119,7 +119,7 @@ const LeadCaptureForm = ({
       <DialogContent className="sm:max-w-[425px] w-[calc(100%-32px)] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl text-center">
-            Agendar diagnóstico gratuito
+            Agendar reunião gratuita
           </DialogTitle>
         </DialogHeader>
         
@@ -167,21 +167,7 @@ const LeadCaptureForm = ({
               )}
             />
             
-            {showChallengeField && (
-              <FormField
-                control={form.control}
-                name="challenge"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Qual seu maior desafio hoje?</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Conte um pouco sobre o desafio do seu negócio..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            {/* Challenge field is now hidden by default regardless of the prop */}
             
             <Button 
               type="submit" 
