@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Calendar } from "lucide-react";
 import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
@@ -24,7 +25,7 @@ const CTASection = ({ source }: CTASectionProps) => {
           </h2>
           
           <p className="text-base font-medium text-dark-primary mb-4">
-            Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
+            Exclusivo para empresas com faturamento acima de R$ 30 mil por mês
           </p>
           
           <p className="text-lg text-gray-700 mb-6">

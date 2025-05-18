@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,7 @@ const Hero = () => {
   return (
     <div className="relative min-h-screen bg-gradient-radial text-dark-text overflow-hidden">
       <div className="bg-dark-primary text-black text-center py-2 text-sm font-medium px-4">
-        Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
+        Exclusivo para empresas com faturamento acima de R$ 30 mil por mês
       </div>
 
       <div className="absolute inset-0 bg-hero-pattern opacity-5"></div>

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Check, Calendar, Clock, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -184,7 +185,7 @@ const DiagnosticoLanding = () => {
           <div className="text-center text-sm text-gray-500">
             <p>© {new Date().getFullYear()} Programa Maximus. Todos os direitos reservados.</p>
             <p className="mt-2">
-              Exclusivo para empresas com faturamento acima de R$ 50 mil por mês.
+              Exclusivo para empresas com faturamento acima de R$ 30 mil por mês.
             </p>
           </div>
         </div>

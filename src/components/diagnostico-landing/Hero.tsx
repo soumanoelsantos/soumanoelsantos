@@ -13,7 +13,7 @@ const Hero = ({ showUrgency }: HeroProps) => {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-block mb-6 px-4 py-1 bg-red-600/30 rounded-full text-red-300 font-medium">
-            Exclusivo para empresas com faturamento acima de R$ 50 mil/mês
+            Exclusivo para empresas com faturamento acima de R$ 30 mil/mês
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold mb-6">

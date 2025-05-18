@@ -26,7 +26,7 @@ const MentorshipCard: React.FC = () => {
             </h2>
             
             <p className="text-base font-medium text-dark-primary mb-4 text-center">
-              Exclusivo para empresas com faturamento acima de R$ 50 mil por mês
+              Exclusivo para empresas com faturamento acima de R$ 30 mil por mês
             </p>
             
             <p className="text-lg text-gray-700 mb-6 text-center">
