@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calendar } from "lucide-react";
-import LeadCaptureForm from "./lead-form/LeadCaptureForm";
+import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
 interface CTASectionProps {
   source: string;

@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Activity } from "lucide-react";
-import LeadCaptureForm from "@/components/LeadCaptureForm";
+import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 import InvestmentVisibilityCard from "@/components/marketing/cards/InvestmentVisibilityCard";
 import PredictabilityCard from "@/components/marketing/cards/PredictabilityCard";
 import SolutionsCard from "@/components/marketing/cards/SolutionsCard";

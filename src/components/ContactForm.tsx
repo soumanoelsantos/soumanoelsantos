@@ -1,5 +1,5 @@
 import { Calendar } from "lucide-react";
-import LeadCaptureForm from "./lead-form/LeadCaptureForm";
+import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
 const ContactForm = () => {
   return (

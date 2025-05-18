@@ -1,8 +1,7 @@
-
 import React from "react";
 import { Check, Calendar, Clock, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import LeadCaptureForm from "@/components/LeadCaptureForm";
+import LeadCaptureForm from "@/components/lead-form/LeadCaptureForm";
 
 const DiagnosticoLanding = () => {
   return (
