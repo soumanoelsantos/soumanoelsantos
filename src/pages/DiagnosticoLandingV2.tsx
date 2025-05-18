@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Check, Calendar, Clock, MessageSquare, PlayCircle } from "lucide-react";
+import { Check, Calendar, Clock, MessageSquare, PlayCircle, Target, TrendingUp, Users, Briefcase, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 import CountdownTimer from "@/components/CountdownTimer";
@@ -13,7 +13,7 @@ const DiagnosticoLandingV2 = () => {
       {/* Header Section */}
       <header className="bg-gradient-to-r from-[#0d112b] to-[#1d365c] py-4 px-4">
         <div className="container mx-auto flex justify-center">
-          <h1 className="text-2xl font-bold text-white">Programa Maximus</h1>
+          <h1 className="text-2xl font-bold text-white">Programa Maximus | <span className="text-dark-primary">Aceleração de Vendas</span></h1>
         </div>
       </header>
 
@@ -26,11 +26,11 @@ const DiagnosticoLandingV2 = () => {
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Tráfego pago sem <span className="text-dark-primary">resultado</span> é dinheiro <span className="text-dark-primary">jogado fora</span>
+              Seu <span className="text-dark-primary">comercial</span> não está <span className="text-dark-primary">convertendo</span> os leads em vendas?
             </h1>
             
             <p className="text-xl mb-8 text-gray-300">
-              Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
+              Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para estruturar seu comercial e <strong>DOBRAR</strong> seu faturamento em 90 dias!
             </p>
             
             {showUrgency && (
@@ -49,7 +49,7 @@ const DiagnosticoLandingV2 = () => {
                 source="diagnostico_landing_v2"
                 showChallengeField={true}
                 buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-lg py-6 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
-                buttonText="QUERO MEU PLANO DE AÇÃO GRATUITO"
+                buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
               />
               <p className="mt-3 text-sm text-gray-400">
                 Você será redirecionado para agendar seu melhor horário
@@ -59,7 +59,7 @@ const DiagnosticoLandingV2 = () => {
             <div className="mt-8 flex justify-center">
               <img
                 src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
-                alt="CRO - Manoel Santos"
+                alt="Estrategista Digital - Manoel Santos"
                 className="w-64 h-64 rounded-full object-cover border-4 border-dark-primary shadow-2xl"
               />
             </div>
@@ -72,38 +72,90 @@ const DiagnosticoLandingV2 = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-              <span className="text-red-500">O Problema</span> que está travando seu crescimento
+              <span className="text-red-500">Os Problemas</span> que estão travando seu crescimento
             </h2>
 
             <div className="bg-gray-800 rounded-lg p-8 shadow-lg mb-10">
               <p className="text-xl mb-6">
-                Se você sente que está gastando com anúncios mas:
+                Se você se identifica com um destes cenários:
               </p>
               <ul className="space-y-4 text-gray-300">
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Não consegue escalar as vendas...
+                  <span className="text-red-500 mr-2">—</span> Tem dificuldade em <strong>converter leads em vendas</strong>, mesmo com tráfego de qualidade...
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Tem leads que não compram...
+                  <span className="text-red-500 mr-2">—</span> Seu time comercial não está <strong>preparado para vender alto ticket</strong>...
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Seu time comercial não converte...
+                  <span className="text-red-500 mr-2">—</span> Já investiu muito em marketing, mas <strong>não consegue escalar as vendas</strong>...
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Seu produto parece "bom demais" para não estar vendendo...
+                  <span className="text-red-500 mr-2">—</span> Tem um produto excelente, mas <strong>falta estrutura comercial</strong> para vender consistentemente...
+                </li>
+                <li className="flex items-start">
+                  <span className="text-red-500 mr-2">—</span> Está tentando vender <strong>mentoria, curso, consultoria, assessoria jurídica ou serviços de alto valor</strong> mas não consegue...
                 </li>
               </ul>
               
               <div className="mt-8 p-4 border-l-4 border-yellow-500 bg-gray-700">
                 <p className="text-lg">
-                  <span className="text-yellow-400 font-bold">→</span> Então, provavelmente, você não tem um Marketing e Comercial alinhados.
+                  <span className="text-yellow-400 font-bold">→</span> O problema não está no seu produto ou no tráfego, mas na <strong>falta de integração entre marketing e comercial</strong>.
                 </p>
               </div>
               
               <div className="mt-6 p-4 border-l-4 border-red-500 bg-gray-700">
                 <p className="text-lg">
-                  <span className="text-red-500 font-bold">⚠️</span> Tráfego sem estratégia é dinheiro queimado.
+                  <span className="text-red-500 font-bold">⚠️</span> Investir apenas em tráfego sem uma <strong>estratégia comercial sólida</strong> é queimar dinheiro.
                 </p>
+              </div>
+            </div>
+
+            {/* Target Markets */}
+            <div className="grid md:grid-cols-2 gap-6 mb-10">
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex items-center mb-4">
+                  <Briefcase className="h-6 w-6 text-dark-primary mr-3" />
+                  <h3 className="text-xl font-bold">Para quem é ideal?</h3>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span> 
+                    <span>Vendedores de <strong>mentorias e cursos high ticket</strong></span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span> 
+                    <span>Escritórios de <strong>advocacia e contabilidade</strong></span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span> 
+                    <span><strong>Agências e consultorias</strong> que querem escalar</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span> 
+                    <span>Empresas que fazem <strong>lançamentos digitais</strong></span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex items-center mb-4">
+                  <Target className="h-6 w-6 text-dark-primary mr-3" />
+                  <h3 className="text-xl font-bold">Resultados comprovados</h3>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span> 
+                    <span>Crescimento de <strong>+900% em 8 meses</strong> com grandes players</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span> 
+                    <span>Mais de <strong>160 empresas aceleradas</strong> no Brasil e Portugal</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span> 
+                    <span>Gestão de <strong>empresas que faturam mais de 1 milhão/mês</strong></span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -115,12 +167,21 @@ const DiagnosticoLandingV2 = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-              <span className="text-yellow-400">A Solução</span> que você precisa
+              <span className="text-yellow-400">A Solução</span> para seu comercial de alta performance
             </h2>
 
             <div className="bg-gray-800 rounded-lg p-8 shadow-lg mb-8">
+              <div className="flex justify-center mb-8">
+                <div className="flex flex-wrap justify-center gap-3">
+                  <span className="bg-blue-900/30 rounded-full px-4 py-1 text-sm font-medium text-blue-300">Gestão Comercial</span>
+                  <span className="bg-green-900/30 rounded-full px-4 py-1 text-sm font-medium text-green-300">Aceleração de Vendas</span>
+                  <span className="bg-purple-900/30 rounded-full px-4 py-1 text-sm font-medium text-purple-300">Alta Performance</span>
+                  <span className="bg-yellow-900/30 rounded-full px-4 py-1 text-sm font-medium text-yellow-300">Estratégias de Vendas</span>
+                </div>
+              </div>
+              
               <p className="text-xl mb-6">
-                Na reunião gratuita, você vai receber:
+                Na consultoria gratuita, você vai receber:
               </p>
               
               <ul className="space-y-4">
@@ -128,25 +189,40 @@ const DiagnosticoLandingV2 = () => {
                   <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
                     <Check className="h-4 w-4 text-black" />
                   </div>
-                  <span>Um diagnóstico claro do seu funil de vendas</span>
+                  <span>Um diagnóstico completo da sua estrutura comercial atual</span>
                 </li>
                 <li className="flex items-start">
                   <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
                     <Check className="h-4 w-4 text-black" />
                   </div>
-                  <span>Um plano de ação com os ajustes mais urgentes</span>
+                  <span>Um plano de ação para integrar marketing e vendas</span>
                 </li>
                 <li className="flex items-start">
                   <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
                     <Check className="h-4 w-4 text-black" />
                   </div>
-                  <span>A visão de um especialista que já ajudou dezenas de empresas</span>
+                  <span>Estratégias para treinar e acompanhar vendedores</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
+                    <Check className="h-4 w-4 text-black" />
+                  </div>
+                  <span>Implementação de funis de vendas que realmente convertem</span>
                 </li>
               </ul>
               
               <div className="mt-8 flex items-center justify-center text-gray-300">
                 <Clock className="h-5 w-5 mr-2" />
                 <span>Duração: 30 minutos | Online | Sem compromisso</span>
+              </div>
+
+              <div className="mt-8 p-4 bg-blue-900/20 rounded-lg border border-blue-800/50">
+                <div className="flex">
+                  <Handshake className="h-6 w-6 text-blue-400 mr-3 flex-shrink-0 mt-1" />
+                  <p className="text-blue-200">
+                    Como <strong>conselheiro e estrategista digital</strong>, já implementei estas estratégias em mais de 160 empresas, desde pequenos negócios até players que faturam milhões mensalmente.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -193,20 +269,71 @@ const DiagnosticoLandingV2 = () => {
                 <div className="flex items-start mb-4">
                   <MessageSquare className="h-6 w-6 text-blue-400 mr-2 mt-1 flex-shrink-0" />
                   <p className="italic text-gray-300">
-                    "Depois dessa reunião, consegui identificar exatamente onde estávamos errando no nosso funil de vendas."
+                    "Após implementar as estratégias de comercial que o Manoel sugeriu, conseguimos triplicar nosso ticket médio na venda da nossa mentoria."
                   </p>
                 </div>
-                <p className="text-sm text-gray-400">— João Pedro, Consultor Digital</p>
+                <p className="text-sm text-gray-400">— Carlos M., CEO de Agência Digital</p>
               </div>
               
               <div className="bg-gray-800 p-6 rounded-lg shadow">
                 <div className="flex items-start mb-4">
                   <MessageSquare className="h-6 w-6 text-blue-400 mr-2 mt-1 flex-shrink-0" />
                   <p className="italic text-gray-300">
-                    "É como se alguém abrisse os olhos pra algo que estava na minha frente o tempo todo."
+                    "Nossa equipe de vendas estava com dificuldade para fechar contratos de alto valor. Após a consultoria, nosso fechamento aumentou 78%."
                   </p>
                 </div>
-                <p className="text-sm text-gray-400">— Mariana L., Lojista Online</p>
+                <p className="text-sm text-gray-400">— Ana F., Escritório de Advocacia</p>
+              </div>
+              
+              <div className="bg-gray-800 p-6 rounded-lg shadow">
+                <div className="flex items-start mb-4">
+                  <MessageSquare className="h-6 w-6 text-blue-400 mr-2 mt-1 flex-shrink-0" />
+                  <p className="italic text-gray-300">
+                    "Fiz um investimento pesado em tráfego mas não convertia. O problema era o nosso funil de vendas. Com as mudanças sugeridas, nosso ROI aumentou 4x."
+                  </p>
+                </div>
+                <p className="text-sm text-gray-400">— Rafael S., Lançamentos Digitais</p>
+              </div>
+              
+              <div className="bg-gray-800 p-6 rounded-lg shadow">
+                <div className="flex items-start mb-4">
+                  <MessageSquare className="h-6 w-6 text-blue-400 mr-2 mt-1 flex-shrink-0" />
+                  <p className="italic text-gray-300">
+                    "O treinamento da nossa equipe de vendas com as táticas compartilhadas fez toda diferença para vendermos nossos pacotes premium."
+                  </p>
+                </div>
+                <p className="text-sm text-gray-400">— Mariana L., Consultoria Empresarial</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-[#0d112b]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-12 text-center">
+              <span className="text-dark-primary">Números</span> que falam por si
+            </h2>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-gray-800/50 p-6 rounded-lg text-center">
+                <TrendingUp className="h-12 w-12 mx-auto mb-4 text-dark-primary" />
+                <div className="text-4xl font-bold mb-2 text-white">+900%</div>
+                <p className="text-gray-400">Crescimento em vendas de clientes em 8 meses</p>
+              </div>
+              
+              <div className="bg-gray-800/50 p-6 rounded-lg text-center">
+                <Briefcase className="h-12 w-12 mx-auto mb-4 text-dark-primary" />
+                <div className="text-4xl font-bold mb-2 text-white">+160</div>
+                <p className="text-gray-400">Empresas aceleradas no Brasil e Portugal</p>
+              </div>
+              
+              <div className="bg-gray-800/50 p-6 rounded-lg text-center">
+                <Users className="h-12 w-12 mx-auto mb-4 text-dark-primary" />
+                <div className="text-4xl font-bold mb-2 text-white">80%</div>
+                <p className="text-gray-400">De aumento médio na conversão de vendas</p>
               </div>
             </div>
           </div>
@@ -236,7 +363,7 @@ const DiagnosticoLandingV2 = () => {
                 source="diagnostico_landing_v2_bottom"
                 showChallengeField={true}
                 buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xl py-6 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
-                buttonText="QUERO MEU PLANO DE AÇÃO GRATUITO"
+                buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
               />
               <p className="mt-3 text-sm text-gray-400">
                 Você será redirecionado para agendar seu melhor horário
