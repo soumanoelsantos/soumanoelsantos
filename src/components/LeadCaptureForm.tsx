@@ -11,11 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Nome precisa ter no mínimo 2 caracteres" }),
   email: z.string().email({ message: "Email inválido" }),
   phone: z.string().min(10, { message: "Telefone inválido" }),
+  challenge: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -24,6 +26,7 @@ interface LeadCaptureFormProps {
   source?: string;
   buttonText?: React.ReactNode;
   buttonClassName?: string;
+  showChallengeField?: boolean;
   onSuccess?: () => void;
 }
 
@@ -31,6 +34,7 @@ const LeadCaptureForm = ({
   source = "website", 
   buttonText = "Agendar diagnóstico gratuito", 
   buttonClassName = "",
+  showChallengeField = false,
   onSuccess 
 }: LeadCaptureFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,6 +48,7 @@ const LeadCaptureForm = ({
       name: "",
       email: "",
       phone: "",
+      challenge: "",
     },
   });
 
@@ -54,6 +59,7 @@ const LeadCaptureForm = ({
         name: values.name,
         email: values.email,
         phone: values.phone,
+        challenge: values.challenge,
         source: source,
         status: "Novo"
       });
@@ -63,9 +69,10 @@ const LeadCaptureForm = ({
         name: values.name,
         email: values.email,
         phone: values.phone,
+        challenge: values.challenge || "",
         source: source,
         status: "Novo", // Explicitly set status to "Novo"
-        notes: `Lead capturado via ${source}`
+        notes: `Lead capturado via ${source}${values.challenge ? `. Desafio: ${values.challenge}` : ''}`
       }).select();
       
       if (error) {
@@ -159,6 +166,22 @@ const LeadCaptureForm = ({
                 </FormItem>
               )}
             />
+            
+            {showChallengeField && (
+              <FormField
+                control={form.control}
+                name="challenge"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Qual seu maior desafio hoje?</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Conte um pouco sobre o desafio do seu negócio..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             
             <Button 
               type="submit" 
