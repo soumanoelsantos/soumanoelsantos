@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Check, Calendar, Clock, MessageSquare, PlayCircle, Target, TrendingUp, Users, Briefcase, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -78,21 +79,43 @@ const DiagnosticoLandingV2 = () => {
               <p className="text-xl mb-6">
                 Se você se identifica com um destes cenários:
               </p>
-              <ul className="space-y-4 text-gray-300">
+              <ul className="space-y-6 text-gray-300">
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> <strong>Investe pesado em tráfego</strong>, mas seus leads não se convertem em vendas...
+                  <span className="text-red-500 mr-3 text-xl">—</span> 
+                  <div>
+                    <span className="font-bold text-white">Investe pesado em tráfego</span>
+                    <span>, mas seus leads não se convertem em vendas...</span>
+                  </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Seu time comercial não tem <strong>processos estruturados nem treinamento adequado</strong>...
+                  <span className="text-red-500 mr-3 text-xl">—</span> 
+                  <div>
+                    <span>Seu time comercial não tem </span>
+                    <span className="font-bold text-white">processos estruturados nem treinamento adequado</span>
+                    <span>...</span>
+                  </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> <strong>Gasta muito em marketing</strong>, mas o ROI é baixo ou inexistente...
+                  <span className="text-red-500 mr-3 text-xl">—</span> 
+                  <div>
+                    <span className="font-bold text-white">Gasta muito em marketing</span>
+                    <span>, mas o ROI é baixo ou inexistente...</span>
+                  </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> <strong>Não há acompanhamento e gestão efetiva</strong> dos vendedores e resultados...
+                  <span className="text-red-500 mr-3 text-xl">—</span> 
+                  <div>
+                    <span className="font-bold text-white">Não há acompanhamento e gestão efetiva</span>
+                    <span> dos vendedores e resultados...</span>
+                  </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Tentou vender <strong>produtos high ticket</strong> (mentorias, cursos, consultorias) sem sucesso...
+                  <span className="text-red-500 mr-3 text-xl">—</span> 
+                  <div>
+                    <span>Tentou vender </span>
+                    <span className="font-bold text-white">produtos high ticket</span>
+                    <span> (mentorias, cursos, consultorias) sem sucesso...</span>
+                  </div>
                 </li>
               </ul>
               
@@ -597,7 +620,7 @@ const DiagnosticoLandingV2 = () => {
           <div className="text-center text-sm text-gray-500">
             <p>© {new Date().getFullYear()} Programa Maximus. Todos os direitos reservados.</p>
             <p className="mt-2">
-              Exclusivo para empresas com faturamento acima de R$ 50 mil por mês.
+              Exclusivo para empresas que queiram vender pela internet.
             </p>
           </div>
         </div>
