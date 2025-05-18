@@ -26,11 +26,11 @@ const DiagnosticoLandingV2 = () => {
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Seu <span className="text-dark-primary">comercial</span> não está <span className="text-dark-primary">convertendo</span> os leads em vendas?
+              Está <span className="text-red-500">jogando dinheiro fora</span> com tráfego enquanto seu <span className="text-dark-primary">comercial não converte</span>?
             </h1>
             
             <p className="text-xl mb-8 text-gray-300">
-              Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para estruturar seu comercial e <strong>DOBRAR</strong> seu faturamento em 90 dias!
+              Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para estruturar seu comercial profissionalmente e <strong>DOBRAR</strong> seu faturamento em 90 dias!
             </p>
             
             {showUrgency && (
@@ -81,31 +81,31 @@ const DiagnosticoLandingV2 = () => {
               </p>
               <ul className="space-y-4 text-gray-300">
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Tem dificuldade em <strong>converter leads em vendas</strong>, mesmo com tráfego de qualidade...
+                  <span className="text-red-500 mr-2">—</span> <strong>Investe pesado em tráfego</strong>, mas seus leads não se convertem em vendas...
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Seu time comercial não está <strong>preparado para vender alto ticket</strong>...
+                  <span className="text-red-500 mr-2">—</span> Seu time comercial não tem <strong>processos estruturados nem treinamento adequado</strong>...
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Já investiu muito em marketing, mas <strong>não consegue escalar as vendas</strong>...
+                  <span className="text-red-500 mr-2">—</span> <strong>Gasta muito em marketing</strong>, mas o ROI é baixo ou inexistente...
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Tem um produto excelente, mas <strong>falta estrutura comercial</strong> para vender consistentemente...
+                  <span className="text-red-500 mr-2">—</span> <strong>Não há acompanhamento e gestão efetiva</strong> dos vendedores e resultados...
                 </li>
                 <li className="flex items-start">
-                  <span className="text-red-500 mr-2">—</span> Está tentando vender <strong>mentoria, curso, consultoria, assessoria jurídica ou serviços de alto valor</strong> mas não consegue...
+                  <span className="text-red-500 mr-2">—</span> Tentou vender <strong>produtos high ticket</strong> (mentorias, cursos, consultorias) sem sucesso...
                 </li>
               </ul>
               
               <div className="mt-8 p-4 border-l-4 border-yellow-500 bg-gray-700">
                 <p className="text-lg">
-                  <span className="text-yellow-400 font-bold">→</span> O problema não está no seu produto ou no tráfego, mas na <strong>falta de integração entre marketing e comercial</strong>.
+                  <span className="text-yellow-400 font-bold">→</span> O problema não está apenas no seu produto ou no tráfego, mas na <strong>falta de estruturação profissional do seu comercial</strong>.
                 </p>
               </div>
               
               <div className="mt-6 p-4 border-l-4 border-red-500 bg-gray-700">
                 <p className="text-lg">
-                  <span className="text-red-500 font-bold">⚠️</span> Investir apenas em tráfego sem uma <strong>estratégia comercial sólida</strong> é queimar dinheiro.
+                  <span className="text-red-500 font-bold">⚠️</span> <strong>Você está literalmente rasgando dinheiro</strong> ao investir em tráfego sem uma estratégia comercial estruturada e processos definidos.
                 </p>
               </div>
             </div>
@@ -162,6 +162,65 @@ const DiagnosticoLandingV2 = () => {
         </div>
       </section>
 
+      {/* NEW: Wasted Money Section */}
+      <section className="py-16 bg-[#0d1829]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
+              <span className="text-red-500">Pare de Rasgar Dinheiro</span> com Tráfego Sem Retorno
+            </h2>
+            
+            <div className="bg-gray-800/50 rounded-lg p-8 shadow-lg mb-10 border border-red-900/30">
+              <p className="text-xl mb-8 text-gray-300">
+                Muitos empresários acreditam que o problema está apenas na geração de leads, mas a verdade é que:
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-red-900/20 p-5 rounded-lg border border-red-800/30">
+                  <h3 className="font-bold text-xl mb-3 text-red-400">O que empresários fazem:</h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <span className="text-red-500 mr-2">✗</span> Aumentam investimento em tráfego constantemente
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-500 mr-2">✗</span> Trocam de agência ou consultor frequentemente
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-500 mr-2">✗</span> Culpam a "qualidade dos leads" pelo baixo resultado
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-500 mr-2">✗</span> Ignoram as falhas no processo comercial interno
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-green-900/20 p-5 rounded-lg border border-green-800/30">
+                  <h3 className="font-bold text-xl mb-3 text-green-400">O que realmente funciona:</h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <span className="text-green-500 mr-2">✓</span> Estruturar processos comerciais profissionais
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-500 mr-2">✓</span> Implementar treinamento constante de vendedores
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-500 mr-2">✓</span> Criar sistemas de gestão e acompanhamento
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-500 mr-2">✓</span> Alinhar marketing e vendas com estratégia integrada
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <p className="text-lg bg-yellow-900/20 p-4 rounded-lg border border-yellow-800/30 mt-6">
+                <strong className="text-yellow-400">A verdade inconveniente:</strong> Seu negócio não tem um problema de tráfego, mas sim um problema de <strong>estrutura comercial profissional</strong>. Sem isso, qualquer investimento em marketing é praticamente dinheiro desperdiçado.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Solution Section */}
       <section className="py-16 bg-[#0d1829]">
         <div className="container mx-auto px-4">
@@ -195,19 +254,19 @@ const DiagnosticoLandingV2 = () => {
                   <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
                     <Check className="h-4 w-4 text-black" />
                   </div>
-                  <span>Um plano de ação para integrar marketing e vendas</span>
+                  <span>Um plano de ação para estruturar processos comerciais profissionais</span>
                 </li>
                 <li className="flex items-start">
                   <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
                     <Check className="h-4 w-4 text-black" />
                   </div>
-                  <span>Estratégias para treinar e acompanhar vendedores</span>
+                  <span>Estratégias para implementar treinamento e acompanhamento de vendedores</span>
                 </li>
                 <li className="flex items-start">
                   <div className="bg-green-500 rounded-full p-1 mr-3 mt-1">
                     <Check className="h-4 w-4 text-black" />
                   </div>
-                  <span>Implementação de funis de vendas que realmente convertem</span>
+                  <span>Sistemas de gestão comercial que aumentam drasticamente as conversões</span>
                 </li>
               </ul>
               
@@ -289,7 +348,7 @@ const DiagnosticoLandingV2 = () => {
                 <div className="flex items-start mb-4">
                   <MessageSquare className="h-6 w-6 text-blue-400 mr-2 mt-1 flex-shrink-0" />
                   <p className="italic text-gray-300">
-                    "Fiz um investimento pesado em tráfego mas não convertia. O problema era o nosso funil de vendas. Com as mudanças sugeridas, nosso ROI aumentou 4x."
+                    "Investimos pesado em tráfego mas não convertia. O problema era nossa falta de processos comerciais. Com as mudanças sugeridas, nosso ROI aumentou 4x."
                   </p>
                 </div>
                 <p className="text-sm text-gray-400">— Rafael S., Lançamentos Digitais</p>
@@ -299,7 +358,7 @@ const DiagnosticoLandingV2 = () => {
                 <div className="flex items-start mb-4">
                   <MessageSquare className="h-6 w-6 text-blue-400 mr-2 mt-1 flex-shrink-0" />
                   <p className="italic text-gray-300">
-                    "O treinamento da nossa equipe de vendas com as táticas compartilhadas fez toda diferença para vendermos nossos pacotes premium."
+                    "O treinamento da nossa equipe comercial e a implementação dos processos fez toda diferença para vendermos nossos pacotes premium."
                   </p>
                 </div>
                 <p className="text-sm text-gray-400">— Mariana L., Consultoria Empresarial</p>
@@ -363,7 +422,7 @@ const DiagnosticoLandingV2 = () => {
                 source="diagnostico_landing_v2_bottom"
                 showChallengeField={true}
                 buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-black text-xl py-6 px-10 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
-                buttonText="QUERO MEU PLANO DE AÇÃO COMERCIAL GRATUITO"
+                buttonText="QUERO PARAR DE RASGAR DINHEIRO COM MARKETING"
               />
               <p className="mt-3 text-sm text-gray-400">
                 Você será redirecionado para agendar seu melhor horário
