@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Check, Calendar, Clock, MessageSquare, PlayCircle, Target, TrendingUp, Users, Briefcase, Handshake, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -161,7 +162,7 @@ const DiagnosticoLandingV2 = () => {
                   </li>
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2">•</span> 
-                    <span>Clínicas de <strong>estética e odontologia</strong>, <strong>energia solar</strong> e empresas que querem vender pela internet</span>
+                    <span>Clínicas de <strong>estética e odontologia</strong>, <strong>energia solar</strong> ou qualquer outra empresas que queira escalar suas vendas usando a internet</span>
                   </li>
                 </ul>
               </div>
@@ -433,7 +434,7 @@ const DiagnosticoLandingV2 = () => {
                     <div className="bg-dark-primary/20 rounded-full p-1 mr-3 mt-1">
                       <Check className="h-4 w-4 text-dark-primary" />
                     </div>
-                    <span><strong>Clínicas de estética, odontologia, empresas de energia solar</strong> e qualquer empresa que queira vender na internet</span>
+                    <span><strong>Clínicas de estética, odontologia, empresas de energia solar</strong> ou qualquer outra empresas que queira escalar suas vendas usando a internet</span>
                   </li>
                 </ul>
               </div>
