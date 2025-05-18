@@ -21,7 +21,7 @@ const Hero = ({ showUrgency }: HeroProps) => {
           </h1>
           
           <p className="text-xl mb-8 text-gray-300">
-            Em uma reunião de 45 minutos comigo você receberá um <strong>PLANO DE AÇÃO GRATUITO</strong> e personalizado para estruturar seu comercial e marketing profissionalmente e <strong>DOBRAR</strong> seu faturamento em 90 dias!
+            Em uma reunião gratuita de 45 minutos comigo você receberá um <strong>PLANO DE AÇÃO</strong> personalizado para estruturar seu comercial e marketing profissionalmente e <strong>DOBRAR</strong> seu faturamento em 90 dias!
           </p>
           
           {showUrgency && (
