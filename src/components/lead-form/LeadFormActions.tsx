@@ -11,7 +11,7 @@ const LeadFormActions = ({ isSubmitting }: LeadFormActionsProps) => {
   return (
     <Button 
       type="submit" 
-      className="w-full bg-[#D5AB2A] hover:bg-[#D5AB2A]/90 text-black mt-4 py-2 px-3 text-xs sm:text-base sm:py-3 sm:px-4 rounded-md" 
+      className="w-full bg-[#D5AB2A] hover:bg-[#D5AB2A]/90 text-black py-3 px-4 text-base rounded-md font-medium" 
       disabled={isSubmitting}
     >
       {isSubmitting ? (

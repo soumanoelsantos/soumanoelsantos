@@ -53,7 +53,7 @@ const LeadCaptureForm = ({
           isSubmitting={isSubmitting}
         />
 
-        <p className="text-sm text-center text-gray-500 mt-0 pt-0">
+        <p className="text-sm text-center text-gray-500 mt-0">
           Seus dados estão seguros e não serão compartilhados com terceiros.
         </p>
       </DialogContent>

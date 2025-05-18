@@ -32,17 +32,15 @@ export const useLeadForm = ({ source, onSuccess }: UseLeadFormProps) => {
         name: values.name,
         email: values.email,
         phone: values.phone,
-        challenge: values.challenge,
         source: source,
         status: "Novo"
       });
       
-      // Insert lead with the default status "Novo"
+      // Insert lead without the challenge field that's causing the error
       const { error, data } = await supabase.from("leads").insert({
         name: values.name,
         email: values.email,
         phone: values.phone,
-        challenge: values.challenge || "",
         source: source,
         status: "Novo", // Explicitly set status to "Novo"
         notes: `Lead capturado via ${source}${values.challenge ? `. Desafio: ${values.challenge}` : ''}`

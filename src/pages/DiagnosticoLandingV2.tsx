@@ -24,7 +24,7 @@ const DiagnosticoLandingV2 = () => {
       <IdealForSection />
       <TestimonialSection />
       <StatsSection />
-      <CTASection />
+      <CTASection source="diagnostico_landing_v2" />
       <Footer />
     </div>
   );
