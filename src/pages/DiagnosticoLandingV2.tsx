@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Check, Calendar, Clock, MessageSquare, PlayCircle, Target, TrendingUp, Users, Briefcase, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ const DiagnosticoLandingV2 = () => {
             </h1>
             
             <p className="text-xl mb-8 text-gray-300">
-              Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para estruturar seu comercial profissionalmente e <strong>DOBRAR</strong> seu faturamento em 90 dias!
+              Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para estruturar seu comercial e marketing profissionalmente e <strong>DOBRAR</strong> seu faturamento em 90 dias!
             </p>
             
             {showUrgency && (
