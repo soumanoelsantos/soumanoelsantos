@@ -8,7 +8,7 @@ const Hero = () => {
       <div className="container mx-auto px-3 sm:px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 px-1">
-            Está <span className="text-red-500">jogando dinheiro fora</span> com tráfego enquanto seu <span className="text-dark-primary">comercial não converte</span>?
+            Você está com <span className="text-red-500">dificuldade de escalar seu negócio</span> vendendo pela internet e está <span className="text-red-500">jogando dinheiro fora</span> com tráfego enquanto seu <span className="text-dark-primary">comercial não converte</span>?
           </h1>
           
           <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-gray-300 px-1">
