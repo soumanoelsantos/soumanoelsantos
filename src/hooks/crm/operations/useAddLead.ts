@@ -14,10 +14,6 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
   const updateWebhookUrl = (url: string) => {
     localStorage.setItem("crm_webhook_url", url);
     setWebhookUrl(url);
-    toast({
-      title: "Webhook configurado",
-      description: "URL do webhook foi salva com sucesso",
-    });
   };
 
   const addLead = async (values: LeadFormValues) => {
@@ -71,7 +67,7 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
           
           console.log("Payload do webhook:", JSON.stringify(payload, null, 2));
           
-          const response = await fetch(webhookUrl, {
+          await fetch(webhookUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -82,13 +78,11 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
           
           console.log("Notificação webhook enviada com modo no-cors");
           
-          // Como estamos usando no-cors, não podemos verificar o status da resposta normalmente
-          // Vamos apenas registrar que a solicitação foi enviada
         } catch (webhookError) {
           console.error("Erro ao enviar notificação para webhook:", webhookError);
           // Notificar o usuário que o webhook falhou, mas o lead foi criado
           toast({
-            variant: "destructive", // Alterado de "warning" para "destructive"
+            variant: "destructive", 
             title: "Lead criado, mas webhook falhou",
             description: "O lead foi criado, mas a notificação webhook falhou. Verifique a URL do webhook.",
           });

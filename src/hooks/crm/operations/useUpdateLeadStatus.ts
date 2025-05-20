@@ -100,7 +100,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
           
           console.log("Payload do webhook:", JSON.stringify(payload, null, 2));
           
-          const response = await fetch(webhookUrl, {
+          await fetch(webhookUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -111,14 +111,24 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
           
           console.log("Notificação webhook enviada com modo no-cors");
           
+          toast({
+            title: "Status atualizado",
+            description: `O lead foi movido para ${newStatus} e o webhook foi notificado.`,
+          });
+          
         } catch (webhookError) {
           console.error("Erro ao enviar notificação para webhook:", webhookError);
           toast({
-            variant: "destructive", // Alterado de "warning" para "destructive"
+            variant: "destructive",
             title: "Status atualizado, mas webhook falhou",
             description: "O status foi atualizado, mas a notificação webhook falhou. Verifique a URL do webhook.",
           });
         }
+      } else {
+        toast({
+          title: "Status atualizado",
+          description: `O lead foi movido para ${newStatus}.`,
+        });
       }
       
       // Return success
