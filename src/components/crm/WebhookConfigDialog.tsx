@@ -11,8 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, ExternalLink } from "lucide-react";
+import { AlertCircle, ExternalLink, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface WebhookConfigDialogProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isValidUrl, setIsValidUrl] = useState(true);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
-  const [testError, setTestError] = useState<string | null>(null);
+  const [testStatus, setTestStatus] = useState<"idle" | "sent" | "error">("idle");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,9 +41,9 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
   }, [currentUrl]);
 
   useEffect(() => {
-    // Reset error when URL changes
-    setTestError(null);
-  }, [webhookUrl]);
+    // Reset status when URL changes or dialog opens/closes
+    setTestStatus("idle");
+  }, [webhookUrl, isOpen]);
 
   const validateUrl = (url: string): boolean => {
     if (url === "") return true;
@@ -84,7 +85,7 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
     }
 
     setIsTestingWebhook(true);
-    setTestError(null);
+    setTestStatus("idle");
     console.log("Testando webhook:", webhookUrl);
 
     try {
@@ -117,18 +118,16 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
       });
 
       // Como estamos usando no-cors, não podemos verificar o status da resposta
+      setTestStatus("sent");
       toast({
         title: "Solicitação enviada",
         description: "O teste foi enviado ao webhook. Verifique o N8N para confirmar se foi recebido.",
-        variant: "default"
       });
       
       console.log("Teste de webhook enviado com modo no-cors");
     } catch (error) {
       console.error("Erro ao testar webhook:", error);
-      
-      // Store the error message for display in the UI
-      setTestError(error instanceof Error ? error.message : 'Erro desconhecido ao enviar webhook');
+      setTestStatus("error");
       
       toast({
         title: "Erro ao testar webhook",
@@ -169,15 +168,24 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
             )}
           </div>
           
-          {testError && (
-            <div className="bg-red-50 p-3 rounded border border-red-200 text-sm text-red-800">
-              <p className="font-medium mb-1">Erro ao testar webhook:</p>
-              <p className="text-xs font-mono overflow-x-auto">{testError}</p>
-              <p className="mt-2 text-xs">
-                Nota: Algumas URLs podem não ser acessíveis devido a problemas de CORS, certificados SSL 
-                ou restrições de rede. Seu webhook ainda pode funcionar corretamente apesar deste erro.
-              </p>
-            </div>
+          {testStatus === "sent" && (
+            <Alert className="bg-blue-50 border-blue-200">
+              <CheckCircle className="h-4 w-4 text-blue-500" />
+              <AlertDescription className="text-blue-700">
+                Requisição de teste enviada. Devido às restrições do navegador, não é possível confirmar se 
+                o webhook recebeu os dados. Verifique diretamente no N8N se a solicitação chegou.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {testStatus === "error" && (
+            <Alert className="bg-red-50 border-red-200">
+              <AlertCircle className="h-4 w-4 text-red-500" />
+              <AlertDescription className="text-red-700">
+                Ocorreu um erro ao tentar enviar o teste. Isso pode ser devido a problemas de CORS, 
+                certificados SSL ou restrições de rede. Seu webhook ainda pode funcionar corretamente apesar deste erro.
+              </AlertDescription>
+            </Alert>
           )}
           
           <div className="mt-2 text-sm text-gray-500">
@@ -185,9 +193,11 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
             <pre className="bg-gray-100 p-2 rounded text-xs mt-1 overflow-x-auto">
 {`{
   "leadData": {
+    "id": "lead-123",
     "name": "Nome do Lead",
     "email": "email@exemplo.com",
     "phone": "11999999999",
+    "status": "Novo",
     ...
   },
   "message": "Novo lead recebido: Nome do Lead",
@@ -196,26 +206,28 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
             </pre>
           </div>
           
-          <div className="mt-2 text-sm text-gray-700">
-            <p className="font-medium mb-1">Como configurar:</p>
-            <ol className="list-decimal list-inside space-y-1 pl-2">
-              <li>No N8N, crie um novo workflow e adicione um trigger "Webhook"</li>
-              <li>Copie a URL do webhook do N8N e cole no campo acima</li>
-              <li>Configure uma ação para enviar mensagem no WhatsApp</li>
-              <li>Use o teste abaixo para verificar se está funcionando</li>
-            </ol>
-          </div>
-          
-          <div className="mt-1 text-sm text-orange-700 bg-orange-50 p-3 rounded border border-orange-200">
-            <p className="font-semibold mb-1">Importante:</p>
-            <p className="mb-2">Devido a restrições de segurança do navegador (CORS e SSL), você não verá uma 
-            confirmação direta do teste. Mesmo que apareça "Failed to fetch", o teste pode ter sido enviado 
-            corretamente.</p>
-            <p>Verifique diretamente no N8N se o webhook foi recebido.</p>
+          <div className="mt-2 text-sm text-gray-700 space-y-4">
+            <div>
+              <p className="font-medium mb-1">Como configurar:</p>
+              <ol className="list-decimal list-inside space-y-1 pl-2">
+                <li>No N8N, crie um novo workflow e adicione um trigger "Webhook"</li>
+                <li>Copie a URL do webhook do N8N e cole no campo acima</li>
+                <li>Configure uma ação para enviar mensagem no WhatsApp</li>
+                <li>Use o teste abaixo para verificar se está funcionando</li>
+              </ol>
+            </div>
             
-            <div className="mt-2 text-xs flex items-center">
-              <ExternalLink className="h-3 w-3 mr-1" />
-              <span>Se estiver usando HTTPS no N8N, verifique se o certificado é válido.</span>
+            <div className="bg-orange-50 p-3 rounded border border-orange-200">
+              <p className="font-semibold mb-1">Importante:</p>
+              <p className="mb-2">Devido a restrições de segurança do navegador (CORS e SSL), você não verá uma 
+              confirmação direta do teste. Mesmo que apareça "Failed to fetch", o teste pode ter sido enviado 
+              corretamente.</p>
+              <p>Verifique diretamente no N8N se o webhook foi recebido.</p>
+              
+              <div className="mt-2 text-xs flex items-center">
+                <ExternalLink className="h-3 w-3 mr-1" />
+                <span>Se estiver usando HTTPS no N8N, verifique se o certificado é válido.</span>
+              </div>
             </div>
           </div>
         </div>
