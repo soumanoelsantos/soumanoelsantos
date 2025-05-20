@@ -7,6 +7,13 @@ export const useLeadOperations = (fetchLeads: () => Promise<void>) => {
   const { updateLead } = useUpdateLead(fetchLeads);
   const { deleteLead } = useDeleteLead(fetchLeads);
   const { updateLeadStatus } = useUpdateLeadStatus(fetchLeads);
+  
+  // Sincronizar a URL do webhook entre os hooks
+  useEffect(() => {
+    if (webhookUrl) {
+      localStorage.setItem('crm_webhook_url', webhookUrl);
+    }
+  }, [webhookUrl]);
 
   return {
     addLead,

@@ -2,7 +2,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LeadFormValues } from "@/types/crm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const useAddLead = (fetchLeads: () => Promise<void>) => {
   const { toast } = useToast();
@@ -51,28 +51,50 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
       if (values.status === "Novo" && webhookUrl && webhookUrl.trim() !== "") {
         try {
           console.log("Enviando notificação para webhook:", webhookUrl);
-          await fetch(webhookUrl, {
+          
+          // Modificado: Melhorar a estrutura dos dados enviados para o webhook e garantir
+          // que os dados estejam em um formato que o n8n ou Revolution API esperariam
+          const payload = {
+            leadData: {
+              id: data && data[0] ? data[0].id : "unknown",
+              name: values.name,
+              email: values.email,
+              phone: values.phone,
+              notes: values.notes || "",
+              status: values.status,
+              source: "manual",
+              createdAt: new Date().toISOString()
+            },
+            message: `Novo lead recebido: ${values.name}`,
+            type: "new_lead"
+          };
+          
+          console.log("Payload do webhook:", JSON.stringify(payload, null, 2));
+          
+          const response = await fetch(webhookUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              leadData: {
-                name: values.name,
-                email: values.email,
-                phone: values.phone,
-                notes: values.notes || "",
-                status: values.status,
-                source: "manual",
-                createdAt: new Date().toISOString()
-              },
-              message: `Novo lead recebido: ${values.name}`,
-              type: "new_lead"
-            }),
+            body: JSON.stringify(payload),
           });
+          
+          const responseData = await response.text();
+          console.log("Resposta do webhook:", response.status, responseData);
+          
+          if (!response.ok) {
+            throw new Error(`Erro no envio do webhook: ${response.status} ${responseData}`);
+          }
+          
           console.log("Notificação webhook enviada com sucesso");
         } catch (webhookError) {
           console.error("Erro ao enviar notificação para webhook:", webhookError);
+          // Notificar o usuário que o webhook falhou, mas o lead foi criado
+          toast({
+            variant: "warning",
+            title: "Lead criado, mas webhook falhou",
+            description: "O lead foi criado, mas a notificação webhook falhou. Verifique a URL do webhook.",
+          });
           // Não impedir a criação do lead se o webhook falhar
         }
       }

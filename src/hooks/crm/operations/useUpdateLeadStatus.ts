@@ -81,30 +81,48 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       if (newStatus === "Novo" && webhookUrl && webhookUrl.trim() !== "") {
         try {
           console.log("Enviando notificação para webhook:", webhookUrl);
-          await fetch(webhookUrl, {
+          
+          // Melhorar a estrutura dos dados enviados para o webhook
+          const payload = {
+            leadData: {
+              id: existingLead.id,
+              name: existingLead.name,
+              email: existingLead.email,
+              phone: existingLead.phone,
+              notes: existingLead.notes || "",
+              status: newStatus,
+              previousStatus: existingLead.status,
+              updatedAt: new Date().toISOString()
+            },
+            message: `Lead movido para Novo: ${existingLead.name}`,
+            type: "status_update_to_new"
+          };
+          
+          console.log("Payload do webhook:", JSON.stringify(payload, null, 2));
+          
+          const response = await fetch(webhookUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              leadData: {
-                id: existingLead.id,
-                name: existingLead.name,
-                email: existingLead.email,
-                phone: existingLead.phone,
-                notes: existingLead.notes || "",
-                status: newStatus,
-                previousStatus: existingLead.status,
-                updatedAt: new Date().toISOString()
-              },
-              message: `Lead movido para Novo: ${existingLead.name}`,
-              type: "status_update_to_new"
-            }),
+            body: JSON.stringify(payload),
           });
+          
+          const responseData = await response.text();
+          console.log("Resposta do webhook:", response.status, responseData);
+          
+          if (!response.ok) {
+            throw new Error(`Erro no envio do webhook: ${response.status} ${responseData}`);
+          }
+          
           console.log("Notificação webhook enviada com sucesso");
         } catch (webhookError) {
           console.error("Erro ao enviar notificação para webhook:", webhookError);
-          // Não impedir a atualização do lead se o webhook falhar
+          toast({
+            variant: "warning",
+            title: "Status atualizado, mas webhook falhou",
+            description: "O status foi atualizado, mas a notificação webhook falhou. Verifique a URL do webhook.",
+          });
         }
       }
       
