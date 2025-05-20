@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface WebhookConfigDialogProps {
   isOpen: boolean;
@@ -28,6 +29,8 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
 }) => {
   const [webhookUrl, setWebhookUrl] = useState("");
   const [isValidUrl, setIsValidUrl] = useState(true);
+  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (currentUrl) {
@@ -69,35 +72,55 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
       return;
     }
 
+    setIsTestingWebhook(true);
+    console.log("Testando webhook:", webhookUrl);
+
     try {
+      // Criando o payload de teste
+      const testPayload = {
+        leadData: {
+          id: "test-id",
+          name: "Test Lead",
+          email: "test@example.com",
+          phone: "123456789",
+          notes: "Teste de webhook",
+          status: "Novo",
+          source: "webhook_test",
+          createdAt: new Date().toISOString()
+        },
+        message: "Teste de webhook - CRM",
+        type: "webhook_test"
+      };
+      
+      console.log("Enviando payload:", JSON.stringify(testPayload, null, 2));
+      
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          leadData: {
-            id: "test-id",
-            name: "Test Lead",
-            email: "test@example.com",
-            phone: "123456789",
-            notes: "Teste de webhook",
-            status: "Novo",
-            source: "webhook_test",
-            createdAt: new Date().toISOString()
-          },
-          message: "Teste de webhook - CRM",
-          type: "webhook_test"
-        }),
+        mode: "no-cors", // Importante para evitar erros de CORS
+        body: JSON.stringify(testPayload),
       });
 
-      if (response.ok) {
-        alert("Teste de webhook enviado com sucesso!");
-      } else {
-        alert(`Erro no teste de webhook: ${response.status} ${response.statusText}`);
-      }
+      // Como estamos usando no-cors, não podemos verificar o status da resposta
+      // Então informamos ao usuário que a solicitação foi enviada
+      toast({
+        title: "Solicitação enviada",
+        description: "O teste foi enviado ao webhook. Por favor verifique o N8N para confirmar se foi recebido.",
+        variant: "default"
+      });
+      
+      console.log("Teste de webhook enviado com modo no-cors");
     } catch (error) {
-      alert(`Falha ao testar webhook: ${error instanceof Error ? error.message : String(error)}`);
+      console.error("Erro ao testar webhook:", error);
+      toast({
+        title: "Erro ao testar webhook",
+        description: `Não foi possível enviar o teste. Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        variant: "destructive"
+      });
+    } finally {
+      setIsTestingWebhook(false);
     }
   };
 
@@ -155,6 +178,12 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
               <li>Use o teste abaixo para verificar se está funcionando</li>
             </ol>
           </div>
+          
+          <div className="mt-1 text-sm text-orange-700 bg-orange-50 p-2 rounded">
+            <p><strong>Nota importante:</strong> Quando usar o botão "Testar Webhook", você não verá uma 
+            confirmação de sucesso diretamente do N8N devido a restrições de CORS. No entanto, 
+            o teste será enviado e você deve verificar no N8N se o webhook foi recebido.</p>
+          </div>
         </div>
 
         <DialogFooter className="flex flex-col sm:flex-row justify-between gap-2">
@@ -162,9 +191,9 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
             variant="outline" 
             type="button" 
             onClick={handleTestWebhook}
-            disabled={!webhookUrl || !isValidUrl}
+            disabled={!webhookUrl || !isValidUrl || isTestingWebhook}
           >
-            Testar Webhook
+            {isTestingWebhook ? "Enviando..." : "Testar Webhook"}
           </Button>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>

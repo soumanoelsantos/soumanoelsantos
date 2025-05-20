@@ -76,17 +76,14 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
             headers: {
               "Content-Type": "application/json",
             },
+            mode: "no-cors", // Usando no-cors para evitar problemas de CORS
             body: JSON.stringify(payload),
           });
           
-          const responseData = await response.text();
-          console.log("Resposta do webhook:", response.status, responseData);
+          console.log("Notificação webhook enviada com modo no-cors");
           
-          if (!response.ok) {
-            throw new Error(`Erro no envio do webhook: ${response.status} ${responseData}`);
-          }
-          
-          console.log("Notificação webhook enviada com sucesso");
+          // Como estamos usando no-cors, não podemos verificar o status da resposta normalmente
+          // Vamos apenas registrar que a solicitação foi enviada
         } catch (webhookError) {
           console.error("Erro ao enviar notificação para webhook:", webhookError);
           // Notificar o usuário que o webhook falhou, mas o lead foi criado
