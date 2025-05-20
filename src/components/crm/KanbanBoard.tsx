@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import LeadFormDialog from "./LeadFormDialog";
@@ -10,6 +11,7 @@ import KanbanColumnsGrid from "./KanbanColumnsGrid";
 import { useKanbanOperations } from "./hooks/useKanbanOperations";
 import { useCrmColumns } from "@/hooks/crm/useCrmColumns";
 import ColumnManagementDialog from "./column-management/ColumnManagementDialog";
+import WebhookConfigDialog from "./WebhookConfigDialog";
 
 const KanbanBoard = () => {
   const { isAuthenticated } = useAuth();
@@ -20,7 +22,9 @@ const KanbanBoard = () => {
     updateLead, 
     deleteLead, 
     updateLeadStatus,
-    fetchLeads 
+    fetchLeads,
+    webhookUrl,
+    updateWebhookUrl 
   } = useCrmData();
   
   const {
@@ -33,6 +37,7 @@ const KanbanBoard = () => {
   } = useCrmColumns();
   
   const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
+  const [isWebhookDialogOpen, setIsWebhookDialogOpen] = useState(false);
   
   const {
     isAddDialogOpen,
@@ -67,6 +72,8 @@ const KanbanBoard = () => {
       <KanbanHeader 
         onAddNew={() => setIsAddDialogOpen(true)} 
         onManageColumns={() => setIsColumnDialogOpen(true)}
+        onConfigureWebhook={() => setIsWebhookDialogOpen(true)}
+        hasWebhookConfigured={!!webhookUrl}
       />
       
       <LeadFormDialog
@@ -102,6 +109,13 @@ const KanbanBoard = () => {
         onEditColumn={editColumn}
         onDeleteColumn={deleteColumn}
         onReorderColumns={reorderColumns}
+      />
+      
+      <WebhookConfigDialog
+        isOpen={isWebhookDialogOpen}
+        onOpenChange={setIsWebhookDialogOpen}
+        onSave={updateWebhookUrl}
+        currentUrl={webhookUrl}
       />
       
       <KanbanColumnsGrid

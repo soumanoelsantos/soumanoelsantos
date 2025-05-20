@@ -1,9 +1,19 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 
 export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
   const { toast } = useToast();
+  const [webhookUrl, setWebhookUrl] = useState<string | null>(null);
+  
+  useEffect(() => {
+    // Carregar webhook URL do localStorage
+    const savedUrl = localStorage.getItem("crm_webhook_url");
+    if (savedUrl) {
+      setWebhookUrl(savedUrl);
+    }
+  }, []);
 
   const updateLeadStatus = async (id: string, newStatus: string) => {
     try {
@@ -23,7 +33,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       // First check if the lead exists
       const { data: existingLead, error: checkError } = await supabase
         .from("leads")
-        .select("id, status")
+        .select("id, status, name, email, phone, notes")
         .eq("id", id)
         .single();
       
@@ -66,6 +76,37 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       }
 
       console.log("Lead status updated successfully to:", newStatus);
+      
+      // Se o status foi alterado para "Novo" e temos um webhook URL, notificar
+      if (newStatus === "Novo" && webhookUrl && webhookUrl.trim() !== "") {
+        try {
+          console.log("Enviando notificação para webhook:", webhookUrl);
+          await fetch(webhookUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              leadData: {
+                id: existingLead.id,
+                name: existingLead.name,
+                email: existingLead.email,
+                phone: existingLead.phone,
+                notes: existingLead.notes || "",
+                status: newStatus,
+                previousStatus: existingLead.status,
+                updatedAt: new Date().toISOString()
+              },
+              message: `Lead movido para Novo: ${existingLead.name}`,
+              type: "status_update_to_new"
+            }),
+          });
+          console.log("Notificação webhook enviada com sucesso");
+        } catch (webhookError) {
+          console.error("Erro ao enviar notificação para webhook:", webhookError);
+          // Não impedir a atualização do lead se o webhook falhar
+        }
+      }
       
       // Return success
       return true;

@@ -1,29 +1,84 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Columns, Plus } from "lucide-react";
+import { PlusCircle, Settings, Link as LinkIcon, CheckCircle2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface KanbanHeaderProps {
   onAddNew: () => void;
   onManageColumns: () => void;
+  onConfigureWebhook?: () => void;
+  hasWebhookConfigured?: boolean;
 }
 
-const KanbanHeader = ({ onAddNew, onManageColumns }: KanbanHeaderProps) => {
+const KanbanHeader = ({ 
+  onAddNew, 
+  onManageColumns,
+  onConfigureWebhook,
+  hasWebhookConfigured
+}: KanbanHeaderProps) => {
   return (
     <div className="flex justify-between items-center mb-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">CRM</h1>
-        <p className="text-gray-600">Gerencie seus leads e oportunidades</p>
-      </div>
-      <div className="flex gap-3">
-        <Button variant="outline" onClick={onManageColumns}>
-          <Columns className="mr-2 h-4 w-4" />
-          Gerenciar Colunas
-        </Button>
-        <Button onClick={onAddNew}>
-          <Plus className="mr-2 h-4 w-4" />
-          Novo Lead
-        </Button>
+      <h1 className="text-2xl font-semibold">CRM - Gestão de Leads</h1>
+      <div className="flex space-x-2">
+        <TooltipProvider>
+          {onConfigureWebhook && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center"
+                  onClick={onConfigureWebhook}
+                >
+                  {hasWebhookConfigured ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 mr-1 text-green-500" />
+                      Webhook
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon className="w-4 h-4 mr-1" />
+                      Webhook
+                    </>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{hasWebhookConfigured 
+                  ? "Webhook configurado - Editar" 
+                  : "Configurar webhook para notificações"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center"
+                onClick={onManageColumns}
+              >
+                <Settings className="w-4 h-4 mr-1" />
+                Colunas
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Gerenciar colunas do CRM</p>
+            </TooltipContent>
+          </Tooltip>
+          
+          <Button
+            size="sm"
+            className="flex items-center"
+            onClick={onAddNew}
+          >
+            <PlusCircle className="w-4 h-4 mr-1" />
+            Novo Lead
+          </Button>
+        </TooltipProvider>
       </div>
     </div>
   );
