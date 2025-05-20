@@ -119,7 +119,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         } catch (webhookError) {
           console.error("Erro ao enviar notificação para webhook:", webhookError);
           toast({
-            variant: "warning",
+            variant: "destructive", // Alterado de "warning" para "destructive"
             title: "Status atualizado, mas webhook falhou",
             description: "O status foi atualizado, mas a notificação webhook falhou. Verifique a URL do webhook.",
           });

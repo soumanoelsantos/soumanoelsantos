@@ -91,7 +91,7 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
           console.error("Erro ao enviar notificação para webhook:", webhookError);
           // Notificar o usuário que o webhook falhou, mas o lead foi criado
           toast({
-            variant: "warning",
+            variant: "destructive", // Alterado de "warning" para "destructive"
             title: "Lead criado, mas webhook falhou",
             description: "O lead foi criado, mas a notificação webhook falhou. Verifique a URL do webhook.",
           });
