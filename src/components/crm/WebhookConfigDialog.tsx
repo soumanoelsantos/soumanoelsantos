@@ -6,14 +6,13 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { AlertCircle, ExternalLink, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import WebhookUrlInput from "./webhook/WebhookUrlInput";
+import WebhookTestStatus from "./webhook/WebhookTestStatus";
+import WebhookPayloadExample from "./webhook/WebhookPayloadExample";
+import WebhookDocumentation from "./webhook/WebhookDocumentation";
+import WebhookDialogFooter from "./webhook/WebhookDialogFooter";
 
 interface WebhookConfigDialogProps {
   isOpen: boolean;
@@ -151,104 +150,24 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-1 gap-2">
-            <Label htmlFor="webhook-url">URL do Webhook</Label>
-            <Input
-              id="webhook-url"
-              value={webhookUrl}
-              onChange={handleUrlChange}
-              placeholder="https://seu-webhook-url.com"
-              className={`w-full ${!isValidUrl ? "border-red-500" : ""}`}
-            />
-            {!isValidUrl && (
-              <div className="text-red-500 text-sm flex items-center">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                Insira uma URL válida
-              </div>
-            )}
-          </div>
+          <WebhookUrlInput 
+            webhookUrl={webhookUrl}
+            onChange={handleUrlChange}
+            isValid={isValidUrl}
+          />
           
-          {testStatus === "sent" && (
-            <Alert className="bg-blue-50 border-blue-200">
-              <CheckCircle className="h-4 w-4 text-blue-500" />
-              <AlertDescription className="text-blue-700">
-                Requisição de teste enviada. Devido às restrições do navegador, não é possível confirmar se 
-                o webhook recebeu os dados. Verifique diretamente no N8N se a solicitação chegou.
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          {testStatus === "error" && (
-            <Alert className="bg-red-50 border-red-200">
-              <AlertCircle className="h-4 w-4 text-red-500" />
-              <AlertDescription className="text-red-700">
-                Ocorreu um erro ao tentar enviar o teste. Isso pode ser devido a problemas de CORS, 
-                certificados SSL ou restrições de rede. Seu webhook ainda pode funcionar corretamente apesar deste erro.
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <div className="mt-2 text-sm text-gray-500">
-            <p>Dados enviados para o webhook:</p>
-            <pre className="bg-gray-100 p-2 rounded text-xs mt-1 overflow-x-auto">
-{`{
-  "leadData": {
-    "id": "lead-123",
-    "name": "Nome do Lead",
-    "email": "email@exemplo.com",
-    "phone": "11999999999",
-    "status": "Novo",
-    ...
-  },
-  "message": "Novo lead recebido: Nome do Lead",
-  "type": "new_lead"
-}`}
-            </pre>
-          </div>
-          
-          <div className="mt-2 text-sm text-gray-700 space-y-4">
-            <div>
-              <p className="font-medium mb-1">Como configurar:</p>
-              <ol className="list-decimal list-inside space-y-1 pl-2">
-                <li>No N8N, crie um novo workflow e adicione um trigger "Webhook"</li>
-                <li>Copie a URL do webhook do N8N e cole no campo acima</li>
-                <li>Configure uma ação para enviar mensagem no WhatsApp</li>
-                <li>Use o teste abaixo para verificar se está funcionando</li>
-              </ol>
-            </div>
-            
-            <div className="bg-orange-50 p-3 rounded border border-orange-200">
-              <p className="font-semibold mb-1">Importante:</p>
-              <p className="mb-2">Devido a restrições de segurança do navegador (CORS e SSL), você não verá uma 
-              confirmação direta do teste. Mesmo que apareça "Failed to fetch", o teste pode ter sido enviado 
-              corretamente.</p>
-              <p>Verifique diretamente no N8N se o webhook foi recebido.</p>
-              
-              <div className="mt-2 text-xs flex items-center">
-                <ExternalLink className="h-3 w-3 mr-1" />
-                <span>Se estiver usando HTTPS no N8N, verifique se o certificado é válido.</span>
-              </div>
-            </div>
-          </div>
+          <WebhookTestStatus status={testStatus} />
+          <WebhookPayloadExample />
+          <WebhookDocumentation />
         </div>
 
-        <DialogFooter className="flex flex-col sm:flex-row justify-between gap-2">
-          <Button 
-            variant="outline" 
-            type="button" 
-            onClick={handleTestWebhook}
-            disabled={!webhookUrl || !isValidUrl || isTestingWebhook}
-            className="flex items-center"
-          >
-            {isTestingWebhook ? "Enviando..." : "Testar Webhook"}
-          </Button>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave}>Salvar</Button>
-          </div>
-        </DialogFooter>
+        <WebhookDialogFooter
+          onTest={handleTestWebhook}
+          onCancel={() => onOpenChange(false)}
+          onSave={handleSave}
+          isTestingWebhook={isTestingWebhook}
+          isTestDisabled={!webhookUrl || !isValidUrl}
+        />
       </DialogContent>
     </Dialog>
   );
