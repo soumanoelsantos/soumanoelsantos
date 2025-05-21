@@ -49,8 +49,7 @@ export const sendWebhookNotification = async (
     console.log("Notificação webhook enviada com modo no-cors");
     
     if (successMessage) {
-      // Fixed: Using the toast function correctly
-      toast.success("Status atualizado", {
+      toast.success("Webhook enviado", {
         description: successMessage,
       });
     }
@@ -59,9 +58,8 @@ export const sendWebhookNotification = async (
   } catch (webhookError) {
     console.error("Erro ao enviar notificação para webhook:", webhookError);
     
-    // Fixed: Using the toast function correctly
     toast.error("Webhook falhou", {
-      description: "A notificação webhook falhou. Verifique a URL do webhook.",
+      description: "A notificação webhook falhou. Verifique o console para mais detalhes.",
     });
     
     return false;
@@ -111,3 +109,6 @@ export const createStatusUpdatePayload = (
     type: "status_update"
   };
 };
+
+// N8N webhook URL
+export const N8N_WEBHOOK_URL = "https://sou-manoel-santos-n8n-c0d228-95-217-5-98.traefik.me/webhook-test/8b3643ea-1470-4c4f-b174-b2d0361d86f6";

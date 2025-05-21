@@ -1,7 +1,7 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { N8N_WEBHOOK_URL, createStatusUpdatePayload, sendWebhookNotification } from "@/utils/webhookUtils";
 
 export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
   const { toast } = useToast();
@@ -45,6 +45,9 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
         console.log("Lead already has the requested status, skipping update");
         return true;
       }
+
+      // Store the previous status for webhook
+      const previousStatus = existingLead.status;
       
       // Perform the update with the status_changed_at field
       const { error } = await supabase
@@ -67,6 +70,17 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       }
 
       console.log("Lead status updated successfully to:", newStatus);
+      
+      // If the lead is updated to "Novo" status, send webhook notification
+      if (newStatus === "Novo") {
+        console.log("Sending webhook for lead updated to 'Novo' status");
+        const payload = createStatusUpdatePayload(existingLead, newStatus, previousStatus);
+        await sendWebhookNotification(
+          N8N_WEBHOOK_URL,
+          payload, 
+          "Lead atualizado enviado para N8N com sucesso"
+        );
+      }
       
       toast({
         title: "Status atualizado",

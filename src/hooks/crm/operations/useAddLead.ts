@@ -2,6 +2,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LeadFormValues } from "@/types/crm";
+import { N8N_WEBHOOK_URL, createNewLeadPayload, sendWebhookNotification } from "@/utils/webhookUtils";
 
 export const useAddLead = (fetchLeads: () => Promise<void>) => {
   const { toast } = useToast();
@@ -32,6 +33,17 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
       }
 
       console.log("Lead added successfully:", data);
+      
+      // If the lead is added with status "Novo", send a webhook notification
+      if (data && data[0] && data[0].status === "Novo") {
+        console.log("Sending webhook for new lead in 'Novo' status");
+        const payload = createNewLeadPayload(data[0]);
+        await sendWebhookNotification(
+          N8N_WEBHOOK_URL,
+          payload,
+          "Lead enviado para N8N com sucesso"
+        );
+      }
       
       // Refresh leads list
       await fetchLeads();
