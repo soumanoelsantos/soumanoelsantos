@@ -1,6 +1,7 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sendWebhookNotification, createStatusUpdatePayload } from "@/utils/webhookUtils";
 import { useState, useEffect } from "react";
 
 export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
@@ -78,50 +79,18 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       console.log("Lead status updated successfully to:", newStatus);
       
       // Se o status foi alterado para "Novo" e temos um webhook URL, notificar
-      if (newStatus === "Novo" && webhookUrl && webhookUrl.trim() !== "") {
-        try {
-          console.log("Enviando notificação para webhook:", webhookUrl);
-          
-          // Melhorar a estrutura dos dados enviados para o webhook
-          const payload = {
-            leadData: {
-              id: existingLead.id,
-              name: existingLead.name,
-              email: existingLead.email,
-              phone: existingLead.phone,
-              notes: existingLead.notes || "",
-              status: newStatus,
-              previousStatus: existingLead.status,
-              updatedAt: new Date().toISOString()
-            },
-            message: `Lead movido para Novo: ${existingLead.name}`,
-            type: "status_update_to_new"
-          };
-          
-          console.log("Payload do webhook:", JSON.stringify(payload, null, 2));
-          
-          await fetch(webhookUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            mode: "no-cors", // Usando no-cors para evitar problemas de CORS
-            body: JSON.stringify(payload),
-          });
-          
-          console.log("Notificação webhook enviada com modo no-cors");
-          
+      if (newStatus === "Novo") {
+        const payload = createStatusUpdatePayload(existingLead, newStatus, existingLead.status);
+        const webhookSucceeded = await sendWebhookNotification(
+          webhookUrl,
+          payload,
+          `O lead foi movido para ${newStatus} e o webhook foi notificado.`
+        );
+        
+        if (!webhookSucceeded) {
           toast({
             title: "Status atualizado",
-            description: `O lead foi movido para ${newStatus} e o webhook foi notificado.`,
-          });
-          
-        } catch (webhookError) {
-          console.error("Erro ao enviar notificação para webhook:", webhookError);
-          toast({
-            variant: "destructive",
-            title: "Status atualizado, mas webhook falhou",
-            description: "O status foi atualizado, mas a notificação webhook falhou. Verifique a URL do webhook.",
+            description: `O lead foi movido para ${newStatus}.`,
           });
         }
       } else {
@@ -130,6 +99,8 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
           description: `O lead foi movido para ${newStatus}.`,
         });
       }
+      
+      await fetchLeads();
       
       // Return success
       return true;

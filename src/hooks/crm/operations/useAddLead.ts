@@ -2,6 +2,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LeadFormValues } from "@/types/crm";
+import { sendWebhookNotification, createNewLeadPayload } from "@/utils/webhookUtils";
 import { useState, useEffect } from "react";
 
 export const useAddLead = (fetchLeads: () => Promise<void>) => {
@@ -44,40 +45,10 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
       console.log("Lead added successfully:", data);
       
       // Se o status for "Novo" e tivermos um webhook configurado, enviar os dados para o webhook
-      if (values.status === "Novo" && webhookUrl && webhookUrl.trim() !== "") {
+      if (values.status === "Novo" && data && data[0]) {
         try {
-          console.log("Enviando notificação para webhook:", webhookUrl);
-          
-          // Modificado: Melhorar a estrutura dos dados enviados para o webhook e garantir
-          // que os dados estejam em um formato que o n8n ou Revolution API esperariam
-          const payload = {
-            leadData: {
-              id: data && data[0] ? data[0].id : "unknown",
-              name: values.name,
-              email: values.email,
-              phone: values.phone,
-              notes: values.notes || "",
-              status: values.status,
-              source: "manual",
-              createdAt: new Date().toISOString()
-            },
-            message: `Novo lead recebido: ${values.name}`,
-            type: "new_lead"
-          };
-          
-          console.log("Payload do webhook:", JSON.stringify(payload, null, 2));
-          
-          await fetch(webhookUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            mode: "no-cors", // Usando no-cors para evitar problemas de CORS
-            body: JSON.stringify(payload),
-          });
-          
-          console.log("Notificação webhook enviada com modo no-cors");
-          
+          const payload = createNewLeadPayload(data[0]);
+          await sendWebhookNotification(webhookUrl, payload);
         } catch (webhookError) {
           console.error("Erro ao enviar notificação para webhook:", webhookError);
           // Notificar o usuário que o webhook falhou, mas o lead foi criado
