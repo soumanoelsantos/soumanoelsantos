@@ -49,8 +49,8 @@ export const sendWebhookNotification = async (
     console.log("Notificação webhook enviada com modo no-cors");
     
     if (successMessage) {
-      toast({
-        title: "Status atualizado",
+      // Fixed: Using the toast function correctly
+      toast.success("Status atualizado", {
         description: successMessage,
       });
     }
@@ -59,9 +59,8 @@ export const sendWebhookNotification = async (
   } catch (webhookError) {
     console.error("Erro ao enviar notificação para webhook:", webhookError);
     
-    toast({
-      variant: "destructive",
-      title: "Webhook falhou",
+    // Fixed: Using the toast function correctly
+    toast.error("Webhook falhou", {
       description: "A notificação webhook falhou. Verifique a URL do webhook.",
     });
     
@@ -93,16 +92,16 @@ export const createNewLeadPayload = (lead: LeadData | any): WebhookPayload => {
  * Creates a webhook payload for a status update
  */
 export const createStatusUpdatePayload = (
-  lead: LeadData, 
+  lead: Partial<LeadData>, 
   newStatus: string, 
   previousStatus: string
 ): WebhookPayload => {
   return {
     leadData: {
-      id: lead.id,
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
+      id: lead.id || "",
+      name: lead.name || "",
+      email: lead.email || "",
+      phone: lead.phone || "",
       notes: lead.notes || "",
       status: newStatus,
       previousStatus: previousStatus,

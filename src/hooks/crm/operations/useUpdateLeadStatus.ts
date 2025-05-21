@@ -1,6 +1,7 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { LeadData } from "@/types/crm";
 import { sendWebhookNotification, createStatusUpdatePayload } from "@/utils/webhookUtils";
 import { useState, useEffect } from "react";
 
@@ -34,7 +35,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       // First check if the lead exists
       const { data: existingLead, error: checkError } = await supabase
         .from("leads")
-        .select("id, status, name, email, phone, notes")
+        .select("id, status, name, email, phone, notes, created_at, source")
         .eq("id", id)
         .single();
       
@@ -78,6 +79,7 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
 
       console.log("Lead status updated successfully to:", newStatus);
       
+      // Lead data is now properly typed as LeadData
       // Se o status foi alterado para "Novo" e temos um webhook URL, notificar
       if (newStatus === "Novo") {
         const payload = createStatusUpdatePayload(existingLead, newStatus, existingLead.status);
