@@ -1,22 +1,11 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LeadData } from "@/types/crm";
-import { sendWebhookNotification, createStatusUpdatePayload } from "@/utils/webhookUtils";
 import { useState, useEffect } from "react";
 
 export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
   const { toast } = useToast();
-  const [webhookUrl, setWebhookUrl] = useState<string | null>(null);
   
-  useEffect(() => {
-    // Carregar webhook URL do localStorage
-    const savedUrl = localStorage.getItem("crm_webhook_url");
-    if (savedUrl) {
-      setWebhookUrl(savedUrl);
-    }
-  }, []);
-
   const updateLeadStatus = async (id: string, newStatus: string) => {
     try {
       // More detailed logging for debugging
@@ -79,28 +68,10 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
 
       console.log("Lead status updated successfully to:", newStatus);
       
-      // Lead data is now properly typed as LeadData
-      // Se o status foi alterado para "Novo" e temos um webhook URL, notificar
-      if (newStatus === "Novo") {
-        const payload = createStatusUpdatePayload(existingLead, newStatus, existingLead.status);
-        const webhookSucceeded = await sendWebhookNotification(
-          webhookUrl,
-          payload,
-          `O lead foi movido para ${newStatus} e o webhook foi notificado.`
-        );
-        
-        if (!webhookSucceeded) {
-          toast({
-            title: "Status atualizado",
-            description: `O lead foi movido para ${newStatus}.`,
-          });
-        }
-      } else {
-        toast({
-          title: "Status atualizado",
-          description: `O lead foi movido para ${newStatus}.`,
-        });
-      }
+      toast({
+        title: "Status atualizado",
+        description: `O lead foi movido para ${newStatus}.`,
+      });
       
       await fetchLeads();
       
