@@ -1,17 +1,19 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Settings } from "lucide-react";
+import { PlusCircle, Settings, Webhook } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface KanbanHeaderProps {
   onAddNew: () => void;
   onManageColumns: () => void;
+  onConfigureWebhook: () => void;
 }
 
 const KanbanHeader = ({ 
   onAddNew, 
-  onManageColumns 
+  onManageColumns,
+  onConfigureWebhook
 }: KanbanHeaderProps) => {
   return (
     <div className="flex justify-between items-center mb-6">
@@ -32,6 +34,23 @@ const KanbanHeader = ({
             </TooltipTrigger>
             <TooltipContent>
               <p>Gerenciar colunas do CRM</p>
+            </TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center"
+                onClick={onConfigureWebhook}
+              >
+                <Webhook className="w-4 h-4 mr-1" />
+                Webhook
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Configurar webhook para notificações</p>
             </TooltipContent>
           </Tooltip>
           

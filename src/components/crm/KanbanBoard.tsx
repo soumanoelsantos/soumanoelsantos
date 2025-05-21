@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import LeadFormDialog from "./LeadFormDialog";
 import { useCrmData } from "./useCrmData";
@@ -11,9 +11,12 @@ import KanbanColumnsGrid from "./KanbanColumnsGrid";
 import { useKanbanOperations } from "./hooks/useKanbanOperations";
 import { useCrmColumns } from "@/hooks/crm/useCrmColumns";
 import ColumnManagementDialog from "./column-management/ColumnManagementDialog";
+import WebhookConfigDialog from "./WebhookConfigDialog";
+import { N8N_WEBHOOK_URL } from "@/utils/webhookUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 const KanbanBoard = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userEmail } = useAuth();
   const { 
     isLoading, 
     leads, 
@@ -34,6 +37,8 @@ const KanbanBoard = () => {
   } = useCrmColumns();
   
   const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
+  const [isWebhookDialogOpen, setIsWebhookDialogOpen] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState<string | null>(N8N_WEBHOOK_URL);
   
   const {
     isAddDialogOpen,
@@ -53,6 +58,13 @@ const KanbanBoard = () => {
     fetchLeads
   });
 
+  const handleSaveWebhookUrl = (url: string) => {
+    setWebhookUrl(url);
+    // Aqui poderia salvar a URL do webhook em algum lugar persistente
+    // como localStorage ou no banco de dados do usuário
+    console.log("Webhook URL salva:", url);
+  };
+
   if (!isAuthenticated) {
     return <UnauthenticatedView />;
   }
@@ -68,6 +80,7 @@ const KanbanBoard = () => {
       <KanbanHeader 
         onAddNew={() => setIsAddDialogOpen(true)} 
         onManageColumns={() => setIsColumnDialogOpen(true)}
+        onConfigureWebhook={() => setIsWebhookDialogOpen(true)}
       />
       
       <LeadFormDialog
@@ -103,6 +116,13 @@ const KanbanBoard = () => {
         onEditColumn={editColumn}
         onDeleteColumn={deleteColumn}
         onReorderColumns={reorderColumns}
+      />
+      
+      <WebhookConfigDialog
+        isOpen={isWebhookDialogOpen}
+        onOpenChange={setIsWebhookDialogOpen}
+        onSave={handleSaveWebhookUrl}
+        currentUrl={webhookUrl}
       />
       
       <KanbanColumnsGrid

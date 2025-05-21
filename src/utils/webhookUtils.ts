@@ -69,15 +69,15 @@ export const sendWebhookNotification = async (
 /**
  * Creates a webhook payload for a new lead
  */
-export const createNewLeadPayload = (lead: LeadData | any): WebhookPayload => {
+export const createNewLeadPayload = (lead: Partial<LeadData>): WebhookPayload => {
   return {
     leadData: {
       id: lead?.id || "unknown",
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
+      name: lead.name || "",
+      email: lead.email || "",
+      phone: lead.phone || "",
       notes: lead.notes || "",
-      status: lead.status,
+      status: lead.status || "Novo",
       source: lead.source || "manual",
       createdAt: new Date().toISOString()
     },
