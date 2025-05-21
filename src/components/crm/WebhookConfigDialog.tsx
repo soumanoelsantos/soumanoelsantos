@@ -85,9 +85,12 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
 
     setIsTestingWebhook(true);
     setTestStatus("idle");
-    console.log("Testando webhook:", webhookUrl);
-
+    
     try {
+      // Timeout for webhook test
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       // Criando o payload de teste
       const testPayload = {
         leadData: {
@@ -104,6 +107,7 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
         type: "webhook_test"
       };
       
+      console.log("Testando webhook:", webhookUrl);
       console.log("Enviando payload:", JSON.stringify(testPayload, null, 2));
       
       // Use no-cors mode to bypass CORS issues
@@ -114,8 +118,11 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
         },
         mode: "no-cors", // Importante para evitar erros de CORS
         body: JSON.stringify(testPayload),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+      
       // Como estamos usando no-cors, não podemos verificar o status da resposta
       setTestStatus("sent");
       toast({
@@ -130,7 +137,7 @@ const WebhookConfigDialog: React.FC<WebhookConfigDialogProps> = ({
       
       toast({
         title: "Erro ao testar webhook",
-        description: "Não foi possível enviar o teste. Verifique o console para detalhes.",
+        description: "Não foi possível enviar o teste. O servidor pode estar indisponível ou houve timeout.",
         variant: "destructive"
       });
     } finally {

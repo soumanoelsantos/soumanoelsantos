@@ -75,11 +75,15 @@ export const useUpdateLeadStatus = (fetchLeads: () => Promise<void>) => {
       if (newStatus === "Novo") {
         console.log("Sending webhook for lead updated to 'Novo' status");
         const payload = createStatusUpdatePayload(existingLead, newStatus, previousStatus);
-        await sendWebhookNotification(
+        
+        // Send webhook asynchronously to not block the UI
+        sendWebhookNotification(
           N8N_WEBHOOK_URL,
           payload, 
           "Lead atualizado enviado para N8N com sucesso"
-        );
+        ).catch(err => {
+          console.error("Erro assíncrono no webhook:", err);
+        });
       }
       
       toast({

@@ -10,17 +10,19 @@ const WebhookDocumentation: React.FC = () => {
         <ol className="list-decimal list-inside space-y-1 pl-2">
           <li>No N8N, crie um novo workflow e adicione um trigger "Webhook"</li>
           <li>Copie a URL do webhook do N8N e cole no campo acima</li>
-          <li>Configure uma ação para enviar mensagem no WhatsApp</li>
+          <li>Configure uma ação para enviar mensagem no WhatsApp ou outra ação desejada</li>
           <li>Use o teste abaixo para verificar se está funcionando</li>
         </ol>
       </div>
       
       <div className="bg-orange-50 p-3 rounded border border-orange-200">
-        <p className="font-semibold mb-1">Importante:</p>
-        <p className="mb-2">Devido a restrições de segurança do navegador (CORS e SSL), você não verá uma 
-        confirmação direta do teste. Mesmo que apareça "Failed to fetch", o teste pode ter sido enviado 
-        corretamente.</p>
-        <p>Verifique diretamente no N8N se o webhook foi recebido.</p>
+        <p className="font-semibold mb-1">Solução de problemas:</p>
+        <ul className="list-disc list-inside space-y-1 pl-2">
+          <li>Verifique se a URL do webhook está correta</li>
+          <li>Confirme que o N8N está em execução e acessível</li>
+          <li>O modo "no-cors" é usado para evitar erros CORS, mas isso significa que não podemos verificar a resposta</li>
+          <li>Mesmo com erro no navegador, o webhook pode ser recebido corretamente</li>
+        </ul>
         
         <div className="mt-2 text-xs flex items-center">
           <ExternalLink className="h-3 w-3 mr-1" />

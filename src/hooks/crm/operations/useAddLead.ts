@@ -12,7 +12,7 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
       // Make sure all required fields are present
       if (!values.name || !values.email || !values.phone || !values.status) {
         console.error("Missing required fields:", values);
-        throw new Error("Missing required fields");
+        throw new Error("Campos obrigatórios não preenchidos");
       }
       
       console.log("Adding lead:", values);
@@ -38,11 +38,15 @@ export const useAddLead = (fetchLeads: () => Promise<void>) => {
       if (data && data[0] && data[0].status === "Novo") {
         console.log("Sending webhook for new lead in 'Novo' status");
         const payload = createNewLeadPayload(data[0]);
-        await sendWebhookNotification(
+        
+        // Send webhook asynchronously to not block the UI
+        sendWebhookNotification(
           N8N_WEBHOOK_URL,
           payload,
           "Lead enviado para N8N com sucesso"
-        );
+        ).catch(err => {
+          console.error("Erro assíncrono no webhook:", err);
+        });
       }
       
       // Refresh leads list
