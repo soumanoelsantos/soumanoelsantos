@@ -58,7 +58,7 @@ const ChatInterface = () => {
       Responda de forma útil e gere código completo e funcional. Se for criar uma página web, inclua HTML completo com DOCTYPE, head e body.
       Certifique-se de que o código seja responsivo e bem estruturado.
       
-      Use blocos de código markdown (```html) para envolver seu código.`;
+      Use blocos de código markdown com três crases seguidas de html para envolver seu código.`;
 
       const response = await callDeepseekApi(prompt);
       
