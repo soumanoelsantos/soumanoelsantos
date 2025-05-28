@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -37,7 +38,7 @@ const CodePreview = () => {
     });
   };
 
-  const openInNewWindow = () => {
+  const openInNewTab = () => {
     const previewHtml = getPreviewHtml();
     if (!previewHtml) {
       toast({
@@ -48,18 +49,18 @@ const CodePreview = () => {
       return;
     }
 
-    const newWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
-    if (newWindow) {
-      newWindow.document.write(previewHtml);
-      newWindow.document.close();
+    const newTab = window.open('', '_blank');
+    if (newTab) {
+      newTab.document.write(previewHtml);
+      newTab.document.close();
       toast({
-        title: "Nova janela aberta!",
-        description: "O preview foi aberto em uma nova janela.",
+        title: "Nova aba aberta!",
+        description: "O preview foi aberto em uma nova aba.",
       });
     } else {
       toast({
         title: "Erro",
-        description: "Não foi possível abrir uma nova janela. Verifique se o bloqueador de pop-ups está desabilitado.",
+        description: "Não foi possível abrir uma nova aba. Verifique se o bloqueador de pop-ups está desabilitado.",
         variant: "destructive"
       });
     }
@@ -150,7 +151,7 @@ const CodePreview = () => {
           </div>
           
           <div className="flex space-x-1">
-            <Button variant="outline" size="sm" onClick={openInNewWindow} className="h-7 px-2">
+            <Button variant="outline" size="sm" onClick={openInNewTab} className="h-7 px-2">
               <ExternalLink className="h-3 w-3" />
             </Button>
             <Button variant="outline" size="sm" onClick={copyToClipboard} className="h-7 px-2">
