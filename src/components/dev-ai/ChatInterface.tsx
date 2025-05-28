@@ -55,12 +55,20 @@ const ChatInterface = () => {
     return response;
   };
 
-  const removeCodeFromMessage = (message: string) => {
-    // Remove blocos de código da mensagem para exibição no chat
-    return message
-      .replace(/```[\s\S]*?```/g, '[Código gerado - veja no preview]')
-      .replace(/<!DOCTYPE html>[\s\S]*<\/html>/gi, '[Código HTML gerado - veja no preview]')
+  const createShortSummary = (message: string) => {
+    // Remove código da mensagem e cria resumo curto
+    const cleanMessage = message
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/<!DOCTYPE html>[\s\S]*<\/html>/gi, '')
+      .replace(/\s+/g, ' ')
       .trim();
+    
+    // Se ainda há conteúdo, pega apenas as primeiras palavras
+    if (cleanMessage && cleanMessage.length > 100) {
+      return cleanMessage.substring(0, 97) + '...';
+    }
+    
+    return cleanMessage || 'Código gerado com sucesso!';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,19 +101,20 @@ const ChatInterface = () => {
           console.log('Código extraído e enviado para preview:', extractedCode);
           setGeneratedCode(extractedCode);
           
-          // Adicionar mensagem sem código ao chat
-          const cleanMessage = removeCodeFromMessage(response);
-          addMessage(cleanMessage || 'Código gerado com sucesso! Veja o resultado no preview.', 'assistant');
+          // Mostrar apenas resumo curto no chat
+          const summary = createShortSummary(response);
+          addMessage(summary, 'assistant');
         } else {
-          // Se não há código, mostrar a resposta completa
-          addMessage(response, 'assistant');
+          // Se não há código, mostrar resumo da resposta
+          const summary = createShortSummary(response);
+          addMessage(summary, 'assistant');
         }
       } else {
-        addMessage('Desculpe, houve um erro ao processar sua solicitação.', 'assistant');
+        addMessage('Erro ao processar solicitação.', 'assistant');
       }
     } catch (error) {
       console.error('Erro ao chamar DeepSeek API:', error);
-      addMessage('Erro de conexão com a API. Tente novamente.', 'assistant');
+      addMessage('Erro de conexão. Tente novamente.', 'assistant');
     } finally {
       setIsLoading(false);
     }
@@ -113,13 +122,13 @@ const ChatInterface = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-gray-200">
+      <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-white">
         <h2 className="font-semibold text-gray-900">Chat com IA</h2>
         <p className="text-sm text-gray-500">Descreva o que você quer desenvolver</p>
       </div>
       
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-4">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`flex max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start space-x-2`}>
@@ -138,10 +147,10 @@ const ChatInterface = () => {
                     : 'bg-gray-100 text-gray-900'
                 }`}>
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  {message.type === 'assistant' && message.content.includes('[Código') && (
+                  {message.type === 'assistant' && (
                     <div className="flex items-center mt-2 text-green-600">
                       <CheckCircle className="h-4 w-4 mr-1" />
-                      <span className="text-xs">Código gerado no preview</span>
+                      <span className="text-xs">Veja o resultado no preview</span>
                     </div>
                   )}
                   <p className="text-xs opacity-70 mt-1">
@@ -173,26 +182,28 @@ const ChatInterface = () => {
         </div>
       </ScrollArea>
       
-      <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
-        <div className="flex space-x-2">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Descreva o que você quer desenvolver..."
-            className="resize-none"
-            rows={2}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-          />
-          <Button type="submit" disabled={isLoading || !input.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </form>
+      <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
+        <form onSubmit={handleSubmit}>
+          <div className="flex space-x-2">
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Descreva o que você quer desenvolver..."
+              className="resize-none"
+              rows={2}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+            />
+            <Button type="submit" disabled={isLoading || !input.trim()}>
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
