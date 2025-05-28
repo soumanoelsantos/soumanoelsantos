@@ -6,7 +6,7 @@
  */
 export const callDeepseekApi = async (prompt: string) => {
   try {
-    const apiKey = "sk-92fe5ce2bc9b4ff2bb125ec8edf6b684";
+    const apiKey = "sk-1d594453b40d47cca214e46aa8e8a9ae";
     const endpoint = "https://api.deepseek.com/v1/chat/completions";
     
     console.log("Calling DeepSeek API with prompt:", prompt);
@@ -22,7 +22,7 @@ export const callDeepseekApi = async (prompt: string) => {
         messages: [
           {
             role: "system",
-            content: "You are a business strategy expert that specializes in creating practical, actionable SWOT strategy recommendations. Focus on specific, concrete actions a business can take immediately."
+            content: "You are a skilled software developer and coding assistant. Help users create functional, well-commented code in various programming languages. Provide clear explanations and practical examples."
           },
           {
             role: "user",
@@ -30,7 +30,7 @@ export const callDeepseekApi = async (prompt: string) => {
           }
         ],
         temperature: 0.7,
-        max_tokens: 2000
+        max_tokens: 3000
       })
     });
     
