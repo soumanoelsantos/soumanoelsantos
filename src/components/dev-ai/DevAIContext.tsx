@@ -41,7 +41,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
       timestamp: new Date()
     }
   ]);
-  const [generatedCode, setGeneratedCode] = useState('// Seu código aparecerá aqui...\n\nfunction exemplo() {\n  return "Olá mundo!";\n}');
+  const [generatedCode, setGeneratedCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const addMessage = (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }) => {
