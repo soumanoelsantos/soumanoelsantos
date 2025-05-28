@@ -1,8 +1,7 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Copy, Download, Play, Code } from 'lucide-react';
+import { Copy, Download, Code, RefreshCw, ChevronLeft, ChevronRight, Globe } from 'lucide-react';
 import { useDevAI } from './DevAIContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -10,6 +9,8 @@ const CodePreview = () => {
   const { generatedCode } = useDevAI();
   const { toast } = useToast();
   const [showCode, setShowCode] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState('Preview');
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedCode);
@@ -34,6 +35,28 @@ const CodePreview = () => {
       title: "Download iniciado!",
       description: "O arquivo foi baixado com sucesso.",
     });
+  };
+
+  const refreshPreview = () => {
+    if (iframeRef.current) {
+      iframeRef.current.src = iframeRef.current.src;
+    }
+    toast({
+      title: "Preview atualizado!",
+      description: "A página foi recarregada.",
+    });
+  };
+
+  const goBack = () => {
+    if (iframeRef.current?.contentWindow) {
+      iframeRef.current.contentWindow.history.back();
+    }
+  };
+
+  const goForward = () => {
+    if (iframeRef.current?.contentWindow) {
+      iframeRef.current.contentWindow.history.forward();
+    }
   };
 
   // Preparar o HTML para o preview
@@ -82,36 +105,72 @@ const CodePreview = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <h2 className="font-semibold text-gray-900">Preview</h2>
+      {/* Header com controles */}
+      <div className="p-3 border-b border-gray-200 bg-white">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center space-x-3">
+            <h2 className="text-sm font-semibold text-gray-900">Preview</h2>
             <Button
               variant={showCode ? 'default' : 'outline'}
               size="sm"
               onClick={() => setShowCode(!showCode)}
+              className="h-7 px-2 text-xs"
             >
-              <Code className="h-4 w-4 mr-1" />
-              {showCode ? 'Voltar ao Preview' : 'Ver Código'}
+              <Code className="h-3 w-3 mr-1" />
+              {showCode ? 'Preview' : 'Código'}
             </Button>
           </div>
           
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm" onClick={copyToClipboard}>
-              <Copy className="h-4 w-4" />
+          <div className="flex space-x-1">
+            <Button variant="outline" size="sm" onClick={copyToClipboard} className="h-7 px-2">
+              <Copy className="h-3 w-3" />
             </Button>
-            <Button variant="outline" size="sm" onClick={downloadCode}>
-              <Download className="h-4 w-4" />
+            <Button variant="outline" size="sm" onClick={downloadCode} className="h-7 px-2">
+              <Download className="h-3 w-3" />
             </Button>
           </div>
         </div>
+
+        {/* Navegação do browser */}
+        {!showCode && (
+          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-md">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goBack}
+              className="h-6 w-6 p-0"
+            >
+              <ChevronLeft className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goForward}
+              className="h-6 w-6 p-0"
+            >
+              <ChevronRight className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={refreshPreview}
+              className="h-6 w-6 p-0"
+            >
+              <RefreshCw className="h-3 w-3" />
+            </Button>
+            <div className="flex items-center flex-1 bg-white border rounded px-2 py-1">
+              <Globe className="h-3 w-3 text-gray-400 mr-2" />
+              <span className="text-xs text-gray-600 truncate">{currentUrl}</span>
+            </div>
+          </div>
+        )}
       </div>
       
       <div className="flex-1 overflow-hidden">
         {showCode ? (
           <ScrollArea className="h-full">
             <div className="p-4">
-              <pre className="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+              <pre className="bg-gray-900 text-green-400 font-mono text-xs p-3 rounded-lg overflow-x-auto whitespace-pre-wrap">
                 <code>{generatedCode}</code>
               </pre>
             </div>
@@ -119,10 +178,12 @@ const CodePreview = () => {
         ) : (
           <div className="h-full bg-white border">
             <iframe
+              ref={iframeRef}
               className="w-full h-full border-0"
               title="Preview"
               srcDoc={getPreviewHtml()}
               sandbox="allow-scripts allow-same-origin allow-forms"
+              onLoad={() => setCurrentUrl('Preview Loaded')}
             />
           </div>
         )}

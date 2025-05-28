@@ -6,11 +6,12 @@ interface Message {
   type: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  image?: { file: File; preview: string };
 }
 
 interface DevAIContextType {
   messages: Message[];
-  addMessage: (content: string, type: 'user' | 'assistant') => void;
+  addMessage: (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }) => void;
   generatedCode: string;
   setGeneratedCode: (code: string) => void;
   isLoading: boolean;
@@ -36,19 +37,20 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     {
       id: '1',
       type: 'assistant',
-      content: 'Olá! Sou seu assistente de desenvolvimento powered by DeepSeek. Como posso te ajudar a criar código hoje?',
+      content: 'Olá! Sou seu assistente de desenvolvimento. Como posso te ajudar hoje?',
       timestamp: new Date()
     }
   ]);
   const [generatedCode, setGeneratedCode] = useState('// Seu código aparecerá aqui...\n\nfunction exemplo() {\n  return "Olá mundo!";\n}');
   const [isLoading, setIsLoading] = useState(false);
 
-  const addMessage = (content: string, type: 'user' | 'assistant') => {
+  const addMessage = (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       type,
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      image
     };
     setMessages(prev => [...prev, newMessage]);
   };
