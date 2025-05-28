@@ -39,38 +39,66 @@ const CodePreview = () => {
 
   // Atualizar o preview quando o código mudar
   useEffect(() => {
-    if (iframeRef.current && generatedCode && generatedCode !== '// Seu código aparecerá aqui...\n\nfunction exemplo() {\n  return "Olá mundo!";\n}') {
+    if (iframeRef.current && generatedCode && activeTab === 'preview') {
+      console.log('Atualizando preview com código:', generatedCode);
+      
       const iframe = iframeRef.current;
       const doc = iframe.contentDocument || iframe.contentWindow?.document;
       
       if (doc) {
-        // Se o código contém HTML completo
-        if (generatedCode.includes('<!DOCTYPE html>') || generatedCode.includes('<html')) {
+        try {
+          // Limpar conteúdo anterior
           doc.open();
-          doc.write(generatedCode);
+          
+          // Se o código contém HTML completo
+          if (generatedCode.includes('<!DOCTYPE html>') || generatedCode.includes('<html')) {
+            doc.write(generatedCode);
+          } else if (generatedCode.includes('<')) {
+            // Se contém tags HTML mas não é documento completo
+            const htmlContent = `
+              <!DOCTYPE html>
+              <html lang="pt-BR">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Preview</title>
+                <style>
+                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+                </style>
+              </head>
+              <body>
+                ${generatedCode}
+              </body>
+              </html>
+            `;
+            doc.write(htmlContent);
+          } else {
+            // Se não é HTML, mostrar como texto
+            const textContent = `
+              <!DOCTYPE html>
+              <html lang="pt-BR">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Preview</title>
+                <style>
+                  body { margin: 20px; font-family: monospace; white-space: pre-wrap; }
+                </style>
+              </head>
+              <body>${generatedCode}</body>
+              </html>
+            `;
+            doc.write(textContent);
+          }
+          
           doc.close();
-        } else {
-          // Se é apenas CSS/JS, criar uma estrutura HTML básica
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html lang="pt-BR">
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Preview</title>
-            </head>
-            <body>
-              ${generatedCode}
-            </body>
-            </html>
-          `;
-          doc.open();
-          doc.write(htmlContent);
-          doc.close();
+          console.log('Preview atualizado com sucesso');
+        } catch (error) {
+          console.error('Erro ao atualizar preview:', error);
         }
       }
     }
-  }, [generatedCode]);
+  }, [generatedCode, activeTab]);
 
   return (
     <div className="flex flex-col h-full">
@@ -112,17 +140,19 @@ const CodePreview = () => {
       <div className="flex-1 overflow-hidden">
         {activeTab === 'code' ? (
           <ScrollArea className="h-full">
-            <pre className="p-4 bg-gray-900 text-green-400 font-mono text-sm min-h-full">
-              <code>{generatedCode}</code>
-            </pre>
+            <div className="p-4">
+              <pre className="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded-lg overflow-x-auto">
+                <code>{generatedCode}</code>
+              </pre>
+            </div>
           </ScrollArea>
         ) : (
-          <div className="h-full bg-white">
+          <div className="h-full bg-white border">
             <iframe
               ref={iframeRef}
               className="w-full h-full border-0"
               title="Preview"
-              sandbox="allow-scripts allow-same-origin"
+              sandbox="allow-scripts allow-same-origin allow-forms"
             />
           </div>
         )}
