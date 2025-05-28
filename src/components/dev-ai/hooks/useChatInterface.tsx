@@ -1,6 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useDevAI } from '../DevAIContext';
+import { useProjectHistory } from '../ProjectHistoryContext';
 import { callDeepseekApi } from '@/utils/swot/ai/deepseekClient';
 import { extractCodeFromResponse } from '../utils/codeExtraction';
 import { determineIfIncremental } from '../utils/incrementalDetection';
@@ -9,6 +10,7 @@ import { generatePrompt } from '../utils/promptGeneration';
 
 export const useChatInterface = () => {
   const { messages, addMessage, updateCodeIncremental, isLoading, setIsLoading, currentProject, generatedCode } = useDevAI();
+  const { addVersion } = useProjectHistory();
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
   const messagesStartRef = useRef<HTMLDivElement>(null);
@@ -75,8 +77,11 @@ export const useChatInterface = () => {
           // Usar a função incremental para preservar layout
           updateCodeIncremental(extractedCode, isIncremental);
           
-          // Mostrar apenas resumo curto no chat
+          // Salvar versão no histórico
           const summary = createShortSummary(response);
+          addVersion(extractedCode, summary, userMessage);
+          
+          // Mostrar apenas resumo curto no chat
           addMessage(summary, 'assistant');
         } else {
           // Se não há código, mostrar resumo da resposta

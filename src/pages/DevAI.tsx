@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import DevAIContent from '@/components/dev-ai/DevAIContent';
 import UnauthenticatedView from '@/components/crm/views/UnauthenticatedView';
 import { DevAIProvider } from '@/components/dev-ai/DevAIContext';
+import { ProjectHistoryProvider } from '@/components/dev-ai/ProjectHistoryContext';
 
 const DevAI = () => {
   const { isAuthenticated } = useAuth();
@@ -14,7 +15,9 @@ const DevAI = () => {
 
   return (
     <DevAIProvider>
-      <DevAIContent />
+      <ProjectHistoryProvider>
+        <DevAIContent />
+      </ProjectHistoryProvider>
     </DevAIProvider>
   );
 };
