@@ -44,6 +44,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentProject, setCurrentProject] = useState<DevProject | null>(null);
   const [projectConversations, setProjectConversations] = useState<Record<string, Message[]>>({});
+  const [projectCodes, setProjectCodes] = useState<Record<string, string>>({});
 
   const getDefaultMessage = (): Message => ({
     id: '1',
@@ -80,7 +81,13 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     console.log(`🔧 Atualizando código do projeto ${currentProject?.name} - Incremental: ${isIncremental}`);
     setGeneratedCode(code);
     
+    // Salvar no cache local do projeto atual
     if (currentProject) {
+      setProjectCodes(prev => ({
+        ...prev,
+        [currentProject.id]: code
+      }));
+      
       await DevAIService.updateProjectCode(currentProject.id, code, isIncremental);
     }
   };
@@ -97,7 +104,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     }
   };
 
-  // Carregar conversa quando projeto muda
+  // Carregar conversa e código quando projeto muda
   useEffect(() => {
     const loadProjectData = async () => {
       if (!currentProject) {
@@ -110,19 +117,17 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
       console.log(`📂 Carregando dados do projeto: ${currentProject.name} (${currentProject.id})`);
       
       try {
-        // Primeiro, verificar se temos no cache local
+        // Carregar conversa
         if (projectConversations[currentProject.id]) {
           console.log('💾 Carregando conversa do cache local');
           setMessages(projectConversations[currentProject.id]);
         } else {
-          // Carregar do banco de dados
           console.log('🗄️ Carregando conversa do banco de dados');
           const conversation = await DevAIService.loadConversation(currentProject.id);
           
           if (conversation.length > 0) {
             console.log(`✅ Conversa carregada: ${conversation.length} mensagens`);
             setMessages(conversation);
-            // Salvar no cache local
             setProjectConversations(prev => ({
               ...prev,
               [currentProject.id]: conversation
@@ -138,10 +143,25 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
           }
         }
         
-        // Carregar código do projeto
-        if (currentProject.code) {
-          console.log(`💻 Código do projeto carregado: ${currentProject.code.length} caracteres`);
-          setGeneratedCode(currentProject.code);
+        // Carregar código - primeiro do cache local, depois do projeto
+        let codeToLoad = '';
+        
+        if (projectCodes[currentProject.id]) {
+          console.log('💻 Carregando código do cache local');
+          codeToLoad = projectCodes[currentProject.id];
+        } else if (currentProject.code) {
+          console.log('💻 Carregando código do projeto no banco');
+          codeToLoad = currentProject.code;
+          // Salvar no cache local
+          setProjectCodes(prev => ({
+            ...prev,
+            [currentProject.id]: currentProject.code
+          }));
+        }
+        
+        if (codeToLoad) {
+          console.log(`💻 Código carregado: ${codeToLoad.length} caracteres`);
+          setGeneratedCode(codeToLoad);
         } else {
           console.log('📄 Nenhum código encontrado no projeto');
           setGeneratedCode('');
@@ -156,7 +176,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     };
 
     loadProjectData();
-  }, [currentProject?.id]); // Dependência apenas no ID do projeto
+  }, [currentProject?.id]);
 
   // Salvar conversa automaticamente quando mensagens mudam
   useEffect(() => {
