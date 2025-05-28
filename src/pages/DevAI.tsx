@@ -5,9 +5,9 @@ import DevAIContent from '@/components/dev-ai/DevAIContent';
 import UnauthenticatedView from '@/components/crm/views/UnauthenticatedView';
 
 const DevAI = () => {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <UnauthenticatedView />;
   }
 
