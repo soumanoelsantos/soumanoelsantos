@@ -16,6 +16,7 @@ interface DevAIContextType {
   addMessage: (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }) => void;
   generatedCode: string;
   setGeneratedCode: (code: string) => void;
+  updateCodeIncremental: (code: string, isIncremental?: boolean) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   currentProject: DevProject | null;
@@ -61,6 +62,15 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     setMessages(prev => [...prev, newMessage]);
   };
 
+  const updateCodeIncremental = async (code: string, isIncremental: boolean = true) => {
+    setGeneratedCode(code);
+    
+    if (currentProject) {
+      console.log(`Atualizando código do projeto ${currentProject.name} - Incremental: ${isIncremental}`);
+      await DevAIService.updateProjectCode(currentProject.id, code, isIncremental);
+    }
+  };
+
   const clearMessages = () => {
     setMessages([
       {
@@ -83,18 +93,6 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
       return () => clearTimeout(timeoutId);
     }
   }, [messages, currentProject]);
-
-  // Salvar código automaticamente quando muda
-  useEffect(() => {
-    if (currentProject && generatedCode) {
-      const saveCode = async () => {
-        await DevAIService.updateProject(currentProject.id, { code: generatedCode });
-      };
-      
-      const timeoutId = setTimeout(saveCode, 2000);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [generatedCode, currentProject]);
 
   // Carregar conversa quando projeto muda
   useEffect(() => {
@@ -124,6 +122,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
       addMessage,
       generatedCode,
       setGeneratedCode,
+      updateCodeIncremental,
       isLoading,
       setIsLoading,
       currentProject,

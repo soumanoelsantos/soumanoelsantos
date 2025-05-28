@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { DevProject, CreateProjectData, DevConversation, DevMessage } from '@/types/devai';
 
@@ -16,7 +17,8 @@ export class DevAIService {
         .insert({
           name: data.name,
           description: data.description,
-          user_id: user.user.id
+          user_id: user.user.id,
+          code: '' // Inicializa com código vazio
         })
         .select()
         .single();
@@ -73,6 +75,88 @@ export class DevAIService {
       console.error('Erro ao atualizar projeto:', error);
       return false;
     }
+  }
+
+  // Nova função para atualizar código de forma incremental
+  static async updateProjectCode(id: string, newCode: string, isIncremental: boolean = true): Promise<boolean> {
+    try {
+      if (!isIncremental) {
+        // Substituição completa do código
+        return await this.updateProject(id, { code: newCode });
+      }
+
+      // Buscar código atual
+      const currentProject = await this.getProject(id);
+      if (!currentProject) return false;
+
+      let updatedCode = currentProject.code || '';
+
+      // Se já existe código, combinar de forma inteligente
+      if (updatedCode && newCode) {
+        // Verificar se o novo código é uma página/componente adicional
+        if (this.isNewPageOrComponent(newCode, updatedCode)) {
+          updatedCode = this.combineCode(updatedCode, newCode);
+        } else {
+          // Se for uma modificação, substituir
+          updatedCode = newCode;
+        }
+      } else {
+        // Se não há código anterior, usar o novo
+        updatedCode = newCode;
+      }
+
+      return await this.updateProject(id, { code: updatedCode });
+    } catch (error) {
+      console.error('Erro ao atualizar código do projeto:', error);
+      return false;
+    }
+  }
+
+  // Verifica se o novo código é uma nova página/componente
+  private static isNewPageOrComponent(newCode: string, existingCode: string): boolean {
+    // Verifica se o novo código contém novas funcionalidades que podem ser combinadas
+    const newCodePages = this.extractPages(newCode);
+    const existingPages = this.extractPages(existingCode);
+    
+    // Se há páginas diferentes, é incremental
+    return newCodePages.some(page => !existingPages.includes(page));
+  }
+
+  // Extrai identificadores de páginas do código
+  private static extractPages(code: string): string[] {
+    const pages: string[] = [];
+    
+    // Procura por rotas ou títulos de páginas
+    const routeMatches = code.match(/path=["']([^"']+)["']/g);
+    if (routeMatches) {
+      pages.push(...routeMatches.map(match => match.replace(/path=["']([^"']+)["']/, '$1')));
+    }
+    
+    // Procura por títulos h1, h2
+    const titleMatches = code.match(/<h[12][^>]*>([^<]+)<\/h[12]>/g);
+    if (titleMatches) {
+      pages.push(...titleMatches.map(match => match.replace(/<h[12][^>]*>([^<]+)<\/h[12]>/, '$1')));
+    }
+    
+    return pages;
+  }
+
+  // Combina código existente com novo código
+  private static combineCode(existingCode: string, newCode: string): string {
+    // Se o código existente é um documento HTML completo
+    if (existingCode.includes('<!DOCTYPE html>') && newCode.includes('<!DOCTYPE html>')) {
+      // Combinar o conteúdo do body
+      const existingBodyMatch = existingCode.match(/<body[^>]*>([\s\S]*)<\/body>/);
+      const newBodyMatch = newCode.match(/<body[^>]*>([\s\S]*)<\/body>/);
+      
+      if (existingBodyMatch && newBodyMatch) {
+        const combinedBody = existingBodyMatch[1] + '\n\n' + newBodyMatch[1];
+        return existingCode.replace(/<body[^>]*>[\s\S]*<\/body>/, `<body>\n${combinedBody}\n</body>`);
+      }
+    }
+    
+    // Para outros casos, adicionar o novo código ao final
+    return existingCode + '\n\n<!-- Nova funcionalidade -->\n' + newCode;
   }
 
   static async deleteProject(id: string): Promise<boolean> {

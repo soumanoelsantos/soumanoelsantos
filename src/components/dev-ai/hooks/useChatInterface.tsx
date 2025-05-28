@@ -4,7 +4,7 @@ import { useDevAI } from '../DevAIContext';
 import { callDeepseekApi } from '@/utils/swot/ai/deepseekClient';
 
 export const useChatInterface = () => {
-  const { messages, addMessage, setGeneratedCode, isLoading, setIsLoading } = useDevAI();
+  const { messages, addMessage, updateCodeIncremental, isLoading, setIsLoading, currentProject, generatedCode } = useDevAI();
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
   const messagesStartRef = useRef<HTMLDivElement>(null);
@@ -68,6 +68,40 @@ export const useChatInterface = () => {
     return cleanMessage || 'Código gerado!';
   };
 
+  const determineIfIncremental = (userMessage: string, existingCode: string) => {
+    const incrementalKeywords = [
+      'adicione', 'adicionar', 'acrescente', 'inclua', 'incluir',
+      'nova página', 'novo componente', 'mais uma', 'outra página',
+      'complementar', 'expandir', 'estender'
+    ];
+    
+    const replaceKeywords = [
+      'substitua', 'substituir', 'mude', 'mudar', 'altere', 'alterar',
+      'refaça', 'refazer', 'recrie', 'recriar', 'novo layout',
+      'começar do zero', 'limpar'
+    ];
+    
+    const messageLower = userMessage.toLowerCase();
+    
+    // Se há palavras de substituição, não é incremental
+    if (replaceKeywords.some(keyword => messageLower.includes(keyword))) {
+      return false;
+    }
+    
+    // Se há palavras incrementais e já existe código, é incremental
+    if (incrementalKeywords.some(keyword => messageLower.includes(keyword)) && existingCode) {
+      return true;
+    }
+    
+    // Se não há código existente, não é incremental
+    if (!existingCode) {
+      return false;
+    }
+    
+    // Por padrão, se há código existente, tentar ser incremental
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if ((!input.trim() && !selectedImage) || isLoading) return;
@@ -81,7 +115,20 @@ export const useChatInterface = () => {
     setIsLoading(true);
 
     try {
+      const isIncremental = determineIfIncremental(userMessage, generatedCode);
+      
       let prompt = `Você é um assistente de desenvolvimento web especializado em criar código HTML, CSS e JavaScript.`;
+      
+      if (currentProject && generatedCode && isIncremental) {
+        prompt += `\n\nCONTEXTO DO PROJETO: "${currentProject.name}"
+        
+CÓDIGO EXISTENTE NO PROJETO:
+\`\`\`html
+${generatedCode}
+\`\`\`
+
+INSTRUÇÃO IMPORTANTE: O usuário quer ADICIONAR funcionalidade ao projeto existente, NÃO substituir o código atual. Mantenha o layout e estrutura existente, apenas adicione a nova funcionalidade solicitada.`;
+      }
       
       if (currentImage) {
         prompt += ` O usuário enviou uma imagem. Analise a imagem e`;
@@ -93,14 +140,20 @@ export const useChatInterface = () => {
         prompt += ` O usuário disse: "${userMessage}"`;
       }
       
+      if (isIncremental && generatedCode) {
+        prompt += `\n\nPor favor, ${userMessage.toLowerCase().includes('nova página') || userMessage.toLowerCase().includes('adicione') ? 'adicione a nova funcionalidade ao código existente' : 'modifique apenas a parte necessária do código existente'}.`;
+      }
+      
       prompt += `
       
-      Responda de forma útil e gere código completo e funcional. Se for criar uma página web, inclua HTML completo com DOCTYPE, head e body.
-      Certifique-se de que o código seja responsivo e bem estruturado.
-      
-      Use blocos de código markdown com três crases seguidas de html para envolver seu código.`;
+Responda de forma útil e gere código completo e funcional. Se for criar uma página web, inclue HTML completo com DOCTYPE, head e body.
+Certifique-se de que o código seja responsivo e bem estruturado.
+
+Use blocos de código markdown com três crases seguidas de html para envolver seu código.`;
 
       console.log('Enviando prompt para DeepSeek:', prompt);
+      console.log('Modo incremental:', isIncremental);
+      
       const response = await callDeepseekApi(prompt);
       
       if (response) {
@@ -110,7 +163,10 @@ export const useChatInterface = () => {
         const extractedCode = extractCodeFromResponse(response);
         if (extractedCode && extractedCode !== response) {
           console.log('Código extraído e enviado para preview:', extractedCode);
-          setGeneratedCode(extractedCode);
+          console.log('Atualizando com modo incremental:', isIncremental);
+          
+          // Usar a nova função incremental
+          updateCodeIncremental(extractedCode, isIncremental);
           
           // Mostrar apenas resumo curto no chat
           const summary = createShortSummary(response);
