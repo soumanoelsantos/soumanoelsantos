@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,14 +9,14 @@ import { callDeepseekApi } from '@/utils/swot/ai/deepseekClient';
 const ChatInterface = () => {
   const { messages, addMessage, setGeneratedCode, isLoading, setIsLoading } = useDevAI();
   const [input, setInput] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesStartRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToTop = () => {
+    messagesStartRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    scrollToBottom();
+    scrollToTop();
   }, [messages]);
 
   const extractCodeFromResponse = (response: string) => {
@@ -120,6 +119,9 @@ const ChatInterface = () => {
     }
   };
 
+  // Reverse the messages array to show newest first
+  const reversedMessages = [...messages].reverse();
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-white">
@@ -129,7 +131,26 @@ const ChatInterface = () => {
       
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          {messages.map((message) => (
+          <div ref={messagesStartRef} />
+          
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="flex items-start space-x-2">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gray-500">
+                  <Bot className="h-4 w-4 text-white" />
+                </div>
+                <div className="bg-gray-100 px-4 py-2 rounded-lg">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {reversedMessages.map((message) => (
             <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`flex max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start space-x-2`}>
                 <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
@@ -160,25 +181,6 @@ const ChatInterface = () => {
               </div>
             </div>
           ))}
-          
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="flex items-start space-x-2">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gray-500">
-                  <Bot className="h-4 w-4 text-white" />
-                </div>
-                <div className="bg-gray-100 px-4 py-2 rounded-lg">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
       
