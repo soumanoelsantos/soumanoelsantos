@@ -69,37 +69,46 @@ export const useChatInterface = () => {
   };
 
   const determineIfIncremental = (userMessage: string, existingCode: string) => {
+    const messageLower = userMessage.toLowerCase();
+    
+    // Palavras que indicam que é para ADICIONAR/INCREMENTAR
     const incrementalKeywords = [
       'adicione', 'adicionar', 'acrescente', 'inclua', 'incluir',
       'nova página', 'novo componente', 'mais uma', 'outra página',
-      'complementar', 'expandir', 'estender'
+      'complementar', 'expandir', 'estender', 'página de', 'criar página',
+      'página cliente', 'página produto', 'página sobre', 'menu',
+      'no mesmo layout', 'mesmo design', 'mesmo site', 'manter',
+      'seguindo o mesmo', 'no layout existente'
     ];
     
+    // Palavras que indicam que é para SUBSTITUIR TUDO
     const replaceKeywords = [
-      'substitua', 'substituir', 'mude', 'mudar', 'altere', 'alterar',
-      'refaça', 'refazer', 'recrie', 'recriar', 'novo layout',
-      'começar do zero', 'limpar'
+      'substitua', 'substituir', 'mude completamente', 'refaça tudo',
+      'recrie do zero', 'novo layout', 'novo design', 'começar novamente',
+      'limpar tudo', 'novo projeto', 'diferente', 'outro estilo'
     ];
     
-    const messageLower = userMessage.toLowerCase();
-    
-    // Se há palavras de substituição, não é incremental
+    // Se tem palavras de substituição explícitas, não é incremental
     if (replaceKeywords.some(keyword => messageLower.includes(keyword))) {
+      console.log('Detectado comando de substituição completa');
       return false;
     }
     
-    // Se há palavras incrementais e já existe código, é incremental
-    if (incrementalKeywords.some(keyword => messageLower.includes(keyword)) && existingCode) {
+    // Se há código existente e palavras incrementais, é incremental
+    if (existingCode && incrementalKeywords.some(keyword => messageLower.includes(keyword))) {
+      console.log('Detectado comando incremental com código existente');
+      return true;
+    }
+    
+    // Se há código existente e não há palavras de substituição, é incremental por padrão
+    if (existingCode && existingCode.trim().length > 100) {
+      console.log('Código existente detectado, usando modo incremental por padrão');
       return true;
     }
     
     // Se não há código existente, não é incremental
-    if (!existingCode) {
-      return false;
-    }
-    
-    // Por padrão, se há código existente, tentar ser incremental
-    return true;
+    console.log('Nenhum código existente, criando do zero');
+    return false;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,7 +136,11 @@ CÓDIGO EXISTENTE NO PROJETO:
 ${generatedCode}
 \`\`\`
 
-INSTRUÇÃO IMPORTANTE: O usuário quer ADICIONAR funcionalidade ao projeto existente, NÃO substituir o código atual. Mantenha o layout e estrutura existente, apenas adicione a nova funcionalidade solicitada.`;
+INSTRUÇÃO MUITO IMPORTANTE: O usuário quer ADICIONAR uma nova página/funcionalidade ao site existente, NÃO substituir o código atual. 
+- MANTENHA todo o layout, menu lateral, header e estrutura existente
+- APENAS adicione a nova página solicitada seguindo o mesmo design
+- Preserve todas as páginas que já existem
+- Use a mesma estrutura de navegação e estilos`;
       }
       
       if (currentImage) {
@@ -141,12 +154,12 @@ INSTRUÇÃO IMPORTANTE: O usuário quer ADICIONAR funcionalidade ao projeto exis
       }
       
       if (isIncremental && generatedCode) {
-        prompt += `\n\nPor favor, ${userMessage.toLowerCase().includes('nova página') || userMessage.toLowerCase().includes('adicione') ? 'adicione a nova funcionalidade ao código existente' : 'modifique apenas a parte necessária do código existente'}.`;
+        prompt += `\n\nPor favor, ADICIONE a nova funcionalidade ao código existente mantendo TUDO que já estava funcionando. Se for uma nova página, adicione ela ao menu de navegação existente e crie o conteúdo seguindo o mesmo padrão visual.`;
       }
       
       prompt += `
       
-Responda de forma útil e gere código completo e funcional. Se for criar uma página web, inclue HTML completo com DOCTYPE, head e body.
+Responda de forma útil e gere código completo e funcional. Se for criar uma página web, inclua HTML completo com DOCTYPE, head e body.
 Certifique-se de que o código seja responsivo e bem estruturado.
 
 Use blocos de código markdown com três crases seguidas de html para envolver seu código.`;
