@@ -24,6 +24,35 @@ const ChatInput: React.FC<ChatInputProps> = ({
   onSubmit,
   isLoading
 }) => {
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        
+        if (file) {
+          // Verificar tamanho do arquivo (5MB máximo)
+          if (file.size > 5 * 1024 * 1024) {
+            console.warn('Imagem muito grande (máximo 5MB)');
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = () => {
+            onImageSelect(file, reader.result as string);
+          };
+          reader.readAsDataURL(file);
+        }
+        break;
+      }
+    }
+  };
+
   return (
     <div className="flex-shrink-0 p-3 border-t border-gray-200 bg-white">
       <form onSubmit={onSubmit}>
@@ -32,7 +61,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Descreva o que você quer desenvolver..."
+              onPaste={handlePaste}
+              placeholder="Descreva o que você quer desenvolver ou cole uma imagem (Ctrl+V)..."
               className="resize-none text-sm"
               rows={1}
               onKeyDown={(e) => {
