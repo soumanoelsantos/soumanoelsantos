@@ -10,40 +10,47 @@ export const generatePrompt = (
   let prompt = `Você é um assistente de desenvolvimento web especializado em criar código HTML, CSS e JavaScript.`;
   
   if (currentProject && generatedCode && isIncremental) {
-    prompt += `\n\nCONTEXTO DO PROJETO: "${currentProject.name}"
-    
-CÓDIGO EXISTENTE NO PROJETO:
+    prompt += `\n\n🔥 INSTRUÇÃO CRÍTICA - MODO INCREMENTAL ATIVADO:
+
+CÓDIGO EXISTENTE DO PROJETO "${currentProject.name}":
 \`\`\`html
 ${generatedCode}
 \`\`\`
 
-INSTRUÇÃO MUITO IMPORTANTE: O usuário quer ADICIONAR uma nova página/funcionalidade ao site existente, NÃO substituir o código atual. 
-- MANTENHA todo o layout, menu lateral, header e estrutura existente
-- APENAS adicione a nova página solicitada seguindo o mesmo design
-- Preserve todas as páginas que já existem
-- Use a mesma estrutura de navegação e estilos`;
+⚠️ ATENÇÃO: O usuário quer ADICIONAR uma nova página/funcionalidade ao site existente acima.
+NÃO crie um novo site. NÃO substitua o código existente.
+
+REGRAS OBRIGATÓRIAS:
+1. MANTENHA 100% do layout atual (header, sidebar, menu, estilos)
+2. PRESERVE todas as páginas que já existem
+3. ADICIONE APENAS a nova página solicitada
+4. Use a MESMA estrutura CSS e JavaScript
+5. Adicione a nova página ao menu de navegação existente
+6. Siga EXATAMENTE o mesmo padrão visual e de código`;
   }
   
   if (hasImage) {
-    prompt += ` O usuário enviou uma imagem. Analise a imagem e`;
+    prompt += `\n\nO usuário enviou uma imagem. Analise a imagem e`;
     if (imageInput?.trim()) {
       prompt += ` também disse: "${imageInput.trim()}"`;
     }
     prompt += ` Crie código baseado no que você vê na imagem.`;
   } else {
-    prompt += ` O usuário disse: "${userMessage}"`;
+    prompt += `\n\nSOLICITAÇÃO DO USUÁRIO: "${userMessage}"`;
   }
   
   if (isIncremental && generatedCode) {
-    prompt += `\n\nPor favor, ADICIONE a nova funcionalidade ao código existente mantendo TUDO que já estava funcionando. Se for uma nova página, adicione ela ao menu de navegação existente e crie o conteúdo seguindo o mesmo padrão visual.`;
+    prompt += `\n\n🎯 COMO PROCEDER:
+1. Analise o código existente para entender a estrutura
+2. Identifique onde adicionar a nova página no menu
+3. Crie o conteúdo da nova página seguindo o mesmo padrão
+4. Mantenha TODA a funcionalidade existente
+5. Retorne o código COMPLETO com a nova página integrada
+
+IMPORTANTE: Se o código existente tem menu lateral, adicione a nova opção lá. Se tem navegação por abas, adicione uma nova aba. Sempre mantenha a consistência visual e funcional.`;
   }
   
-  prompt += `
-  
-Responda de forma útil e gere código completo e funcional. Se for criar uma página web, inclua HTML completo com DOCTYPE, head e body.
-Certifique-se de que o código seja responsivo e bem estruturado.
-
-Use blocos de código markdown com três crases seguidas de html para envolver seu código.`;
+  prompt += `\n\nResponda com código HTML completo e funcional. Use blocos de código markdown com \`\`\`html para envolver seu código.`;
 
   return prompt;
 };
