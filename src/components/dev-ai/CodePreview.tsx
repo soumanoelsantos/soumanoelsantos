@@ -1,13 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useDevAI } from './DevAIContext';
 import { useCodePreview } from './hooks/useCodePreview';
 import CodePreviewHeader from './components/CodePreviewHeader';
 import CodeDisplay from './components/CodeDisplay';
 import PreviewFrame from './components/PreviewFrame';
+import FileStructure from './components/FileStructure';
 
 const CodePreview = () => {
   const { generatedCode } = useDevAI();
+  const [selectedFile, setSelectedFile] = useState<{ content: string; name: string } | null>(null);
   const {
     showCode,
     setShowCode,
@@ -25,10 +27,18 @@ const CodePreview = () => {
 
   const handleToggleView = () => {
     setShowCode(!showCode);
+    if (!showCode && !selectedFile && generatedCode) {
+      // Auto-selecionar o primeiro arquivo quando abrir código
+      setSelectedFile({ content: generatedCode, name: 'index.html' });
+    }
   };
 
   const handleLoad = () => {
     setCurrentUrl('Preview Loaded');
+  };
+
+  const handleFileSelect = (content: string, fileName: string) => {
+    setSelectedFile({ content, name: fileName });
   };
 
   return (
@@ -47,7 +57,20 @@ const CodePreview = () => {
       
       <div className="flex-1 overflow-hidden">
         {showCode ? (
-          <CodeDisplay code={generatedCode} />
+          <div className="flex h-full">
+            <div className="w-64">
+              <FileStructure 
+                onFileSelect={handleFileSelect}
+                generatedCode={generatedCode}
+              />
+            </div>
+            <div className="flex-1">
+              <CodeDisplay 
+                code={selectedFile?.content || generatedCode} 
+                fileName={selectedFile?.name}
+              />
+            </div>
+          </div>
         ) : (
           <PreviewFrame
             iframeRef={iframeRef}
