@@ -37,21 +37,20 @@ const CodePreview = () => {
     });
   };
 
-  // Atualizar o preview quando o código mudar
-  useEffect(() => {
-    if (iframeRef.current && generatedCode) {
-      console.log('Atualizando preview com código:', generatedCode);
-      
-      const iframe = iframeRef.current;
-      
-      // Criar um blob URL com o código HTML
-      let htmlContent = generatedCode;
-      
-      // Se o código não contém DOCTYPE, criar um documento HTML completo
-      if (!generatedCode.includes('<!DOCTYPE html>') && !generatedCode.includes('<html')) {
-        if (generatedCode.includes('<')) {
-          // Se contém tags HTML mas não é documento completo
-          htmlContent = `<!DOCTYPE html>
+  // Preparar o HTML para o preview
+  const getPreviewHtml = () => {
+    if (!generatedCode) return '';
+    
+    console.log('Preparando HTML para preview:', generatedCode);
+    
+    // Se o código já é um documento HTML completo
+    if (generatedCode.includes('<!DOCTYPE html>') || generatedCode.includes('<html')) {
+      return generatedCode;
+    }
+    
+    // Se contém tags HTML mas não é documento completo
+    if (generatedCode.includes('<')) {
+      return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -65,9 +64,10 @@ const CodePreview = () => {
   ${generatedCode}
 </body>
 </html>`;
-        } else {
-          // Se não é HTML, mostrar como texto
-          htmlContent = `<!DOCTYPE html>
+    }
+    
+    // Se não é HTML, mostrar como texto
+    return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -79,20 +79,7 @@ const CodePreview = () => {
 </head>
 <body>${generatedCode}</body>
 </html>`;
-        }
-      }
-      
-      // Criar blob URL e definir como src do iframe
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      iframe.src = url;
-      
-      // Limpar o URL quando o componente for desmontado ou o código mudar
-      return () => {
-        URL.revokeObjectURL(url);
-      };
-    }
-  }, [generatedCode]);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -146,6 +133,7 @@ const CodePreview = () => {
               ref={iframeRef}
               className="w-full h-full border-0"
               title="Preview"
+              srcDoc={getPreviewHtml()}
               sandbox="allow-scripts allow-same-origin allow-forms"
             />
           </div>
