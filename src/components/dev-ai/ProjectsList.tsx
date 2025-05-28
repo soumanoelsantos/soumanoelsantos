@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Edit, Calendar } from 'lucide-react';
+import { Trash2, MessageSquare, Calendar } from 'lucide-react';
 import { DevProject } from '@/types/devai';
 
 interface ProjectsListProps {
@@ -47,27 +47,30 @@ const ProjectsList: React.FC<ProjectsListProps> = ({
       {projects.map((project) => (
         <Card 
           key={project.id} 
-          className={`cursor-pointer transition-colors hover:bg-gray-50 ${
-            currentProject?.id === project.id ? 'border-blue-500 bg-blue-50' : ''
+          className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+            currentProject?.id === project.id 
+              ? 'border-blue-500 bg-blue-50 shadow-md' 
+              : 'hover:bg-gray-50'
           }`}
           onClick={() => onSelectProject(project)}
         >
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold truncate">
+              <CardTitle className="text-sm font-semibold truncate flex items-center">
+                <MessageSquare className="h-4 w-4 mr-2 text-blue-500" />
                 {project.name}
               </CardTitle>
               <div className="flex items-center space-x-1">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0"
+                  className="h-6 w-6 p-0 hover:bg-red-100"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDeleteProject(project.id);
                   }}
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3 w-3 text-red-500" />
                 </Button>
               </div>
             </div>
@@ -83,11 +86,18 @@ const ProjectsList: React.FC<ProjectsListProps> = ({
                 <Calendar className="h-3 w-3 mr-1" />
                 {new Date(project.updated_at).toLocaleDateString('pt-BR')}
               </div>
-              {project.code && (
-                <Badge variant="secondary" className="text-xs">
-                  Com código
-                </Badge>
-              )}
+              <div className="flex space-x-1">
+                {project.code && (
+                  <Badge variant="secondary" className="text-xs">
+                    Com código
+                  </Badge>
+                )}
+                {currentProject?.id === project.id && (
+                  <Badge variant="default" className="text-xs bg-blue-500">
+                    Ativo
+                  </Badge>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>

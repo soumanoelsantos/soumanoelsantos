@@ -39,17 +39,18 @@ interface DevAIProviderProps {
 }
 
 export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      type: 'assistant',
-      content: 'Olá! Sou seu assistente de desenvolvimento. Como posso te ajudar hoje?',
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [generatedCode, setGeneratedCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentProject, setCurrentProject] = useState<DevProject | null>(null);
+  const [projectConversations, setProjectConversations] = useState<Record<string, Message[]>>({});
+
+  const getDefaultMessage = (): Message => ({
+    id: '1',
+    type: 'assistant',
+    content: 'Olá! Sou seu assistente de desenvolvimento. Como posso te ajudar hoje?',
+    timestamp: new Date()
+  });
 
   const addMessage = (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }) => {
     const newMessage: Message = {
@@ -59,62 +60,116 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
       timestamp: new Date(),
       image
     };
-    setMessages(prev => [...prev, newMessage]);
+    
+    setMessages(prev => {
+      const updatedMessages = [...prev, newMessage];
+      
+      // Salvar no cache local do projeto atual
+      if (currentProject) {
+        setProjectConversations(prevConversations => ({
+          ...prevConversations,
+          [currentProject.id]: updatedMessages
+        }));
+      }
+      
+      return updatedMessages;
+    });
   };
 
   const updateCodeIncremental = async (code: string, isIncremental: boolean = true) => {
+    console.log(`🔧 Atualizando código do projeto ${currentProject?.name} - Incremental: ${isIncremental}`);
     setGeneratedCode(code);
     
     if (currentProject) {
-      console.log(`Atualizando código do projeto ${currentProject.name} - Incremental: ${isIncremental}`);
       await DevAIService.updateProjectCode(currentProject.id, code, isIncremental);
     }
   };
 
   const clearMessages = () => {
-    setMessages([
-      {
-        id: '1',
-        type: 'assistant',
-        content: 'Olá! Sou seu assistente de desenvolvimento. Como posso te ajudar hoje?',
-        timestamp: new Date()
-      }
-    ]);
+    const defaultMessage = getDefaultMessage();
+    setMessages([defaultMessage]);
+    
+    if (currentProject) {
+      setProjectConversations(prev => ({
+        ...prev,
+        [currentProject.id]: [defaultMessage]
+      }));
+    }
   };
+
+  // Carregar conversa quando projeto muda
+  useEffect(() => {
+    const loadProjectData = async () => {
+      if (!currentProject) {
+        console.log('📝 Nenhum projeto selecionado, limpando dados');
+        setMessages([getDefaultMessage()]);
+        setGeneratedCode('');
+        return;
+      }
+
+      console.log(`📂 Carregando dados do projeto: ${currentProject.name} (${currentProject.id})`);
+      
+      try {
+        // Primeiro, verificar se temos no cache local
+        if (projectConversations[currentProject.id]) {
+          console.log('💾 Carregando conversa do cache local');
+          setMessages(projectConversations[currentProject.id]);
+        } else {
+          // Carregar do banco de dados
+          console.log('🗄️ Carregando conversa do banco de dados');
+          const conversation = await DevAIService.loadConversation(currentProject.id);
+          
+          if (conversation.length > 0) {
+            console.log(`✅ Conversa carregada: ${conversation.length} mensagens`);
+            setMessages(conversation);
+            // Salvar no cache local
+            setProjectConversations(prev => ({
+              ...prev,
+              [currentProject.id]: conversation
+            }));
+          } else {
+            console.log('📝 Nenhuma conversa encontrada, iniciando nova');
+            const defaultMessage = getDefaultMessage();
+            setMessages([defaultMessage]);
+            setProjectConversations(prev => ({
+              ...prev,
+              [currentProject.id]: [defaultMessage]
+            }));
+          }
+        }
+        
+        // Carregar código do projeto
+        if (currentProject.code) {
+          console.log(`💻 Código do projeto carregado: ${currentProject.code.length} caracteres`);
+          setGeneratedCode(currentProject.code);
+        } else {
+          console.log('📄 Nenhum código encontrado no projeto');
+          setGeneratedCode('');
+        }
+        
+      } catch (error) {
+        console.error('❌ Erro ao carregar dados do projeto:', error);
+        const defaultMessage = getDefaultMessage();
+        setMessages([defaultMessage]);
+        setGeneratedCode('');
+      }
+    };
+
+    loadProjectData();
+  }, [currentProject?.id]); // Dependência apenas no ID do projeto
 
   // Salvar conversa automaticamente quando mensagens mudam
   useEffect(() => {
     if (currentProject && messages.length > 1) {
       const saveConversation = async () => {
+        console.log(`💾 Salvando conversa do projeto ${currentProject.name}`);
         await DevAIService.saveConversation(currentProject.id, messages);
       };
       
       const timeoutId = setTimeout(saveConversation, 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [messages, currentProject]);
-
-  // Carregar conversa quando projeto muda
-  useEffect(() => {
-    if (currentProject) {
-      const loadData = async () => {
-        const conversation = await DevAIService.loadConversation(currentProject.id);
-        if (conversation.length > 0) {
-          setMessages(conversation);
-        } else {
-          clearMessages();
-        }
-        
-        if (currentProject.code) {
-          setGeneratedCode(currentProject.code);
-        } else {
-          setGeneratedCode('');
-        }
-      };
-      
-      loadData();
-    }
-  }, [currentProject]);
+  }, [messages, currentProject?.id]);
 
   return (
     <DevAIContext.Provider value={{
