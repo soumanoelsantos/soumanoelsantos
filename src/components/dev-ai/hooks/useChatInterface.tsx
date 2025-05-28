@@ -34,7 +34,14 @@ export const useChatInterface = () => {
     setIsLoading(true);
 
     try {
-      const isIncremental = determineIfIncremental(userMessage, generatedCode);
+      // FORÇAR modo incremental se há código existente
+      const hasExistingCode = generatedCode && generatedCode.trim().length > 300;
+      const isIncremental = hasExistingCode ? true : determineIfIncremental(userMessage, generatedCode);
+      
+      console.log('🔍 Detecção de modo:');
+      console.log('- Código existente:', hasExistingCode);
+      console.log('- Modo incremental FINAL:', isIncremental);
+      console.log('- Tamanho do código:', generatedCode?.length || 0);
       
       const prompt = generatePrompt(
         userMessage,
@@ -45,21 +52,20 @@ export const useChatInterface = () => {
         input.trim()
       );
 
-      console.log('Enviando prompt para DeepSeek:', prompt);
-      console.log('Modo incremental:', isIncremental);
+      console.log('📤 Enviando prompt para DeepSeek:', prompt);
       
       const response = await callDeepseekApi(prompt);
       
       if (response) {
-        console.log('Resposta recebida da API:', response);
+        console.log('📥 Resposta recebida da API:', response);
         
         // Extrair código da resposta
         const extractedCode = extractCodeFromResponse(response);
         if (extractedCode && extractedCode !== response) {
-          console.log('Código extraído e enviado para preview:', extractedCode);
-          console.log('Atualizando com modo incremental:', isIncremental);
+          console.log('💻 Código extraído:', extractedCode.substring(0, 200) + '...');
+          console.log('🔄 Atualizando com modo incremental:', isIncremental);
           
-          // Usar a nova função incremental
+          // Usar a função incremental
           updateCodeIncremental(extractedCode, isIncremental);
           
           // Mostrar apenas resumo curto no chat
@@ -74,7 +80,7 @@ export const useChatInterface = () => {
         addMessage('Erro ao processar solicitação.', 'assistant');
       }
     } catch (error) {
-      console.error('Erro ao chamar DeepSeek API:', error);
+      console.error('❌ Erro ao chamar DeepSeek API:', error);
       addMessage('Erro de conexão. Tente novamente.', 'assistant');
     } finally {
       setIsLoading(false);

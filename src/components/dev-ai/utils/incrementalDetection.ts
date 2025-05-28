@@ -2,14 +2,14 @@
 export const determineIfIncremental = (userMessage: string, existingCode: string): boolean => {
   const messageLower = userMessage.toLowerCase();
   
-  console.log('Analisando mensagem para detecção incremental:', messageLower);
-  console.log('Código existente presente:', !!existingCode && existingCode.length > 100);
+  console.log('🔍 Analisando mensagem para detecção incremental:', messageLower);
+  console.log('📋 Código existente presente:', !!existingCode && existingCode.length > 100);
   
   // Palavras que indicam SUBSTITUIÇÃO COMPLETA (mais restritivas)
   const replaceKeywords = [
     'substitua tudo', 'refaça completamente', 'recrie do zero', 'começar novamente',
     'limpar tudo', 'novo projeto', 'projeto diferente', 'layout totalmente diferente',
-    'começar do zero', 'apagar tudo'
+    'começar do zero', 'apagar tudo', 'criar um novo site', 'novo site'
   ];
   
   // Palavras que indicam ADIÇÃO/INCREMENTO (mais abrangentes)
@@ -20,30 +20,31 @@ export const determineIfIncremental = (userMessage: string, existingCode: string
     'expandir', 'estender', 'no mesmo layout', 'mesmo design',
     'mesmo site', 'manter', 'seguindo o mesmo', 'no layout existente',
     'cliente', 'clientes', 'dashboard', 'sobre', 'contato', 'produto',
-    'produtos', 'vendas', 'relatório', 'configurações'
+    'produtos', 'vendas', 'relatório', 'configurações', 'admin',
+    'administração', 'perfil', 'ajuda', 'suporte'
   ];
   
   // Se tem palavras de substituição explícitas, não é incremental
   const hasReplaceWords = replaceKeywords.some(keyword => messageLower.includes(keyword));
   if (hasReplaceWords) {
-    console.log('Detectado comando de substituição completa:', replaceKeywords.find(k => messageLower.includes(k)));
+    console.log('🔄 Detectado comando de substituição completa:', replaceKeywords.find(k => messageLower.includes(k)));
     return false;
   }
   
-  // Se há código existente significativo (mais de 200 caracteres), é incremental por padrão
-  if (existingCode && existingCode.trim().length > 200) {
-    console.log('Código existente detectado, usando modo incremental por padrão');
+  // Se há código existente significativo (mais de 300 caracteres), SEMPRE é incremental por padrão
+  if (existingCode && existingCode.trim().length > 300) {
+    console.log('✅ Código existente detectado, FORÇANDO modo incremental');
     return true;
   }
   
   // Se há palavras incrementais, é incremental
   const hasIncrementalWords = incrementalKeywords.some(keyword => messageLower.includes(keyword));
   if (hasIncrementalWords) {
-    console.log('Detectado comando incremental:', incrementalKeywords.find(k => messageLower.includes(k)));
+    console.log('📄 Detectado comando incremental:', incrementalKeywords.find(k => messageLower.includes(k)));
     return true;
   }
   
   // Se não há código existente, não é incremental
-  console.log('Nenhum código existente, criando do zero');
+  console.log('🆕 Nenhum código existente, criando do zero');
   return false;
 };
