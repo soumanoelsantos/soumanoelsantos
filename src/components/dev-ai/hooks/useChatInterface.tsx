@@ -61,17 +61,18 @@ export const useChatInterface = () => {
         input.trim()
       );
 
-      console.log('📤 Enviando prompt com preservação de layout:', prompt.substring(0, 300) + '...');
+      console.log('📤 Enviando prompt:', prompt.substring(0, 300) + '...');
       
       const response = await callDeepseekApi(prompt);
       
       if (response) {
-        console.log('📥 Resposta recebida da API');
+        console.log('📥 Resposta recebida da API:', response.substring(0, 200) + '...');
         
         // Extrair código da resposta
         const extractedCode = extractCodeFromResponse(response);
-        if (extractedCode && extractedCode !== response) {
-          console.log('💻 Código extraído com sucesso');
+        
+        if (extractedCode) {
+          console.log('💻 Código extraído com sucesso, tamanho:', extractedCode.length);
           console.log('🔄 Atualizando com preservação de layout - Incremental:', isIncremental);
           
           // Usar a função incremental para preservar layout
@@ -86,12 +87,14 @@ export const useChatInterface = () => {
           // Mostrar apenas resumo curto no chat
           addMessage(summary, 'assistant');
         } else {
-          // Se não há código, mostrar resumo da resposta
+          console.log('⚠️ Nenhum código extraído, mostrando resposta completa');
+          // Se não há código, mostrar resposta completa
           const summary = createShortSummary(response);
           addMessage(summary, 'assistant');
         }
       } else {
-        addMessage('Erro ao processar solicitação.', 'assistant');
+        console.error('❌ Resposta vazia da API');
+        addMessage('Erro ao processar solicitação. Tente novamente.', 'assistant');
       }
     } catch (error) {
       console.error('❌ Erro ao chamar DeepSeek API:', error);

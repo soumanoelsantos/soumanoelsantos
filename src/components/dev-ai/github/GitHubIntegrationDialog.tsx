@@ -22,27 +22,27 @@ const GitHubIntegrationDialog: React.FC<GitHubIntegrationDialogProps> = ({
   projectId,
   projectName
 }) => {
-  const [step, setStep] = useState<'auth' | 'repository' | 'success'>('auth');
+  const [step, setStep] = useState<'auth' | 'repo' | 'config'>('auth');
   const [token, setToken] = useState('');
+  const [user, setUser] = useState<any>(null);
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
-  const [selectedRepo, setSelectedRepo] = useState<string>('');
-  const [newRepoName, setNewRepoName] = useState(projectName.toLowerCase().replace(/\s+/g, '-'));
-  const [createNew, setCreateNew] = useState(false);
+  const [selectedRepo, setSelectedRepo] = useState<GitHubRepository | null>(null);
+  const [newRepoName, setNewRepoName] = useState('');
+  const [newRepoDescription, setNewRepoDescription] = useState('');
+  const [branchName, setBranchName] = useState('main');
+  const [isPrivate, setIsPrivate] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [githubUser, setGithubUser] = useState<any>(null);
+  const [createNewRepo, setCreateNewRepo] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (isOpen) {
-      setStep('auth');
-      setToken('');
-      setRepositories([]);
-      setSelectedRepo('');
-      setGithubUser(null);
+    if (isOpen && projectName && !newRepoName) {
+      setNewRepoName(projectName.toLowerCase().replace(/\s+/g, '-'));
+      setNewRepoDescription(`Projeto ${projectName} criado com DevAI`);
     }
-  }, [isOpen]);
+  }, [isOpen, projectName, newRepoName]);
 
-  const handleAuthenticate = async () => {
+  const handleAuth = async () => {
     if (!token.trim()) {
       toast({
         variant: "destructive",
@@ -54,30 +54,52 @@ const GitHubIntegrationDialog: React.FC<GitHubIntegrationDialogProps> = ({
 
     setIsLoading(true);
     try {
-      const user = await GitHubService.authenticateWithToken(token);
-      setGithubUser(user);
+      const githubUser = await GitHubService.authenticateWithToken(token);
+      setUser(githubUser);
       
       const repos = await GitHubService.listRepositories(token);
       setRepositories(repos);
-      setStep('repository');
       
+      setStep('repo');
       toast({
-        title: "Autenticação realizada!",
-        description: `Conectado como ${user.name || user.login}`
+        title: "Autenticação bem-sucedida!",
+        description: `Conectado como ${githubUser.name || githubUser.login}`
       });
     } catch (error) {
       console.error('Error authenticating:', error);
       toast({
         variant: "destructive",
         title: "Erro na autenticação",
-        description: "Verifique se seu token está correto e tem as permissões necessárias."
+        description: "Token inválido ou erro na conexão com GitHub."
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCreateRepository = async () => {
+  const handleRepoSelection = () => {
+    if (!createNewRepo && !selectedRepo) {
+      toast({
+        variant: "destructive",
+        title: "Repositório necessário",
+        description: "Por favor, selecione um repositório existente."
+      });
+      return;
+    }
+
+    if (createNewRepo && !newRepoName.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Nome necessário",
+        description: "Por favor, insira um nome para o novo repositório."
+      });
+      return;
+    }
+
+    setStep('config');
+  };
+
+  const handleCreateRepo = async () => {
     if (!newRepoName.trim()) {
       toast({
         variant: "destructive",
@@ -92,228 +114,262 @@ const GitHubIntegrationDialog: React.FC<GitHubIntegrationDialogProps> = ({
       const repo = await GitHubService.createRepository(
         token,
         newRepoName,
-        `Código gerado pelo DevAI para o projeto: ${projectName}`,
-        true
+        newRepoDescription,
+        isPrivate
       );
       
-      await saveIntegration(repo.full_name, repo.html_url, repo.default_branch);
-      
+      setSelectedRepo(repo);
       toast({
         title: "Repositório criado!",
-        description: `O repositório ${repo.name} foi criado com sucesso.`
+        description: `Repositório ${repo.name} foi criado com sucesso.`
       });
-      
-      setStep('success');
     } catch (error) {
       console.error('Error creating repository:', error);
       toast({
         variant: "destructive",
         title: "Erro ao criar repositório",
-        description: "Não foi possível criar o repositório. Tente novamente."
+        description: "Não foi possível criar o repositório. Verifique se o nome não está em uso."
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleConnectRepository = async () => {
-    if (!selectedRepo) {
+  const handleSaveIntegration = async () => {
+    if (!selectedRepo || !user) {
       toast({
         variant: "destructive",
-        title: "Repositório necessário",
-        description: "Por favor, selecione um repositório."
+        title: "Dados incompletos",
+        description: "Faltam informações necessárias para salvar a integração."
       });
       return;
     }
 
     setIsLoading(true);
     try {
-      const repo = repositories.find(r => r.full_name === selectedRepo);
-      if (!repo) {
-        throw new Error('Repositório não encontrado');
-      }
-
-      await saveIntegration(repo.full_name, repo.html_url, repo.default_branch);
-      
-      toast({
-        title: "Repositório conectado!",
-        description: `Integração configurada com ${repo.name}.`
+      await GitHubService.saveIntegration({
+        project_id: projectId,
+        github_token: token,
+        github_username: user.login,
+        repository_name: selectedRepo.full_name,
+        repository_url: selectedRepo.html_url,
+        branch_name: branchName,
+        auto_sync: true // Adicionado o campo obrigatório auto_sync
       });
+
+      toast({
+        title: "Integração configurada!",
+        description: `Projeto conectado ao repositório ${selectedRepo.full_name}.`
+      });
+
+      onClose();
       
-      setStep('success');
+      // Reset do estado
+      setStep('auth');
+      setToken('');
+      setUser(null);
+      setSelectedRepo(null);
+      setRepositories([]);
     } catch (error) {
-      console.error('Error connecting repository:', error);
+      console.error('Error saving integration:', error);
       toast({
         variant: "destructive",
-        title: "Erro ao conectar repositório",
-        description: "Não foi possível conectar ao repositório. Tente novamente."
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar a integração. Tente novamente."
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const saveIntegration = async (repoFullName: string, repoUrl: string, branch: string) => {
-    await GitHubService.saveIntegration({
-      project_id: projectId,
-      github_token: token,
-      github_username: githubUser.login,
-      repository_name: repoFullName,
-      repository_url: repoUrl,
-      branch_name: branch
-    });
+  const resetDialog = () => {
+    setStep('auth');
+    setToken('');
+    setUser(null);
+    setSelectedRepo(null);
+    setRepositories([]);
+    setCreateNewRepo(false);
+    setBranchName('main');
   };
 
-  const renderAuthStep = () => (
-    <div className="space-y-4">
-      <div className="text-center">
-        <Github className="h-12 w-12 mx-auto mb-4 text-gray-600" />
-        <h3 className="text-lg font-semibold mb-2">Conectar ao GitHub</h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Para integrar com o GitHub, você precisa de um Personal Access Token
-        </p>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="token">Personal Access Token</Label>
-        <Input
-          id="token"
-          type="password"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-        />
-        <p className="text-xs text-gray-500">
-          O token deve ter permissões: repo, user
-        </p>
-      </div>
-      
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onClose}>
-          Cancelar
-        </Button>
-        <Button onClick={handleAuthenticate} disabled={isLoading}>
-          {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-          Conectar
-        </Button>
-      </div>
-      
-      <div className="border-t pt-4">
-        <p className="text-xs text-gray-500">
-          <a 
-            href="https://github.com/settings/tokens" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline flex items-center gap-1"
-          >
-            Criar Personal Access Token <ExternalLink className="h-3 w-3" />
-          </a>
-        </p>
-      </div>
-    </div>
-  );
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        resetDialog();
+        onClose();
+      }
+    }}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            <Github className="h-5 w-5" />
+            <span>Integração GitHub</span>
+          </DialogTitle>
+        </DialogHeader>
 
-  const renderRepositoryStep = () => (
-    <div className="space-y-4">
-      <div className="text-center">
-        <h3 className="text-lg font-semibold mb-2">Escolher Repositório</h3>
-        <p className="text-sm text-gray-600">
-          Conecte a um repositório existente ou crie um novo
-        </p>
-      </div>
-      
-      <div className="space-y-4">
-        <div>
-          <Label className="flex items-center space-x-2">
-            <input
-              type="radio"
-              checked={!createNew}
-              onChange={() => setCreateNew(false)}
-            />
-            <span>Usar repositório existente</span>
-          </Label>
-          
-          {!createNew && (
-            <div className="mt-2">
-              <Select value={selectedRepo} onValueChange={setSelectedRepo}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um repositório" />
-                </SelectTrigger>
-                <SelectContent>
-                  {repositories.map((repo) => (
-                    <SelectItem key={repo.id} value={repo.full_name}>
-                      {repo.full_name} {repo.private && '(privado)'}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-        </div>
-        
-        <div>
-          <Label className="flex items-center space-x-2">
-            <input
-              type="radio"
-              checked={createNew}
-              onChange={() => setCreateNew(true)}
-            />
-            <span>Criar novo repositório</span>
-          </Label>
-          
-          {createNew && (
-            <div className="mt-2">
+        {step === 'auth' && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="token">Personal Access Token</Label>
               <Input
-                value={newRepoName}
-                onChange={(e) => setNewRepoName(e.target.value)}
-                placeholder="nome-do-repositorio"
+                id="token"
+                type="password"
+                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+              />
+              <p className="text-sm text-gray-500">
+                Você precisa de um token com permissões de 'repo' e 'user'. 
+                <a 
+                  href="https://github.com/settings/tokens" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline ml-1 inline-flex items-center"
+                >
+                  Criar token <ExternalLink className="h-3 w-3 ml-1" />
+                </a>
+              </p>
+            </div>
+            
+            <Button onClick={handleAuth} disabled={isLoading} className="w-full">
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Github className="h-4 w-4 mr-2" />
+              )}
+              Conectar GitHub
+            </Button>
+          </div>
+        )}
+
+        {step === 'repo' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium">Escolher Repositório</h3>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={createNewRepo ? "outline" : "default"}
+                  size="sm"
+                  onClick={() => setCreateNewRepo(false)}
+                >
+                  Existente
+                </Button>
+                <Button
+                  variant={createNewRepo ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCreateNewRepo(true)}
+                >
+                  Criar Novo
+                </Button>
+              </div>
+            </div>
+
+            {createNewRepo ? (
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="repoName">Nome do Repositório</Label>
+                  <Input
+                    id="repoName"
+                    value={newRepoName}
+                    onChange={(e) => setNewRepoName(e.target.value)}
+                    placeholder="meu-projeto"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="repoDesc">Descrição (opcional)</Label>
+                  <Input
+                    id="repoDesc"
+                    value={newRepoDescription}
+                    onChange={(e) => setNewRepoDescription(e.target.value)}
+                    placeholder="Descrição do projeto..."
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="private"
+                    checked={isPrivate}
+                    onChange={(e) => setIsPrivate(e.target.checked)}
+                  />
+                  <Label htmlFor="private">Repositório privado</Label>
+                </div>
+                <Button onClick={handleCreateRepo} disabled={isLoading} className="w-full">
+                  {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                  Criar Repositório
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Label>Selecionar Repositório</Label>
+                <Select value={selectedRepo?.id.toString()} onValueChange={(value) => {
+                  const repo = repositories.find(r => r.id.toString() === value);
+                  setSelectedRepo(repo || null);
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Escolha um repositório..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {repositories.map((repo) => (
+                      <SelectItem key={repo.id} value={repo.id.toString()}>
+                        <div className="flex items-center space-x-2">
+                          <span>{repo.name}</span>
+                          {repo.private && <span className="text-xs bg-gray-200 px-1 rounded">privado</span>}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="flex space-x-2">
+              <Button variant="outline" onClick={() => setStep('auth')} className="flex-1">
+                Voltar
+              </Button>
+              <Button 
+                onClick={handleRepoSelection} 
+                disabled={!selectedRepo && !createNewRepo}
+                className="flex-1"
+              >
+                Continuar
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {step === 'config' && selectedRepo && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Configuração Final</h3>
+            
+            <div className="space-y-2">
+              <Label>Repositório Selecionado</Label>
+              <div className="p-2 bg-gray-50 rounded border">
+                <p className="font-medium">{selectedRepo.full_name}</p>
+                <p className="text-sm text-gray-600">{selectedRepo.html_url}</p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="branch">Branch</Label>
+              <Input
+                id="branch"
+                value={branchName}
+                onChange={(e) => setBranchName(e.target.value)}
+                placeholder="main"
               />
             </div>
-          )}
-        </div>
-      </div>
-      
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={() => setStep('auth')}>
-          Voltar
-        </Button>
-        <Button 
-          onClick={createNew ? handleCreateRepository : handleConnectRepository}
-          disabled={isLoading || (!createNew && !selectedRepo) || (createNew && !newRepoName)}
-        >
-          {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-          {createNew ? 'Criar Repositório' : 'Conectar'}
-        </Button>
-      </div>
-    </div>
-  );
 
-  const renderSuccessStep = () => (
-    <div className="space-y-4 text-center">
-      <div className="text-green-600">
-        <Github className="h-12 w-12 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Integração Configurada!</h3>
-        <p className="text-sm text-gray-600">
-          Seu projeto está agora conectado ao GitHub. Você pode sincronizar o código automaticamente.
-        </p>
-      </div>
-      
-      <Button onClick={onClose} className="w-full">
-        Concluir
-      </Button>
-    </div>
-  );
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Integração com GitHub</DialogTitle>
-        </DialogHeader>
-        
-        {step === 'auth' && renderAuthStep()}
-        {step === 'repository' && renderRepositoryStep()}
-        {step === 'success' && renderSuccessStep()}
+            <div className="flex space-x-2">
+              <Button variant="outline" onClick={() => setStep('repo')} className="flex-1">
+                Voltar
+              </Button>
+              <Button onClick={handleSaveIntegration} disabled={isLoading} className="flex-1">
+                {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                Salvar Integração
+              </Button>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
