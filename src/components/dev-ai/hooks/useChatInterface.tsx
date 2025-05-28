@@ -34,14 +34,21 @@ export const useChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // FORÇAR modo incremental se há código existente
-      const hasExistingCode = generatedCode && generatedCode.trim().length > 300;
+      // SEMPRE forçar modo incremental se há código existente
+      const hasExistingCode = generatedCode && generatedCode.trim().length > 100;
+      
+      console.log('🔍 Verificação de código existente:');
+      console.log('- Tem código:', !!generatedCode);
+      console.log('- Tamanho do código:', generatedCode?.length || 0);
+      console.log('- É código significativo:', hasExistingCode);
+      
+      // Se há código existente, SEMPRE usar modo incremental
       const isIncremental = hasExistingCode ? true : determineIfIncremental(userMessage, generatedCode);
       
-      console.log('🔍 Detecção de modo:');
-      console.log('- Código existente:', hasExistingCode);
-      console.log('- Modo incremental FINAL:', isIncremental);
-      console.log('- Tamanho do código:', generatedCode?.length || 0);
+      console.log('🚨 DECISÃO FINAL:');
+      console.log('- Código existente detectado:', hasExistingCode);
+      console.log('- Modo incremental OBRIGATÓRIO:', isIncremental);
+      console.log('- Preservar layout:', isIncremental);
       
       const prompt = generatePrompt(
         userMessage,
@@ -52,20 +59,20 @@ export const useChatInterface = () => {
         input.trim()
       );
 
-      console.log('📤 Enviando prompt para DeepSeek:', prompt);
+      console.log('📤 Enviando prompt com preservação de layout:', prompt.substring(0, 300) + '...');
       
       const response = await callDeepseekApi(prompt);
       
       if (response) {
-        console.log('📥 Resposta recebida da API:', response);
+        console.log('📥 Resposta recebida da API');
         
         // Extrair código da resposta
         const extractedCode = extractCodeFromResponse(response);
         if (extractedCode && extractedCode !== response) {
-          console.log('💻 Código extraído:', extractedCode.substring(0, 200) + '...');
-          console.log('🔄 Atualizando com modo incremental:', isIncremental);
+          console.log('💻 Código extraído com sucesso');
+          console.log('🔄 Atualizando com preservação de layout - Incremental:', isIncremental);
           
-          // Usar a função incremental
+          // Usar a função incremental para preservar layout
           updateCodeIncremental(extractedCode, isIncremental);
           
           // Mostrar apenas resumo curto no chat

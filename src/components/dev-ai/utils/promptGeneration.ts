@@ -10,34 +10,33 @@ export const generatePrompt = (
   let prompt = `Você é um assistente de desenvolvimento web especializado em criar código HTML, CSS e JavaScript.`;
   
   if (currentProject && generatedCode && isIncremental) {
-    prompt += `\n\n🔥 INSTRUÇÃO CRÍTICA - MODO INCREMENTAL ATIVADO:
+    prompt += `\n\n🚨 MODO INCREMENTAL OBRIGATÓRIO - PRESERVAÇÃO TOTAL DO LAYOUT 🚨
 
 CÓDIGO EXISTENTE DO PROJETO "${currentProject.name}":
 \`\`\`html
 ${generatedCode}
 \`\`\`
 
-⚠️ ATENÇÃO MÁXIMA: O usuário quer ADICIONAR uma nova página/funcionalidade ao site existente acima.
-JAMAIS crie um novo site. JAMAIS substitua o código existente.
+⛔ REGRAS ABSOLUTAS E INVIOLÁVEIS:
+1. JAMAIS substitua ou remova o código existente
+2. JAMAIS altere o layout, design ou estrutura atual
+3. JAMAIS crie um novo documento HTML do zero
+4. PRESERVE 100% do header, sidebar, menu e estilos existentes
+5. MANTENHA todas as páginas que já existem funcionando
+6. ADICIONE APENAS a nova página/funcionalidade solicitada
+7. Use EXATAMENTE a mesma estrutura CSS e JavaScript existente
+8. Adicione a nova opção no menu de navegação atual
+9. Siga RIGOROSAMENTE o mesmo padrão visual e de código
+10. MANTENHA toda a funcionalidade JavaScript existente
 
-REGRAS OBRIGATÓRIAS:
-1. PRESERVE 100% do layout atual (header, sidebar, menu, estilos)
-2. MANTENHA todas as páginas que já existem
-3. ADICIONE APENAS a nova página solicitada
-4. Use a MESMA estrutura CSS e JavaScript
-5. Adicione a nova página ao menu de navegação existente
-6. Siga EXATAMENTE o mesmo padrão visual e de código
-7. MANTENHA toda a funcionalidade JavaScript existente
-8. NÃO remova nenhum conteúdo existente
+🎯 INSTRUÇÕES OBRIGATÓRIAS DE IMPLEMENTAÇÃO:
+- Analise o código existente para entender a estrutura de navegação
+- Identifique onde adicionar a nova página no menu atual
+- Crie o conteúdo da nova página seguindo EXATAMENTE o mesmo padrão
+- Mantenha TODA a funcionalidade existente intacta
+- Retorne APENAS o código COMPLETO com a nova página INTEGRADA ao sistema atual
 
-🎯 COMO PROCEDER OBRIGATORIAMENTE:
-1. Analise o código existente para entender a estrutura
-2. Identifique onde adicionar a nova página no menu
-3. Crie o conteúdo da nova página seguindo o mesmo padrão
-4. Mantenha TODA a funcionalidade existente
-5. Retorne o código COMPLETO com a nova página integrada
-
-IMPORTANTE: Se o código existente tem menu lateral, adicione a nova opção lá. Se tem navegação por abas, adicione uma nova aba. Sempre mantenha a consistência visual e funcional.`;
+IMPORTANTE: Se o código tem menu lateral/superior, adicione a nova opção lá. Se tem navegação por abas/botões, adicione uma nova aba. SEMPRE mantenha consistência visual e funcional com o que já existe.`;
   }
   
   if (hasImage) {
@@ -51,11 +50,13 @@ IMPORTANTE: Se o código existente tem menu lateral, adicione a nova opção lá
   }
   
   if (isIncremental && generatedCode) {
-    prompt += `\n\n⚠️ LEMBRE-SE: MODO INCREMENTAL ESTÁ ATIVO!
-- NÃO substitua o código existente
-- APENAS adicione a nova funcionalidade
-- PRESERVE todo o layout e funcionalidade atual
-- INTEGRE a nova página ao sistema existente`;
+    prompt += `\n\n🔥 LEMBRETE CRÍTICO FINAL:
+- MODO INCREMENTAL ESTÁ ATIVO E É OBRIGATÓRIO
+- NÃO substitua NADA do código existente
+- APENAS adicione/integre a nova funcionalidade
+- PRESERVE todo o layout, design e funcionalidade atual
+- INTEGRE a nova página ao sistema de navegação existente
+- O resultado deve ser o código existente + nova página integrada`;
   }
   
   prompt += `\n\nResponda com código HTML completo e funcional. Use blocos de código markdown com \`\`\`html para envolver seu código.`;
