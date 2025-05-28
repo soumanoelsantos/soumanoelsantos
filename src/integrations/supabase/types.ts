@@ -104,6 +104,59 @@ export type Database = {
           },
         ]
       }
+      dev_github_integrations: {
+        Row: {
+          auto_sync: boolean
+          branch_name: string
+          created_at: string
+          github_token: string
+          github_username: string
+          id: string
+          last_sync_at: string | null
+          project_id: string
+          repository_name: string
+          repository_url: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_sync?: boolean
+          branch_name?: string
+          created_at?: string
+          github_token: string
+          github_username: string
+          id?: string
+          last_sync_at?: string | null
+          project_id: string
+          repository_name: string
+          repository_url: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_sync?: boolean
+          branch_name?: string
+          created_at?: string
+          github_token?: string
+          github_username?: string
+          id?: string
+          last_sync_at?: string | null
+          project_id?: string
+          repository_name?: string
+          repository_url?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dev_github_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "dev_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dev_projects: {
         Row: {
           code: string | null
@@ -133,6 +186,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      dev_sync_logs: {
+        Row: {
+          commit_hash: string | null
+          created_at: string
+          files_changed: number | null
+          id: string
+          integration_id: string
+          message: string | null
+          status: string
+          sync_type: string
+        }
+        Insert: {
+          commit_hash?: string | null
+          created_at?: string
+          files_changed?: number | null
+          id?: string
+          integration_id: string
+          message?: string | null
+          status: string
+          sync_type: string
+        }
+        Update: {
+          commit_hash?: string | null
+          created_at?: string
+          files_changed?: number | null
+          id?: string
+          integration_id?: string
+          message?: string | null
+          status?: string
+          sync_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dev_sync_logs_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "dev_github_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       diagnostic_results: {
         Row: {

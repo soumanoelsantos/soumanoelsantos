@@ -1,8 +1,20 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Copy, Download, Code, ExternalLink } from 'lucide-react';
+import { 
+  Code, 
+  Monitor, 
+  Copy, 
+  Download, 
+  ExternalLink,
+  ArrowLeft,
+  ArrowRight,
+  RotateCcw
+} from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import BrowserNavigation from './BrowserNavigation';
+import GitHubSyncButton from '../github/GitHubSyncButton';
+import { useDevAI } from '../DevAIContext';
 
 interface CodePreviewHeaderProps {
   showCode: boolean;
@@ -27,43 +39,63 @@ const CodePreviewHeader: React.FC<CodePreviewHeaderProps> = ({
   onGoForward,
   onRefresh
 }) => {
+  const { currentProject, generatedCode } = useDevAI();
+
   return (
-    <div className="p-3 border-b border-gray-200 bg-white">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center space-x-3">
-          <h2 className="text-sm font-semibold text-gray-900">Preview</h2>
+    <div className="flex-shrink-0 p-3 border-b border-gray-200 bg-white">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
           <Button
-            variant={showCode ? 'default' : 'outline'}
-            size="sm"
             onClick={onToggleView}
-            className="h-7 px-2 text-xs"
+            variant={showCode ? "default" : "outline"}
+            size="sm"
           >
-            <Code className="h-3 w-3 mr-1" />
-            {showCode ? 'Preview' : 'Código'}
+            <Code className="h-4 w-4 mr-2" />
+            Código
+          </Button>
+          
+          <Button
+            onClick={onToggleView}
+            variant={!showCode ? "default" : "outline"}
+            size="sm"
+          >
+            <Monitor className="h-4 w-4 mr-2" />
+            Preview
           </Button>
         </div>
-        
-        <div className="flex space-x-1">
-          <Button variant="outline" size="sm" onClick={onOpenInNewTab} className="h-7 px-2">
-            <ExternalLink className="h-3 w-3" />
+
+        <div className="flex items-center space-x-2">
+          {/* Integração GitHub */}
+          {currentProject && (
+            <GitHubSyncButton
+              projectId={currentProject.id}
+              projectName={currentProject.name}
+              code={generatedCode}
+            />
+          )}
+          
+          {!showCode && (
+            <BrowserNavigation
+              currentUrl={currentUrl}
+              onGoBack={onGoBack}
+              onGoForward={onGoForward}
+              onRefresh={onRefresh}
+            />
+          )}
+          
+          <Button onClick={onCopy} variant="outline" size="sm">
+            <Copy className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={onCopy} className="h-7 px-2">
-            <Copy className="h-3 w-3" />
+          
+          <Button onClick={onDownload} variant="outline" size="sm">
+            <Download className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={onDownload} className="h-7 px-2">
-            <Download className="h-3 w-3" />
+          
+          <Button onClick={onOpenInNewTab} variant="outline" size="sm">
+            <ExternalLink className="h-4 w-4" />
           </Button>
         </div>
       </div>
-
-      {!showCode && (
-        <BrowserNavigation
-          currentUrl={currentUrl}
-          onGoBack={onGoBack}
-          onGoForward={onGoForward}
-          onRefresh={onRefresh}
-        />
-      )}
     </div>
   );
 };
