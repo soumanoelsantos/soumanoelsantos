@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Copy, Download, Code, RefreshCw, ChevronLeft, ChevronRight, Globe } from 'lucide-react';
+import { Copy, Download, Code, RefreshCw, ChevronLeft, ChevronRight, Globe, ExternalLink } from 'lucide-react';
 import { useDevAI } from './DevAIContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -35,6 +35,34 @@ const CodePreview = () => {
       title: "Download iniciado!",
       description: "O arquivo foi baixado com sucesso.",
     });
+  };
+
+  const openInNewWindow = () => {
+    const previewHtml = getPreviewHtml();
+    if (!previewHtml) {
+      toast({
+        title: "Erro",
+        description: "Nenhum código para visualizar.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    if (newWindow) {
+      newWindow.document.write(previewHtml);
+      newWindow.document.close();
+      toast({
+        title: "Nova janela aberta!",
+        description: "O preview foi aberto em uma nova janela.",
+      });
+    } else {
+      toast({
+        title: "Erro",
+        description: "Não foi possível abrir uma nova janela. Verifique se o bloqueador de pop-ups está desabilitado.",
+        variant: "destructive"
+      });
+    }
   };
 
   const refreshPreview = () => {
@@ -122,6 +150,9 @@ const CodePreview = () => {
           </div>
           
           <div className="flex space-x-1">
+            <Button variant="outline" size="sm" onClick={openInNewWindow} className="h-7 px-2">
+              <ExternalLink className="h-3 w-3" />
+            </Button>
             <Button variant="outline" size="sm" onClick={copyToClipboard} className="h-7 px-2">
               <Copy className="h-3 w-3" />
             </Button>
