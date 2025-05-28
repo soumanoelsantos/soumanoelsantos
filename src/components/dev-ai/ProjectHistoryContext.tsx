@@ -23,7 +23,15 @@ export const ProjectHistoryProvider: React.FC<ProjectHistoryProviderProps> = ({ 
   const { setGeneratedCode, currentProject } = useDevAI();
 
   const addVersion = (code: string, message: string, userMessage?: string) => {
-    if (!currentProject) return;
+    if (!currentProject) {
+      console.warn('⚠️ Tentativa de adicionar versão sem projeto ativo');
+      return;
+    }
+
+    console.log('📝 Adicionando nova versão...');
+    console.log('- Projeto:', currentProject.name);
+    console.log('- Mensagem:', message);
+    console.log('- Código (primeiros 100 chars):', code.substring(0, 100));
 
     const newVersion: ProjectVersion = {
       id: Date.now().toString(),
@@ -34,10 +42,15 @@ export const ProjectHistoryProvider: React.FC<ProjectHistoryProviderProps> = ({ 
       userMessage
     };
 
-    setVersions(prev => [...prev, newVersion]);
+    setVersions(prev => {
+      const updated = [...prev, newVersion];
+      console.log('📊 Versões após adicionar:', updated.length);
+      return updated;
+    });
+    
     setCurrentVersion(newVersion.version);
     
-    console.log(`📝 Nova versão adicionada: v${newVersion.version} - ${message}`);
+    console.log(`✅ Nova versão adicionada: v${newVersion.version} - ${message}`);
   };
 
   const revertToVersion = (version: number) => {
@@ -55,6 +68,14 @@ export const ProjectHistoryProvider: React.FC<ProjectHistoryProviderProps> = ({ 
   const getVersionByNumber = (version: number) => {
     return versions.find(v => v.version === version);
   };
+
+  // Debug: Log sempre que versions mudar
+  React.useEffect(() => {
+    console.log('🔄 Versões atualizadas:', versions.length);
+    versions.forEach((v, i) => {
+      console.log(`  v${v.version}: ${v.message} (${v.timestamp.toLocaleTimeString()})`);
+    });
+  }, [versions]);
 
   return (
     <ProjectHistoryContext.Provider value={{

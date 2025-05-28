@@ -77,9 +77,11 @@ export const useChatInterface = () => {
           // Usar a função incremental para preservar layout
           updateCodeIncremental(extractedCode, isIncremental);
           
-          // Salvar versão no histórico
+          // ADICIONAR VERSÃO NO HISTÓRICO - IMPORTANTE!
+          console.log('📝 Salvando versão no histórico...');
           const summary = createShortSummary(response);
           addVersion(extractedCode, summary, userMessage);
+          console.log('✅ Versão salva no histórico');
           
           // Mostrar apenas resumo curto no chat
           addMessage(summary, 'assistant');

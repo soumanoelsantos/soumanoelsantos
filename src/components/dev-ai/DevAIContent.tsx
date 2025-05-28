@@ -15,8 +15,16 @@ const DevAIContent = () => {
   };
 
   const toggleHistory = () => {
+    console.log('🔄 Toggling history panel:', !historyOpen);
     setHistoryOpen(!historyOpen);
   };
+
+  // Debug: Log do estado atual
+  React.useEffect(() => {
+    console.log('🎛️ DevAIContent - Estado dos painéis:');
+    console.log('- Sidebar aberta:', sidebarOpen);
+    console.log('- Histórico aberto:', historyOpen);
+  }, [sidebarOpen, historyOpen]);
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
