@@ -6,12 +6,18 @@ export class DevAIService {
   // Projetos
   static async createProject(data: CreateProjectData): Promise<DevProject | null> {
     try {
+      const { data: user } = await supabase.auth.getUser();
+      
+      if (!user.user) {
+        throw new Error('Usuário não autenticado');
+      }
+
       const { data: project, error } = await supabase
         .from('dev_projects')
         .insert({
           name: data.name,
           description: data.description,
-          user_id: (await supabase.auth.getUser()).data.user?.id
+          user_id: user.user.id
         })
         .select()
         .single();
@@ -85,9 +91,35 @@ export class DevAIService {
     }
   }
 
+  // Função auxiliar para serializar mensagens para o banco
+  private static serializeMessagesForDB(messages: DevMessage[]) {
+    return messages.map(msg => ({
+      id: msg.id,
+      type: msg.type,
+      content: msg.content,
+      timestamp: msg.timestamp.toISOString(),
+      // Não salvamos o objeto File, apenas indicamos se tinha imagem
+      hasImage: !!msg.image
+    }));
+  }
+
+  // Função auxiliar para deserializar mensagens do banco
+  private static deserializeMessagesFromDB(messages: any[]): DevMessage[] {
+    return messages.map(msg => ({
+      id: msg.id,
+      type: msg.type,
+      content: msg.content,
+      timestamp: new Date(msg.timestamp),
+      // Não recuperamos imagens do banco por enquanto
+      ...(msg.hasImage && { image: undefined })
+    }));
+  }
+
   // Conversas
   static async saveConversation(projectId: string, messages: DevMessage[]): Promise<boolean> {
     try {
+      const serializedMessages = this.serializeMessagesForDB(messages);
+      
       const { data: existing } = await supabase
         .from('dev_conversations')
         .select('id')
@@ -98,10 +130,7 @@ export class DevAIService {
         const { error } = await supabase
           .from('dev_conversations')
           .update({ 
-            messages: messages.map(msg => ({
-              ...msg,
-              timestamp: msg.timestamp.toISOString()
-            })),
+            messages: serializedMessages,
             updated_at: new Date().toISOString()
           })
           .eq('project_id', projectId);
@@ -112,10 +141,7 @@ export class DevAIService {
           .from('dev_conversations')
           .insert({
             project_id: projectId,
-            messages: messages.map(msg => ({
-              ...msg,
-              timestamp: msg.timestamp.toISOString()
-            }))
+            messages: serializedMessages
           });
 
         if (error) throw error;
@@ -140,10 +166,7 @@ export class DevAIService {
 
       if (!conversation?.messages) return [];
 
-      return (conversation.messages as any[]).map(msg => ({
-        ...msg,
-        timestamp: new Date(msg.timestamp)
-      }));
+      return this.deserializeMessagesFromDB(conversation.messages as any[]);
     } catch (error) {
       console.error('Erro ao carregar conversa:', error);
       return [];
