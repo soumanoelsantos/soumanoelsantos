@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { DevProject, CreateProjectData, DevConversation, DevMessage } from '@/types/devai';
 
@@ -100,6 +99,7 @@ export class DevAIService {
       timestamp: msg.timestamp.toISOString(),
       // Não salvamos o objeto File, apenas indicamos se tinha imagem
       hasImage: !!msg.image
+      // Note: removemos completamente a propriedade 'image' para evitar serializar o File
     }));
   }
 
