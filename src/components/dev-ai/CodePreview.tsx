@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Copy, Download, Play, Code } from 'lucide-react';
 import { useDevAI } from './DevAIContext';
 import { useToast } from '@/hooks/use-toast';
@@ -9,6 +10,7 @@ const CodePreview = () => {
   const { generatedCode } = useDevAI();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'code' | 'preview'>('code');
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedCode);
@@ -19,11 +21,11 @@ const CodePreview = () => {
   };
 
   const downloadCode = () => {
-    const blob = new Blob([generatedCode], { type: 'text/plain' });
+    const blob = new Blob([generatedCode], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'generated-code.js';
+    a.download = 'generated-code.html';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -34,6 +36,41 @@ const CodePreview = () => {
       description: "O arquivo foi baixado com sucesso.",
     });
   };
+
+  // Atualizar o preview quando o código mudar
+  useEffect(() => {
+    if (iframeRef.current && generatedCode && generatedCode !== '// Seu código aparecerá aqui...\n\nfunction exemplo() {\n  return "Olá mundo!";\n}') {
+      const iframe = iframeRef.current;
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      
+      if (doc) {
+        // Se o código contém HTML completo
+        if (generatedCode.includes('<!DOCTYPE html>') || generatedCode.includes('<html')) {
+          doc.open();
+          doc.write(generatedCode);
+          doc.close();
+        } else {
+          // Se é apenas CSS/JS, criar uma estrutura HTML básica
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="pt-BR">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Preview</title>
+            </head>
+            <body>
+              ${generatedCode}
+            </body>
+            </html>
+          `;
+          doc.open();
+          doc.write(htmlContent);
+          doc.close();
+        }
+      }
+    }
+  }, [generatedCode]);
 
   return (
     <div className="flex flex-col h-full">
@@ -74,22 +111,19 @@ const CodePreview = () => {
       
       <div className="flex-1 overflow-hidden">
         {activeTab === 'code' ? (
-          <div className="h-full">
-            <pre className="h-full overflow-auto p-4 bg-gray-900 text-green-400 font-mono text-sm">
+          <ScrollArea className="h-full">
+            <pre className="p-4 bg-gray-900 text-green-400 font-mono text-sm min-h-full">
               <code>{generatedCode}</code>
             </pre>
-          </div>
+          </ScrollArea>
         ) : (
-          <div className="h-full bg-white p-4">
-            <div className="h-full border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <Play className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">Preview funcional em desenvolvimento</p>
-                <p className="text-sm text-gray-400 mt-2">
-                  Por enquanto, copie o código e teste em seu ambiente
-                </p>
-              </div>
-            </div>
+          <div className="h-full bg-white">
+            <iframe
+              ref={iframeRef}
+              className="w-full h-full border-0"
+              title="Preview"
+              sandbox="allow-scripts allow-same-origin"
+            />
           </div>
         )}
       </div>
