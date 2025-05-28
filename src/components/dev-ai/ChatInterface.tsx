@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, User, Bot } from 'lucide-react';
+import { Send, User, Bot, CheckCircle } from 'lucide-react';
 import { useDevAI } from './DevAIContext';
 import { callDeepseekApi } from '@/utils/swot/ai/deepseekClient';
 
@@ -55,6 +55,14 @@ const ChatInterface = () => {
     return response;
   };
 
+  const removeCodeFromMessage = (message: string) => {
+    // Remove blocos de código da mensagem para exibição no chat
+    return message
+      .replace(/```[\s\S]*?```/g, '[Código gerado - veja no preview]')
+      .replace(/<!DOCTYPE html>[\s\S]*<\/html>/gi, '[Código HTML gerado - veja no preview]')
+      .trim();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -78,13 +86,19 @@ const ChatInterface = () => {
       
       if (response) {
         console.log('Resposta recebida da API:', response);
-        addMessage(response, 'assistant');
         
         // Extrair código da resposta
         const extractedCode = extractCodeFromResponse(response);
-        if (extractedCode) {
+        if (extractedCode && extractedCode !== response) {
           console.log('Código extraído e enviado para preview:', extractedCode);
           setGeneratedCode(extractedCode);
+          
+          // Adicionar mensagem sem código ao chat
+          const cleanMessage = removeCodeFromMessage(response);
+          addMessage(cleanMessage || 'Código gerado com sucesso! Veja o resultado no preview.', 'assistant');
+        } else {
+          // Se não há código, mostrar a resposta completa
+          addMessage(response, 'assistant');
         }
       } else {
         addMessage('Desculpe, houve um erro ao processar sua solicitação.', 'assistant');
@@ -124,6 +138,12 @@ const ChatInterface = () => {
                     : 'bg-gray-100 text-gray-900'
                 }`}>
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  {message.type === 'assistant' && message.content.includes('[Código') && (
+                    <div className="flex items-center mt-2 text-green-600">
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      <span className="text-xs">Código gerado no preview</span>
+                    </div>
+                  )}
                   <p className="text-xs opacity-70 mt-1">
                     {message.timestamp.toLocaleTimeString()}
                   </p>

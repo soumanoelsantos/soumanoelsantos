@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Copy, Download, Play, Code } from 'lucide-react';
@@ -9,8 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 const CodePreview = () => {
   const { generatedCode } = useDevAI();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'code' | 'preview'>('code');
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [showCode, setShowCode] = useState(false);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedCode);
@@ -86,25 +85,15 @@ const CodePreview = () => {
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h2 className="font-semibold text-gray-900">Código Gerado</h2>
-            <div className="flex space-x-1">
-              <Button
-                variant={activeTab === 'code' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setActiveTab('code')}
-              >
-                <Code className="h-4 w-4 mr-1" />
-                Código
-              </Button>
-              <Button
-                variant={activeTab === 'preview' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setActiveTab('preview')}
-              >
-                <Play className="h-4 w-4 mr-1" />
-                Preview
-              </Button>
-            </div>
+            <h2 className="font-semibold text-gray-900">Preview</h2>
+            <Button
+              variant={showCode ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setShowCode(!showCode)}
+            >
+              <Code className="h-4 w-4 mr-1" />
+              {showCode ? 'Voltar ao Preview' : 'Ver Código'}
+            </Button>
           </div>
           
           <div className="flex space-x-2">
@@ -119,7 +108,7 @@ const CodePreview = () => {
       </div>
       
       <div className="flex-1 overflow-hidden">
-        {activeTab === 'code' ? (
+        {showCode ? (
           <ScrollArea className="h-full">
             <div className="p-4">
               <pre className="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
@@ -130,7 +119,6 @@ const CodePreview = () => {
         ) : (
           <div className="h-full bg-white border">
             <iframe
-              ref={iframeRef}
               className="w-full h-full border-0"
               title="Preview"
               srcDoc={getPreviewHtml()}
