@@ -39,66 +39,60 @@ const CodePreview = () => {
 
   // Atualizar o preview quando o código mudar
   useEffect(() => {
-    if (iframeRef.current && generatedCode && activeTab === 'preview') {
+    if (iframeRef.current && generatedCode) {
       console.log('Atualizando preview com código:', generatedCode);
       
       const iframe = iframeRef.current;
-      const doc = iframe.contentDocument || iframe.contentWindow?.document;
       
-      if (doc) {
-        try {
-          // Limpar conteúdo anterior
-          doc.open();
-          
-          // Se o código contém HTML completo
-          if (generatedCode.includes('<!DOCTYPE html>') || generatedCode.includes('<html')) {
-            doc.write(generatedCode);
-          } else if (generatedCode.includes('<')) {
-            // Se contém tags HTML mas não é documento completo
-            const htmlContent = `
-              <!DOCTYPE html>
-              <html lang="pt-BR">
-              <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Preview</title>
-                <style>
-                  body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                </style>
-              </head>
-              <body>
-                ${generatedCode}
-              </body>
-              </html>
-            `;
-            doc.write(htmlContent);
-          } else {
-            // Se não é HTML, mostrar como texto
-            const textContent = `
-              <!DOCTYPE html>
-              <html lang="pt-BR">
-              <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Preview</title>
-                <style>
-                  body { margin: 20px; font-family: monospace; white-space: pre-wrap; }
-                </style>
-              </head>
-              <body>${generatedCode}</body>
-              </html>
-            `;
-            doc.write(textContent);
-          }
-          
-          doc.close();
-          console.log('Preview atualizado com sucesso');
-        } catch (error) {
-          console.error('Erro ao atualizar preview:', error);
+      // Criar um blob URL com o código HTML
+      let htmlContent = generatedCode;
+      
+      // Se o código não contém DOCTYPE, criar um documento HTML completo
+      if (!generatedCode.includes('<!DOCTYPE html>') && !generatedCode.includes('<html')) {
+        if (generatedCode.includes('<')) {
+          // Se contém tags HTML mas não é documento completo
+          htmlContent = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview</title>
+  <style>
+    body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  ${generatedCode}
+</body>
+</html>`;
+        } else {
+          // Se não é HTML, mostrar como texto
+          htmlContent = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview</title>
+  <style>
+    body { margin: 20px; font-family: monospace; white-space: pre-wrap; }
+  </style>
+</head>
+<body>${generatedCode}</body>
+</html>`;
         }
       }
+      
+      // Criar blob URL e definir como src do iframe
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      iframe.src = url;
+      
+      // Limpar o URL quando o componente for desmontado ou o código mudar
+      return () => {
+        URL.revokeObjectURL(url);
+      };
     }
-  }, [generatedCode, activeTab]);
+  }, [generatedCode]);
 
   return (
     <div className="flex flex-col h-full">
@@ -141,7 +135,7 @@ const CodePreview = () => {
         {activeTab === 'code' ? (
           <ScrollArea className="h-full">
             <div className="p-4">
-              <pre className="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded-lg overflow-x-auto">
+              <pre className="bg-gray-900 text-green-400 font-mono text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
                 <code>{generatedCode}</code>
               </pre>
             </div>
