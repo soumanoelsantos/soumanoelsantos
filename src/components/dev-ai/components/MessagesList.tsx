@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import MessageItem from './MessageItem';
 import LoadingIndicator from './LoadingIndicator';
@@ -24,20 +24,28 @@ const MessagesList: React.FC<MessagesListProps> = ({
   isLoading, 
   messagesStartRef 
 }) => {
-  // Reverse the messages array to show newest first
-  const reversedMessages = [...messages].reverse();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll para a última mensagem quando uma nova é adicionada
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4 pb-20">
+        <div className="p-4 space-y-4">
           <div ref={messagesStartRef} />
           
-          {isLoading && <LoadingIndicator />}
-
-          {reversedMessages.map((message) => (
+          {/* Mostrar mensagens na ordem cronológica normal */}
+          {messages.map((message) => (
             <MessageItem key={message.id} message={message} />
           ))}
+
+          {isLoading && <LoadingIndicator />}
+
+          {/* Referência para scroll automático */}
+          <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
     </div>

@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useDevAI } from '../DevAIContext';
 import { useErrorHandler } from './useErrorHandler';
 import { callDeepseekApi } from '@/utils/swot/ai/deepseekClient';
@@ -14,14 +14,6 @@ export const useChatInterface = () => {
   const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
   const messagesStartRef = useRef<HTMLDivElement>(null);
   const { handleError } = useErrorHandler();
-
-  const scrollToTop = () => {
-    messagesStartRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToTop();
-  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
