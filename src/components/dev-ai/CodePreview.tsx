@@ -38,12 +38,12 @@ const CodePreview = () => {
   const handleToggleView = () => {
     setShowCode(!showCode);
     if (!showCode && !selectedFile && generatedCode) {
-      setSelectedFile({ content: generatedCode, name: 'index.html' });
+      setSelectedFile({ content: generatedCode, name: 'component.tsx' });
     }
   };
 
   const handleLoad = () => {
-    setCurrentUrl('Preview Loaded');
+    setCurrentUrl('Preview Carregado');
   };
 
   const handleFileSelect = (content: string, fileName: string) => {
@@ -55,20 +55,12 @@ const CodePreview = () => {
     reportError('Erro na renderização do preview', 'code');
   };
 
+  // Iniciar com preview visual por padrão quando há código
   useEffect(() => {
-    if (generatedCode) {
-      const hasOpeningTag = generatedCode.includes('<html') || generatedCode.includes('<body') || generatedCode.includes('<div');
-      const hasClosingTag = generatedCode.includes('</html>') || generatedCode.includes('</body>') || generatedCode.includes('</div>');
-      
-      if (!hasOpeningTag || !hasClosingTag) {
-        reportError('Código HTML pode estar incompleto ou malformado', 'code');
-      }
-      
-      if (generatedCode.includes('undefined') && generatedCode.includes('function')) {
-        reportError('Possível erro de JavaScript detectado no código', 'code');
-      }
+    if (generatedCode && showCode) {
+      setShowCode(false);
     }
-  }, [generatedCode, reportError]);
+  }, [generatedCode]);
 
   return (
     <div className="flex flex-col h-full bg-white">
