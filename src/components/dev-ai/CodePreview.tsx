@@ -14,6 +14,7 @@ const CodePreview = () => {
   const { generatedCode } = useDevAI();
   const [selectedFile, setSelectedFile] = useState<{ content: string; name: string } | null>(null);
   const [showCode, setShowCode] = useState(false);
+  
   const {
     currentUrl,
     setCurrentUrl,
@@ -55,12 +56,11 @@ const CodePreview = () => {
     reportError('Erro na renderização do preview', 'code');
   };
 
-  // Mostrar preview visual por padrão
-  useEffect(() => {
-    if (!generatedCode) {
-      setShowCode(false);
-    }
-  }, [generatedCode]);
+  console.log('CodePreview estado:', {
+    showCode,
+    generatedCode: !!generatedCode,
+    selectedFile: !!selectedFile
+  });
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -106,19 +106,21 @@ const CodePreview = () => {
             </div>
           </div>
         ) : (
-          // Mostrar preview visual - se há código gerado, usar iframe, senão mostrar componente diretamente
-          generatedCode ? (
-            <PreviewFrame
-              iframeRef={iframeRef}
-              previewHtml={getPreviewHtml()}
-              onLoad={handleLoad}
-              onError={handleIframeError}
-            />
-          ) : (
-            <div className="w-full h-full overflow-auto">
-              <SimpleWebsite />
-            </div>
-          )
+          // Mostrar preview visual
+          <div className="w-full h-full">
+            {generatedCode ? (
+              <PreviewFrame
+                iframeRef={iframeRef}
+                previewHtml={getPreviewHtml()}
+                onLoad={handleLoad}
+                onError={handleIframeError}
+              />
+            ) : (
+              <div className="w-full h-full overflow-auto bg-white">
+                <SimpleWebsite />
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -6,7 +6,6 @@ import { useNewTabOpen } from './useNewTabOpen';
 import { usePreviewRefresh } from './usePreviewRefresh';
 
 export const useCodePreview = (generatedCode: string) => {
-  const [showCode, setShowCode] = useState(true);
   const [currentUrl, setCurrentUrl] = useState('React Code');
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -29,14 +28,25 @@ export const useCodePreview = (generatedCode: string) => {
 
   const refreshPreview = () => {
     refresh();
+    // Recarregar iframe se existir
+    if (iframeRef.current) {
+      const iframe = iframeRef.current;
+      const src = iframe.src;
+      iframe.src = '';
+      iframe.src = src;
+    }
   };
 
   const goBack = () => {
-    // Não aplicável para visualização de código
+    if (iframeRef.current?.contentWindow) {
+      iframeRef.current.contentWindow.history.back();
+    }
   };
 
   const goForward = () => {
-    // Não aplicável para visualização de código
+    if (iframeRef.current?.contentWindow) {
+      iframeRef.current.contentWindow.history.forward();
+    }
   };
 
   const getPreviewHtml = () => {
@@ -44,8 +54,6 @@ export const useCodePreview = (generatedCode: string) => {
   };
 
   return {
-    showCode: true,
-    setShowCode,
     currentUrl,
     setCurrentUrl,
     iframeRef,
