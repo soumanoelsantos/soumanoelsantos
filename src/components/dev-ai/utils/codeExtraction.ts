@@ -3,119 +3,105 @@ export const extractCodeFromResponse = (response: string) => {
   console.log('🔍 Iniciando extração de código da resposta...');
   console.log('📄 Resposta recebida (primeiros 500 chars):', response.substring(0, 500));
   
-  // 1. Procurar por blocos de código HTML explícitos
-  const htmlBlockMatch = response.match(/```html\s*([\s\S]*?)```/i);
-  if (htmlBlockMatch && htmlBlockMatch[1].trim()) {
-    console.log('✅ Código HTML encontrado em bloco explícito');
-    const code = htmlBlockMatch[1].trim();
-    console.log('📏 Tamanho do código extraído:', code.length);
-    return code;
-  }
-
-  // 2. Procurar por blocos de código genéricos que contenham HTML
-  const genericCodeMatch = response.match(/```[a-zA-Z]*\s*([\s\S]*?)```/);
-  if (genericCodeMatch && genericCodeMatch[1].includes('<') && genericCodeMatch[1].includes('>')) {
-    console.log('✅ Código HTML encontrado em bloco genérico');
-    const code = genericCodeMatch[1].trim();
-    console.log('📏 Tamanho do código extraído:', code.length);
-    return code;
-  }
-
-  // 3. Procurar por documento HTML completo no texto
-  const docHtmlMatch = response.match(/<!DOCTYPE html>[\s\S]*?<\/html>/i);
-  if (docHtmlMatch) {
-    console.log('✅ Documento HTML completo encontrado no texto');
-    const code = docHtmlMatch[0].trim();
-    console.log('📏 Tamanho do código extraído:', code.length);
-    return code;
-  }
-
-  // 4. Procurar por tag HTML de abertura até fechamento
-  const htmlTagMatch = response.match(/<html[^>]*>[\s\S]*?<\/html>/i);
-  if (htmlTagMatch) {
-    console.log('✅ Tag HTML completa encontrada');
-    const code = htmlTagMatch[0].trim();
-    console.log('📏 Tamanho do código extraído:', code.length);
-    return code;
-  }
-
-  // 5. Procurar por estruturas HTML significativas - MELHORADO
-  const structureMatches = [
-    /<body[^>]*>[\s\S]*?<\/body>/i,
-    /<div[^>]*class="[^"]*container[^"]*"[^>]*>[\s\S]*?<\/div>/i,
-    /<div[^>]*class="[^"]*page[^"]*"[^>]*>[\s\S]*?<\/div>/i,
-    /<section[^>]*>[\s\S]*?<\/section>/i,
-    /<main[^>]*>[\s\S]*?<\/main>/i,
-    /<article[^>]*>[\s\S]*?<\/article>/i,
-    /<form[^>]*>[\s\S]*?<\/form>/i,
-    /<div[^>]*id="[^"]*"[^>]*>[\s\S]*?<\/div>/i,
-    // Novo: buscar por divs com classes específicas de páginas
-    /<div[^>]*class="[^"]*nav-tab[^"]*"[^>]*>[^<]*contato[^<]*<\/div>[\s\S]*?<div[^>]*class="[^"]*page-content[^"]*"[^>]*>[\s\S]*?<\/div>/i
-  ];
-
-  for (const pattern of structureMatches) {
-    const match = response.match(pattern);
-    if (match) {
-      console.log('✅ Estrutura HTML significativa encontrada:', pattern.toString().substring(0, 50) + '...');
-      let code = match[0].trim();
-      
-      // Se encontrou apenas uma div de página, tentar extrair contexto maior
-      if (code.includes('page-content') && !code.includes('<!DOCTYPE')) {
-        console.log('🔄 Tentando extrair contexto maior para página...');
-        // Procurar por todo o contexto ao redor
-        const contextMatch = response.match(/(<div[^>]*class="[^"]*container[^"]*"[^>]*>[\s\S]*?<\/div>\s*<\/div>|<html[\s\S]*?<\/html>|<!DOCTYPE[\s\S]*?<\/html>)/i);
-        if (contextMatch) {
-          code = contextMatch[0].trim();
-          console.log('✅ Contexto maior encontrado, tamanho:', code.length);
-        }
-      }
-      
+  // 1. Procurar por blocos de código TSX/JSX explícitos
+  const tsxBlockMatch = response.match(/```(?:tsx|jsx|typescript|react)\s*([\s\S]*?)```/i);
+  if (tsxBlockMatch && tsxBlockMatch[1].trim()) {
+    const code = tsxBlockMatch[1].trim();
+    if (isValidReactCode(code)) {
+      console.log('✅ Código React TSX válido encontrado');
       console.log('📏 Tamanho do código extraído:', code.length);
       return code;
     }
   }
 
-  // 6. Procurar por qualquer div com conteúdo substancial
-  const substantialDivMatch = response.match(/<div[^>]*>[\s\S]{100,}?<\/div>/s);
-  if (substantialDivMatch) {
-    console.log('✅ Div substancial encontrada');
-    const code = substantialDivMatch[0].trim();
-    console.log('📏 Tamanho do código extraído:', code.length);
-    return code;
+  // 2. Procurar por blocos de código genéricos que sejam React válidos
+  const genericCodeMatch = response.match(/```[a-zA-Z]*\s*([\s\S]*?)```/);
+  if (genericCodeMatch && genericCodeMatch[1].trim()) {
+    const code = genericCodeMatch[1].trim();
+    if (isValidReactCode(code)) {
+      console.log('✅ Código React válido encontrado em bloco genérico');
+      console.log('📏 Tamanho do código extraído:', code.length);
+      return code;
+    }
   }
 
-  // 7. Se contém HTML mas não conseguiu extrair, tentar buscar seções menores
-  if (response.includes('<') && response.includes('>')) {
-    console.log('⚠️ HTML detectado mas não conseguiu extrair padrão específico');
-    
-    // Tentar extrair linha por linha procurando por HTML
-    const lines = response.split('\n');
-    let htmlLines = [];
-    let inHtmlBlock = false;
-    
-    for (const line of lines) {
-      if (line.includes('<') && line.includes('>')) {
-        inHtmlBlock = true;
-        htmlLines.push(line);
-      } else if (inHtmlBlock && line.trim() === '') {
-        htmlLines.push(line);
-      } else if (inHtmlBlock && !line.includes('<')) {
-        // Pode ser fim do bloco HTML
-        break;
+  // 3. Procurar por componentes React válidos no texto
+  const reactComponentMatches = [
+    // Componente React funcional completo
+    /import\s+React[^;]*;[\s\S]*?export\s+default\s+\w+;/,
+    // Componente React com função
+    /const\s+\w+\s*=\s*\(\s*\)\s*=>\s*\{[\s\S]*?\};[\s\S]*?export\s+default\s+\w+;/,
+    // Arquivo de página React
+    /import\s+React[^;]*;[\s\S]*?const\s+\w+\s*=[\s\S]*?export\s+default\s+\w+;/
+  ];
+
+  for (const pattern of reactComponentMatches) {
+    const match = response.match(pattern);
+    if (match) {
+      const code = match[0].trim();
+      if (isValidReactCode(code)) {
+        console.log('✅ Componente React válido encontrado');
+        console.log('📏 Tamanho do código extraído:', code.length);
+        return code;
       }
     }
-    
-    if (htmlLines.length > 0) {
-      const extractedCode = htmlLines.join('\n').trim();
-      console.log('✅ HTML extraído linha por linha, tamanho:', extractedCode.length);
-      return extractedCode;
-    }
-    
-    console.log('🔄 Tentando extrair toda a resposta como código');
-    return response.trim();
   }
 
-  console.log('❌ Nenhum código HTML encontrado na resposta');
-  console.log('📝 Resposta completa analisada:', response);
+  // 4. Verificar se há código que pareça React mas esteja malformado
+  if (response.includes('import React') || response.includes('export default')) {
+    console.log('⚠️ Código React detectado mas malformado - rejeitando');
+    console.log('📝 Conteúdo problemático:', response.substring(0, 1000));
+    return null;
+  }
+
+  console.log('❌ Nenhum código React válido encontrado na resposta');
   return null;
+};
+
+// Função para validar se o código é React válido
+const isValidReactCode = (code: string): boolean => {
+  console.log('🔍 Validando código React...');
+  
+  // Verificações básicas de sintaxe React
+  const hasValidImports = code.includes('import React') || code.includes('import');
+  const hasExportDefault = code.includes('export default');
+  const hasValidComponent = /const\s+\w+\s*=|function\s+\w+/.test(code);
+  
+  // Verificar se não tem sintaxe malformada
+  const hasInvalidSyntax = [
+    /\{\s*\/\*[\s\S]*?\*\/\s*\}/,  // Comentários malformados no JSX
+    /\{\s*title:\s*"[^"]*",[\s\S]*?\}/,  // Objetos JavaScript soltos no JSX
+    /\)\s*;\s*\}\s*;\s*export/,  // Sintaxe quebrada
+    /\{\s*item\.\w+\s*\}/,  // Variáveis não declaradas
+  ].some(pattern => pattern.test(code));
+
+  // Verificar se tem estrutura JSX básica válida
+  const hasValidJSX = /<[A-Z][\w]*/.test(code) || /<div|<section|<main|<header/.test(code);
+  
+  // Verificar se não tem HTML puro (deve ser JSX/React)
+  const isPureHTML = code.includes('<!DOCTYPE html>') || 
+                     (code.includes('<html') && !code.includes('import'));
+
+  const isValid = hasValidImports && 
+                  hasExportDefault && 
+                  hasValidComponent && 
+                  hasValidJSX && 
+                  !hasInvalidSyntax && 
+                  !isPureHTML;
+
+  console.log('📊 Validação de código React:');
+  console.log('- Imports válidos:', hasValidImports);
+  console.log('- Export default:', hasExportDefault);
+  console.log('- Componente válido:', hasValidComponent);
+  console.log('- JSX válido:', hasValidJSX);
+  console.log('- Sem sintaxe inválida:', !hasInvalidSyntax);
+  console.log('- Não é HTML puro:', !isPureHTML);
+  console.log('- Resultado final:', isValid);
+
+  if (!isValid) {
+    console.log('❌ Código rejeitado - não atende aos critérios de React válido');
+    console.log('🔍 Primeiros 500 chars do código rejeitado:', code.substring(0, 500));
+  }
+
+  return isValid;
 };

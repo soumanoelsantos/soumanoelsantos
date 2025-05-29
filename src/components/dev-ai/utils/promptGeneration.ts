@@ -25,7 +25,15 @@ export const generatePrompt = (
 - Configure rota no App.tsx
 - Use export default para o componente principal
 - Implemente props tipadas com TypeScript interfaces
-- Use Tailwind CSS para estilos responsivos`;
+- Use Tailwind CSS para estilos responsivos
+
+⛔ SINTAXE PROIBIDA - JAMAIS USE:
+- Comentários JSX malformados: {/* texto */}
+- Objetos JavaScript soltos no JSX: {title: "texto", description: "..."}
+- Código HTML puro sem imports React
+- Sintaxe quebrada com ); }; export
+- Variáveis não declaradas no JSX
+- Qualquer código que não seja React/TypeScript válido`;
   
   if (currentProject && generatedCode && isIncremental) {
     prompt += `\n\n🚨 MODO INCREMENTAL OBRIGATÓRIO - PRESERVAÇÃO TOTAL DO LAYOUT 🚨
@@ -78,11 +86,47 @@ IMPORTANTE: Se o código tem menu lateral/superior, adicione a nova opção lá.
 - Use apenas componentes que existem no projeto
 
 🔧 VALIDAÇÃO DE CÓDIGO OBRIGATÓRIA:
-- Verifique se todas as tags HTML estão fechadas corretamente
-- Confirme que todos os imports são válidos
-- Garanta que o JSX está bem formado
+- Verifique se todas as tags JSX estão fechadas corretamente
+- Confirme que todos os imports são válidos e necessários
+- Garanta que o JSX está bem formado e sem objetos soltos
 - Use apenas propriedades CSS válidas do Tailwind
-- Implemente error boundaries quando necessário`;
+- NÃO use comentários JSX malformados ou objetos no JSX
+- SEMPRE declare variáveis antes de usar no JSX
+
+✅ EXEMPLO DE CÓDIGO VÁLIDO:
+\`\`\`tsx
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const LandingPage = () => {
+  const features = [
+    { title: "Feature 1", description: "Descrição 1" },
+    { title: "Feature 2", description: "Descrição 2" }
+  ];
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <header className="py-16 text-center">
+        <h1 className="text-4xl font-bold mb-4">Título Principal</h1>
+        <p className="text-xl text-gray-300">Subtítulo</p>
+      </header>
+      
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          {features.map((feature, index) => (
+            <div key={index} className="mb-8">
+              <h3 className="text-2xl font-semibold">{feature.title}</h3>
+              <p className="text-gray-400">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default LandingPage;
+\`\`\``;
   
   if (isIncremental && generatedCode) {
     prompt += `\n\n🔥 LEMBRETE CRÍTICO FINAL:
@@ -94,7 +138,9 @@ IMPORTANTE: Se o código tem menu lateral/superior, adicione a nova opção lá.
 - O resultado deve ser o código existente + nova página integrada`;
   }
   
-  prompt += `\n\nResponda SEMPRE com páginas React separadas e roteamento adequado. Use blocos de código markdown com \`\`\`tsx para envolver seu código.`;
+  prompt += `\n\nResponda SEMPRE com páginas React separadas e roteamento adequado. Use blocos de código markdown com \`\`\`tsx para envolver seu código VÁLIDO.
+
+🚨 CRÍTICO: JAMAIS retorne código com sintaxe malformada, objetos soltos no JSX, ou comentários quebrados. Sempre valide que seu código é React/TypeScript 100% funcional antes de enviar.`;
 
   return prompt;
 };
