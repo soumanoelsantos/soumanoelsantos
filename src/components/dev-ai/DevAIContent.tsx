@@ -1,8 +1,6 @@
 
 import React, { useState } from 'react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
 import ProjectsSidebar from './ProjectsSidebar';
 import ChatInterface from './ChatInterface';
 import CodePreview from './CodePreview';
@@ -16,20 +14,6 @@ const DevAIContent = () => {
 
   return (
     <div className="h-screen w-full flex bg-gray-50">
-      {/* Botão para abrir sidebar quando fechada - movido para o lado direito */}
-      {!isSidebarOpen && (
-        <div className="fixed top-4 right-4 z-50">
-          <Button
-            onClick={toggleSidebar}
-            variant="outline"
-            size="sm"
-            className="bg-white shadow-md hover:shadow-lg"
-          >
-            <Menu className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-
       <ResizablePanelGroup direction="horizontal" className="w-full">
         {isSidebarOpen && (
           <>
@@ -72,7 +56,10 @@ const DevAIContent = () => {
           maxSize={60}
           className="min-w-0"
         >
-          <ChatInterface />
+          <ChatInterface 
+            isSidebarOpen={isSidebarOpen}
+            onToggleSidebar={toggleSidebar}
+          />
         </ResizablePanel>
         
         <ResizableHandle 
