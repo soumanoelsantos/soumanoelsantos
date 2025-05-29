@@ -37,8 +37,10 @@ const MessagesList: React.FC<MessagesListProps> = ({
         const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
         
         // Só faz scroll automático se o usuário estiver perto do final
-        if (isNearBottom) {
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (isNearBottom || messages.length === 1) {
+          setTimeout(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
         }
       }
     }
@@ -46,8 +48,8 @@ const MessagesList: React.FC<MessagesListProps> = ({
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      <ScrollArea ref={scrollAreaRef} className="flex-1">
-        <div className="p-4 space-y-4">
+      <ScrollArea ref={scrollAreaRef} className="flex-1 h-full">
+        <div className="p-4 space-y-4 min-h-full">
           <div ref={messagesStartRef} />
           
           {/* Indicador de início do histórico */}
@@ -67,7 +69,7 @@ const MessagesList: React.FC<MessagesListProps> = ({
           {isLoading && <LoadingIndicator />}
 
           {/* Referência para scroll automático */}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} className="h-1" />
         </div>
       </ScrollArea>
     </div>
