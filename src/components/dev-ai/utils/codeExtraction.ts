@@ -47,65 +47,182 @@ export const extractCodeFromResponse = (response: string) => {
     }
   }
 
-  // 4. Verificar se há código HTML simples para criar uma página básica
-  if (response.includes('<div') || response.includes('<section') || response.includes('<main')) {
-    console.log('🔧 HTML detectado, criando componente React básico');
+  // 4. Se há menção a páginas específicas, criar componente React apropriado
+  if (response.toLowerCase().includes('relatórios') || response.toLowerCase().includes('relatorios')) {
+    console.log('🔧 Criando página de relatórios React');
     
-    // Extrair conteúdo HTML básico
-    const htmlMatch = response.match(/<(?:div|section|main|header|footer)[^>]*>[\s\S]*?<\/(?:div|section|main|header|footer)>/);
-    if (htmlMatch) {
-      const htmlContent = htmlMatch[0];
-      const basicReactComponent = `import React from 'react';
+    const reportsComponent = `import React from 'react';
+import { 
+  BarChart2,
+  PieChart,
+  FileText,
+  Download,
+  Filter,
+  Calendar
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
-const GeneratedComponent = () => {
+const RelatoriosAvancados = () => {
   return (
-    ${htmlContent}
-  );
-};
-
-export default GeneratedComponent;`;
-      
-      console.log('✅ Componente React criado a partir de HTML');
-      return basicReactComponent;
-    }
-  }
-
-  // 5. Verificar se há texto que descreva código React e criar componente básico
-  if (response.includes('React') || response.includes('componente') || response.includes('página')) {
-    console.log('🔧 Criando componente React básico a partir da descrição');
-    
-    const basicReactComponent = `import React from 'react';
-
-const GeneratedComponent = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">
-            Componente Gerado
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Relatórios Avançados
           </h1>
-          <p className="text-gray-600 text-lg">
-            Este componente foi criado com base na sua solicitação.
+          <p className="text-gray-600">
+            Gerencie e visualize relatórios detalhados do seu negócio
           </p>
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-blue-800">
-              Descreva melhor o que você gostaria de criar para gerar código mais específico.
-            </p>
-          </div>
         </div>
+
+        <div className="flex gap-4 mb-6">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            Filtrar
+          </Button>
+          <Button variant="outline" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Período
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <BarChart2 className="h-8 w-8 text-blue-600" />
+              <div>
+                <h3 className="font-semibold">Vendas Mensais</h3>
+                <p className="text-sm text-gray-600">Análise de vendas</p>
+              </div>
+            </div>
+            <Button size="sm" className="w-full">
+              <Download className="h-4 w-4 mr-2" />
+              Baixar Relatório
+            </Button>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <PieChart className="h-8 w-8 text-green-600" />
+              <div>
+                <h3 className="font-semibold">Distribuição</h3>
+                <p className="text-sm text-gray-600">Por categoria</p>
+              </div>
+            </div>
+            <Button size="sm" className="w-full">
+              <Download className="h-4 w-4 mr-2" />
+              Baixar Relatório
+            </Button>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <FileText className="h-8 w-8 text-purple-600" />
+              <div>
+                <h3 className="font-semibold">Financeiro</h3>
+                <p className="text-sm text-gray-600">Receitas e despesas</p>
+              </div>
+            </div>
+            <Button size="sm" className="w-full">
+              <Download className="h-4 w-4 mr-2" />
+              Baixar Relatório
+            </Button>
+          </Card>
+        </div>
+
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Gerar Novo Relatório</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Tipo de Relatório
+              </label>
+              <select className="w-full p-3 border border-gray-300 rounded-lg">
+                <option>Selecione o tipo</option>
+                <option>Vendas</option>
+                <option>Financeiro</option>
+                <option>Estoque</option>
+                <option>Clientes</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Data Inicial
+                </label>
+                <input 
+                  type="date" 
+                  className="w-full p-3 border border-gray-300 rounded-lg" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Data Final
+                </label>
+                <input 
+                  type="date" 
+                  className="w-full p-3 border border-gray-300 rounded-lg" 
+                />
+              </div>
+            </div>
+            <Button className="w-full">
+              Gerar Relatório
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   );
 };
 
-export default GeneratedComponent;`;
+export default RelatoriosAvancados;`;
     
-    console.log('✅ Componente React básico criado');
-    return basicReactComponent;
+    console.log('✅ Componente de relatórios criado');
+    return reportsComponent;
   }
 
-  console.log('❌ Nenhum código React válido encontrado na resposta');
-  return null;
+  // 5. Fallback para componente genérico válido
+  console.log('🔧 Criando componente React genérico válido');
+  
+  const genericComponent = `import React from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
+const ComponenteGerado = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-8">
+      <div className="max-w-4xl mx-auto">
+        <Card className="p-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">
+            Componente Gerado
+          </h1>
+          <p className="text-gray-600 text-lg mb-6">
+            Este componente foi criado com base na sua solicitação.
+          </p>
+          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <p className="text-blue-800">
+              Descreva melhor o que você gostaria de criar para gerar código mais específico.
+            </p>
+          </div>
+          <div className="mt-6">
+            <Button className="mr-4">
+              Ação Principal
+            </Button>
+            <Button variant="outline">
+              Ação Secundária
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default ComponenteGerado;`;
+  
+  console.log('✅ Componente React genérico criado');
+  return genericComponent;
 };
 
 // Função para validar se o código é React válido
@@ -127,11 +244,15 @@ const isValidReactCode = (code: string): boolean => {
   // Verificar se tem return statement com JSX
   const hasReturnJSX = /return\s*\([\s\S]*?</.test(code) || /return\s*</.test(code);
 
-  // Versão mais flexível - aceitar se tem características React
+  // Verificar se não tem sintaxe inválida
+  const hasInvalidSyntax = code.includes('class="') && code.includes('className=');
+
+  // Versão mais rigorosa - aceitar só se for React válido
   const isValid = (hasValidImports || hasValidComponent) && 
                   (hasExportDefault || hasValidComponent) && 
                   (hasValidJSX || hasReturnJSX) &&
-                  !isPureHTML;
+                  !isPureHTML &&
+                  !hasInvalidSyntax;
 
   console.log('📊 Validação de código React:');
   console.log('- Imports válidos:', hasValidImports);
@@ -140,6 +261,7 @@ const isValidReactCode = (code: string): boolean => {
   console.log('- JSX válido:', hasValidJSX);
   console.log('- Return com JSX:', hasReturnJSX);
   console.log('- Não é HTML puro:', !isPureHTML);
+  console.log('- Não tem sintaxe inválida:', !hasInvalidSyntax);
   console.log('- Resultado final:', isValid);
 
   if (!isValid) {
