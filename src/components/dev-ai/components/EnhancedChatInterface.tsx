@@ -5,11 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Menu, 
-  MessageSquare, 
   Bot, 
-  Sparkles,
-  Clock,
-  Code2
+  Sparkles
 } from 'lucide-react';
 import MessagesList from './MessagesList';
 import ChatInput from './ChatInput';
@@ -27,8 +24,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   isSidebarOpen, 
   onToggleSidebar 
 }) => {
-  const { currentProject, generatedCode } = useDevAI();
-  const [showStats, setShowStats] = useState(false);
+  const { currentProject } = useDevAI();
   
   const {
     messages,
@@ -49,29 +45,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     clearError
   } = useErrorHandler();
 
-  const statsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (statsRef.current && !statsRef.current.contains(event.target as Node)) {
-        setShowStats(false);
-      }
-    };
-
-    if (showStats) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showStats]);
-
   const messageCount = messages.length;
-  const hasCode = generatedCode && generatedCode.trim().length > 0;
-  const lastMessageTime = messages.length > 0 
-    ? messages[messages.length - 1].timestamp 
-    : null;
 
   return (
     <div className="h-full flex flex-col bg-gradient-to-b from-white to-gray-50">
@@ -108,59 +82,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                   </p>
                 </div>
               </div>
-            </div>
-            
-            {/* Stats Button */}
-            <div className="relative" ref={statsRef}>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowStats(!showStats)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <MessageSquare className="h-4 w-4 mr-1" />
-                {messageCount}
-              </Button>
-              
-              {showStats && (
-                <Card className="absolute right-0 top-full mt-2 p-4 shadow-lg z-50 w-64">
-                  <h3 className="font-semibold text-sm mb-3">Estatísticas da Sessão</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-blue-500" />
-                        <span className="text-sm">Mensagens</span>
-                      </div>
-                      <Badge variant="secondary">{messageCount}</Badge>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Code2 className="h-4 w-4 text-green-500" />
-                        <span className="text-sm">Código</span>
-                      </div>
-                      <Badge variant={hasCode ? "default" : "secondary"}>
-                        {hasCode ? "Gerado" : "Vazio"}
-                      </Badge>
-                    </div>
-                    
-                    {lastMessageTime && (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-orange-500" />
-                          <span className="text-sm">Última</span>
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {lastMessageTime.toLocaleTimeString('pt-BR', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              )}
             </div>
           </div>
         </div>

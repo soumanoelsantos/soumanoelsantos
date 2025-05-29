@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { 
   Code, 
   Eye, 
@@ -29,7 +28,7 @@ import ErrorDisplay from './ErrorDisplay';
 const EnhancedCodePreview = () => {
   const { generatedCode } = useDevAI();
   const [selectedFile, setSelectedFile] = useState<{ content: string; name: string } | null>(null);
-  const [viewMode, setViewMode] = useState<'preview' | 'code' | 'split'>('preview');
+  const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [codeStatus, setCodeStatus] = useState<'valid' | 'warning' | 'error'>('valid');
 
@@ -200,18 +199,10 @@ const EnhancedCodePreview = () => {
                 <Code className="h-3 w-3 mr-1" />
                 Código
               </Button>
-              <Button
-                variant={viewMode === 'split' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('split')}
-                className="text-xs h-8"
-              >
-                Split
-              </Button>
             </div>
 
             {/* Device Toggle (only for preview) */}
-            {(viewMode === 'preview' || viewMode === 'split') && (
+            {viewMode === 'preview' && (
               <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
                 <Button
                   variant={previewDevice === 'desktop' ? 'default' : 'ghost'}
@@ -305,35 +296,6 @@ const EnhancedCodePreview = () => {
                     code={selectedFile?.content || generatedCode} 
                     fileName={selectedFile?.name}
                   />
-                </div>
-              </div>
-            )}
-
-            {viewMode === 'split' && (
-              <div className="flex h-full">
-                <div className="flex-1 border-r border-gray-200">
-                  <div className={`h-full ${getDeviceClasses()}`}>
-                    <PreviewFrame
-                      iframeRef={iframeRef}
-                      previewHtml={getPreviewHtml()}
-                      onLoad={handleLoad}
-                      onError={handleIframeError}
-                    />
-                  </div>
-                </div>
-                <div className="flex-1 flex">
-                  <div className="w-48 border-r border-gray-200 bg-gray-50">
-                    <FileStructure 
-                      onFileSelect={handleFileSelect}
-                      generatedCode={generatedCode}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <CodeDisplay 
-                      code={selectedFile?.content || generatedCode} 
-                      fileName={selectedFile?.name}
-                    />
-                  </div>
                 </div>
               </div>
             )}
