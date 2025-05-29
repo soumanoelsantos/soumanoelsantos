@@ -1,6 +1,9 @@
 
 import React from 'react';
-import { User, Bot, CheckCircle } from 'lucide-react';
+import { User, Bot, CheckCircle, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useProjectHistory } from '../ProjectHistoryContext';
+import { useDevAI } from '../DevAIContext';
 
 interface Message {
   id: string;
@@ -8,6 +11,7 @@ interface Message {
   content: string;
   timestamp: Date;
   image?: { file: File; preview: string };
+  projectState?: string; // Código do projeto no momento da mensagem
 }
 
 interface MessageItemProps {
@@ -15,6 +19,24 @@ interface MessageItemProps {
 }
 
 const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
+  const projectHistory = useProjectHistory();
+  const { setGeneratedCode } = useDevAI();
+
+  const handleRestore = () => {
+    if (message.projectState && setGeneratedCode) {
+      console.log(`🔄 Restaurando projeto para estado da mensagem: ${message.id}`);
+      console.log(`📝 Conteúdo da mensagem: ${message.content.substring(0, 50)}...`);
+      console.log(`💻 Tamanho do código a restaurar: ${message.projectState.length} caracteres`);
+      
+      setGeneratedCode(message.projectState);
+      
+      // Opcional: adicionar uma mensagem de confirmação
+      console.log('✅ Projeto restaurado com sucesso');
+    } else {
+      console.warn('⚠️ Não foi possível restaurar: estado do projeto não disponível');
+    }
+  };
+
   return (
     <div className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex max-w-[85%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start space-x-2`}>
@@ -41,6 +63,22 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
               : 'bg-gray-100 text-gray-900'
           }`}>
             <p className="text-xs whitespace-pre-wrap">{message.content}</p>
+            
+            {/* Botão de restaurar apenas para mensagens do usuário que têm estado do projeto */}
+            {message.type === 'user' && message.projectState && (
+              <div className="mt-2 pt-2 border-t border-blue-400/30">
+                <Button
+                  onClick={handleRestore}
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 px-2 py-1 text-xs text-blue-100 hover:text-blue-50 hover:bg-blue-600/50"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Restaurar
+                </Button>
+              </div>
+            )}
+            
             {message.type === 'assistant' && (
               <div className="flex items-center mt-1 text-green-600">
                 <CheckCircle className="h-3 w-3 mr-1" />

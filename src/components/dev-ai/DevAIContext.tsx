@@ -9,11 +9,12 @@ interface Message {
   content: string;
   timestamp: Date;
   image?: { file: File; preview: string };
+  projectState?: string; // Estado do projeto no momento da mensagem
 }
 
 interface DevAIContextType {
   messages: Message[];
-  addMessage: (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }) => void;
+  addMessage: (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }, projectState?: string) => void;
   generatedCode: string;
   setGeneratedCode: (code: string) => void;
   updateCodeIncremental: (code: string, isIncremental?: boolean) => void;
@@ -53,7 +54,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     timestamp: new Date()
   });
 
-  const addMessage = (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }) => {
+  const addMessage = (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }, projectState?: string) => {
     console.log('💬 Adicionando nova mensagem:', { type, content: content.substring(0, 100) });
     
     const newMessage: Message = {
@@ -61,7 +62,8 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
       type,
       content,
       timestamp: new Date(),
-      image
+      image,
+      projectState // Salvar o estado do projeto na mensagem
     };
     
     setMessages(prev => {

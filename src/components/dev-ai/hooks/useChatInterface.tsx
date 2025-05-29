@@ -7,7 +7,6 @@ import { extractCodeFromResponse } from '../utils/codeExtraction';
 import { determineIfIncremental } from '../utils/incrementalDetection';
 import { createShortSummary } from '../utils/messageProcessing';
 import { generatePrompt } from '../utils/promptGeneration';
-import { useProjectHistory } from '../ProjectHistoryContext';
 
 export const useChatInterface = () => {
   const { messages, addMessage, updateCodeIncremental, isLoading, setIsLoading, currentProject, generatedCode } = useDevAI();
@@ -15,9 +14,6 @@ export const useChatInterface = () => {
   const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
   const messagesStartRef = useRef<HTMLDivElement>(null);
   const { handleError } = useErrorHandler();
-
-  // Usar useProjectHistory de forma segura
-  const projectHistory = useProjectHistory();
 
   const scrollToTop = () => {
     messagesStartRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,7 +29,10 @@ export const useChatInterface = () => {
 
     const userMessage = input.trim() || (selectedImage ? 'Imagem enviada' : '');
     setInput('');
-    addMessage(userMessage, 'user', selectedImage || undefined);
+    
+    // Salvar o estado atual do código na mensagem do usuário
+    const currentProjectState = generatedCode || '';
+    addMessage(userMessage, 'user', selectedImage || undefined, currentProjectState);
     
     const currentImage = selectedImage;
     setSelectedImage(null);
@@ -48,7 +47,6 @@ export const useChatInterface = () => {
       console.log('- Tamanho do código:', generatedCode?.length || 0);
       console.log('- É código significativo:', hasExistingCode);
       console.log('- Projeto atual:', currentProject?.name);
-      console.log('- Contexto de histórico disponível:', !!projectHistory);
       
       // Se há código existente, SEMPRE usar modo incremental
       const isIncremental = hasExistingCode ? true : determineIfIncremental(userMessage, generatedCode);
@@ -85,22 +83,6 @@ export const useChatInterface = () => {
           
           // Usar a função incremental para preservar layout
           updateCodeIncremental(extractedCode, isIncremental);
-          
-          // GARANTIR que o histórico seja salvo - apenas se disponível
-          if (projectHistory && projectHistory.addVersion && currentProject) {
-            console.log('📝 Salvando versão no histórico...');
-            const summary = createShortSummary(response);
-            
-            try {
-              projectHistory.addVersion(extractedCode, summary, userMessage);
-              console.log('✅ Versão salva no histórico com sucesso');
-            } catch (historyError) {
-              console.error('❌ Erro ao salvar no histórico:', historyError);
-              handleError(historyError, 'code');
-            }
-          } else {
-            console.warn('⚠️ Histórico não disponível ou não configurado');
-          }
           
           // Mostrar apenas resumo curto no chat
           const summary = createShortSummary(response);
