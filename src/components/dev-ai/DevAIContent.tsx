@@ -16,9 +16,9 @@ const DevAIContent = () => {
 
   return (
     <div className="h-screen w-full flex bg-gray-50">
-      {/* Botão para abrir sidebar quando fechada */}
+      {/* Botão para abrir sidebar quando fechada - movido para o lado direito */}
       {!isSidebarOpen && (
-        <div className="fixed top-4 left-4 z-50">
+        <div className="fixed top-4 right-4 z-50">
           <Button
             onClick={toggleSidebar}
             variant="outline"
