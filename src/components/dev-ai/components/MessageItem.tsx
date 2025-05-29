@@ -30,6 +30,14 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
     ? message.content.substring(0, CHARACTER_LIMIT) + '...'
     : message.content;
 
+  console.log('📝 MessageItem debug:', {
+    messageId: message.id,
+    contentLength: message.content.length,
+    shouldShowReadMore,
+    isExpanded,
+    displayContentLength: displayContent.length
+  });
+
   const handleRestore = () => {
     if (message.projectState && setGeneratedCode) {
       console.log(`🔄 Restaurando projeto para estado da mensagem: ${message.id}`);
@@ -46,6 +54,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   };
 
   const toggleExpanded = () => {
+    console.log('🔄 Toggling expanded state:', { from: isExpanded, to: !isExpanded });
     setIsExpanded(!isExpanded);
   };
 
