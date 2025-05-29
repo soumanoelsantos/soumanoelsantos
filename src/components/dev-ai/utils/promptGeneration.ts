@@ -7,13 +7,23 @@ export const generatePrompt = (
   hasImage: boolean,
   imageInput?: string
 ): string => {
-  let prompt = `Você é um assistente de desenvolvimento web especializado em criar código HTML, CSS e JavaScript.`;
+  let prompt = `Você é um assistente de desenvolvimento web especializado em criar aplicações React com TypeScript, usando roteamento adequado e estrutura de páginas separadas.
+
+🚨 REGRAS OBRIGATÓRIAS DE ARQUITETURA:
+1. SEMPRE crie páginas React separadas (.tsx) para cada funcionalidade
+2. SEMPRE use React Router para navegação entre páginas
+3. JAMAIS crie um HTML único com múltiplas seções
+4. Cada página deve ser um componente React independente
+5. Use a estrutura de pastas: src/pages/ para páginas principais
+6. Crie componentes reutilizáveis em: src/components/
+7. Use TypeScript em todos os arquivos
+8. Implemente navegação com Link do react-router-dom`;
   
   if (currentProject && generatedCode && isIncremental) {
     prompt += `\n\n🚨 MODO INCREMENTAL OBRIGATÓRIO - PRESERVAÇÃO TOTAL DO LAYOUT 🚨
 
 CÓDIGO EXISTENTE DO PROJETO "${currentProject.name}":
-\`\`\`html
+\`\`\`tsx
 ${generatedCode}
 \`\`\`
 
@@ -49,6 +59,14 @@ IMPORTANTE: Se o código tem menu lateral/superior, adicione a nova opção lá.
     prompt += `\n\nSOLICITAÇÃO DO USUÁRIO: "${userMessage}"`;
   }
   
+  prompt += `\n\n🏗️ ESTRUTURA OBRIGATÓRIA DE RESPOSTA:
+- Crie páginas React separadas em src/pages/
+- Configure roteamento no App.tsx
+- Crie componentes reutilizáveis se necessário
+- Use navegação com Link do react-router-dom
+- Mantenha TypeScript em todos os arquivos
+- Implemente layout responsivo com Tailwind CSS`;
+  
   if (isIncremental && generatedCode) {
     prompt += `\n\n🔥 LEMBRETE CRÍTICO FINAL:
 - MODO INCREMENTAL ESTÁ ATIVO E É OBRIGATÓRIO
@@ -59,7 +77,7 @@ IMPORTANTE: Se o código tem menu lateral/superior, adicione a nova opção lá.
 - O resultado deve ser o código existente + nova página integrada`;
   }
   
-  prompt += `\n\nResponda com código HTML completo e funcional. Use blocos de código markdown com \`\`\`html para envolver seu código.`;
+  prompt += `\n\nResponda SEMPRE com páginas React separadas e roteamento adequado. Use blocos de código markdown com \`\`\`tsx para envolver seu código.`;
 
   return prompt;
 };

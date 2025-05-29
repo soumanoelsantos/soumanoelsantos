@@ -8,6 +8,7 @@ export const determineIfIncremental = (userMessage: string, existingCode: string
   // Se há código existente significativo (mais de 100 caracteres), SEMPRE é incremental
   if (existingCode && existingCode.trim().length > 100) {
     console.log('✅ CÓDIGO EXISTENTE DETECTADO - MODO INCREMENTAL FORÇADO SEMPRE');
+    console.log('🏗️ ARQUITETURA OBRIGATÓRIA: Páginas React separadas com roteamento');
     return true;
   }
   
@@ -21,10 +22,11 @@ export const determineIfIncremental = (userMessage: string, existingCode: string
   const hasReplaceWords = replaceKeywords.some(keyword => messageLower.includes(keyword));
   if (hasReplaceWords && (!existingCode || existingCode.trim().length < 100)) {
     console.log('🔄 Detectado comando de substituição completa (sem código existente)');
+    console.log('🏗️ CRIANDO: Estrutura React com páginas separadas desde o início');
     return false;
   }
   
-  // QUALQUER outra situação com código existente é incremental
-  console.log('📄 Forçando modo incremental para preservar layout');
+  // QUALQUER outra situação força estrutura React com páginas separadas
+  console.log('📄 Forçando estrutura React com páginas separadas e roteamento adequado');
   return true;
 };
