@@ -38,7 +38,6 @@ const CodePreview = () => {
   const handleToggleView = () => {
     setShowCode(!showCode);
     if (!showCode && !selectedFile && generatedCode) {
-      // Auto-selecionar o primeiro arquivo quando abrir código
       setSelectedFile({ content: generatedCode, name: 'index.html' });
     }
   };
@@ -51,16 +50,13 @@ const CodePreview = () => {
     setSelectedFile({ content, name: fileName });
   };
 
-  // Capturar erros de iframe
   const handleIframeError = (error: any) => {
     console.error('🚨 Erro no iframe:', error);
     reportError('Erro na renderização do preview', 'code');
   };
 
-  // Verificar se há problemas no código gerado
   useEffect(() => {
     if (generatedCode) {
-      // Verificações básicas de HTML
       const hasOpeningTag = generatedCode.includes('<html') || generatedCode.includes('<body') || generatedCode.includes('<div');
       const hasClosingTag = generatedCode.includes('</html>') || generatedCode.includes('</body>') || generatedCode.includes('</div>');
       
@@ -68,7 +64,6 @@ const CodePreview = () => {
         reportError('Código HTML pode estar incompleto ou malformado', 'code');
       }
       
-      // Verificar se há JavaScript com erros óbvios
       if (generatedCode.includes('undefined') && generatedCode.includes('function')) {
         reportError('Possível erro de JavaScript detectado no código', 'code');
       }
@@ -76,21 +71,23 @@ const CodePreview = () => {
   }, [generatedCode, reportError]);
 
   return (
-    <div className="flex flex-col h-full">
-      <CodePreviewHeader
-        showCode={showCode}
-        onToggleView={handleToggleView}
-        onCopy={copyToClipboard}
-        onDownload={downloadCode}
-        onOpenInNewTab={openInNewTab}
-        currentUrl={currentUrl}
-        onGoBack={goBack}
-        onGoForward={goForward}
-        onRefresh={refreshPreview}
-      />
+    <div className="flex flex-col h-full bg-white">
+      <div className="flex-shrink-0">
+        <CodePreviewHeader
+          showCode={showCode}
+          onToggleView={handleToggleView}
+          onCopy={copyToClipboard}
+          onDownload={downloadCode}
+          onOpenInNewTab={openInNewTab}
+          currentUrl={currentUrl}
+          onGoBack={goBack}
+          onGoForward={goForward}
+          onRefresh={refreshPreview}
+        />
+      </div>
       
       {currentError && (
-        <div className="flex-shrink-0 p-3 border-b border-gray-200">
+        <div className="flex-shrink-0 p-3 border-b border-gray-200 bg-red-50">
           <ErrorDisplay
             error={currentError}
             isFixing={isFixing}
@@ -100,16 +97,16 @@ const CodePreview = () => {
         </div>
       )}
       
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden">
         {showCode ? (
           <div className="flex h-full">
-            <div className="w-64">
+            <div className="w-64 border-r border-gray-200">
               <FileStructure 
                 onFileSelect={handleFileSelect}
                 generatedCode={generatedCode}
               />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <CodeDisplay 
                 code={selectedFile?.content || generatedCode} 
                 fileName={selectedFile?.name}

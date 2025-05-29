@@ -27,14 +27,14 @@ const ChatInterface = () => {
   } = useErrorHandler();
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-shrink-0 p-3 border-b border-gray-200 bg-white">
-        <h2 className="text-sm font-semibold text-gray-900">Chat com IA</h2>
-        <p className="text-xs text-gray-500">Descreva o que você quer ou envie uma imagem</p>
+    <div className="flex flex-col h-full bg-white">
+      <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-white">
+        <h2 className="text-lg font-semibold text-gray-900">Chat com IA</h2>
+        <p className="text-sm text-gray-500">Descreva o que você quer ou envie uma imagem</p>
       </div>
       
       {currentError && (
-        <div className="flex-shrink-0 p-3 border-b border-gray-200">
+        <div className="flex-shrink-0 p-3 border-b border-gray-200 bg-red-50">
           <ErrorDisplay
             error={currentError}
             isFixing={isFixing}
@@ -44,21 +44,25 @@ const ChatInterface = () => {
         </div>
       )}
       
-      <MessagesList 
-        messages={messages}
-        isLoading={isLoading}
-        messagesStartRef={messagesStartRef}
-      />
+      <div className="flex-1 min-h-0">
+        <MessagesList 
+          messages={messages}
+          isLoading={isLoading}
+          messagesStartRef={messagesStartRef}
+        />
+      </div>
       
-      <ChatInput
-        input={input}
-        setInput={setInput}
-        selectedImage={selectedImage}
-        onImageSelect={handleImageSelect}
-        onRemoveImage={handleRemoveImage}
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-      />
+      <div className="flex-shrink-0 border-t border-gray-200 bg-white">
+        <ChatInput
+          input={input}
+          setInput={setInput}
+          selectedImage={selectedImage}
+          onImageSelect={handleImageSelect}
+          onRemoveImage={handleRemoveImage}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 };
