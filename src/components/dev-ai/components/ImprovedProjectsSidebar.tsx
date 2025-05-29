@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +22,6 @@ import { DevProject } from '@/types/devai';
 const ImprovedProjectsSidebar = () => {
   const { currentProject, setCurrentProject } = useDevAI();
   const { projects, createProject, deleteProject, isLoading } = useDevProjects();
-  const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'updated' | 'created'>('updated');
 
@@ -77,14 +75,15 @@ const ImprovedProjectsSidebar = () => {
             </Badge>
           </div>
           
-          <Button
-            onClick={() => setIsNewProjectOpen(true)}
-            size="sm"
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Novo
-          </Button>
+          <NewProjectDialog
+            onCreateProject={handleCreateProject}
+            trigger={
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="h-4 w-4 mr-1" />
+                Novo
+              </Button>
+            }
+          />
         </div>
 
         {/* Search and Filter */}
@@ -139,14 +138,15 @@ const ImprovedProjectsSidebar = () => {
                 }
               </p>
               {!searchQuery && (
-                <Button 
-                  onClick={() => setIsNewProjectOpen(true)}
-                  size="sm"
-                  variant="outline"
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Criar Projeto
-                </Button>
+                <NewProjectDialog
+                  onCreateProject={handleCreateProject}
+                  trigger={
+                    <Button size="sm" variant="outline">
+                      <Plus className="h-4 w-4 mr-1" />
+                      Criar Projeto
+                    </Button>
+                  }
+                />
               )}
             </div>
           ) : (
@@ -210,12 +210,6 @@ const ImprovedProjectsSidebar = () => {
           )}
         </div>
       </div>
-
-      <NewProjectDialog
-        open={isNewProjectOpen}
-        onOpenChange={setIsNewProjectOpen}
-        onCreateProject={handleCreateProject}
-      />
     </div>
   );
 };
