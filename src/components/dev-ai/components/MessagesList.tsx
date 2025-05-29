@@ -25,19 +25,41 @@ const MessagesList: React.FC<MessagesListProps> = ({
   messagesStartRef 
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll para a última mensagem quando uma nova é adicionada
+  // Auto-scroll para a última mensagem apenas quando uma nova mensagem é adicionada
+  // mas preserva a posição se o usuário estiver navegando pelo histórico
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+        
+        // Só faz scroll automático se o usuário estiver perto do final
+        if (isNearBottom) {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
   }, [messages]);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      <ScrollArea className="flex-1">
+      <ScrollArea ref={scrollAreaRef} className="flex-1">
         <div className="p-4 space-y-4">
           <div ref={messagesStartRef} />
           
-          {/* Mostrar mensagens na ordem cronológica normal */}
+          {/* Indicador de início do histórico */}
+          {messages.length > 0 && (
+            <div className="text-center py-2">
+              <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                Início da conversa
+              </span>
+            </div>
+          )}
+          
+          {/* Mostrar todas as mensagens na ordem cronológica */}
           {messages.map((message) => (
             <MessageItem key={message.id} message={message} />
           ))}
