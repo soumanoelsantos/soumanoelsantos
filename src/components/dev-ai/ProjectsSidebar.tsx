@@ -2,8 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { FolderOpen, Settings, MessageSquare } from 'lucide-react';
+import { MessageSquare, Settings } from 'lucide-react';
 import ProjectsList from './ProjectsList';
 import NewProjectDialog from './NewProjectDialog';
 import { useDevProjects } from '@/hooks/useDevProjects';
@@ -39,7 +38,6 @@ const ProjectsSidebar: React.FC<ProjectsSidebarProps> = ({ isOpen, onToggle }) =
 
   const handleDeleteProject = async (id: string) => {
     await deleteProject(id);
-    // Se o projeto deletado era o atual, limpar seleção
     if (currentProject?.id === id) {
       setCurrentProject(null);
     }
@@ -48,18 +46,8 @@ const ProjectsSidebar: React.FC<ProjectsSidebarProps> = ({ isOpen, onToggle }) =
   if (!isOpen) return null;
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <FolderOpen className="h-5 w-5 text-gray-600" />
-            <h3 className="font-semibold text-gray-900">Projetos</h3>
-          </div>
-          <Button variant="ghost" size="sm" onClick={onToggle}>
-            ×
-          </Button>
-        </div>
-        
+    <div className="h-full flex flex-col">
+      <div className="p-3 border-b border-gray-200">
         {currentProject && (
           <div className="mb-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
             <div className="flex items-center space-x-2">
@@ -87,7 +75,7 @@ const ProjectsSidebar: React.FC<ProjectsSidebarProps> = ({ isOpen, onToggle }) =
         />
       </ScrollArea>
       
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-3 border-t border-gray-200">
         <Button variant="outline" size="sm" className="w-full">
           <Settings className="h-4 w-4 mr-2" />
           Configurações
