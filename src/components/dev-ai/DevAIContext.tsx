@@ -54,6 +54,8 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
   });
 
   const addMessage = (content: string, type: 'user' | 'assistant', image?: { file: File; preview: string }) => {
+    console.log('💬 Adicionando nova mensagem:', { type, content: content.substring(0, 100) });
+    
     const newMessage: Message = {
       id: Date.now().toString(),
       type,
@@ -64,6 +66,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     
     setMessages(prev => {
       const updatedMessages = [...prev, newMessage];
+      console.log('📝 Total de mensagens agora:', updatedMessages.length);
       
       // Salvar no cache local do projeto atual
       if (currentProject) {
@@ -71,6 +74,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
           ...prevConversations,
           [currentProject.id]: updatedMessages
         }));
+        console.log('💾 Mensagem salva no cache do projeto:', currentProject.name);
       }
       
       return updatedMessages;
@@ -78,7 +82,14 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
   };
 
   const updateCodeIncremental = async (code: string, isIncremental: boolean = true) => {
-    console.log(`🔧 Atualizando código do projeto ${currentProject?.name} - Incremental: ${isIncremental}`);
+    console.log('🔧 Atualizando código do projeto...');
+    console.log('📊 Detalhes da atualização:');
+    console.log('- Projeto atual:', currentProject?.name || 'nenhum');
+    console.log('- Modo incremental:', isIncremental);
+    console.log('- Tamanho do código:', code.length);
+    console.log('- Código anterior existia:', !!generatedCode);
+    console.log('- Primeiros 100 chars do novo código:', code.substring(0, 100));
+    
     setGeneratedCode(code);
     
     // Salvar no cache local do projeto atual
@@ -87,8 +98,16 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
         ...prev,
         [currentProject.id]: code
       }));
+      console.log('💾 Código salvo no cache do projeto:', currentProject.name);
       
-      await DevAIService.updateProjectCode(currentProject.id, code, isIncremental);
+      try {
+        await DevAIService.updateProjectCode(currentProject.id, code, isIncremental);
+        console.log('✅ Código salvo no banco de dados com sucesso');
+      } catch (error) {
+        console.error('❌ Erro ao salvar código no banco:', error);
+      }
+    } else {
+      console.warn('⚠️ Nenhum projeto ativo para salvar o código');
     }
   };
 

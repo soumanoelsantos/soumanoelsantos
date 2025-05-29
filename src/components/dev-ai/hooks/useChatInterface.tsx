@@ -1,7 +1,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useDevAI } from '../DevAIContext';
-import { useProjectHistory } from '../ProjectHistoryContext';
 import { callDeepseekApi } from '@/utils/swot/ai/deepseekClient';
 import { extractCodeFromResponse } from '../utils/codeExtraction';
 import { determineIfIncremental } from '../utils/incrementalDetection';
@@ -10,10 +9,20 @@ import { generatePrompt } from '../utils/promptGeneration';
 
 export const useChatInterface = () => {
   const { messages, addMessage, updateCodeIncremental, isLoading, setIsLoading, currentProject, generatedCode } = useDevAI();
-  const projectHistory = useProjectHistory();
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
   const messagesStartRef = useRef<HTMLDivElement>(null);
+
+  // Tentar obter o projectHistory de forma segura
+  let projectHistory;
+  try {
+    // Importação dinâmica para evitar erro se o provider não estiver disponível
+    const { useProjectHistory } = require('../ProjectHistoryContext');
+    projectHistory = useProjectHistory();
+  } catch (error) {
+    console.warn('⚠️ ProjectHistory não disponível:', error);
+    projectHistory = null;
+  }
 
   const scrollToTop = () => {
     messagesStartRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,7 +72,8 @@ export const useChatInterface = () => {
         input.trim()
       );
 
-      console.log('📤 Enviando prompt:', prompt.substring(0, 300) + '...');
+      console.log('📤 Enviando prompt para API...');
+      console.log('📝 Prompt gerado:', prompt.substring(0, 500) + '...');
       
       const response = await callDeepseekApi(prompt);
       
@@ -75,12 +85,12 @@ export const useChatInterface = () => {
         
         if (extractedCode) {
           console.log('💻 Código extraído com sucesso, tamanho:', extractedCode.length);
-          console.log('🔄 Atualizando com preservação de layout - Incremental:', isIncremental);
+          console.log('🔄 Atualizando código com modo incremental:', isIncremental);
           
           // Usar a função incremental para preservar layout
           updateCodeIncremental(extractedCode, isIncremental);
           
-          // GARANTIR que o histórico seja salvo - com verificação de segurança
+          // GARANTIR que o histórico seja salvo - apenas se disponível
           if (projectHistory && projectHistory.addVersion && currentProject) {
             console.log('📝 Salvando versão no histórico...');
             const summary = createShortSummary(response);
@@ -92,17 +102,16 @@ export const useChatInterface = () => {
               console.error('❌ Erro ao salvar no histórico:', historyError);
             }
           } else {
-            console.warn('⚠️ Não foi possível salvar no histórico:');
-            console.warn('- projectHistory disponível:', !!projectHistory);
-            console.warn('- addVersion disponível:', !!(projectHistory?.addVersion));
-            console.warn('- currentProject disponível:', !!currentProject);
+            console.warn('⚠️ Histórico não disponível ou não configurado');
           }
           
           // Mostrar apenas resumo curto no chat
           const summary = createShortSummary(response);
           addMessage(summary, 'assistant');
         } else {
-          console.log('⚠️ Nenhum código extraído, mostrando resposta completa');
+          console.log('⚠️ Nenhum código extraído da resposta');
+          console.log('📄 Resposta completa:', response);
+          
           // Se não há código, mostrar resposta completa
           const summary = createShortSummary(response);
           addMessage(summary, 'assistant');
@@ -113,7 +122,7 @@ export const useChatInterface = () => {
       }
     } catch (error) {
       console.error('❌ Erro ao chamar DeepSeek API:', error);
-      addMessage('Erro de conexão. Tente novamente.', 'assistant');
+      addMessage('Erro de conexão. Verifique sua internet e tente novamente.', 'assistant');
     } finally {
       setIsLoading(false);
     }
