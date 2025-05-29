@@ -72,6 +72,7 @@ INSTRUÇÕES OBRIGATÓRIAS DE CORREÇÃO:
 5. Crie componentes reutilizáveis em: src/components/
 6. Configure roteamento no App.tsx
 7. Use navegação com Link do react-router-dom
+8. TODOS os textos devem estar em PORTUGUÊS BRASILEIRO
 
 FORMATO DE RESPOSTA OBRIGATÓRIO:
 - Crie arquivos .tsx separados para cada página
@@ -80,6 +81,7 @@ FORMATO DE RESPOSTA OBRIGATÓRIO:
 - Implemente navegação adequada com react-router-dom
 - Use Tailwind CSS para estilização
 - Garanta que o código seja válido e funcional
+- Use português brasileiro em todos os textos
 
 Por favor, corrija o erro e retorne APENAS código React/TypeScript válido seguindo essas diretrizes.
       `;
@@ -115,7 +117,7 @@ Por favor, corrija o erro e retorne APENAS código React/TypeScript válido segu
       
       toast.error('Falha na correção automática', {
         id: 'auto-fix',
-        description: 'Tente fazer a correção manualmente ou contacte o suporte'
+        description: 'Tente fazer a correção manualmente ou entre em contato com o suporte'
       });
     } finally {
       setIsFixing(false);
