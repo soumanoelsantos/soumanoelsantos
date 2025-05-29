@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { User, Bot, CheckCircle, RotateCcw } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Bot, CheckCircle, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useProjectHistory } from '../ProjectHistoryContext';
 import { useDevAI } from '../DevAIContext';
@@ -21,6 +21,14 @@ interface MessageItemProps {
 const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const projectHistory = useProjectHistory();
   const { setGeneratedCode } = useDevAI();
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Definir limite de caracteres para mostrar "Ler mais"
+  const CHARACTER_LIMIT = 300;
+  const shouldShowReadMore = message.content.length > CHARACTER_LIMIT;
+  const displayContent = shouldShowReadMore && !isExpanded 
+    ? message.content.substring(0, CHARACTER_LIMIT) + '...'
+    : message.content;
 
   const handleRestore = () => {
     if (message.projectState && setGeneratedCode) {
@@ -35,6 +43,10 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
     } else {
       console.warn('⚠️ Não foi possível restaurar: estado do projeto não disponível');
     }
+  };
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
   };
 
   return (
@@ -66,7 +78,33 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
               ? 'bg-blue-500 text-white' 
               : 'bg-gray-100 text-gray-900'
           }`}>
-            <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+            <p className="text-sm whitespace-pre-wrap leading-relaxed">{displayContent}</p>
+            
+            {/* Botão "Ler mais" / "Ler menos" */}
+            {shouldShowReadMore && (
+              <Button
+                onClick={toggleExpanded}
+                variant="ghost"
+                size="sm"
+                className={`mt-2 h-6 px-2 py-1 text-xs ${
+                  message.type === 'user'
+                    ? 'text-blue-100 hover:text-blue-50 hover:bg-blue-600/50'
+                    : 'text-gray-600 hover:text-gray-700 hover:bg-gray-200/50'
+                }`}
+              >
+                {isExpanded ? (
+                  <>
+                    <ChevronUp className="h-3 w-3 mr-1" />
+                    Ler menos
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-3 w-3 mr-1" />
+                    Ler mais
+                  </>
+                )}
+              </Button>
+            )}
             
             <div className="flex items-center justify-between mt-3 pt-2 border-t border-opacity-20 border-current">
               <p className="text-xs opacity-70">
