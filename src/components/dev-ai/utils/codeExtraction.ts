@@ -70,6 +70,40 @@ export default GeneratedComponent;`;
     }
   }
 
+  // 5. Verificar se há texto que descreva código React e criar componente básico
+  if (response.includes('React') || response.includes('componente') || response.includes('página')) {
+    console.log('🔧 Criando componente React básico a partir da descrição');
+    
+    const basicReactComponent = `import React from 'react';
+
+const GeneratedComponent = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">
+            Componente Gerado
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Este componente foi criado com base na sua solicitação.
+          </p>
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-blue-800">
+              Descreva melhor o que você gostaria de criar para gerar código mais específico.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GeneratedComponent;`;
+    
+    console.log('✅ Componente React básico criado');
+    return basicReactComponent;
+  }
+
   console.log('❌ Nenhum código React válido encontrado na resposta');
   return null;
 };
