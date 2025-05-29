@@ -54,22 +54,34 @@ export const useErrorHandler = () => {
 
     try {
       const fixPrompt = `
-ERRO DETECTADO NO SISTEMA:
+🚨 CORREÇÃO DE ERRO - ESTRUTURA REACT OBRIGATÓRIA 🚨
+
+ERRO DETECTADO:
 Tipo: ${error.type}
 Mensagem: ${error.message}
 Detalhes: ${error.details}
 
-CÓDIGO ATUAL:
+CÓDIGO PROBLEMÁTICO:
 ${generatedCode || 'Nenhum código gerado ainda'}
 
-INSTRUÇÕES:
-- Analise o erro e identifique a causa
-- Corrija o problema no código
-- Mantenha toda a funcionalidade existente
-- Retorne apenas o código HTML corrigido
-- Não adicione explicações, apenas o código
+INSTRUÇÕES OBRIGATÓRIAS DE CORREÇÃO:
+1. SEMPRE crie páginas React separadas (.tsx) com TypeScript
+2. SEMPRE use React Router para navegação entre páginas
+3. JAMAIS crie um HTML único com múltiplas seções
+4. Use a estrutura de pastas: src/pages/ para páginas principais
+5. Crie componentes reutilizáveis em: src/components/
+6. Configure roteamento no App.tsx
+7. Use navegação com Link do react-router-dom
 
-Por favor, corrija este erro e retorne o código HTML funcional.
+FORMATO DE RESPOSTA OBRIGATÓRIO:
+- Crie arquivos .tsx separados para cada página
+- Configure as rotas no App.tsx
+- Use componentes React funcionais com TypeScript
+- Implemente navegação adequada com react-router-dom
+- Use Tailwind CSS para estilização
+- Garanta que o código seja válido e funcional
+
+Por favor, corrija o erro e retorne APENAS código React/TypeScript válido seguindo essas diretrizes.
       `;
 
       toast.loading('Corrigindo erro automaticamente...', {

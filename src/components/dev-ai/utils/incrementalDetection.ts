@@ -15,7 +15,8 @@ export const determineIfIncremental = (userMessage: string, existingCode: string
   // Palavras que indicam SUBSTITUIÇÃO COMPLETA (muito restritivas)
   const replaceKeywords = [
     'recrie do zero', 'começar do zero', 'apagar tudo', 'limpar tudo',
-    'novo projeto completamente diferente', 'substitua tudo e recrie'
+    'novo projeto completamente diferente', 'substitua tudo e recrie',
+    'delete todo o código', 'remova tudo e comece novamente'
   ];
   
   // Se tem palavras de substituição explícitas E não há código existente

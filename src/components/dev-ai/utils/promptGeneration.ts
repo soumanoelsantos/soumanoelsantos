@@ -17,7 +17,15 @@ export const generatePrompt = (
 5. Use a estrutura de pastas: src/pages/ para páginas principais
 6. Crie componentes reutilizáveis em: src/components/
 7. Use TypeScript em todos os arquivos
-8. Implemente navegação com Link do react-router-dom`;
+8. Implemente navegação com Link do react-router-dom
+
+🎯 FORMATO DE CÓDIGO OBRIGATÓRIO:
+- Arquivo principal: src/pages/NomedaPagina.tsx
+- Componentes auxiliares em: src/components/nomepagina/
+- Configure rota no App.tsx
+- Use export default para o componente principal
+- Implemente props tipadas com TypeScript interfaces
+- Use Tailwind CSS para estilos responsivos`;
   
   if (currentProject && generatedCode && isIncremental) {
     prompt += `\n\n🚨 MODO INCREMENTAL OBRIGATÓRIO - PRESERVAÇÃO TOTAL DO LAYOUT 🚨
@@ -61,11 +69,20 @@ IMPORTANTE: Se o código tem menu lateral/superior, adicione a nova opção lá.
   
   prompt += `\n\n🏗️ ESTRUTURA OBRIGATÓRIA DE RESPOSTA:
 - Crie páginas React separadas em src/pages/
-- Configure roteamento no App.tsx
+- Configure roteamento no App.tsx se necessário
 - Crie componentes reutilizáveis se necessário
 - Use navegação com Link do react-router-dom
 - Mantenha TypeScript em todos os arquivos
-- Implemente layout responsivo com Tailwind CSS`;
+- Implemente layout responsivo com Tailwind CSS
+- Garanta que todos os imports sejam válidos
+- Use apenas componentes que existem no projeto
+
+🔧 VALIDAÇÃO DE CÓDIGO OBRIGATÓRIA:
+- Verifique se todas as tags HTML estão fechadas corretamente
+- Confirme que todos os imports são válidos
+- Garanta que o JSX está bem formado
+- Use apenas propriedades CSS válidas do Tailwind
+- Implemente error boundaries quando necessário`;
   
   if (isIncremental && generatedCode) {
     prompt += `\n\n🔥 LEMBRETE CRÍTICO FINAL:
