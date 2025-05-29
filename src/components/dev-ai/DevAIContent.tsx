@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 import ProjectsSidebar from './ProjectsSidebar';
 import ChatInterface from './ChatInterface';
 import CodePreview from './CodePreview';
