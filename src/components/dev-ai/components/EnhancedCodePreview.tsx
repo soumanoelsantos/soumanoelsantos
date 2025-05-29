@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Code, Monitor } from 'lucide-react';
+import { Code, Monitor, Files } from 'lucide-react';
 import { useDevAI } from '../DevAIContext';
 import { useCodePreview } from '../hooks/useCodePreview';
 import { useErrorHandler } from '../hooks/useErrorHandler';
@@ -13,10 +13,12 @@ import SimpleWebsite from '../../SimpleWebsite';
 import EmptyCodeState from './EmptyCodeState';
 import ErrorDisplay from './ErrorDisplay';
 
+type ViewMode = 'code' | 'preview' | 'files';
+
 const EnhancedCodePreview = () => {
   const { generatedCode } = useDevAI();
   const [selectedFile, setSelectedFile] = useState<{ content: string; name: string } | null>(null);
-  const [showCode, setShowCode] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('preview');
 
   const {
     currentUrl,
@@ -42,9 +44,9 @@ const EnhancedCodePreview = () => {
     setSelectedFile({ content, name: fileName });
   };
 
-  const handleToggleView = () => {
-    setShowCode(!showCode);
-    if (!showCode && !selectedFile && generatedCode) {
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    if (mode === 'code' && !selectedFile && generatedCode) {
       setSelectedFile({ content: generatedCode, name: 'component.tsx' });
     }
   };
@@ -64,21 +66,30 @@ const EnhancedCodePreview = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Button
-              onClick={handleToggleView}
-              variant={showCode ? "default" : "outline"}
-              size="sm"
-            >
-              <Code className="h-4 w-4 mr-2" />
-              Código
-            </Button>
-            
-            <Button
-              onClick={handleToggleView}
-              variant={!showCode ? "default" : "outline"}
+              onClick={() => handleViewModeChange('preview')}
+              variant={viewMode === 'preview' ? "default" : "outline"}
               size="sm"
             >
               <Monitor className="h-4 w-4 mr-2" />
               Preview
+            </Button>
+
+            <Button
+              onClick={() => handleViewModeChange('files')}
+              variant={viewMode === 'files' ? "default" : "outline"}
+              size="sm"
+            >
+              <Files className="h-4 w-4 mr-2" />
+              Arquivos
+            </Button>
+            
+            <Button
+              onClick={() => handleViewModeChange('code')}
+              variant={viewMode === 'code' ? "default" : "outline"}
+              size="sm"
+            >
+              <Code className="h-4 w-4 mr-2" />
+              Código
             </Button>
           </div>
 
@@ -107,18 +118,7 @@ const EnhancedCodePreview = () => {
       )}
       
       <div className="flex-1 min-h-0 overflow-hidden">
-        {showCode ? (
-          // Visualização de código
-          !generatedCode ? (
-            <EmptyCodeState />
-          ) : (
-            <CodePreviewContent
-              generatedCode={generatedCode}
-              selectedFile={selectedFile}
-              onFileSelect={handleFileSelect}
-            />
-          )
-        ) : (
+        {viewMode === 'preview' ? (
           // Visualização de preview
           <div className="w-full h-full">
             {generatedCode ? (
@@ -134,7 +134,18 @@ const EnhancedCodePreview = () => {
               </div>
             )}
           </div>
-        )}
+        ) : viewMode === 'files' || viewMode === 'code' ? (
+          // Visualização de arquivos e código
+          !generatedCode ? (
+            <EmptyCodeState />
+          ) : (
+            <CodePreviewContent
+              generatedCode={generatedCode}
+              selectedFile={selectedFile}
+              onFileSelect={handleFileSelect}
+            />
+          )
+        ) : null}
       </div>
     </div>
   );
