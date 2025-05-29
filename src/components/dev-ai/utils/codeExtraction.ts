@@ -63,7 +63,7 @@ export const extractCodeFromResponse = (response: string) => {
   return null;
 };
 
-// Função para validar se o código é React válido - versão mais permissiva
+// Função para validar se o código é React válido - versão mais rigorosa
 const isValidReactCode = (code: string): boolean => {
   console.log('🔍 Validando código React...');
   
@@ -79,9 +79,14 @@ const isValidReactCode = (code: string): boolean => {
   const isPureHTML = code.includes('<!DOCTYPE html>') || 
                      (code.includes('<html') && !code.includes('import'));
 
-  // Versão mais permissiva - aceitar se tem pelo menos imports e exports válidos
+  // Verificar se tem return statement com JSX
+  const hasReturnJSX = /return\s*\([\s\S]*?</.test(code) || /return\s*</.test(code);
+
+  // Versão mais rigorosa - aceitar se tem estrutura React completa
   const isValid = hasValidImports && 
                   hasExportDefault && 
+                  hasValidComponent &&
+                  hasReturnJSX &&
                   !isPureHTML;
 
   console.log('📊 Validação de código React:');
@@ -89,6 +94,7 @@ const isValidReactCode = (code: string): boolean => {
   console.log('- Export default:', hasExportDefault);
   console.log('- Componente válido:', hasValidComponent);
   console.log('- JSX válido:', hasValidJSX);
+  console.log('- Return com JSX:', hasReturnJSX);
   console.log('- Não é HTML puro:', !isPureHTML);
   console.log('- Resultado final:', isValid);
 

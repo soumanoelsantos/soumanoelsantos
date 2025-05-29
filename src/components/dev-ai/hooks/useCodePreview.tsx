@@ -95,22 +95,52 @@ export const useCodePreview = (generatedCode: string) => {
       return generatedCode;
     }
     
-    // Se é código React/JSX, criar preview HTML simples
+    // Se é código React/JSX, criar um preview HTML interpretado
     if (generatedCode.includes('import React') || generatedCode.includes('export default')) {
-      console.log('🔧 Convertendo código React para preview HTML');
+      console.log('🔧 Criando preview para código React');
       
-      // Extrair JSX básico do componente React
-      const jsxMatch = generatedCode.match(/return\s*\(\s*([\s\S]*?)\s*\);?\s*}/);
+      // Extrair o nome do componente
+      const componentNameMatch = generatedCode.match(/export default (\w+)/);
+      const componentName = componentNameMatch ? componentNameMatch[1] : 'Componente';
+      
+      // Extrair JSX do return statement
+      const returnMatch = generatedCode.match(/return\s*\(\s*([\s\S]*?)\s*\);?\s*}/);
       let jsxContent = '';
       
-      if (jsxMatch) {
-        jsxContent = jsxMatch[1]
+      if (returnMatch) {
+        jsxContent = returnMatch[1]
           .replace(/className=/g, 'class=')
           .replace(/\{[^}]*\}/g, '') // Remover expressões JSX simples
           .replace(/\/>/g, '>'); // Converter tags auto-fechadas
+        
+        // Limpar código JSX complexo e manter apenas HTML básico
+        jsxContent = jsxContent
+          .replace(/\{.*?\}/g, '') // Remover todas as expressões JSX
+          .replace(/onClick=.*?(?=\s|\/>|>)/g, '') // Remover handlers
+          .replace(/onChange=.*?(?=\s|\/>|>)/g, '') // Remover handlers
+          .replace(/onSubmit=.*?(?=\s|\/>|>)/g, '') // Remover handlers
+          .replace(/setState.*?(?=\s|\/>|>)/g, ''); // Remover estado
       } else {
-        // Fallback: mostrar o código como texto
-        jsxContent = `<pre style="white-space: pre-wrap; font-family: monospace; padding: 20px; background: #f5f5f5;">${generatedCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
+        // Se não conseguir extrair JSX, mostrar informações do componente
+        jsxContent = `
+          <div class="p-8 max-w-4xl mx-auto">
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mx-auto mb-6 flex items-center justify-center">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                  </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Componente React: ${componentName}</h1>
+                <p class="text-gray-600 text-lg">Componente React criado com sucesso!</p>
+                <div class="mt-6 p-4 bg-white rounded-lg border">
+                  <p class="text-sm text-gray-500">Este é um preview simplificado do componente React gerado.</p>
+                  <p class="text-sm text-gray-500 mt-2">Para ver o código completo, clique na aba "Código".</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
       }
       
       return `<!DOCTYPE html>
@@ -118,10 +148,10 @@ export const useCodePreview = (generatedCode: string) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Preview React Component</title>
+  <title>Preview - ${componentName}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; }
   </style>
 </head>
 <body>
@@ -140,7 +170,7 @@ export const useCodePreview = (generatedCode: string) => {
   <title>Preview</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+    body { margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
   </style>
 </head>
 <body>
@@ -157,7 +187,7 @@ export const useCodePreview = (generatedCode: string) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Preview</title>
   <style>
-    body { margin: 20px; font-family: monospace; white-space: pre-wrap; }
+    body { margin: 20px; font-family: monospace; white-space: pre-wrap; background: #f8fafc; }
   </style>
 </head>
 <body>${generatedCode}</body>
