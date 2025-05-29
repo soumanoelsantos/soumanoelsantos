@@ -171,7 +171,7 @@ const EnhancedCodePreview = () => {
                 variant="outline"
                 size="sm"
                 onClick={openInNewTab}
-                className="text-xs"
+                className="text-xs bg-blue-50 hover:bg-blue-100 border-blue-200"
               >
                 <ExternalLink className="h-3 w-3 mr-1" />
                 Nova Aba

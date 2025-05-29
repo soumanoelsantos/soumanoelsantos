@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,6 +55,10 @@ const ImprovedProjectsSidebar = () => {
         setCurrentProject(null);
       }
     }
+  };
+
+  const handleCreateProject = async (data: { name: string; description?: string; }) => {
+    await createProject(data);
   };
 
   const recentProjects = filteredProjects.slice(0, 5);
@@ -209,7 +214,7 @@ const ImprovedProjectsSidebar = () => {
       <NewProjectDialog
         open={isNewProjectOpen}
         onOpenChange={setIsNewProjectOpen}
-        onCreateProject={createProject}
+        onCreateProject={handleCreateProject}
       />
     </div>
   );
