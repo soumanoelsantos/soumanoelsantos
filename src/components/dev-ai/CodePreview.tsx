@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDevAI } from './DevAIContext';
 import { useCodePreview } from './hooks/useCodePreview';
+import { useErrorHandler } from './hooks/useErrorHandler';
 import CodePreviewHeader from './components/CodePreviewHeader';
 import CodeDisplay from './components/CodeDisplay';
 import PreviewFrame from './components/PreviewFrame';
 import FileStructure from './components/FileStructure';
+import ErrorDisplay from './components/ErrorDisplay';
 
 const CodePreview = () => {
   const { generatedCode } = useDevAI();
@@ -25,6 +27,14 @@ const CodePreview = () => {
     getPreviewHtml
   } = useCodePreview(generatedCode);
 
+  const {
+    currentError,
+    isFixing,
+    autoFixError,
+    clearError,
+    reportError
+  } = useErrorHandler();
+
   const handleToggleView = () => {
     setShowCode(!showCode);
     if (!showCode && !selectedFile && generatedCode) {
@@ -41,6 +51,30 @@ const CodePreview = () => {
     setSelectedFile({ content, name: fileName });
   };
 
+  // Capturar erros de iframe
+  const handleIframeError = (error: any) => {
+    console.error('🚨 Erro no iframe:', error);
+    reportError('Erro na renderização do preview', 'code');
+  };
+
+  // Verificar se há problemas no código gerado
+  useEffect(() => {
+    if (generatedCode) {
+      // Verificações básicas de HTML
+      const hasOpeningTag = generatedCode.includes('<html') || generatedCode.includes('<body') || generatedCode.includes('<div');
+      const hasClosingTag = generatedCode.includes('</html>') || generatedCode.includes('</body>') || generatedCode.includes('</div>');
+      
+      if (!hasOpeningTag || !hasClosingTag) {
+        reportError('Código HTML pode estar incompleto ou malformado', 'code');
+      }
+      
+      // Verificar se há JavaScript com erros óbvios
+      if (generatedCode.includes('undefined') && generatedCode.includes('function')) {
+        reportError('Possível erro de JavaScript detectado no código', 'code');
+      }
+    }
+  }, [generatedCode, reportError]);
+
   return (
     <div className="flex flex-col h-full">
       <CodePreviewHeader
@@ -54,6 +88,17 @@ const CodePreview = () => {
         onGoForward={goForward}
         onRefresh={refreshPreview}
       />
+      
+      {currentError && (
+        <div className="flex-shrink-0 p-3 border-b border-gray-200">
+          <ErrorDisplay
+            error={currentError}
+            isFixing={isFixing}
+            onAutoFix={() => autoFixError(currentError)}
+            onDismiss={clearError}
+          />
+        </div>
+      )}
       
       <div className="flex-1 overflow-hidden">
         {showCode ? (
@@ -76,6 +121,7 @@ const CodePreview = () => {
             iframeRef={iframeRef}
             previewHtml={getPreviewHtml()}
             onLoad={handleLoad}
+            onError={handleIframeError}
           />
         )}
       </div>

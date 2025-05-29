@@ -1,28 +1,23 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useDevAI } from '../DevAIContext';
+import { useErrorHandler } from './useErrorHandler';
 import { callDeepseekApi } from '@/utils/swot/ai/deepseekClient';
 import { extractCodeFromResponse } from '../utils/codeExtraction';
 import { determineIfIncremental } from '../utils/incrementalDetection';
 import { createShortSummary } from '../utils/messageProcessing';
 import { generatePrompt } from '../utils/promptGeneration';
+import { useProjectHistory } from '../ProjectHistoryContext';
 
 export const useChatInterface = () => {
   const { messages, addMessage, updateCodeIncremental, isLoading, setIsLoading, currentProject, generatedCode } = useDevAI();
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
   const messagesStartRef = useRef<HTMLDivElement>(null);
+  const { handleError } = useErrorHandler();
 
-  // Tentar obter o projectHistory de forma segura
-  let projectHistory;
-  try {
-    // Importação dinâmica para evitar erro se o provider não estiver disponível
-    const { useProjectHistory } = require('../ProjectHistoryContext');
-    projectHistory = useProjectHistory();
-  } catch (error) {
-    console.warn('⚠️ ProjectHistory não disponível:', error);
-    projectHistory = null;
-  }
+  // Usar useProjectHistory de forma segura
+  const projectHistory = useProjectHistory();
 
   const scrollToTop = () => {
     messagesStartRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -100,6 +95,7 @@ export const useChatInterface = () => {
               console.log('✅ Versão salva no histórico com sucesso');
             } catch (historyError) {
               console.error('❌ Erro ao salvar no histórico:', historyError);
+              handleError(historyError, 'code');
             }
           } else {
             console.warn('⚠️ Histórico não disponível ou não configurado');
@@ -118,10 +114,13 @@ export const useChatInterface = () => {
         }
       } else {
         console.error('❌ Resposta vazia da API');
+        const error = new Error('Resposta vazia da API');
+        handleError(error, 'api');
         addMessage('Erro ao processar solicitação. Tente novamente.', 'assistant');
       }
     } catch (error) {
       console.error('❌ Erro ao chamar DeepSeek API:', error);
+      handleError(error, 'api');
       addMessage('Erro de conexão. Verifique sua internet e tente novamente.', 'assistant');
     } finally {
       setIsLoading(false);
