@@ -15,7 +15,7 @@ const DevAIContent = () => {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col bg-gray-50">
+    <div className="h-screen w-full flex flex-col bg-gray-50 overflow-hidden">
       {/* Top Navigation Bar - Simplified */}
       <div className="h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0">
         <div className="flex items-center gap-4">
@@ -27,8 +27,8 @@ const DevAIContent = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex">
-        <ResizablePanelGroup direction="horizontal" className="w-full">
+      <div className="flex-1 min-h-0">
+        <ResizablePanelGroup direction="horizontal" className="h-full">
           {/* Sidebar Panel */}
           {isSidebarOpen && (
             <>

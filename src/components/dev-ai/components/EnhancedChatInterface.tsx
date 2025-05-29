@@ -74,7 +74,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     : null;
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-white to-gray-50">
+    <div className="h-full flex flex-col bg-gradient-to-b from-white to-gray-50">
       {/* Enhanced Header */}
       <div className="flex-shrink-0 bg-white border-b border-gray-200 shadow-sm">
         <div className="p-4">
@@ -179,7 +179,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       )}
       
       {/* Messages Area */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0">
         {messageCount === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center max-w-md">

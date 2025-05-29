@@ -28,7 +28,6 @@ const MessagesList: React.FC<MessagesListProps> = ({
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll para a última mensagem apenas quando uma nova mensagem é adicionada
-  // mas preserva a posição se o usuário estiver navegando pelo histórico
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -47,9 +46,9 @@ const MessagesList: React.FC<MessagesListProps> = ({
   }, [messages]);
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      <ScrollArea ref={scrollAreaRef} className="flex-1 h-full">
-        <div className="p-4 space-y-4 min-h-full">
+    <div className="h-full flex flex-col">
+      <ScrollArea ref={scrollAreaRef} className="flex-1 h-0">
+        <div className="p-4 space-y-4">
           <div ref={messagesStartRef} />
           
           {/* Indicador de início do histórico */}
