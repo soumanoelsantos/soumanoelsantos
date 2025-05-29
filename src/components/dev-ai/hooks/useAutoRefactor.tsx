@@ -176,10 +176,6 @@ Por favor, refatore o código criando os arquivos necessários para reduzir o ta
           toast({
             title: "Refatoração Recomendada",
             description: `O arquivo está com ${suggestion.currentSize} linhas. Clique para ver sugestões de refatoração.`,
-            action: {
-              altText: "Ver Sugestões",
-              action: () => {}
-            }
           });
         }
       }

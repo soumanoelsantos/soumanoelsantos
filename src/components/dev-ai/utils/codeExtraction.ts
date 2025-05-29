@@ -47,15 +47,26 @@ export const extractCodeFromResponse = (response: string) => {
     }
   }
 
-  // 4. Verificar se há código que pareça React mas esteja malformado
-  if (response.includes('import React') || response.includes('export default')) {
-    console.log('⚠️ Código React detectado mas pode estar incompleto - tentando extrair mesmo assim');
+  // 4. Verificar se há código HTML simples para criar uma página básica
+  if (response.includes('<div') || response.includes('<section') || response.includes('<main')) {
+    console.log('🔧 HTML detectado, criando componente React básico');
     
-    // Tentar extrair componente mesmo que não passe na validação rigorosa
-    const componentMatch = response.match(/import React[\s\S]*?export default \w+;?/);
-    if (componentMatch) {
-      console.log('📝 Extraindo componente detectado:', componentMatch[0].substring(0, 200));
-      return componentMatch[0];
+    // Extrair conteúdo HTML básico
+    const htmlMatch = response.match(/<(?:div|section|main|header|footer)[^>]*>[\s\S]*?<\/(?:div|section|main|header|footer)>/);
+    if (htmlMatch) {
+      const htmlContent = htmlMatch[0];
+      const basicReactComponent = `import React from 'react';
+
+const GeneratedComponent = () => {
+  return (
+    ${htmlContent}
+  );
+};
+
+export default GeneratedComponent;`;
+      
+      console.log('✅ Componente React criado a partir de HTML');
+      return basicReactComponent;
     }
   }
 
@@ -63,7 +74,7 @@ export const extractCodeFromResponse = (response: string) => {
   return null;
 };
 
-// Função para validar se o código é React válido - versão mais rigorosa
+// Função para validar se o código é React válido
 const isValidReactCode = (code: string): boolean => {
   console.log('🔍 Validando código React...');
   
@@ -82,11 +93,10 @@ const isValidReactCode = (code: string): boolean => {
   // Verificar se tem return statement com JSX
   const hasReturnJSX = /return\s*\([\s\S]*?</.test(code) || /return\s*</.test(code);
 
-  // Versão mais rigorosa - aceitar se tem estrutura React completa
-  const isValid = hasValidImports && 
-                  hasExportDefault && 
-                  hasValidComponent &&
-                  hasReturnJSX &&
+  // Versão mais flexível - aceitar se tem características React
+  const isValid = (hasValidImports || hasValidComponent) && 
+                  (hasExportDefault || hasValidComponent) && 
+                  (hasValidJSX || hasReturnJSX) &&
                   !isPureHTML;
 
   console.log('📊 Validação de código React:');
