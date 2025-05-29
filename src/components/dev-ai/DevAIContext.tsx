@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { DevProject } from '@/types/devai';
 import { DevAIService } from '@/services/devaiService';
@@ -107,28 +106,42 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
         if (generatedCode.includes('nav-tab') && generatedCode.includes('page-content')) {
           console.log('🔗 Integrando nova página ao sistema de navegação existente');
           
-          // Extrair o conteúdo da nova página
-          let newPageContent = code;
+          // Extrair o conteúdo da nova página mais rigorosamente
+          const newPageTabMatch = code.match(/<div[^>]*class="[^"]*nav-tab[^"]*"[^>]*data-page="([^"]*)"[^>]*>([^<]*)<\/div>/);
+          const newPageContentMatch = code.match(/<div[^>]*class="[^"]*page-content[^"]*"[^>]*data-page="([^"]*)"[^>]*>([\s\S]*?)<\/div>/);
           
-          // Se o novo código tem a estrutura completa, extrair apenas a nova página
-          const newPageMatch = code.match(/<div[^>]*class="[^"]*page-content[^"]*"[^>]*>[\s\S]*?<\/div>/);
-          const newTabMatch = code.match(/<div[^>]*class="[^"]*nav-tab[^"]*"[^>]*>[^<]*<\/div>/);
-          
-          if (newPageMatch && newTabMatch) {
-            // Adicionar nova aba ao menu existente
-            const updatedCode = generatedCode.replace(
-              /(<div class="nav-tabs">[\s\S]*?)(<\/div>)/,
-              `$1            ${newTabMatch[0]}\n$2`
-            );
+          if (newPageTabMatch && newPageContentMatch && newPageTabMatch[1] === newPageContentMatch[1]) {
+            const pageId = newPageTabMatch[1];
+            const tabContent = newPageTabMatch[0];
+            const pageContent = newPageContentMatch[0];
             
-            // Adicionar novo conteúdo da página
-            const finalCode = updatedCode.replace(
-              /(<\/div>\s*<\/div>\s*<style>)/,
-              `        ${newPageMatch[0]}\n$1`
-            );
+            // Verificar se a página já existe
+            const pageExists = generatedCode.includes(`data-page="${pageId}"`);
             
-            console.log('✅ Nova página integrada com sucesso');
-            setGeneratedCode(finalCode);
+            if (!pageExists) {
+              // Adicionar nova aba ao menu existente
+              let updatedCode = generatedCode.replace(
+                /(<div class="nav-tabs">[\s\S]*?)(\s*<\/div>)/,
+                `$1            ${tabContent}\n$2`
+              );
+              
+              // Adicionar novo conteúdo da página antes do fechamento do container
+              updatedCode = updatedCode.replace(
+                /(\s*<\/div>\s*<\/div>\s*<style>)/,
+                `        ${pageContent}\n$1`
+              );
+              
+              console.log('✅ Nova página integrada com sucesso');
+              setGeneratedCode(updatedCode);
+            } else {
+              console.log('⚠️ Página já existe, substituindo conteúdo');
+              // Substituir conteúdo da página existente
+              const updatedCode = generatedCode.replace(
+                new RegExp(`<div[^>]*class="[^"]*page-content[^"]*"[^>]*data-page="${pageId}"[^>]*>[\\s\\S]*?<\\/div>`),
+                pageContent
+              );
+              setGeneratedCode(updatedCode);
+            }
           } else {
             console.log('⚠️ Estrutura de página não reconhecida, usando código novo');
             setGeneratedCode(code);
@@ -144,7 +157,7 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
         
         if (similarity > 0.8) {
           console.log('⚠️ Códigos muito similares, mantendo existente');
-          // Não atualizar se muito similar
+          // Não atualizar se muito similar para evitar perder o estado atual
         } else {
           console.log('🔄 Atualizando com novo código');
           setGeneratedCode(code);
