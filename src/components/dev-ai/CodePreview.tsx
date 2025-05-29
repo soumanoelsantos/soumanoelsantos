@@ -8,13 +8,13 @@ import CodeDisplay from './components/CodeDisplay';
 import PreviewFrame from './components/PreviewFrame';
 import FileStructure from './components/FileStructure';
 import ErrorDisplay from './components/ErrorDisplay';
+import SimpleWebsite from '../SimpleWebsite';
 
 const CodePreview = () => {
   const { generatedCode } = useDevAI();
   const [selectedFile, setSelectedFile] = useState<{ content: string; name: string } | null>(null);
+  const [showCode, setShowCode] = useState(false);
   const {
-    showCode,
-    setShowCode,
     currentUrl,
     setCurrentUrl,
     iframeRef,
@@ -55,9 +55,9 @@ const CodePreview = () => {
     reportError('Erro na renderização do preview', 'code');
   };
 
-  // Iniciar com preview visual por padrão quando há código
+  // Mostrar preview visual por padrão
   useEffect(() => {
-    if (generatedCode && showCode) {
+    if (!generatedCode) {
       setShowCode(false);
     }
   }, [generatedCode]);
@@ -106,12 +106,19 @@ const CodePreview = () => {
             </div>
           </div>
         ) : (
-          <PreviewFrame
-            iframeRef={iframeRef}
-            previewHtml={getPreviewHtml()}
-            onLoad={handleLoad}
-            onError={handleIframeError}
-          />
+          // Mostrar preview visual - se há código gerado, usar iframe, senão mostrar componente diretamente
+          generatedCode ? (
+            <PreviewFrame
+              iframeRef={iframeRef}
+              previewHtml={getPreviewHtml()}
+              onLoad={handleLoad}
+              onError={handleIframeError}
+            />
+          ) : (
+            <div className="w-full h-full overflow-auto">
+              <SimpleWebsite />
+            </div>
+          )
         )}
       </div>
     </div>
