@@ -88,9 +88,70 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     console.log('- Modo incremental:', isIncremental);
     console.log('- Tamanho do código:', code.length);
     console.log('- Código anterior existia:', !!generatedCode);
-    console.log('- Primeiros 100 chars do novo código:', code.substring(0, 100));
+    console.log('- Primeiros 200 chars do novo código:', code.substring(0, 200));
     
-    setGeneratedCode(code);
+    if (isIncremental && generatedCode && generatedCode.trim().length > 100) {
+      console.log('🔄 Combinando código existente com novo código');
+      
+      // Verificar se o novo código é uma página adicional ou substituição
+      const isNewPage = code.includes('class="page-content"') || 
+                       code.includes('data-page=') ||
+                       code.includes('nav-tab');
+      
+      if (isNewPage) {
+        console.log('📄 Detectada nova página, integrando ao código existente...');
+        
+        // Se o código existente tem estrutura de navegação, integrar
+        if (generatedCode.includes('nav-tab') && generatedCode.includes('page-content')) {
+          console.log('🔗 Integrando nova página ao sistema de navegação existente');
+          
+          // Extrair o conteúdo da nova página
+          let newPageContent = code;
+          
+          // Se o novo código tem a estrutura completa, extrair apenas a nova página
+          const newPageMatch = code.match(/<div[^>]*class="[^"]*page-content[^"]*"[^>]*>[\s\S]*?<\/div>/);
+          const newTabMatch = code.match(/<div[^>]*class="[^"]*nav-tab[^"]*"[^>]*>[^<]*<\/div>/);
+          
+          if (newPageMatch && newTabMatch) {
+            // Adicionar nova aba ao menu existente
+            const updatedCode = generatedCode.replace(
+              /(<div class="nav-tabs">[\s\S]*?)(<\/div>)/,
+              `$1            ${newTabMatch[0]}\n$2`
+            );
+            
+            // Adicionar novo conteúdo da página
+            const finalCode = updatedCode.replace(
+              /(<\/div>\s*<\/div>\s*<style>)/,
+              `        ${newPageMatch[0]}\n$1`
+            );
+            
+            console.log('✅ Nova página integrada com sucesso');
+            setGeneratedCode(finalCode);
+          } else {
+            console.log('⚠️ Estrutura de página não reconhecida, usando código novo');
+            setGeneratedCode(code);
+          }
+        } else {
+          console.log('📄 Código existente sem navegação, substituindo');
+          setGeneratedCode(code);
+        }
+      } else {
+        // Verificar se os códigos são muito similares
+        const similarity = calculateSimilarity(generatedCode, code);
+        console.log('📊 Similaridade entre códigos:', similarity);
+        
+        if (similarity > 0.8) {
+          console.log('⚠️ Códigos muito similares, mantendo existente');
+          // Não atualizar se muito similar
+        } else {
+          console.log('🔄 Atualizando com novo código');
+          setGeneratedCode(code);
+        }
+      }
+    } else {
+      console.log('📄 Definindo novo código (não incremental ou sem código anterior)');
+      setGeneratedCode(code);
+    }
     
     // Salvar no cache local do projeto atual
     if (currentProject) {
@@ -109,6 +170,43 @@ export const DevAIProvider: React.FC<DevAIProviderProps> = ({ children }) => {
     } else {
       console.warn('⚠️ Nenhum projeto ativo para salvar o código');
     }
+  };
+
+  // Função para calcular similaridade entre dois códigos
+  const calculateSimilarity = (code1: string, code2: string): number => {
+    const normalize = (str: string) => str.replace(/\s+/g, ' ').trim().toLowerCase();
+    const norm1 = normalize(code1);
+    const norm2 = normalize(code2);
+    
+    if (norm1 === norm2) return 1;
+    if (norm1.length === 0 || norm2.length === 0) return 0;
+    
+    const longer = norm1.length > norm2.length ? norm1 : norm2;
+    const shorter = norm1.length > norm2.length ? norm2 : norm1;
+    
+    const editDistance = calculateEditDistance(longer, shorter);
+    return (longer.length - editDistance) / longer.length;
+  };
+
+  // Função para calcular distância de edição
+  const calculateEditDistance = (str1: string, str2: string): number => {
+    const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
+    
+    for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
+    for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+    
+    for (let j = 1; j <= str2.length; j++) {
+      for (let i = 1; i <= str1.length; i++) {
+        const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[j][i] = Math.min(
+          matrix[j][i - 1] + 1,
+          matrix[j - 1][i] + 1,
+          matrix[j - 1][i - 1] + indicator
+        );
+      }
+    }
+    
+    return matrix[str2.length][str1.length];
   };
 
   const clearMessages = () => {

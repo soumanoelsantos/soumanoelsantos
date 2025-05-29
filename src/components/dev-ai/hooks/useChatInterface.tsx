@@ -75,11 +75,12 @@ export const useChatInterface = () => {
       if (response) {
         console.log('📥 Resposta recebida da API:', response.substring(0, 200) + '...');
         
-        // Extrair código da resposta
+        // Extrair código da resposta com logs detalhados
         const extractedCode = extractCodeFromResponse(response);
         
         if (extractedCode) {
           console.log('💻 Código extraído com sucesso, tamanho:', extractedCode.length);
+          console.log('🔍 Primeiros 300 chars do código extraído:', extractedCode.substring(0, 300));
           console.log('🔄 Atualizando código com modo incremental:', isIncremental);
           
           // Usar a função incremental para preservar layout
@@ -106,7 +107,7 @@ export const useChatInterface = () => {
           addMessage(summary, 'assistant');
         } else {
           console.log('⚠️ Nenhum código extraído da resposta');
-          console.log('📄 Resposta completa:', response);
+          console.log('📄 Resposta completa para análise:', response);
           
           // Se não há código, mostrar resposta completa
           const summary = createShortSummary(response);
