@@ -130,7 +130,6 @@ const EnhancedCodePreview = () => {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <Monitor className="h-5 w-5 text-gray-600" />
-                <h2 className="font-semibold text-gray-900">Preview & Código</h2>
               </div>
               
               <div className="flex items-center gap-2">

@@ -21,9 +21,6 @@ const DevAIContent = () => {
         <div className="flex items-center gap-4">
           <div className="text-lg font-semibold text-gray-900">DevAI</div>
         </div>
-        <div className="text-xs text-gray-500">
-          Clone do Lovable.dev
-        </div>
       </div>
 
       {/* Main Content */}
