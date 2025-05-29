@@ -17,11 +17,13 @@ export const useCodePreview = (generatedCode: string) => {
   };
 
   const downloadCode = () => {
-    const blob = new Blob([generatedCode], { type: 'text/html' });
+    // Detectar se é React ou HTML
+    const fileName = generatedCode.includes('import React') ? 'component.tsx' : 'generated-code.html';
+    const blob = new Blob([generatedCode], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'generated-code.html';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -86,11 +88,46 @@ export const useCodePreview = (generatedCode: string) => {
   const getPreviewHtml = () => {
     if (!generatedCode) return '';
     
-    console.log('Preparando HTML para preview:', generatedCode);
+    console.log('Preparando HTML para preview:', generatedCode.substring(0, 200));
     
     // Se o código já é um documento HTML completo
     if (generatedCode.includes('<!DOCTYPE html>') || generatedCode.includes('<html')) {
       return generatedCode;
+    }
+    
+    // Se é código React/JSX, criar preview HTML simples
+    if (generatedCode.includes('import React') || generatedCode.includes('export default')) {
+      console.log('🔧 Convertendo código React para preview HTML');
+      
+      // Extrair JSX básico do componente React
+      const jsxMatch = generatedCode.match(/return\s*\(\s*([\s\S]*?)\s*\);?\s*}/);
+      let jsxContent = '';
+      
+      if (jsxMatch) {
+        jsxContent = jsxMatch[1]
+          .replace(/className=/g, 'class=')
+          .replace(/\{[^}]*\}/g, '') // Remover expressões JSX simples
+          .replace(/\/>/g, '>'); // Converter tags auto-fechadas
+      } else {
+        // Fallback: mostrar o código como texto
+        jsxContent = `<pre style="white-space: pre-wrap; font-family: monospace; padding: 20px; background: #f5f5f5;">${generatedCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
+      }
+      
+      return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview React Component</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  ${jsxContent}
+</body>
+</html>`;
     }
     
     // Se contém tags HTML mas não é documento completo
@@ -101,6 +138,7 @@ export const useCodePreview = (generatedCode: string) => {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
   </style>

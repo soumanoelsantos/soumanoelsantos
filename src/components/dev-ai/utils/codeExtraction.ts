@@ -49,16 +49,21 @@ export const extractCodeFromResponse = (response: string) => {
 
   // 4. Verificar se há código que pareça React mas esteja malformado
   if (response.includes('import React') || response.includes('export default')) {
-    console.log('⚠️ Código React detectado mas malformado - rejeitando');
-    console.log('📝 Conteúdo problemático:', response.substring(0, 1000));
-    return null;
+    console.log('⚠️ Código React detectado mas pode estar incompleto - tentando extrair mesmo assim');
+    
+    // Tentar extrair componente mesmo que não passe na validação rigorosa
+    const componentMatch = response.match(/import React[\s\S]*?export default \w+;?/);
+    if (componentMatch) {
+      console.log('📝 Extraindo componente detectado:', componentMatch[0].substring(0, 200));
+      return componentMatch[0];
+    }
   }
 
   console.log('❌ Nenhum código React válido encontrado na resposta');
   return null;
 };
 
-// Função para validar se o código é React válido
+// Função para validar se o código é React válido - versão mais permissiva
 const isValidReactCode = (code: string): boolean => {
   console.log('🔍 Validando código React...');
   
@@ -67,14 +72,6 @@ const isValidReactCode = (code: string): boolean => {
   const hasExportDefault = code.includes('export default');
   const hasValidComponent = /const\s+\w+\s*=|function\s+\w+/.test(code);
   
-  // Verificar se não tem sintaxe malformada
-  const hasInvalidSyntax = [
-    /\{\s*\/\*[\s\S]*?\*\/\s*\}/,  // Comentários malformados no JSX
-    /\{\s*title:\s*"[^"]*",[\s\S]*?\}/,  // Objetos JavaScript soltos no JSX
-    /\)\s*;\s*\}\s*;\s*export/,  // Sintaxe quebrada
-    /\{\s*item\.\w+\s*\}/,  // Variáveis não declaradas
-  ].some(pattern => pattern.test(code));
-
   // Verificar se tem estrutura JSX básica válida
   const hasValidJSX = /<[A-Z][\w]*/.test(code) || /<div|<section|<main|<header/.test(code);
   
@@ -82,11 +79,9 @@ const isValidReactCode = (code: string): boolean => {
   const isPureHTML = code.includes('<!DOCTYPE html>') || 
                      (code.includes('<html') && !code.includes('import'));
 
+  // Versão mais permissiva - aceitar se tem pelo menos imports e exports válidos
   const isValid = hasValidImports && 
                   hasExportDefault && 
-                  hasValidComponent && 
-                  hasValidJSX && 
-                  !hasInvalidSyntax && 
                   !isPureHTML;
 
   console.log('📊 Validação de código React:');
@@ -94,13 +89,14 @@ const isValidReactCode = (code: string): boolean => {
   console.log('- Export default:', hasExportDefault);
   console.log('- Componente válido:', hasValidComponent);
   console.log('- JSX válido:', hasValidJSX);
-  console.log('- Sem sintaxe inválida:', !hasInvalidSyntax);
   console.log('- Não é HTML puro:', !isPureHTML);
   console.log('- Resultado final:', isValid);
 
   if (!isValid) {
-    console.log('❌ Código rejeitado - não atende aos critérios de React válido');
+    console.log('❌ Código rejeitado - não atende aos critérios mínimos de React');
     console.log('🔍 Primeiros 500 chars do código rejeitado:', code.substring(0, 500));
+  } else {
+    console.log('✅ Código React aceito para preview');
   }
 
   return isValid;
