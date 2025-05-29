@@ -92,16 +92,18 @@ const CodePreview = () => {
       <div className="flex-1 min-h-0 overflow-hidden">
         {showCode ? (
           <div className="flex h-full">
-            <div className="w-64 border-r border-gray-200">
-              <FileStructure 
-                onFileSelect={handleFileSelect}
-                generatedCode={generatedCode}
-              />
-            </div>
+            {generatedCode && (
+              <div className="w-64 border-r border-gray-200">
+                <FileStructure 
+                  onFileSelect={handleFileSelect}
+                  generatedCode={generatedCode}
+                />
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <CodeDisplay 
-                code={selectedFile?.content || generatedCode} 
-                fileName={selectedFile?.name}
+                code={selectedFile?.content || generatedCode || 'Nenhum código gerado ainda'} 
+                fileName={selectedFile?.name || 'component.tsx'}
               />
             </div>
           </div>
