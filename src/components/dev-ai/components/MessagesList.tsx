@@ -10,6 +10,7 @@ interface Message {
   content: string;
   timestamp: Date;
   image?: { file: File; preview: string };
+  projectState?: string;
 }
 
 interface MessagesListProps {
@@ -27,17 +28,19 @@ const MessagesList: React.FC<MessagesListProps> = ({
   const reversedMessages = [...messages].reverse();
 
   return (
-    <ScrollArea className="flex-1">
-      <div className="p-3 space-y-3">
-        <div ref={messagesStartRef} />
-        
-        {isLoading && <LoadingIndicator />}
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-4 pb-20">
+          <div ref={messagesStartRef} />
+          
+          {isLoading && <LoadingIndicator />}
 
-        {reversedMessages.map((message) => (
-          <MessageItem key={message.id} message={message} />
-        ))}
-      </div>
-    </ScrollArea>
+          {reversedMessages.map((message) => (
+            <MessageItem key={message.id} message={message} />
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
 

@@ -38,56 +38,62 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   };
 
   return (
-    <div className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-      <div className={`flex max-w-[85%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start space-x-2`}>
-        <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
+    <div className={`flex w-full ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+      <div className={`flex max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start gap-3`}>
+        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
           message.type === 'user' ? 'bg-blue-500' : 'bg-gray-500'
         }`}>
           {message.type === 'user' ? (
-            <User className="h-3 w-3 text-white" />
+            <User className="h-4 w-4 text-white" />
           ) : (
-            <Bot className="h-3 w-3 text-white" />
+            <Bot className="h-4 w-4 text-white" />
           )}
         </div>
-        <div className="flex flex-col space-y-1">
+        
+        <div className="flex flex-col space-y-2 min-w-0">
           {message.image && (
-            <img
-              src={message.image.preview}
-              alt="Imagem enviada"
-              className="max-w-32 h-20 object-cover rounded border"
-            />
+            <div className="flex-shrink-0">
+              <img
+                src={message.image.preview}
+                alt="Imagem enviada"
+                className="max-w-40 h-24 object-cover rounded-lg border shadow-sm"
+              />
+            </div>
           )}
-          <div className={`px-3 py-2 rounded-lg ${
+          
+          <div className={`px-4 py-3 rounded-lg break-words ${
             message.type === 'user' 
               ? 'bg-blue-500 text-white' 
               : 'bg-gray-100 text-gray-900'
           }`}>
-            <p className="text-xs whitespace-pre-wrap">{message.content}</p>
+            <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
             
-            {/* Botão de restaurar apenas para mensagens do usuário que têm estado do projeto */}
-            {message.type === 'user' && message.projectState && (
-              <div className="mt-2 pt-2 border-t border-blue-400/30">
+            <div className="flex items-center justify-between mt-3 pt-2 border-t border-opacity-20 border-current">
+              <p className="text-xs opacity-70">
+                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </p>
+              
+              {/* Botão de restaurar para mensagens do usuário que têm estado do projeto */}
+              {message.type === 'user' && message.projectState && (
                 <Button
                   onClick={handleRestore}
                   size="sm"
                   variant="ghost"
-                  className="h-6 px-2 py-1 text-xs text-blue-100 hover:text-blue-50 hover:bg-blue-600/50"
+                  className="h-7 px-2 py-1 text-xs text-blue-100 hover:text-blue-50 hover:bg-blue-600/50 ml-2"
                 >
                   <RotateCcw className="h-3 w-3 mr-1" />
                   Restaurar
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
             
+            {/* Indicador de preview atualizado para mensagens do assistente */}
             {message.type === 'assistant' && (
-              <div className="flex items-center mt-1 text-green-600">
-                <CheckCircle className="h-3 w-3 mr-1" />
-                <span className="text-xs">Preview atualizado</span>
+              <div className="flex items-center mt-2 pt-2 border-t border-green-200">
+                <CheckCircle className="h-3 w-3 mr-1 text-green-600" />
+                <span className="text-xs text-green-600">Preview atualizado</span>
               </div>
             )}
-            <p className="text-xs opacity-70 mt-1">
-              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </p>
           </div>
         </div>
       </div>
