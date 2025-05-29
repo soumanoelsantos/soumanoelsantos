@@ -10,7 +10,7 @@ import { generatePrompt } from '../utils/promptGeneration';
 
 export const useChatInterface = () => {
   const { messages, addMessage, updateCodeIncremental, isLoading, setIsLoading, currentProject, generatedCode } = useDevAI();
-  const { addVersion } = useProjectHistory();
+  const projectHistory = useProjectHistory();
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
   const messagesStartRef = useRef<HTMLDivElement>(null);
@@ -43,6 +43,8 @@ export const useChatInterface = () => {
       console.log('- Tem código:', !!generatedCode);
       console.log('- Tamanho do código:', generatedCode?.length || 0);
       console.log('- É código significativo:', hasExistingCode);
+      console.log('- Projeto atual:', currentProject?.name);
+      console.log('- Contexto de histórico disponível:', !!projectHistory);
       
       // Se há código existente, SEMPRE usar modo incremental
       const isIncremental = hasExistingCode ? true : determineIfIncremental(userMessage, generatedCode);
@@ -78,13 +80,26 @@ export const useChatInterface = () => {
           // Usar a função incremental para preservar layout
           updateCodeIncremental(extractedCode, isIncremental);
           
-          // ADICIONAR VERSÃO NO HISTÓRICO - IMPORTANTE!
-          console.log('📝 Salvando versão no histórico...');
-          const summary = createShortSummary(response);
-          addVersion(extractedCode, summary, userMessage);
-          console.log('✅ Versão salva no histórico');
+          // GARANTIR que o histórico seja salvo - com verificação de segurança
+          if (projectHistory && projectHistory.addVersion && currentProject) {
+            console.log('📝 Salvando versão no histórico...');
+            const summary = createShortSummary(response);
+            
+            try {
+              projectHistory.addVersion(extractedCode, summary, userMessage);
+              console.log('✅ Versão salva no histórico com sucesso');
+            } catch (historyError) {
+              console.error('❌ Erro ao salvar no histórico:', historyError);
+            }
+          } else {
+            console.warn('⚠️ Não foi possível salvar no histórico:');
+            console.warn('- projectHistory disponível:', !!projectHistory);
+            console.warn('- addVersion disponível:', !!(projectHistory?.addVersion));
+            console.warn('- currentProject disponível:', !!currentProject);
+          }
           
           // Mostrar apenas resumo curto no chat
+          const summary = createShortSummary(response);
           addMessage(summary, 'assistant');
         } else {
           console.log('⚠️ Nenhum código extraído, mostrando resposta completa');
