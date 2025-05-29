@@ -11,6 +11,7 @@ import {
 import MessagesList from './MessagesList';
 import ChatInput from './ChatInput';
 import ErrorDisplay from './ErrorDisplay';
+import RefactorSuggestionsPanel from './RefactorSuggestionsPanel';
 import { useChatInterface } from '../hooks/useChatInterface';
 import { useErrorHandler } from '../hooks/useErrorHandler';
 import { useDevAI } from '../DevAIContext';
@@ -87,6 +88,9 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         </div>
       </div>
       
+      {/* Refactor Suggestions Panel */}
+      <RefactorSuggestionsPanel />
+      
       {/* Error Display */}
       {currentError && (
         <div className="flex-shrink-0 p-3 border-b border-gray-200 bg-red-50">
@@ -120,6 +124,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 <p>💡 Descreva componentes e funcionalidades</p>
                 <p>🚀 Envie imagens para análise</p>
                 <p>✨ Faça melhorias incrementais</p>
+                <p>🔧 Refatoração automática quando necessário</p>
               </div>
             </div>
           </div>
