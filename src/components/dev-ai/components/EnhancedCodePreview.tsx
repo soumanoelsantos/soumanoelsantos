@@ -5,14 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { 
   Code, 
-  Eye, 
   Copy, 
   Download, 
   ExternalLink, 
   RefreshCw,
-  Monitor,
-  Smartphone,
-  Tablet,
   Bug,
   CheckCircle,
   AlertTriangle
@@ -21,38 +17,26 @@ import { useDevAI } from '../DevAIContext';
 import { useCodePreview } from '../hooks/useCodePreview';
 import { useErrorHandler } from '../hooks/useErrorHandler';
 import CodeDisplay from './CodeDisplay';
-import PreviewFrame from './PreviewFrame';
 import FileStructure from './FileStructure';
 import ErrorDisplay from './ErrorDisplay';
 
 const EnhancedCodePreview = () => {
   const { generatedCode } = useDevAI();
   const [selectedFile, setSelectedFile] = useState<{ content: string; name: string } | null>(null);
-  const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
-  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [codeStatus, setCodeStatus] = useState<'valid' | 'warning' | 'error'>('valid');
 
   const {
-    showCode,
-    setShowCode,
-    currentUrl,
-    setCurrentUrl,
-    iframeRef,
     copyToClipboard,
     downloadCode,
     openInNewTab,
-    refreshPreview,
-    goBack,
-    goForward,
-    getPreviewHtml
+    refreshPreview
   } = useCodePreview(generatedCode);
 
   const {
     currentError,
     isFixing,
     autoFixError,
-    clearError,
-    reportError
+    clearError
   } = useErrorHandler();
 
   // Analyze code quality
@@ -74,29 +58,8 @@ const EnhancedCodePreview = () => {
     }
   }, [generatedCode, currentError]);
 
-  const handleLoad = () => {
-    setCurrentUrl('Preview Carregado');
-  };
-
   const handleFileSelect = (content: string, fileName: string) => {
     setSelectedFile({ content, name: fileName });
-  };
-
-  const handleIframeError = (error: any) => {
-    console.error('🚨 Erro no iframe:', error);
-    reportError('Erro na renderização do preview', 'code');
-  };
-
-  const getDeviceClasses = () => {
-    switch (previewDevice) {
-      case 'mobile':
-        return 'max-w-sm mx-auto';
-      case 'tablet':
-        return 'max-w-2xl mx-auto';
-      case 'desktop':
-      default:
-        return 'w-full';
-    }
   };
 
   const getStatusIcon = () => {
@@ -129,7 +92,8 @@ const EnhancedCodePreview = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <Monitor className="h-5 w-5 text-gray-600" />
+                <Code className="h-5 w-5 text-gray-600" />
+                <span className="font-semibold text-gray-900">Código React</span>
               </div>
               
               <div className="flex items-center gap-2">
@@ -174,71 +138,16 @@ const EnhancedCodePreview = () => {
                 <ExternalLink className="h-3 w-3 mr-1" />
                 Nova Aba
               </Button>
-            </div>
-          </div>
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
               <Button
-                variant={viewMode === 'preview' ? 'default' : 'ghost'}
+                variant="outline"
                 size="sm"
-                onClick={() => setViewMode('preview')}
-                className="text-xs h-8"
+                onClick={refreshPreview}
+                className="text-xs"
               >
-                <Eye className="h-3 w-3 mr-1" />
-                Preview
-              </Button>
-              <Button
-                variant={viewMode === 'code' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('code')}
-                className="text-xs h-8"
-              >
-                <Code className="h-3 w-3 mr-1" />
-                Código
+                <RefreshCw className="h-3 w-3" />
               </Button>
             </div>
-
-            {/* Device Toggle (only for preview) */}
-            {viewMode === 'preview' && (
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                <Button
-                  variant={previewDevice === 'desktop' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setPreviewDevice('desktop')}
-                  className="text-xs h-8 px-2"
-                >
-                  <Monitor className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant={previewDevice === 'tablet' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setPreviewDevice('tablet')}
-                  className="text-xs h-8 px-2"
-                >
-                  <Tablet className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant={previewDevice === 'mobile' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setPreviewDevice('mobile')}
-                  className="text-xs h-8 px-2"
-                >
-                  <Smartphone className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-
-            {/* Refresh Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={refreshPreview}
-              className="text-xs"
-            >
-              <RefreshCw className="h-3 w-3" />
-            </Button>
           </div>
         </div>
       </div>
@@ -265,40 +174,25 @@ const EnhancedCodePreview = () => {
                 Nenhum código gerado
               </h3>
               <p className="text-gray-500 text-sm">
-                Envie uma mensagem para o assistente IA para começar a gerar código.
+                Envie uma mensagem para o assistente IA para começar a gerar código React.
               </p>
             </Card>
           </div>
         ) : (
-          <>
-            {viewMode === 'preview' && (
-              <div className={`h-full ${getDeviceClasses()}`}>
-                <PreviewFrame
-                  iframeRef={iframeRef}
-                  previewHtml={getPreviewHtml()}
-                  onLoad={handleLoad}
-                  onError={handleIframeError}
-                />
-              </div>
-            )}
-
-            {viewMode === 'code' && (
-              <div className="flex h-full">
-                <div className="w-64 border-r border-gray-200 bg-gray-50">
-                  <FileStructure 
-                    onFileSelect={handleFileSelect}
-                    generatedCode={generatedCode}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <CodeDisplay 
-                    code={selectedFile?.content || generatedCode} 
-                    fileName={selectedFile?.name}
-                  />
-                </div>
-              </div>
-            )}
-          </>
+          <div className="flex h-full">
+            <div className="w-64 border-r border-gray-200 bg-gray-50">
+              <FileStructure 
+                onFileSelect={handleFileSelect}
+                generatedCode={generatedCode}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <CodeDisplay 
+                code={selectedFile?.content || generatedCode} 
+                fileName={selectedFile?.name || 'component.tsx'}
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>
