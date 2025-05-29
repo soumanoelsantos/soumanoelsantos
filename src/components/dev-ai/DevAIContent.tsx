@@ -6,7 +6,6 @@ import { X, Sidebar } from 'lucide-react';
 import ImprovedProjectsSidebar from './components/ImprovedProjectsSidebar';
 import EnhancedChatInterface from './components/EnhancedChatInterface';
 import EnhancedCodePreview from './components/EnhancedCodePreview';
-import NavigationMenu from './components/NavigationMenu';
 
 const DevAIContent = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -17,11 +16,10 @@ const DevAIContent = () => {
 
   return (
     <div className="h-screen w-full flex flex-col bg-gray-50">
-      {/* Top Navigation Bar */}
+      {/* Top Navigation Bar - Simplified */}
       <div className="h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0">
         <div className="flex items-center gap-4">
-          <NavigationMenu />
-          <div className="text-sm font-medium text-gray-700">DevAI</div>
+          <div className="text-lg font-semibold text-gray-900">DevAI</div>
         </div>
         <div className="text-xs text-gray-500">
           Clone do Lovable.dev

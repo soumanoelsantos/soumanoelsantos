@@ -8,7 +8,6 @@ import {
   MessageSquare, 
   Bot, 
   Sparkles,
-  Zap,
   Clock,
   Code2
 } from 'lucide-react';
@@ -164,39 +163,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               )}
             </div>
           </div>
-          
-          {/* Quick Actions */}
-          {currentProject && (
-            <div className="flex items-center gap-2 mt-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:border-blue-300"
-                onClick={() => setInput('Crie uma landing page moderna')}
-              >
-                <Zap className="h-3 w-3 mr-1" />
-                Landing Page
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs bg-gradient-to-r from-green-50 to-blue-50 border-green-200 hover:border-green-300"
-                onClick={() => setInput('Adicione um dashboard administrativo')}
-              >
-                <Code2 className="h-3 w-3 mr-1" />
-                Dashboard
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 hover:border-purple-300"
-                onClick={() => setInput('Melhore o design com animações')}
-              >
-                <Sparkles className="h-3 w-3 mr-1" />
-                Melhorar UI
-              </Button>
-            </div>
-          )}
         </div>
       </div>
       
@@ -214,7 +180,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       
       {/* Messages Area */}
       <div className="flex-1 min-h-0 overflow-hidden">
-        {messageCount === 1 && !currentProject ? (
+        {messageCount === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center max-w-md">
               <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
@@ -224,12 +190,15 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
                 Bem-vindo ao DevAI
               </h3>
               <p className="text-gray-600 mb-6">
-                Selecione um projeto na barra lateral ou crie um novo para começar a desenvolver com IA.
+                {currentProject 
+                  ? `Projeto "${currentProject.name}" selecionado. Descreva o que você quer desenvolver.`
+                  : 'Selecione um projeto na barra lateral ou crie um novo para começar a desenvolver com IA.'
+                }
               </p>
               <div className="flex flex-col gap-2 text-sm text-gray-500">
-                <p>💡 Crie landing pages modernas</p>
-                <p>🚀 Desenvolva dashboards completos</p>
-                <p>✨ Melhore designs automaticamente</p>
+                <p>💡 Descreva componentes e funcionalidades</p>
+                <p>🚀 Envie imagens para análise</p>
+                <p>✨ Faça melhorias incrementais</p>
               </div>
             </div>
           </div>
