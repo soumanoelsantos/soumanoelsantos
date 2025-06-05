@@ -1,240 +1,679 @@
-
-import React, { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { 
-  Target, 
-  Play, 
-  RotateCcw, 
-  Download,
-  Brain,
-  CheckCircle
-} from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Navigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { Bot, Sparkles, CheckCircle2 } from "lucide-react";
 import PlanejamentoEstrategicoForm from "./PlanejamentoEstrategicoForm";
 import PlanoAcaoGerado from "./PlanoAcaoGerado";
-import { 
-  PlanejamentoEstrategicoData, 
-  RespostaPlanejamento, 
-  PlanoAcao 
-} from "@/types/planejamentoEstrategico";
+import { PlanejamentoEstrategicoData, RespostaPlanejamento, PlanoAcao } from "@/types/planejamentoEstrategico";
 
 const PlanejamentoEstrategico: React.FC = () => {
-  const { userId } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const [etapa, setEtapa] = useState<'intro' | 'questionario' | 'processando' | 'plano'>('intro');
-  const [dadosPlanejamento, setDadosPlanejamento] = useState<PlanejamentoEstrategicoData | null>(null);
-  const [carregando, setCarregando] = useState(false);
+  const [etapa, setEtapa<'questionario' | 'resultado'>('questionario');
+  const [dados, setDados] = useState<PlanejamentoEstrategicoData | null>(null);
+  const [gerandoPlano, setGerandoPlano] = useState(false);
 
-  useEffect(() => {
-    carregarDadosExistentes();
-  }, [userId]);
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-  const carregarDadosExistentes = async () => {
-    // Aqui você carregaria dados existentes do Supabase
-    try {
-      // const { data } = await supabase.from('planejamento_estrategico').select('*').eq('user_id', userId).single();
-      // if (data) {
-      //   setDadosPlanejamento(data);
-      //   setEtapa('plano');
-      // }
-    } catch (error) {
-      console.log("Nenhum planejamento existente encontrado");
+  const gerarPlanoAcaoCompleto = (respostas: RespostaPlanejamento[]): PlanoAcao[] => {
+    const acoes: PlanoAcao[] = [];
+    let contadorId = 1;
+
+    // Função para adicionar ação
+    const adicionarAcao = (
+      acao: string, 
+      categoria: string, 
+      prioridade: 'alta' | 'media' | 'baixa',
+      prazoMeses: number,
+      responsavel?: string,
+      recursos?: string,
+      metricas?: string
+    ) => {
+      const dataVencimento = new Date();
+      dataVencimento.setMonth(dataVencimento.getMonth() + prazoMeses);
+      
+      acoes.push({
+        id: contadorId.toString(),
+        acao,
+        categoria,
+        prazo: `${prazoMeses} ${prazoMeses === 1 ? 'mês' : 'meses'}`,
+        prioridade,
+        concluida: false,
+        dataVencimento,
+        responsavel,
+        recursos,
+        metricas
+      });
+      contadorId++;
+    };
+
+    // Analisar respostas e gerar ações específicas
+    respostas.forEach(resposta => {
+      const { perguntaId, resposta: respostaValor, swotClassificacao } = resposta;
+
+      // Ações baseadas no diagnóstico empresarial
+      if (perguntaId === 'processos_documentados' && respostaValor === 'nao') {
+        adicionarAcao(
+          'Documentar todos os processos operacionais da empresa',
+          'Processos',
+          'alta',
+          2,
+          'Gestor de Operações',
+          'Software de documentação, tempo da equipe',
+          'Número de processos documentados'
+        );
+        adicionarAcao(
+          'Criar manual de procedimentos padrão',
+          'Processos',
+          'alta',
+          3,
+          'Líder de cada área',
+          'Ferramenta de edição, revisão técnica',
+          'Percentual de processos padronizados'
+        );
+        adicionarAcao(
+          'Treinar equipe nos novos processos documentados',
+          'Processos',
+          'media',
+          4,
+          'RH e Gestores',
+          'Material de treinamento, tempo para capacitação',
+          'Taxa de adesão aos novos processos'
+        );
+      }
+
+      if (perguntaId === 'controle_qualidade' && respostaValor === 'nao') {
+        adicionarAcao(
+          'Implementar sistema de controle de qualidade',
+          'Qualidade',
+          'alta',
+          2,
+          'Gerente de Qualidade',
+          'Software de gestão da qualidade, certificação',
+          'Índice de qualidade, reclamações de clientes'
+        );
+        adicionarAcao(
+          'Criar indicadores de qualidade por produto/serviço',
+          'Qualidade',
+          'media',
+          1,
+          'Equipe de Qualidade',
+          'Sistema de métricas, relatórios',
+          'Número de indicadores implementados'
+        );
+        adicionarAcao(
+          'Estabelecer rotina de auditoria interna',
+          'Qualidade',
+          'media',
+          3,
+          'Auditor interno',
+          'Checklist de auditoria, tempo para revisões',
+          'Frequência de auditorias realizadas'
+        );
+      }
+
+      if (perguntaId === 'metas_definidas' && respostaValor === 'nao') {
+        adicionarAcao(
+          'Definir metas SMART para cada área da empresa',
+          'Planejamento',
+          'alta',
+          1,
+          'Diretoria',
+          'Reuniões de planejamento, consultoria estratégica',
+          'Número de metas definidas e alcançadas'
+        );
+        adicionarAcao(
+          'Criar plano estratégico anual com objetivos claros',
+          'Planejamento',
+          'alta',
+          2,
+          'CEO e Diretores',
+          'Consultoria em planejamento estratégico',
+          'Percentual de objetivos atingidos'
+        );
+        adicionarAcao(
+          'Implementar reuniões mensais de acompanhamento de metas',
+          'Planejamento',
+          'media',
+          1,
+          'Gestores de área',
+          'Sistema de relatórios, tempo para reuniões',
+          'Aderência às reuniões de acompanhamento'
+        );
+      }
+
+      if (perguntaId === 'acompanhamento_resultados' && respostaValor === 'nao') {
+        adicionarAcao(
+          'Criar dashboard de indicadores chave (KPIs)',
+          'Gestão',
+          'alta',
+          2,
+          'Analista de BI',
+          'Software de BI, integração de dados',
+          'Número de KPIs monitorados'
+        );
+        adicionarAcao(
+          'Estabelecer rotina de análise de resultados',
+          'Gestão',
+          'media',
+          1,
+          'Gerentes',
+          'Relatórios gerenciais, tempo de análise',
+          'Frequência de análises realizadas'
+        );
+        adicionarAcao(
+          'Implementar relatórios automatizados',
+          'Gestão',
+          'media',
+          3,
+          'TI',
+          'Automação, integração de sistemas',
+          'Percentual de relatórios automatizados'
+        );
+      }
+
+      if (perguntaId === 'sistema_gestao' && respostaValor === 'nao') {
+        adicionarAcao(
+          'Pesquisar e implementar sistema ERP adequado',
+          'Tecnologia',
+          'alta',
+          4,
+          'TI e Diretoria',
+          'Investimento em software, consultoria',
+          'Sistema ERP funcionando plenamente'
+        );
+        adicionarAcao(
+          'Treinar equipe no novo sistema de gestão',
+          'Tecnologia',
+          'alta',
+          2,
+          'TI e RH',
+          'Treinamento especializado, suporte técnico',
+          'Taxa de adoção do sistema pela equipe'
+        );
+        adicionarAcao(
+          'Migrar dados para o novo sistema',
+          'Tecnologia',
+          'media',
+          3,
+          'TI',
+          'Consultoria em migração de dados',
+          'Percentual de dados migrados corretamente'
+        );
+      }
+
+      if (perguntaId === 'capacitacao_equipe' && respostaValor === 'nao') {
+        adicionarAcao(
+          'Criar programa de capacitação contínua',
+          'Pessoas',
+          'alta',
+          2,
+          'RH',
+          'Budget para treinamentos, plataforma de ensino',
+          'Horas de treinamento por colaborador'
+        );
+        adicionarAcao(
+          'Mapear competências necessárias por cargo',
+          'Pessoas',
+          'media',
+          1,
+          'RH e Gestores',
+          'Consultoria em gestão de competências',
+          'Matriz de competências completa'
+        );
+        adicionarAcao(
+          'Implementar plano de desenvolvimento individual',
+          'Pessoas',
+          'media',
+          3,
+          'RH',
+          'Coaching, mentoring, cursos',
+          'Percentual de colaboradores com PDI'
+        );
+      }
+
+      // Ações baseadas na análise SWOT
+      if (swotClassificacao === 'Fraqueza') {
+        switch (perguntaId) {
+          case 'swot_marketing_plano':
+            adicionarAcao(
+              'Desenvolver estratégia de marketing digital completa',
+              'Marketing',
+              'alta',
+              2,
+              'Gerente de Marketing',
+              'Agência de marketing, budget publicitário',
+              'ROI das campanhas, leads gerados'
+            );
+            adicionarAcao(
+              'Criar presença consistente nas redes sociais',
+              'Marketing',
+              'media',
+              1,
+              'Social Media',
+              'Ferramentas de gestão, criação de conteúdo',
+              'Engajamento e alcance nas redes'
+            );
+            break;
+
+          case 'swot_equipe_qualificada':
+            adicionarAcao(
+              'Recrutar talentos especializados para áreas críticas',
+              'Pessoas',
+              'alta',
+              3,
+              'RH',
+              'Processo seletivo, headhunter',
+              'Qualidade dos profissionais contratados'
+            );
+            adicionarAcao(
+              'Criar programa de retenção de talentos',
+              'Pessoas',
+              'media',
+              2,
+              'RH',
+              'Benefícios, plano de carreira',
+              'Taxa de retenção de colaboradores'
+            );
+            break;
+
+          case 'swot_fluxo_caixa':
+            adicionarAcao(
+              'Implementar controle rigoroso de fluxo de caixa',
+              'Financeiro',
+              'alta',
+              1,
+              'CFO',
+              'Software financeiro, consultoria',
+              'Previsibilidade do fluxo de caixa'
+            );
+            adicionarAcao(
+              'Renegociar prazos de pagamento com fornecedores',
+              'Financeiro',
+              'alta',
+              1,
+              'Compras',
+              'Negociação, relacionamento',
+              'Prazo médio de pagamento'
+            );
+            break;
+
+          case 'swot_tecnologia_atual':
+            adicionarAcao(
+              'Modernizar infraestrutura tecnológica',
+              'Tecnologia',
+              'alta',
+              4,
+              'TI',
+              'Investimento em hardware/software',
+              'Atualização tecnológica completa'
+            );
+            break;
+
+          case 'swot_clientes_fieis':
+            adicionarAcao(
+              'Criar programa de fidelização de clientes',
+              'Vendas',
+              'alta',
+              2,
+              'Gerente Comercial',
+              'CRM, programa de pontos',
+              'Taxa de retenção de clientes'
+            );
+            break;
+        }
+      }
+
+      // Ações para aproveitar oportunidades
+      if (swotClassificacao === 'Oportunidade') {
+        switch (perguntaId) {
+          case 'swot_novo_nicho_mercado':
+            adicionarAcao(
+              'Pesquisar e validar novo nicho de mercado',
+              'Estratégia',
+              'media',
+              2,
+              'Diretor Comercial',
+              'Pesquisa de mercado, testes',
+              'Viabilidade do novo nicho'
+            );
+            adicionarAcao(
+              'Desenvolver produto/serviço para novo nicho',
+              'Desenvolvimento',
+              'media',
+              4,
+              'P&D',
+              'Investimento em desenvolvimento',
+              'Lançamento do novo produto'
+            );
+            break;
+
+          case 'swot_parcerias_estrategicas':
+            adicionarAcao(
+              'Mapear potenciais parceiros estratégicos',
+              'Estratégia',
+              'media',
+              1,
+              'CEO',
+              'Network, pesquisa de mercado',
+              'Número de parcerias estabelecidas'
+            );
+            adicionarAcao(
+              'Estruturar acordos de parceria',
+              'Jurídico',
+              'media',
+              2,
+              'Jurídico',
+              'Advocacia, contratos',
+              'Contratos de parceria assinados'
+            );
+            break;
+
+          case 'swot_expansao_geografica':
+            adicionarAcao(
+              'Estudar viabilidade de expansão geográfica',
+              'Estratégia',
+              'media',
+              3,
+              'Planejamento',
+              'Consultoria, estudo de mercado',
+              'Plano de expansão aprovado'
+            );
+            break;
+        }
+      }
+
+      // Ações para neutralizar ameaças
+      if (swotClassificacao === 'Ameaça') {
+        switch (perguntaId) {
+          case 'swot_concorrentes_redes_sociais':
+            adicionarAcao(
+              'Acelerar investimento em marketing digital',
+              'Marketing',
+              'alta',
+              1,
+              'Marketing',
+              'Budget adicional, agência especializada',
+              'Presença digital competitiva'
+            );
+            break;
+
+          case 'swot_regulamentacao_setor':
+            adicionarAcao(
+              'Adequar-se às novas regulamentações',
+              'Compliance',
+              'alta',
+              2,
+              'Jurídico',
+              'Consultoria regulatória',
+              'Conformidade total com regulamentações'
+            );
+            break;
+
+          case 'swot_crise_economica':
+            adicionarAcao(
+              'Criar plano de contingência para crise',
+              'Estratégia',
+              'alta',
+              1,
+              'Diretoria',
+              'Planejamento estratégico',
+              'Plano de contingência aprovado'
+            );
+            adicionarAcao(
+              'Diversificar fontes de receita',
+              'Comercial',
+              'media',
+              3,
+              'Comercial',
+              'Desenvolvimento de novos produtos',
+              'Número de fontes de receita'
+            );
+            break;
+
+          case 'swot_competidores_grandes':
+            adicionarAcao(
+              'Focar em diferenciação e nicho específico',
+              'Estratégia',
+              'alta',
+              2,
+              'CEO',
+              'Consultoria estratégica',
+              'Posicionamento diferenciado no mercado'
+            );
+            break;
+        }
+      }
+    });
+
+    // Ações adicionais baseadas na proposta única de valor
+    const diferencialResposta = respostas.find(r => r.perguntaId === 'diferencial_competitivo');
+    if (!diferencialResposta || !diferencialResposta.resposta) {
+      adicionarAcao(
+        'Definir claramente proposta única de valor',
+        'Estratégia',
+        'alta',
+        1,
+        'CEO',
+        'Workshop de estratégia',
+        'PUV definida e comunicada'
+      );
     }
-  };
 
-  const iniciarQuestionario = () => {
-    setEtapa('questionario');
+    // Ações para desenvolvimento da equipe baseadas no tamanho
+    const tamanhoEquipe = respostas.find(r => r.perguntaId === 'numero_funcionarios')?.resposta;
+    if (tamanhoEquipe === '1-5') {
+      adicionarAcao(
+        'Planejar expansão da equipe conforme crescimento',
+        'Pessoas',
+        'media',
+        3,
+        'RH',
+        'Planejamento de headcount',
+        'Plano de contratações'
+      );
+    } else if (tamanhoEquipe === '6-15') {
+      adicionarAcao(
+        'Implementar estrutura de gestão intermediária',
+        'Pessoas',
+        'media',
+        2,
+        'RH',
+        'Definição de hierarquia',
+        'Estrutura organizacional clara'
+      );
+    }
+
+    // Ações baseadas na fase da empresa
+    const crescimento = respostas.find(r => r.perguntaId === 'crescimento_atual')?.resposta;
+    if (crescimento === 'Em declínio') {
+      adicionarAcao(
+        'Implementar plano de recuperação urgente',
+        'Estratégia',
+        'alta',
+        1,
+        'CEO',
+        'Consultoria de turnaround',
+        'Reversão da tendência de declínio'
+      );
+    } else if (crescimento === 'Estagnado') {
+      adicionarAcao(
+        'Identificar e remover gargalos operacionais',
+        'Operações',
+        'alta',
+        2,
+        'COO',
+        'Análise de processos',
+        'Eliminação de gargalos identificados'
+      );
+    }
+
+    // Garantir que temos pelo menos 15-20 ações
+    if (acoes.length < 15) {
+      // Adicionar ações complementares essenciais
+      const acoesComplementares = [
+        {
+          acao: 'Implementar reuniões semanais de alinhamento',
+          categoria: 'Gestão',
+          prioridade: 'media' as const,
+          prazo: 1,
+          responsavel: 'Todos os gestores',
+          recursos: 'Tempo para reuniões',
+          metricas: 'Frequência e qualidade das reuniões'
+        },
+        {
+          acao: 'Criar sistema de feedback contínuo',
+          categoria: 'Pessoas',
+          prioridade: 'media' as const,
+          prazo: 2,
+          responsavel: 'RH',
+          recursos: 'Ferramenta de feedback',
+          metricas: 'Frequência de feedbacks'
+        },
+        {
+          acao: 'Desenvolver programa de inovação',
+          categoria: 'Inovação',
+          prioridade: 'baixa' as const,
+          prazo: 4,
+          responsavel: 'P&D',
+          recursos: 'Budget para inovação',
+          metricas: 'Número de ideias implementadas'
+        },
+        {
+          acao: 'Implementar programa de sustentabilidade',
+          categoria: 'Sustentabilidade',
+          prioridade: 'baixa' as const,
+          prazo: 6,
+          responsavel: 'Comitê de Sustentabilidade',
+          recursos: 'Investimento em práticas sustentáveis',
+          metricas: 'Redução de impacto ambiental'
+        },
+        {
+          acao: 'Criar programa de mentoring interno',
+          categoria: 'Pessoas',
+          prioridade: 'media' as const,
+          prazo: 3,
+          responsavel: 'RH',
+          recursos: 'Tempo dos mentores',
+          metricas: 'Número de mentorias ativas'
+        }
+      ];
+
+      acoesComplementares.forEach(acaoComp => {
+        if (acoes.length < 20) {
+          adicionarAcao(
+            acaoComp.acao,
+            acaoComp.categoria,
+            acaoComp.prioridade,
+            acaoComp.prazo,
+            acaoComp.responsavel,
+            acaoComp.recursos,
+            acaoComp.metricas
+          );
+        }
+      });
+    }
+
+    return acoes.sort((a, b) => {
+      const prioridadeOrdem = { alta: 1, media: 2, baixa: 3 };
+      return prioridadeOrdem[a.prioridade] - prioridadeOrdem[b.prioridade];
+    });
   };
 
   const processarRespostas = async (respostas: RespostaPlanejamento[]) => {
-    setEtapa('processando');
-    setCarregando(true);
-
+    setGerandoPlano(true);
+    
     try {
-      // Aqui você processaria as respostas e geraria as ferramentas
-      await new Promise(resolve => setTimeout(resolve, 3000)); // Simular processamento
-
-      const planoAcaoGerado = gerarPlanoAcao(respostas);
-      const ferramentasGeradas = gerarFerramentas(respostas);
-
-      const novosPlanejamento: PlanejamentoEstrategicoData = {
-        empresaNome: respostas.find(r => r.perguntaId === 'empresa_nome')?.resposta as string || '',
+      // Obter informações básicas
+      const empresaNome = respostas.find(r => r.perguntaId === 'empresa_nome')?.resposta as string || 'Empresa';
+      
+      // Gerar ferramentas baseadas nas respostas
+      const ferramentasGeradas = gerarFerramentasCompletas(respostas);
+      
+      // Gerar plano de ação abrangente
+      const planoAcao = gerarPlanoAcaoCompleto(respostas);
+      
+      const dadosCompletos: PlanejamentoEstrategicoData = {
+        empresaNome,
         respostas,
         ferramentasGeradas,
-        planoAcao: planoAcaoGerado,
+        planoAcao,
         progresso: 0,
         dataInicio: new Date(),
         dataAtualizacao: new Date(),
         status: 'em_andamento'
       };
-
-      setDadosPlanejamento(novosPlanejamento);
       
-      // Salvar no Supabase
-      // await supabase.from('planejamento_estrategico').insert({
-      //   user_id: userId,
-      //   dados: novosPlanejamento
-      // });
-
-      setEtapa('plano');
+      setDados(dadosCompletos);
+      setEtapa('resultado');
       
       toast({
-        title: "Planejamento Concluído!",
-        description: "Seu plano de ação estratégico foi gerado com sucesso.",
+        title: "Plano Estratégico Gerado!",
+        description: `Foram criadas ${planoAcao.length} ações estratégicas para os próximos 6 meses.`,
       });
+      
     } catch (error) {
+      console.error("Erro ao gerar plano:", error);
       toast({
         title: "Erro",
-        description: "Erro ao processar planejamento. Tente novamente.",
+        description: "Não foi possível gerar o plano estratégico. Tente novamente.",
         variant: "destructive"
       });
-    } finally {
-      setCarregando(false);
     }
+    
+    setGerandoPlano(false);
   };
 
-  const gerarPlanoAcao = (respostas: RespostaPlanejamento[]): PlanoAcao[] => {
-    const acoes: PlanoAcao[] = [];
-    const hoje = new Date();
-
-    // Gerar ações baseadas nas respostas
-    respostas.forEach(resposta => {
-      switch (resposta.perguntaId) {
-        case 'processos_documentados':
-          if (resposta.resposta === 'nao') {
-            acoes.push({
-              id: 'doc_processos',
-              acao: 'Documentar e padronizar todos os processos principais da empresa',
-              categoria: 'Processos',
-              prazo: '30 dias',
-              prioridade: 'alta',
-              concluida: false,
-              dataVencimento: new Date(hoje.getTime() + 30 * 24 * 60 * 60 * 1000),
-              recursos: 'Tempo da equipe, ferramentas de documentação',
-              metricas: 'Número de processos documentados'
-            });
-          }
-          break;
-        case 'metas_definidas':
-          if (resposta.resposta === 'nao') {
-            acoes.push({
-              id: 'definir_metas',
-              acao: 'Estabelecer metas SMART para todos os departamentos',
-              categoria: 'Gestão',
-              prazo: '15 dias',
-              prioridade: 'alta',
-              concluida: false,
-              dataVencimento: new Date(hoje.getTime() + 15 * 24 * 60 * 60 * 1000),
-              recursos: 'Reuniões de planejamento, análise de dados históricos',
-              metricas: 'Metas definidas por departamento'
-            });
-          }
-          break;
-        case 'sistema_gestao':
-          if (resposta.resposta === 'nao') {
-            acoes.push({
-              id: 'implementar_sistema',
-              acao: 'Pesquisar e implementar sistema de gestão (ERP/CRM)',
-              categoria: 'Tecnologia',
-              prazo: '90 dias',
-              prioridade: 'media',
-              concluida: false,
-              dataVencimento: new Date(hoje.getTime() + 90 * 24 * 60 * 60 * 1000),
-              recursos: 'Orçamento para software, tempo para implementação',
-              metricas: 'Sistema implementado e funcionando'
-            });
-          }
-          break;
-      }
-    });
-
-    // Adicionar ações estratégicas padrão
-    acoes.push(
-      {
-        id: 'analise_mercado',
-        acao: 'Realizar análise competitiva completa do mercado',
-        categoria: 'Estratégia',
-        prazo: '45 dias',
-        prioridade: 'media',
-        concluida: false,
-        dataVencimento: new Date(hoje.getTime() + 45 * 24 * 60 * 60 * 1000),
-        recursos: 'Pesquisa de mercado, análise de concorrentes',
-        metricas: 'Relatório de análise competitiva completo'
-      },
-      {
-        id: 'plan_marketing',
-        acao: 'Desenvolver plano de marketing digital',
-        categoria: 'Marketing',
-        prazo: '60 dias',
-        prioridade: 'media',
-        concluida: false,
-        dataVencimento: new Date(hoje.getTime() + 60 * 24 * 60 * 60 * 1000),
-        recursos: 'Equipe de marketing, orçamento para campanhas',
-        metricas: 'Plano de marketing documentado e aprovado'
-      }
-    );
-
-    return acoes;
-  };
-
-  const gerarFerramentas = (respostas: RespostaPlanejamento[]) => {
-    // Processar respostas SWOT
-    const swotRespostas = respostas.filter(r => r.swotClassificacao);
-    const forcas = swotRespostas.filter(r => r.swotClassificacao === 'Força').map(r => r.resposta as string);
-    const fraquezas = swotRespostas.filter(r => r.swotClassificacao === 'Fraqueza').map(r => r.resposta as string);
-    const oportunidades = swotRespostas.filter(r => r.swotClassificacao === 'Oportunidade').map(r => r.resposta as string);
-    const ameacas = swotRespostas.filter(r => r.swotClassificacao === 'Ameaça').map(r => r.resposta as string);
-
-    // Gerar diagnóstico
+  const gerarFerramentasCompletas = (respostas: RespostaPlanejamento[]) => {
     const diagnostico = {
       processosDocumentados: respostas.find(r => r.perguntaId === 'processos_documentados')?.resposta === 'sim',
       controleQualidade: respostas.find(r => r.perguntaId === 'controle_qualidade')?.resposta === 'sim',
       metasDefinidas: respostas.find(r => r.perguntaId === 'metas_definidas')?.resposta === 'sim',
       acompanhamentoResultados: respostas.find(r => r.perguntaId === 'acompanhamento_resultados')?.resposta === 'sim',
       sistemaGestao: respostas.find(r => r.perguntaId === 'sistema_gestao')?.resposta === 'sim',
-      capacitacaoEquipe: respostas.find(r => r.perguntaId === 'capacitacao_equipe')?.resposta === 'sim',
+      capacitacaoEquipe: respostas.find(r => r.perguntaId === 'capacitacao_equipe')?.resposta === 'sim'
     };
 
-    // Gerar PUV
-    const puv = {
-      diferencial: respostas.find(r => r.perguntaId === 'diferencial_competitivo')?.resposta || '',
-      problema: respostas.find(r => r.perguntaId === 'problema_cliente')?.resposta || '',
-      beneficio: respostas.find(r => r.perguntaId === 'beneficio_principal')?.resposta || '',
+    const swot = {
+      forcas: respostas.filter(r => r.swotClassificacao === 'Força').map(r => r.perguntaId),
+      fraquezas: respostas.filter(r => r.swotClassificacao === 'Fraqueza').map(r => r.perguntaId),
+      oportunidades: respostas.filter(r => r.swotClassificacao === 'Oportunidade').map(r => r.perguntaId),
+      ameacas: respostas.filter(r => r.swotClassificacao === 'Ameaça').map(r => r.perguntaId)
     };
 
-    // Gerar mapa da equipe
-    const mapaEquipe = {
-      numeroFuncionarios: respostas.find(r => r.perguntaId === 'numero_funcionarios')?.resposta || '',
-      estruturaHierarquica: respostas.find(r => r.perguntaId === 'estrutura_hierarquica')?.resposta || '',
-      principaisCargos: respostas.find(r => r.perguntaId === 'principais_cargos')?.resposta || '',
-    };
-
-    // Gerar fase da empresa
-    const faseEmpresa = {
-      tempoMercado: respostas.find(r => r.perguntaId === 'tempo_mercado')?.resposta || '',
-      faturamento: respostas.find(r => r.perguntaId === 'faturamento_atual')?.resposta || '',
-      crescimento: respostas.find(r => r.perguntaId === 'crescimento_atual')?.resposta || '',
-    };
-
-    // Gerar mapa de negócio
     const mapaNegocios = {
-      empresa: respostas.find(r => r.perguntaId === 'empresa_nome')?.resposta || '',
-      setor: respostas.find(r => r.perguntaId === 'empresa_setor')?.resposta || '',
-      produtos: respostas.find(r => r.perguntaId === 'empresa_produtos')?.resposta || '',
-      publicoAlvo: respostas.find(r => r.perguntaId === 'empresa_publico')?.resposta || '',
+      empresa: respostas.find(r => r.perguntaId === 'empresa_nome')?.resposta as string || '',
+      setor: respostas.find(r => r.perguntaId === 'empresa_setor')?.resposta as string || '',
+      produtos: respostas.find(r => r.perguntaId === 'empresa_produtos')?.resposta as string || '',
+      publicoAlvo: respostas.find(r => r.perguntaId === 'empresa_publico')?.resposta as string || ''
+    };
+
+    const puv = {
+      diferencial: respostas.find(r => r.perguntaId === 'diferencial_competitivo')?.resposta as string || '',
+      problema: respostas.find(r => r.perguntaId === 'problema_cliente')?.resposta as string || '',
+      beneficio: respostas.find(r => r.perguntaId === 'beneficio_principal')?.resposta as string || ''
+    };
+
+    const mapaEquipe = {
+      numeroFuncionarios: respostas.find(r => r.perguntaId === 'numero_funcionarios')?.resposta as string || '',
+      estruturaHierarquica: respostas.find(r => r.perguntaId === 'estrutura_hierarquica')?.resposta as string || '',
+      principaisCargos: respostas.find(r => r.perguntaId === 'principais_cargos')?.resposta as string || ''
+    };
+
+    const faseEmpresa = {
+      tempoMercado: respostas.find(r => r.perguntaId === 'tempo_mercado')?.resposta as string || '',
+      faturamento: respostas.find(r => r.perguntaId === 'faturamento_atual')?.resposta as string || '',
+      crescimento: respostas.find(r => r.perguntaId === 'crescimento_atual')?.resposta as string || ''
     };
 
     return {
       diagnostico,
-      swot: {
-        forcas,
-        fraquezas,
-        oportunidades,
-        ameacas
-      },
+      swot,
       mapaNegocios,
       puv,
       mapaEquipe,
@@ -242,63 +681,29 @@ const PlanejamentoEstrategico: React.FC = () => {
     };
   };
 
-  const atualizarProgresso = (novoProgresso: number) => {
-    if (dadosPlanejamento) {
-      const dadosAtualizados = {
-        ...dadosPlanejamento,
+  const handleUpdateProgresso = (novoProgresso: number) => {
+    if (dados) {
+      setDados({
+        ...dados,
         progresso: novoProgresso,
         dataAtualizacao: new Date()
-      };
-      setDadosPlanejamento(dadosAtualizados);
-      
-      // Salvar no Supabase
-      // await supabase.from('planejamento_estrategico').update({
-      //   dados: dadosAtualizados
-      // }).eq('user_id', userId);
+      });
     }
   };
 
-  const reiniciarPlanejamento = () => {
-    setDadosPlanejamento(null);
-    setEtapa('intro');
-  };
-
-  const exportarPlano = () => {
-    // Implementar exportação para PDF
-    toast({
-      title: "Exportando...",
-      description: "Seu plano será baixado em instantes.",
-    });
-  };
-
-  if (etapa === 'questionario') {
-    return <PlanejamentoEstrategicoForm onComplete={processarRespostas} />;
-  }
-
-  if (etapa === 'processando') {
+  if (gerandoPlano) {
     return (
-      <div className="max-w-2xl mx-auto p-6">
+      <div className="max-w-4xl mx-auto p-6">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-6 w-6 animate-pulse" />
-              Processando Planejamento Estratégico
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-center">
-              <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-lg font-medium">Gerando seu plano personalizado...</p>
-              <p className="text-gray-600 mt-2">
-                Estamos analisando suas respostas e criando um plano de ação detalhado
-              </p>
-            </div>
-            <Progress value={75} className="mt-4" />
-            <div className="space-y-2 text-sm text-gray-600">
-              <p>✅ Analisando respostas do questionário</p>
-              <p>✅ Gerando diagnóstico empresarial</p>
-              <p>✅ Criando análise SWOT</p>
-              <p className="animate-pulse">🔄 Desenvolvendo plano de ação...</p>
+          <CardContent className="p-8 text-center">
+            <Bot className="h-16 w-16 mx-auto mb-4 animate-pulse text-blue-600" />
+            <h2 className="text-2xl font-bold mb-2">Gerando Plano Estratégico</h2>
+            <p className="text-gray-600 mb-4">
+              Analisando suas respostas e criando um plano de ação personalizado...
+            </p>
+            <div className="flex items-center justify-center gap-2 text-blue-600">
+              <Sparkles className="h-5 w-5 animate-spin" />
+              <span>Processando dados estratégicos</span>
             </div>
           </CardContent>
         </Card>
@@ -306,155 +711,11 @@ const PlanejamentoEstrategico: React.FC = () => {
     );
   }
 
-  if (etapa === 'plano' && dadosPlanejamento) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Planejamento Estratégico</h1>
-            <p className="text-gray-600">Acompanhe o progresso do seu plano de ação</p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={exportarPlano}>
-              <Download className="mr-2 h-4 w-4" />
-              Exportar PDF
-            </Button>
-            <Button variant="outline" onClick={reiniciarPlanejamento}>
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Novo Planejamento
-            </Button>
-          </div>
-        </div>
-        
-        <PlanoAcaoGerado 
-          dados={dadosPlanejamento} 
-          onUpdateProgresso={atualizarProgresso}
-        />
-      </div>
-    );
+  if (etapa === 'resultado' && dados) {
+    return <PlanoAcaoGerado dados={dados} onUpdateProgresso={handleUpdateProgresso} />;
   }
 
-  // Tela inicial
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl mb-4">Planejamento Estratégico Inteligente</CardTitle>
-          <p className="text-xl text-gray-600">
-            Um questionário completo que gera automaticamente todas as ferramentas de gestão e um plano de ação personalizado
-          </p>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <Brain className="h-5 w-5" />
-                O que você receberá:
-              </h3>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  Diagnóstico empresarial completo
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  Análise SWOT personalizada
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  Mapa do negócio estruturado
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  Proposta única de valor definida
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  Mapa da equipe organizacional
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  Identificação da fase da empresa
-                </li>
-              </ul>
-            </div>
-            
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <Target className="h-5 w-5" />
-                Plano de Ação SMART:
-              </h3>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  Cronograma de 6 meses
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  Ações específicas e mensuráveis
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  Priorização inteligente
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  Acompanhamento de progresso
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  Recursos necessários definidos
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  Métricas de sucesso claras
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold mb-2">Como funciona:</h3>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
-              <div className="text-center">
-                <div className="bg-blue-100 rounded-full p-3 w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                  <span className="font-bold text-blue-600">1</span>
-                </div>
-                <p>Responda o questionário inteligente com suporte de IA</p>
-              </div>
-              <div className="text-center">
-                <div className="bg-purple-100 rounded-full p-3 w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                  <span className="font-bold text-purple-600">2</span>
-                </div>
-                <p>Receba todas as ferramentas preenchidas automaticamente</p>
-              </div>
-              <div className="text-center">
-                <div className="bg-green-100 rounded-full p-3 w-12 h-12 mx-auto mb-2 flex items-center justify-center">
-                  <span className="font-bold text-green-600">3</span>
-                </div>
-                <p>Execute seu plano de ação e acompanhe o progresso</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <Button 
-              onClick={iniciarQuestionario}
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Iniciar Planejamento Estratégico
-            </Button>
-            <p className="text-sm text-gray-500 mt-2">
-              Tempo estimado: 15-20 minutos
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  return <PlanejamentoEstrategicoForm onComplete={processarRespostas} />;
 };
 
 export default PlanejamentoEstrategico;
