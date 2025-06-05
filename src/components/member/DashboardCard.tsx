@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart3, Settings, ExternalLink } from 'lucide-react';
+import { BarChart3, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
@@ -14,13 +14,6 @@ const DashboardCard = () => {
 
   const handleConfigureDashboard = () => {
     navigate('/dashboard/configurar');
-  };
-
-  const handleGenerateLink = () => {
-    // Gerar link público para o dashboard da empresa
-    const dashboardUrl = `${window.location.origin}/dashboard/empresa/${Date.now()}`;
-    navigator.clipboard.writeText(dashboardUrl);
-    // TODO: Adicionar toast de confirmação
   };
 
   return (
@@ -40,7 +33,7 @@ const DashboardCard = () => {
       </CardHeader>
       
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Button 
             onClick={handleAccessDashboard}
             className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
@@ -56,15 +49,6 @@ const DashboardCard = () => {
           >
             <Settings className="h-4 w-4" />
             Configurar Dashboard
-          </Button>
-          
-          <Button 
-            onClick={handleGenerateLink}
-            variant="outline" 
-            className="border-green-300 text-green-700 hover:bg-green-50 flex items-center gap-2"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Gerar Link Público
           </Button>
         </div>
         
