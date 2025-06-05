@@ -5,13 +5,13 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { salesData } from '../data/chartData';
 
 export const SalesChart = () => (
-  <Card>
+  <Card className="w-full">
     <CardHeader>
       <CardTitle>Vendas por Mês</CardTitle>
-      <CardContent className="text-sm text-gray-600">Evolução das vendas mensais</CardContent>
+      <CardContent className="text-sm text-gray-600 p-0">Evolução das vendas mensais</CardContent>
     </CardHeader>
     <CardContent>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={350}>
         <BarChart data={salesData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
@@ -25,13 +25,13 @@ export const SalesChart = () => (
 );
 
 export const GrowthChart = () => (
-  <Card>
+  <Card className="w-full">
     <CardHeader>
       <CardTitle>Tendência de Crescimento</CardTitle>
-      <CardContent className="text-sm text-gray-600">Projeção baseada nos dados atuais</CardContent>
+      <CardContent className="text-sm text-gray-600 p-0">Projeção baseada nos dados atuais</CardContent>
     </CardHeader>
     <CardContent>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={350}>
         <LineChart data={salesData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />

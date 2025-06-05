@@ -18,7 +18,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return (
       <>
         {metrics.map((metric, index) => (
-          <Card key={`${metric.key}-${index}`} className="h-40 flex flex-col">
+          <Card key={`${metric.key}-${index}`} className="h-48 flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
               <CardTitle className="text-sm font-medium text-gray-600">
                 {metric.title}
@@ -63,7 +63,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
   // Taxa de conversão
   if (itemKey === 'conversionRate' && config.showMonthlyGoals && config.showConversion) {
     return (
-      <div className="h-40">
+      <div className="h-48">
         <ConversionRateCard />
       </div>
     );
@@ -72,7 +72,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
   // Meta de faturamento
   if (itemKey === 'revenueGoal' && config.showMonthlyGoals && config.showRevenue) {
     return (
-      <div className="h-40">
+      <div className="h-48">
         <RevenueGoalCard />
       </div>
     );
@@ -81,7 +81,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
   // Meta de receita
   if (itemKey === 'salesGoal' && config.showMonthlyGoals && config.showRevenue) {
     return (
-      <div className="h-40">
+      <div className="h-48">
         <SalesGoalCard />
       </div>
     );
