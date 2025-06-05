@@ -77,6 +77,7 @@ export type Database = {
           company_name: string | null
           created_at: string
           id: string
+          metrics_order: Json | null
           show_charts: boolean | null
           show_conversion: boolean | null
           show_leads: boolean | null
@@ -92,6 +93,7 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           id?: string
+          metrics_order?: Json | null
           show_charts?: boolean | null
           show_conversion?: boolean | null
           show_leads?: boolean | null
@@ -107,6 +109,7 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           id?: string
+          metrics_order?: Json | null
           show_charts?: boolean | null
           show_conversion?: boolean | null
           show_leads?: boolean | null
