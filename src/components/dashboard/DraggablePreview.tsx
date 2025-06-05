@@ -23,39 +23,65 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
   metricsOrder,
   onReorderMetrics
 }) => {
-  const allMetrics: MetricItem[] = [
-    // Cards de métricas básicas
-    { key: 'showSales', title: 'Total de Vendas', enabled: config.showSales },
-    { key: 'showSales', title: 'Número de Vendas', enabled: config.showSales },
-    { key: 'showLeads', title: 'Leads Gerados', enabled: config.showLeads },
-    { key: 'showTicketMedio', title: 'Ticket Médio', enabled: config.showTicketMedio },
-    { key: 'showTeam', title: 'Performance da Equipe', enabled: config.showTeam },
-    // Metas mensais
-    { key: 'revenueGoal', title: 'Meta de Faturamento', enabled: config.showMonthlyGoals && config.showRevenue },
-    { key: 'salesGoal', title: 'Meta de Receita', enabled: config.showMonthlyGoals && config.showRevenue },
-    { key: 'conversionRate', title: 'Taxa de Conversão', enabled: config.showMonthlyGoals && config.showConversion },
-    // Gráficos
-    { key: 'salesChart', title: '📊 Vendas por Mês', enabled: config.showCharts, isChart: true },
-    { key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: config.showCharts, isChart: true }
-  ];
+  // Criando array de métricas que corresponde exatamente ao dashboard real
+  const allMetrics: MetricItem[] = [];
 
-  // Filtra apenas métricas habilitadas
-  const enabledMetrics = allMetrics.filter(metric => metric.enabled);
+  // Cards de métricas básicas (todos os que podem aparecer no dashboard)
+  if (config.showSales) {
+    allMetrics.push(
+      { key: 'showSales', title: 'Total de Vendas', enabled: true },
+      { key: 'showSales', title: 'Número de Vendas', enabled: true }
+    );
+  }
+
+  if (config.showLeads) {
+    allMetrics.push({ key: 'showLeads', title: 'Leads Gerados', enabled: true });
+  }
+
+  if (config.showTicketMedio) {
+    allMetrics.push({ key: 'showTicketMedio', title: 'Ticket Médio', enabled: true });
+  }
+
+  if (config.showTeam) {
+    allMetrics.push({ key: 'showTeam', title: 'Performance da Equipe', enabled: true });
+  }
+
+  // Metas mensais
+  if (config.showMonthlyGoals && config.showConversion) {
+    allMetrics.push({ key: 'conversionRate', title: 'Taxa de Conversão', enabled: true });
+  }
+
+  if (config.showMonthlyGoals && config.showRevenue) {
+    allMetrics.push(
+      { key: 'revenueGoal', title: 'Meta de Faturamento', enabled: true },
+      { key: 'salesGoal', title: 'Meta de Receita', enabled: true }
+    );
+  }
+
+  // Gráficos
+  if (config.showCharts) {
+    allMetrics.push(
+      { key: 'salesChart', title: '📊 Vendas por Mês', enabled: true, isChart: true },
+      { key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: true, isChart: true }
+    );
+  }
 
   // Ordena as métricas com base na ordem salva
   const orderedMetrics = metricsOrder
-    .map(key => enabledMetrics.find(metric => metric.key === key))
+    .map(key => allMetrics.find(metric => metric.key === key))
     .filter((metric): metric is MetricItem => metric !== undefined)
     .concat(
-      enabledMetrics.filter(metric => !metricsOrder.includes(metric.key as string))
+      allMetrics.filter(metric => !metricsOrder.includes(metric.key as string))
     );
 
   // Separa cards e gráficos
   const cards = orderedMetrics.filter(metric => !metric.isChart);
   const charts = orderedMetrics.filter(metric => metric.isChart);
 
+  console.log('Total de métricas habilitadas:', allMetrics.length);
   console.log('Cards habilitados:', cards.length);
   console.log('Gráficos habilitados:', charts.length);
+  console.log('Cards:', cards.map(c => c.title));
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
