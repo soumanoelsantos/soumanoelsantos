@@ -9,6 +9,7 @@ interface MetricItem {
   key: keyof DashboardConfig | 'charts' | 'salesChart' | 'growthChart' | 'conversionRate' | 'revenueGoal' | 'salesGoal';
   title: string;
   enabled: boolean;
+  isChart?: boolean;
 }
 
 interface DraggablePreviewProps {
@@ -28,8 +29,8 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
     { key: 'showLeads', title: 'Leads Gerados', enabled: config.showLeads },
     { key: 'showTicketMedio', title: 'Ticket Médio', enabled: config.showTicketMedio },
     { key: 'showTeam', title: 'Performance da Equipe', enabled: config.showTeam },
-    { key: 'salesChart', title: '📊 Vendas por Mês', enabled: config.showCharts },
-    { key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: config.showCharts },
+    { key: 'salesChart', title: '📊 Vendas por Mês', enabled: config.showCharts, isChart: true },
+    { key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: config.showCharts, isChart: true },
     { key: 'conversionRate', title: 'Taxa de Conversão', enabled: config.showMonthlyGoals && config.showConversion },
     { key: 'revenueGoal', title: 'Meta de Faturamento', enabled: config.showMonthlyGoals && config.showRevenue },
     { key: 'salesGoal', title: 'Meta de Receita', enabled: config.showMonthlyGoals && config.showRevenue }
@@ -74,7 +75,7 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5"
                 >
                   {orderedMetrics.map((metric, index) => (
                     <Draggable key={`${metric.key}-${index}`} draggableId={`${metric.key}-${index}`} index={index}>
@@ -84,7 +85,7 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
                           {...provided.draggableProps}
                           className={`bg-white p-1.5 rounded text-xs flex items-center gap-1 transition-shadow ${
                             snapshot.isDragging ? 'shadow-lg' : 'shadow-sm'
-                          }`}
+                          } ${metric.isChart ? 'col-span-full' : ''}`}
                         >
                           <div {...provided.dragHandleProps} className="cursor-grab">
                             <GripVertical className="h-2.5 w-2.5 text-gray-400" />
