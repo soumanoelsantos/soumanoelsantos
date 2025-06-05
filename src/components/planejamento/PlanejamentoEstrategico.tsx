@@ -181,26 +181,64 @@ const PlanejamentoEstrategico: React.FC = () => {
   };
 
   const gerarFerramentas = (respostas: RespostaPlanejamento[]) => {
-    // Aqui você geraria todas as ferramentas baseadas nas respostas
+    // Processar respostas SWOT
+    const swotRespostas = respostas.filter(r => r.swotClassificacao);
+    const forcas = swotRespostas.filter(r => r.swotClassificacao === 'Força').map(r => r.resposta as string);
+    const fraquezas = swotRespostas.filter(r => r.swotClassificacao === 'Fraqueza').map(r => r.resposta as string);
+    const oportunidades = swotRespostas.filter(r => r.swotClassificacao === 'Oportunidade').map(r => r.resposta as string);
+    const ameacas = swotRespostas.filter(r => r.swotClassificacao === 'Ameaça').map(r => r.resposta as string);
+
+    // Gerar diagnóstico
+    const diagnostico = {
+      processosDocumentados: respostas.find(r => r.perguntaId === 'processos_documentados')?.resposta === 'sim',
+      controleQualidade: respostas.find(r => r.perguntaId === 'controle_qualidade')?.resposta === 'sim',
+      metasDefinidas: respostas.find(r => r.perguntaId === 'metas_definidas')?.resposta === 'sim',
+      acompanhamentoResultados: respostas.find(r => r.perguntaId === 'acompanhamento_resultados')?.resposta === 'sim',
+      sistemaGestao: respostas.find(r => r.perguntaId === 'sistema_gestao')?.resposta === 'sim',
+      capacitacaoEquipe: respostas.find(r => r.perguntaId === 'capacitacao_equipe')?.resposta === 'sim',
+    };
+
+    // Gerar PUV
+    const puv = {
+      diferencial: respostas.find(r => r.perguntaId === 'diferencial_competitivo')?.resposta || '',
+      problema: respostas.find(r => r.perguntaId === 'problema_cliente')?.resposta || '',
+      beneficio: respostas.find(r => r.perguntaId === 'beneficio_principal')?.resposta || '',
+    };
+
+    // Gerar mapa da equipe
+    const mapaEquipe = {
+      numeroFuncionarios: respostas.find(r => r.perguntaId === 'numero_funcionarios')?.resposta || '',
+      estruturaHierarquica: respostas.find(r => r.perguntaId === 'estrutura_hierarquica')?.resposta || '',
+      principaisCargos: respostas.find(r => r.perguntaId === 'principais_cargos')?.resposta || '',
+    };
+
+    // Gerar fase da empresa
+    const faseEmpresa = {
+      tempoMercado: respostas.find(r => r.perguntaId === 'tempo_mercado')?.resposta || '',
+      faturamento: respostas.find(r => r.perguntaId === 'faturamento_atual')?.resposta || '',
+      crescimento: respostas.find(r => r.perguntaId === 'crescimento_atual')?.resposta || '',
+    };
+
+    // Gerar mapa de negócio
+    const mapaNegocios = {
+      empresa: respostas.find(r => r.perguntaId === 'empresa_nome')?.resposta || '',
+      setor: respostas.find(r => r.perguntaId === 'empresa_setor')?.resposta || '',
+      produtos: respostas.find(r => r.perguntaId === 'empresa_produtos')?.resposta || '',
+      publicoAlvo: respostas.find(r => r.perguntaId === 'empresa_publico')?.resposta || '',
+    };
+
     return {
-      diagnostico: {
-        // Dados do diagnóstico gerados
-      },
+      diagnostico,
       swot: {
-        // Dados da análise SWOT gerados
+        forcas,
+        fraquezas,
+        oportunidades,
+        ameacas
       },
-      mapaNegocios: {
-        // Dados do mapa de negócios gerados
-      },
-      puv: {
-        // Dados da PUV gerados
-      },
-      mapaEquipe: {
-        // Dados do mapa da equipe gerados
-      },
-      faseEmpresa: {
-        // Dados da fase da empresa gerados
-      }
+      mapaNegocios,
+      puv,
+      mapaEquipe,
+      faseEmpresa
     };
   };
 

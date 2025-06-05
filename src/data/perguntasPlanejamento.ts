@@ -281,7 +281,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     obrigatoria: true
   },
   
-  // Equipe e estrutura
+  // Equipe e estrutura - Perguntas simplificadas
   {
     id: "numero_funcionarios",
     categoria: "equipe",
@@ -293,15 +293,17 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
   {
     id: "estrutura_hierarquica",
     categoria: "equipe",
-    pergunta: "Como está organizada a estrutura hierárquica da empresa?",
-    tipo: "texto",
-    obrigatoria: false
+    pergunta: "Qual o modelo da sua empresa?",
+    tipo: "multipla_escolha",
+    opcoes: ["Hierárquica tradicional", "Horizontal (poucos níveis)", "Por projetos/equipes", "Familiar", "Ainda em definição"],
+    obrigatoria: true
   },
   {
     id: "principais_cargos",
     categoria: "equipe",
-    pergunta: "Quais são os principais cargos e responsabilidades?",
-    tipo: "texto",
+    pergunta: "Quais áreas/departamentos existem na empresa?",
+    tipo: "multipla_escolha",
+    opcoes: ["Vendas", "Marketing", "Operacional/Produção", "Financeiro", "RH", "TI", "Atendimento ao Cliente", "Apenas o(s) sócio(s)"],
     obrigatoria: true
   },
   
