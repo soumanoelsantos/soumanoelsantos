@@ -17,7 +17,7 @@ const DashboardMetrics = () => {
     { month: 'Mai', value: 6000 },
   ];
 
-  const metricsCards = [
+  const allMetricsCards = [
     {
       key: 'showSales',
       title: 'Total de Vendas',
@@ -65,27 +65,23 @@ const DashboardMetrics = () => {
     }
   ];
 
-  // Ordena as métricas com base na configuração salva
+  // Ordena as métricas com base na configuração salva, seguindo exatamente a mesma lógica do preview
   const getOrderedMetrics = () => {
-    const enabledMetrics = metricsCards.filter(metric => config[metric.key as keyof typeof config]);
-    
-    if (!config.metricsOrder) {
-      return enabledMetrics;
+    if (!config.metricsOrder || config.metricsOrder.length === 0) {
+      return allMetricsCards.filter(metric => config[metric.key as keyof typeof config]);
     }
 
-    // Ordena com base na ordem salva
-    const orderedMetrics: typeof metricsCards = [];
+    // Ordena com base na ordem salva - mesma lógica do DraggablePreview
+    const orderedMetrics: typeof allMetricsCards = [];
     
     config.metricsOrder.forEach(key => {
-      const metric = enabledMetrics.find(m => m.key === key);
-      if (metric) {
-        orderedMetrics.push(metric);
-      }
+      const metrics = allMetricsCards.filter(m => m.key === key && config[key as keyof typeof config]);
+      orderedMetrics.push(...metrics);
     });
 
     // Adiciona métricas que não estão na ordem salva (para casos de métricas novas)
-    enabledMetrics.forEach(metric => {
-      if (!config.metricsOrder.includes(metric.key)) {
+    allMetricsCards.forEach(metric => {
+      if (!config.metricsOrder.includes(metric.key) && config[metric.key as keyof typeof config]) {
         orderedMetrics.push(metric);
       }
     });
