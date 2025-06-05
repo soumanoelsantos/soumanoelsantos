@@ -2,66 +2,18 @@
 export const programModules = [
   {
     id: 0,
-    title: "Ferramentas",
-    description: "Ferramentas de diagnóstico e análise para sua empresa",
+    title: "Planejamento Estratégico",
+    description: "Questionário inteligente que gera automaticamente todas as ferramentas de gestão e um plano de ação personalizado",
     status: "disponível",
     lessons: [
       { 
         id: 1, 
-        title: "Diagnóstico do Negócio", 
-        url: "/teste", 
+        title: "Planejamento Estratégico Completo", 
+        url: "/planejamento-estrategico", 
         isWhatsapp: false, 
-        dataKey: "diagnostic_results",
-        benefit: "Identifique pontos fortes e fracos do seu negócio para tomar decisões estratégicas."
-      },
-      { 
-        id: 2, 
-        title: "Check List de Contratação", 
-        url: "/checklist-contratacao", 
-        isWhatsapp: false, 
-        dataKey: "checklist_data",
-        benefit: "Otimize seu processo de recrutamento e reduza erros de contratação."
-      },
-      { 
-        id: 3, 
-        title: "Análise SWOT", 
-        url: "/analise-swot", 
-        isWhatsapp: false, 
-        dataKey: "swot_data",
-        benefit: "Visualize oportunidades e ameaças para criar estratégias competitivas."
-      },
-      { 
-        id: 4, 
-        title: "Teste Fase da Empresa", 
-        url: "/teste-fase", 
-        isWhatsapp: false, 
-        dataKey: "fase_results",
-        benefit: "Entenda em qual estágio sua empresa está e quais são os próximos passos."
-      },
-      { 
-        id: 5, 
-        title: "Mapa do Negócio", 
-        url: "/mapa-negocio", 
-        isWhatsapp: false, 
-        dataKey: "business_map_data",
-        benefit: "Defina claramente seu modelo de negócio e direcione recursos de forma eficiente."
-      },
-      { 
-        id: 6, 
-        title: "Proposta Única de Valor (PUV)", 
-        url: "/proposta-unica-valor", 
-        isWhatsapp: false, 
-        dataKey: "puv_data",
-        benefit: "Destaque-se da concorrência com um posicionamento claro e atraente."
-      },
-      { 
-        id: 7, 
-        title: "Mapa da Equipe", 
-        url: "/mapa-equipe", 
-        isWhatsapp: false, 
-        dataKey: "mapa_equipe",
-        benefit: "Organize sua estrutura organizacional para máxima eficiência e produtividade."
-      },
+        dataKey: "planejamento_estrategico",
+        benefit: "Gere automaticamente diagnóstico, SWOT, mapa de negócios, PUV, mapa da equipe e um plano de ação SMART de 6 meses através de um questionário inteligente com IA."
+      }
     ]
   },
   {
