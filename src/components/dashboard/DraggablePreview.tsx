@@ -6,7 +6,7 @@ import { GripVertical } from 'lucide-react';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
 
 interface MetricItem {
-  key: keyof DashboardConfig;
+  key: keyof DashboardConfig | 'charts' | 'salesChart' | 'growthChart' | 'conversionRate' | 'revenueGoal' | 'salesGoal';
   title: string;
   enabled: boolean;
 }
@@ -28,7 +28,12 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
     { key: 'showConversion', title: 'Conversão', enabled: config.showConversion },
     { key: 'showRevenue', title: 'Receita', enabled: config.showRevenue },
     { key: 'showTicketMedio', title: 'Ticket Médio', enabled: config.showTicketMedio },
-    { key: 'showTeam', title: 'Equipe', enabled: config.showTeam }
+    { key: 'showTeam', title: 'Equipe', enabled: config.showTeam },
+    { key: 'salesChart', title: '📊 Vendas por Mês', enabled: config.showCharts },
+    { key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: config.showCharts },
+    { key: 'conversionRate', title: 'Taxa de Conversão', enabled: config.showMonthlyGoals && config.showConversion },
+    { key: 'revenueGoal', title: 'Meta de Faturamento', enabled: config.showMonthlyGoals && config.showRevenue },
+    { key: 'salesGoal', title: 'Meta de Receita', enabled: config.showMonthlyGoals && config.showRevenue }
   ];
 
   // Ordena as métricas com base na ordem salva
@@ -36,7 +41,7 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
     .map(key => allMetrics.find(metric => metric.key === key))
     .filter((metric): metric is MetricItem => metric !== undefined && metric.enabled)
     .concat(
-      allMetrics.filter(metric => !metricsOrder.includes(metric.key) && metric.enabled)
+      allMetrics.filter(metric => !metricsOrder.includes(metric.key as string) && metric.enabled)
     );
 
   const handleDragEnd = (result: DropResult) => {
@@ -46,7 +51,7 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    const newOrder = items.map(item => item.key);
+    const newOrder = items.map(item => item.key as string);
     onReorderMetrics(newOrder);
   };
 
@@ -73,13 +78,17 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
                   className="grid grid-cols-2 gap-2"
                 >
                   {orderedMetrics.map((metric, index) => (
-                    <Draggable key={metric.key} draggableId={metric.key} index={index}>
+                    <Draggable key={metric.key} draggableId={metric.key as string} index={index}>
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           className={`bg-white p-2 rounded text-xs flex items-center gap-2 transition-shadow ${
                             snapshot.isDragging ? 'shadow-lg' : 'shadow-sm'
+                          } ${
+                            metric.key.includes('Chart') || metric.key.includes('Goal') || metric.key === 'conversionRate' 
+                              ? 'col-span-2' 
+                              : ''
                           }`}
                         >
                           <div {...provided.dragHandleProps} className="cursor-grab">
@@ -95,27 +104,6 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
               )}
             </Droppable>
           </DragDropContext>
-          
-          {config.showCharts && (
-            <div className="bg-white p-2 rounded mt-2">
-              <div className="text-xs text-gray-600">📊 Gráficos</div>
-            </div>
-          )}
-
-          {config.showMonthlyGoals && (
-            <div className="bg-white p-2 rounded mt-2 space-y-1">
-              <div className="text-xs font-medium text-gray-700">Indicadores Adicionais:</div>
-              {config.showConversion && (
-                <div className="text-xs text-gray-600">• Taxa de Conversão</div>
-              )}
-              {config.showRevenue && (
-                <>
-                  <div className="text-xs text-gray-600">• Meta de Faturamento</div>
-                  <div className="text-xs text-gray-600">• Meta de Receita</div>
-                </>
-              )}
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
