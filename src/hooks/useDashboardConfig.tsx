@@ -56,6 +56,17 @@ export const useDashboardConfig = () => {
 
       if (data) {
         console.log('Config loaded:', data);
+        
+        // Safely parse metrics_order with type checking
+        let metricsOrder = defaultConfig.metricsOrder;
+        if (data.metrics_order) {
+          if (Array.isArray(data.metrics_order)) {
+            metricsOrder = data.metrics_order as string[];
+          } else {
+            console.warn('metrics_order is not an array, using default');
+          }
+        }
+        
         setConfig({
           showSales: data.show_sales,
           showLeads: data.show_leads,
@@ -66,7 +77,7 @@ export const useDashboardConfig = () => {
           companyName: data.company_name || '',
           showMonthlyGoals: data.show_monthly_goals,
           showCharts: data.show_charts,
-          metricsOrder: data.metrics_order || defaultConfig.metricsOrder
+          metricsOrder: metricsOrder
         });
       } else {
         console.log('No config found, using defaults');
