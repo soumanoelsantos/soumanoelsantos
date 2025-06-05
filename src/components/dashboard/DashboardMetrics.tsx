@@ -29,8 +29,8 @@ const DashboardMetrics = () => {
         })}
       </div>
 
-      {/* Gráficos ocupando toda a linha */}
-      <div className="space-y-6">
+      {/* Gráficos em grid de 2 colunas proporcionais */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {orderedItems.map((key, index) => {
           // Só renderiza gráficos
           if (key !== 'salesChart' && key !== 'growthChart') return null;
@@ -39,9 +39,9 @@ const DashboardMetrics = () => {
           if (!components) return null;
           
           return (
-            <div key={`${key}-${index}`} className="w-full">
+            <React.Fragment key={`${key}-${index}`}>
               {components}
-            </div>
+            </React.Fragment>
           );
         })}
       </div>
