@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Bot, ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
+import { Bot, ArrowRight, ArrowLeft, Sparkles, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { perguntasPlanejamento } from "@/data/perguntasPlanejamento";
 import { PerguntaPlanejamento, RespostaPlanejamento } from "@/types/planejamentoEstrategico";
@@ -45,9 +45,9 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
       
       const dicas = {
         "empresa_nome": "Escolha um nome que reflita sua proposta de valor e seja fácil de lembrar.",
-        "forcas_empresa": "Pense em: qualidade dos produtos, atendimento, localização, preços, tecnologia, experiência da equipe.",
-        "fraquezas_empresa": "Considere: falta de recursos, processos ineficientes, dependência de poucos clientes, falta de marketing.",
-        "oportunidades_mercado": "Analise: novos mercados, mudanças de comportamento, tecnologias emergentes, parcerias estratégicas.",
+        "swot_marketing_plano": "Um bom plano de marketing inclui: público-alvo definido, canais de comunicação ativos, métricas de acompanhamento e orçamento destinado.",
+        "swot_concorrentes_redes_sociais": "Analise a presença digital dos concorrentes: frequência de posts, engajamento, investimento em anúncios pagos.",
+        "swot_novo_nicho_mercado": "Considere: mudanças de comportamento do consumidor, novas tecnologias, gaps no mercado atual.",
         "diferencial_competitivo": "O que faz seus clientes escolherem você? Pode ser qualidade, preço, atendimento, inovação ou especialização."
       };
       
@@ -73,9 +73,17 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
     }
 
     const novasRespostas = respostas.filter(r => r.perguntaId !== pergunta.id);
+    
+    // Para perguntas SWOT guiadas, incluir a classificação
+    let swotClassificacao: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null = null;
+    if (pergunta.tipo === 'swot_guiada' && pergunta.direcionamento && respostaTemp) {
+      swotClassificacao = pergunta.direcionamento[respostaTemp] || null;
+    }
+
     novasRespostas.push({
       perguntaId: pergunta.id,
-      resposta: respostaTemp
+      resposta: respostaTemp,
+      swotClassificacao
     });
     setRespostas(novasRespostas);
   };
@@ -101,10 +109,19 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
   const finalizarQuestionario = () => {
     salvarResposta();
     const respostasFinal = respostas.filter(r => r.perguntaId !== pergunta.id);
+    
+    // Incluir a resposta atual
+    let swotClassificacao: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null = null;
+    if (pergunta.tipo === 'swot_guiada' && pergunta.direcionamento && respostaTemp) {
+      swotClassificacao = pergunta.direcionamento[respostaTemp] || null;
+    }
+    
     respostasFinal.push({
       perguntaId: pergunta.id,
-      resposta: respostaTemp
+      resposta: respostaTemp,
+      swotClassificacao
     });
+    
     onComplete(respostasFinal);
   };
 
@@ -134,6 +151,47 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
           </RadioGroup>
         );
       
+      case "swot_guiada":
+        return (
+          <div className="space-y-4">
+            <RadioGroup value={respostaTemp} onValueChange={setRespostaTemp}>
+              {pergunta.opcoes?.map((opcao, index) => {
+                const direcionamento = pergunta.direcionamento?.[opcao];
+                return (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value={opcao} id={`opcao-${index}`} />
+                      <Label htmlFor={`opcao-${index}`} className="font-medium">{opcao}</Label>
+                    </div>
+                    {direcionamento && (
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        direcionamento === 'Força' ? 'bg-green-100 text-green-800' :
+                        direcionamento === 'Fraqueza' ? 'bg-red-100 text-red-800' :
+                        direcionamento === 'Oportunidade' ? 'bg-blue-100 text-blue-800' :
+                        direcionamento === 'Ameaça' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        👉 {direcionamento}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </RadioGroup>
+            
+            {respostaTemp && pergunta.direcionamento?.[respostaTemp] && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                  <span className="text-blue-800 font-medium">
+                    Esta resposta será classificada como: {pergunta.direcionamento[respostaTemp]}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      
       case "multipla_escolha":
         return (
           <RadioGroup value={respostaTemp} onValueChange={setRespostaTemp}>
@@ -157,6 +215,18 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
     }
   };
 
+  const getCategoriaLabel = (categoria: string) => {
+    const labels = {
+      negocio: "Informações do Negócio",
+      diagnostico: "Diagnóstico Empresarial", 
+      swot: "Análise SWOT",
+      puv: "Proposta Única de Valor",
+      equipe: "Estrutura da Equipe",
+      fase: "Fase da Empresa"
+    };
+    return labels[categoria as keyof typeof labels] || categoria;
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card>
@@ -166,6 +236,9 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
             <div className="text-sm text-gray-500">
               Pergunta {perguntaAtual + 1} de {perguntasPlanejamento.length}
             </div>
+          </div>
+          <div className="text-sm text-blue-600 font-medium">
+            {getCategoriaLabel(pergunta.categoria)}
           </div>
           <Progress value={progresso} className="mt-4" />
         </CardHeader>

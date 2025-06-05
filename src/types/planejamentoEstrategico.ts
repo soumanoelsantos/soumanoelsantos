@@ -3,8 +3,9 @@ export interface PerguntaPlanejamento {
   id: string;
   categoria: 'diagnostico' | 'swot' | 'negocio' | 'puv' | 'equipe' | 'fase';
   pergunta: string;
-  tipo: 'texto' | 'multipla_escolha' | 'escala' | 'sim_nao';
+  tipo: 'texto' | 'multipla_escolha' | 'escala' | 'sim_nao' | 'swot_guiada';
   opcoes?: string[];
+  direcionamento?: { [key: string]: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null };
   obrigatoria: boolean;
   dependeDe?: string; // ID da pergunta que deve ser respondida antes
 }
@@ -13,6 +14,7 @@ export interface RespostaPlanejamento {
   perguntaId: string;
   resposta: string | number;
   observacoes?: string;
+  swotClassificacao?: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null;
 }
 
 export interface PlanoAcao {
@@ -34,7 +36,12 @@ export interface PlanejamentoEstrategicoData {
   respostas: RespostaPlanejamento[];
   ferramentasGeradas: {
     diagnostico?: any;
-    swot?: any;
+    swot?: {
+      forcas: string[];
+      fraquezas: string[];
+      oportunidades: string[];
+      ameacas: string[];
+    };
     mapaNegocios?: any;
     puv?: any;
     mapaEquipe?: any;
