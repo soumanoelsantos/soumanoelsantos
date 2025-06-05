@@ -1,0 +1,69 @@
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DashboardConfig } from '@/hooks/useDashboardConfig';
+import { allMetricsCards } from '../data/metricsDefinitions';
+import { SalesChart, GrowthChart } from '../charts/ChartComponents';
+import { ConversionRateCard, RevenueGoalCard, SalesGoalCard } from '../goals/GoalComponents';
+
+interface ItemRendererProps {
+  itemKey: string;
+  config: DashboardConfig;
+}
+
+export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) => {
+  // Cards de métricas básicas
+  if (itemKey.startsWith('show') && config[itemKey as keyof typeof config]) {
+    const metrics = allMetricsCards.filter(m => m.key === itemKey);
+    return (
+      <>
+        {metrics.map((metric, index) => (
+          <Card key={`${metric.key}-${index}`}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                {metric.title}
+              </CardTitle>
+              <metric.icon className={`h-4 w-4 ${metric.color}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{metric.value}</div>
+              <p className="text-xs text-gray-600 mt-1">
+                {metric.description}
+              </p>
+              <div className="text-sm text-green-600 mt-2">
+                {metric.trend} vs mês anterior
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </>
+    );
+  }
+
+  // Gráfico de vendas por mês
+  if (itemKey === 'salesChart' && config.showCharts) {
+    return <SalesChart />;
+  }
+
+  // Gráfico de tendência de crescimento
+  if (itemKey === 'growthChart' && config.showCharts) {
+    return <GrowthChart />;
+  }
+
+  // Taxa de conversão
+  if (itemKey === 'conversionRate' && config.showMonthlyGoals && config.showConversion) {
+    return <ConversionRateCard />;
+  }
+
+  // Meta de faturamento
+  if (itemKey === 'revenueGoal' && config.showMonthlyGoals && config.showRevenue) {
+    return <RevenueGoalCard />;
+  }
+
+  // Meta de receita
+  if (itemKey === 'salesGoal' && config.showMonthlyGoals && config.showRevenue) {
+    return <SalesGoalCard />;
+  }
+
+  return null;
+};
