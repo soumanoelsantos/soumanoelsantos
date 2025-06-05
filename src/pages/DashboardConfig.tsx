@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -9,21 +9,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 
 const DashboardConfig = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [config, setConfig] = useState({
-    showSales: true,
-    showLeads: true,
-    showConversion: true,
-    showTeam: false,
-    showRevenue: true,
-    showTicketMedio: true,
-    companyName: '',
-    showMonthlyGoals: true,
-    showCharts: true
-  });
+  const { config, setConfig, saveConfig, isLoading } = useDashboardConfig();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -38,10 +29,11 @@ const DashboardConfig = () => {
     }));
   };
 
-  const handleSave = () => {
-    // TODO: Salvar configurações no banco de dados
-    console.log('Configurações salvas:', config);
-    navigate('/dashboard');
+  const handleSave = async () => {
+    const success = await saveConfig(config);
+    if (success) {
+      navigate('/dashboard');
+    }
   };
 
   if (!isAuthenticated) {
@@ -69,9 +61,13 @@ const DashboardConfig = () => {
               </div>
             </div>
             
-            <Button onClick={handleSave} className="flex items-center gap-2">
+            <Button 
+              onClick={handleSave} 
+              disabled={isLoading}
+              className="flex items-center gap-2"
+            >
               <Save className="h-4 w-4" />
-              Salvar Configurações
+              {isLoading ? 'Salvando...' : 'Salvar Configurações'}
             </Button>
           </div>
         </div>

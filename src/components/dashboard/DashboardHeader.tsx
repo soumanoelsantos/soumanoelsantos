@@ -3,9 +3,11 @@ import React from 'react';
 import { ArrowLeft, Settings, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 
 const DashboardHeader = () => {
   const navigate = useNavigate();
+  const { config } = useDashboardConfig();
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm">
@@ -22,7 +24,9 @@ const DashboardHeader = () => {
               Voltar
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Dashboard Empresarial</h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                {config.companyName ? `${config.companyName} - Dashboard` : 'Dashboard Empresarial'}
+              </h1>
               <p className="text-gray-600">Acompanhe suas métricas em tempo real</p>
             </div>
           </div>

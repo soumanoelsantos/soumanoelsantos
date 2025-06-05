@@ -72,6 +72,54 @@ export type Database = {
         }
         Relationships: []
       }
+      dashboard_configs: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          id: string
+          show_charts: boolean | null
+          show_conversion: boolean | null
+          show_leads: boolean | null
+          show_monthly_goals: boolean | null
+          show_revenue: boolean | null
+          show_sales: boolean | null
+          show_team: boolean | null
+          show_ticket_medio: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          show_charts?: boolean | null
+          show_conversion?: boolean | null
+          show_leads?: boolean | null
+          show_monthly_goals?: boolean | null
+          show_revenue?: boolean | null
+          show_sales?: boolean | null
+          show_team?: boolean | null
+          show_ticket_medio?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          show_charts?: boolean | null
+          show_conversion?: boolean | null
+          show_leads?: boolean | null
+          show_monthly_goals?: boolean | null
+          show_revenue?: boolean | null
+          show_sales?: boolean | null
+          show_team?: boolean | null
+          show_ticket_medio?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       dev_conversations: {
         Row: {
           created_at: string
