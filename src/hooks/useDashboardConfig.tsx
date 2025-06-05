@@ -55,7 +55,7 @@ export const useDashboardConfig = () => {
       });
       
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao salvar configurações do dashboard:', error);
       toast({
         variant: "destructive",
@@ -81,4 +81,4 @@ export const useDashboardConfig = () => {
   };
 };
 
-export { DashboardConfig };
+export type { DashboardConfig };
