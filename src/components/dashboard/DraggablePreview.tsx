@@ -98,7 +98,22 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
           
           {config.showCharts && (
             <div className="bg-white p-2 rounded mt-2">
-              <div className="text-xs text-gray-600">Gráficos serão exibidos aqui</div>
+              <div className="text-xs text-gray-600">📊 Gráficos</div>
+            </div>
+          )}
+
+          {config.showMonthlyGoals && (
+            <div className="bg-white p-2 rounded mt-2 space-y-1">
+              <div className="text-xs font-medium text-gray-700">Indicadores Adicionais:</div>
+              {config.showConversion && (
+                <div className="text-xs text-gray-600">• Taxa de Conversão</div>
+              )}
+              {config.showRevenue && (
+                <>
+                  <div className="text-xs text-gray-600">• Meta de Faturamento</div>
+                  <div className="text-xs text-gray-600">• Meta de Receita</div>
+                </>
+              )}
             </div>
           )}
         </div>
