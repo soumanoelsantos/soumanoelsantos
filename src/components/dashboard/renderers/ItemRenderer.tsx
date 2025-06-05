@@ -18,20 +18,22 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return (
       <>
         {metrics.map((metric, index) => (
-          <Card key={`${metric.key}-${index}`}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card key={`${metric.key}-${index}`} className="h-40 flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
               <CardTitle className="text-sm font-medium text-gray-600">
                 {metric.title}
               </CardTitle>
-              <metric.icon className={`h-4 w-4 ${metric.color}`} />
+              <metric.icon className={`h-4 w-4 ${metric.color} flex-shrink-0`} />
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 flex flex-col justify-between">
               <div className="text-2xl font-bold">{metric.value}</div>
-              <p className="text-xs text-gray-600 mt-1">
-                {metric.description}
-              </p>
-              <div className="text-sm text-green-600 mt-2">
-                {metric.trend} vs mês anterior
+              <div className="mt-auto">
+                <p className="text-xs text-gray-600 mt-1">
+                  {metric.description}
+                </p>
+                <div className="text-sm text-green-600 mt-2">
+                  {metric.trend} vs mês anterior
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -40,29 +42,49 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     );
   }
 
-  // Gráfico de vendas por mês
+  // Gráfico de vendas por mês - ocupa toda a linha
   if (itemKey === 'salesChart' && config.showCharts) {
-    return <SalesChart />;
+    return (
+      <div className="col-span-full">
+        <SalesChart />
+      </div>
+    );
   }
 
-  // Gráfico de tendência de crescimento
+  // Gráfico de tendência de crescimento - ocupa toda a linha
   if (itemKey === 'growthChart' && config.showCharts) {
-    return <GrowthChart />;
+    return (
+      <div className="col-span-full">
+        <GrowthChart />
+      </div>
+    );
   }
 
   // Taxa de conversão
   if (itemKey === 'conversionRate' && config.showMonthlyGoals && config.showConversion) {
-    return <ConversionRateCard />;
+    return (
+      <div className="h-40">
+        <ConversionRateCard />
+      </div>
+    );
   }
 
   // Meta de faturamento
   if (itemKey === 'revenueGoal' && config.showMonthlyGoals && config.showRevenue) {
-    return <RevenueGoalCard />;
+    return (
+      <div className="h-40">
+        <RevenueGoalCard />
+      </div>
+    );
   }
 
   // Meta de receita
   if (itemKey === 'salesGoal' && config.showMonthlyGoals && config.showRevenue) {
-    return <SalesGoalCard />;
+    return (
+      <div className="h-40">
+        <SalesGoalCard />
+      </div>
+    );
   }
 
   return null;
