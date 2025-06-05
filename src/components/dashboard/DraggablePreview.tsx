@@ -23,12 +23,11 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
   onReorderMetrics
 }) => {
   const allMetrics: MetricItem[] = [
-    { key: 'showSales', title: 'Vendas', enabled: config.showSales },
-    { key: 'showLeads', title: 'Leads', enabled: config.showLeads },
-    { key: 'showConversion', title: 'Conversão', enabled: config.showConversion },
-    { key: 'showRevenue', title: 'Receita', enabled: config.showRevenue },
+    { key: 'showSales', title: 'Total de Vendas', enabled: config.showSales },
+    { key: 'showSales', title: 'Número de Vendas', enabled: config.showSales },
+    { key: 'showLeads', title: 'Leads Gerados', enabled: config.showLeads },
     { key: 'showTicketMedio', title: 'Ticket Médio', enabled: config.showTicketMedio },
-    { key: 'showTeam', title: 'Equipe', enabled: config.showTeam },
+    { key: 'showTeam', title: 'Performance da Equipe', enabled: config.showTeam },
     { key: 'salesChart', title: '📊 Vendas por Mês', enabled: config.showCharts },
     { key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: config.showCharts },
     { key: 'conversionRate', title: 'Taxa de Conversão', enabled: config.showMonthlyGoals && config.showConversion },
@@ -64,8 +63,8 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
         </p>
       </CardHeader>
       <CardContent>
-        <div className="bg-gray-100 rounded-lg p-4 space-y-2">
-          <h3 className="font-medium text-gray-800">
+        <div className="bg-gray-100 rounded-lg p-3 space-y-2">
+          <h3 className="font-medium text-gray-800 text-sm">
             {config.companyName || 'Sua Empresa'} - Dashboard
           </h3>
           
@@ -75,26 +74,22 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="grid grid-cols-2 gap-2"
+                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"
                 >
                   {orderedMetrics.map((metric, index) => (
-                    <Draggable key={metric.key} draggableId={metric.key as string} index={index}>
+                    <Draggable key={`${metric.key}-${index}`} draggableId={`${metric.key}-${index}`} index={index}>
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          className={`bg-white p-2 rounded text-xs flex items-center gap-2 transition-shadow ${
+                          className={`bg-white p-1.5 rounded text-xs flex items-center gap-1 transition-shadow ${
                             snapshot.isDragging ? 'shadow-lg' : 'shadow-sm'
-                          } ${
-                            metric.key.includes('Chart') || metric.key.includes('Goal') || metric.key === 'conversionRate' 
-                              ? 'col-span-2' 
-                              : ''
                           }`}
                         >
                           <div {...provided.dragHandleProps} className="cursor-grab">
-                            <GripVertical className="h-3 w-3 text-gray-400" />
+                            <GripVertical className="h-2.5 w-2.5 text-gray-400" />
                           </div>
-                          {metric.title}
+                          <span className="text-xs truncate">{metric.title}</span>
                         </div>
                       )}
                     </Draggable>

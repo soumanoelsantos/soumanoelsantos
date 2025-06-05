@@ -71,29 +71,25 @@ const DashboardMetrics = () => {
     // Cards de métricas básicas
     if (key.startsWith('show') && config[key as keyof typeof config]) {
       const metrics = allMetricsCards.filter(m => m.key === key);
-      return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {metrics.map((metric, index) => (
-            <Card key={`${metric.key}-${index}`}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {metric.title}
-                </CardTitle>
-                <metric.icon className={`h-4 w-4 ${metric.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{metric.value}</div>
-                <p className="text-xs text-gray-600 mt-1">
-                  {metric.description}
-                </p>
-                <div className="text-sm text-green-600 mt-2">
-                  {metric.trend} vs mês anterior
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      );
+      return metrics.map((metric, index) => (
+        <Card key={`${metric.key}-${index}`}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-gray-600">
+              {metric.title}
+            </CardTitle>
+            <metric.icon className={`h-4 w-4 ${metric.color}`} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metric.value}</div>
+            <p className="text-xs text-gray-600 mt-1">
+              {metric.description}
+            </p>
+            <div className="text-sm text-green-600 mt-2">
+              {metric.trend} vs mês anterior
+            </div>
+          </CardContent>
+        </Card>
+      ));
     }
 
     // Gráfico de vendas por mês
@@ -105,7 +101,7 @@ const DashboardMetrics = () => {
             <CardContent className="text-sm text-gray-600">Evolução das vendas mensais</CardContent>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={200}>
               <BarChart data={salesData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
@@ -128,7 +124,7 @@ const DashboardMetrics = () => {
             <CardContent className="text-sm text-gray-600">Projeção baseada nos dados atuais</CardContent>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={200}>
               <LineChart data={salesData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
@@ -218,14 +214,24 @@ const DashboardMetrics = () => {
   const orderedItems = getOrderedItems();
 
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {orderedItems.map((key, index) => {
-        const component = renderItem(key);
-        return component ? (
+        const components = renderItem(key);
+        if (!components) return null;
+        
+        if (Array.isArray(components)) {
+          return components.map((component, subIndex) => (
+            <div key={`${key}-${index}-${subIndex}`}>
+              {component}
+            </div>
+          ));
+        }
+        
+        return (
           <div key={`${key}-${index}`}>
-            {component}
+            {components}
           </div>
-        ) : null;
+        );
       })}
     </div>
   );
