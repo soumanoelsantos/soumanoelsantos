@@ -1,61 +1,232 @@
 
 import React from 'react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
-import MetricsCards from './metrics/MetricsCards';
-import ChartsSection from './metrics/ChartsSection';
-import AdditionalIndicators from './metrics/AdditionalIndicators';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { TrendingUp, Users, Target, DollarSign, Award } from 'lucide-react';
 
 const DashboardMetrics = () => {
   const { config } = useDashboardConfig();
 
-  // Função para ordenar componentes baseado na configuração
-  const getOrderedComponents = () => {
-    const components = [];
+  // Dados dos gráficos
+  const salesData = [
+    { month: 'Jan', value: 3500 },
+    { month: 'Fev', value: 3000 },
+    { month: 'Mar', value: 5500 },
+    { month: 'Abr', value: 4500 },
+    { month: 'Mai', value: 6000 },
+  ];
 
-    if (!config.metricsOrder || config.metricsOrder.length === 0) {
-      // Ordem padrão se não há configuração
-      components.push({ type: 'cards', component: <MetricsCards config={config} /> });
-      if (config.showCharts) {
-        components.push({ type: 'charts', component: <ChartsSection /> });
-      }
-      if (config.showMonthlyGoals) {
-        components.push({ type: 'indicators', component: <AdditionalIndicators config={config} /> });
-      }
-      return components;
+  // Definição de todos os cards de métricas
+  const allMetricsCards = [
+    {
+      key: 'showSales',
+      title: 'Total de Vendas',
+      value: 'R$ 30.000,00',
+      description: 'Total do período',
+      icon: DollarSign,
+      trend: '+12%',
+      color: 'text-green-600'
+    },
+    {
+      key: 'showSales',
+      title: 'Número de Vendas',
+      value: '7',
+      description: 'Total de vendas',
+      icon: Target,
+      trend: '+5%',
+      color: 'text-blue-600'
+    },
+    {
+      key: 'showLeads',
+      title: 'Leads Gerados',
+      value: '3',
+      description: 'Novos leads',
+      icon: Users,
+      trend: '+8%',
+      color: 'text-purple-600'
+    },
+    {
+      key: 'showTicketMedio',
+      title: 'Ticket Médio',
+      value: 'R$ 5.420',
+      description: 'Valor médio por venda',
+      icon: TrendingUp,
+      trend: '+15%',
+      color: 'text-orange-600'
+    },
+    {
+      key: 'showTeam',
+      title: 'Performance da Equipe',
+      value: '85%',
+      description: 'Média geral da equipe',
+      icon: Award,
+      trend: '+3%',
+      color: 'text-indigo-600'
+    }
+  ];
+
+  // Função para renderizar um item individual
+  const renderItem = (key: string) => {
+    // Cards de métricas básicas
+    if (key.startsWith('show') && config[key as keyof typeof config]) {
+      const metrics = allMetricsCards.filter(m => m.key === key);
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {metrics.map((metric, index) => (
+            <Card key={`${metric.key}-${index}`}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  {metric.title}
+                </CardTitle>
+                <metric.icon className={`h-4 w-4 ${metric.color}`} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{metric.value}</div>
+                <p className="text-xs text-gray-600 mt-1">
+                  {metric.description}
+                </p>
+                <div className="text-sm text-green-600 mt-2">
+                  {metric.trend} vs mês anterior
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      );
     }
 
-    // Primeiro, adiciona os cards das métricas básicas na ordem especificada
-    const hasBasicMetrics = config.metricsOrder.some(key => 
-      ['showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam'].includes(key)
-    );
-    
-    if (hasBasicMetrics) {
-      components.push({ type: 'cards', component: <MetricsCards config={config} /> });
+    // Gráfico de vendas por mês
+    if (key === 'salesChart' && config.showCharts) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>Vendas por Mês</CardTitle>
+            <CardContent className="text-sm text-gray-600">Evolução das vendas mensais</CardContent>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={salesData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="value" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      );
     }
 
-    // Depois, adiciona os outros componentes baseado na ordem
-    config.metricsOrder.forEach(key => {
-      if (key === 'salesChart' && config.showCharts && !components.find(c => c.type === 'charts')) {
-        components.push({ type: 'charts', component: <ChartsSection /> });
-      }
-      if ((key === 'conversionRate' || key === 'revenueGoal' || key === 'salesGoal') && 
-          config.showMonthlyGoals && !components.find(c => c.type === 'indicators')) {
-        components.push({ type: 'indicators', component: <AdditionalIndicators config={config} /> });
-      }
-    });
+    // Gráfico de tendência de crescimento
+    if (key === 'growthChart' && config.showCharts) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>Tendência de Crescimento</CardTitle>
+            <CardContent className="text-sm text-gray-600">Projeção baseada nos dados atuais</CardContent>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={salesData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      );
+    }
 
-    return components;
+    // Taxa de conversão
+    if (key === 'conversionRate' && config.showMonthlyGoals && config.showConversion) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>Taxa de Conversão</CardTitle>
+            <CardContent className="text-sm text-gray-600">Percentual de conversão no período</CardContent>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-600">68%</div>
+            <div className="text-sm text-gray-600 mt-2">da Meta</div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: '68%' }}></div>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Meta de faturamento
+    if (key === 'revenueGoal' && config.showMonthlyGoals && config.showRevenue) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>Meta de Faturamento</CardTitle>
+            <CardContent className="text-sm text-gray-600">Progresso da meta mensal</CardContent>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-600">R$ 0,00</div>
+            <div className="text-sm text-gray-600 mt-2">Meta do Mês</div>
+            <div className="text-sm text-gray-500 mt-1">Progresso: 0,0%</div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Meta de receita
+    if (key === 'salesGoal' && config.showMonthlyGoals && config.showRevenue) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>Meta de Receita</CardTitle>
+            <CardContent className="text-sm text-gray-600">Progresso da meta de receita</CardContent>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-purple-600">R$ 0,00</div>
+            <div className="text-sm text-gray-600 mt-2">Meta do Mês</div>
+            <div className="text-sm text-gray-500 mt-1">Progresso: 0,0%</div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return null;
   };
 
-  const orderedComponents = getOrderedComponents();
+  // Gera a lista ordenada de componentes
+  const getOrderedItems = () => {
+    if (!config.metricsOrder || config.metricsOrder.length === 0) {
+      // Ordem padrão
+      const defaultOrder = ['showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam'];
+      if (config.showCharts) {
+        defaultOrder.push('salesChart', 'growthChart');
+      }
+      if (config.showMonthlyGoals) {
+        defaultOrder.push('conversionRate', 'revenueGoal', 'salesGoal');
+      }
+      return defaultOrder;
+    }
+
+    return config.metricsOrder;
+  };
+
+  const orderedItems = getOrderedItems();
 
   return (
     <div className="space-y-6">
-      {orderedComponents.map((comp, index) => (
-        <div key={`${comp.type}-${index}`}>
-          {comp.component}
-        </div>
-      ))}
+      {orderedItems.map((key, index) => {
+        const component = renderItem(key);
+        return component ? (
+          <div key={`${key}-${index}`}>
+            {component}
+          </div>
+        ) : null;
+      })}
     </div>
   );
 };
