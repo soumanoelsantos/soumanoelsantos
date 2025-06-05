@@ -62,29 +62,17 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
 
   // Taxa de conversão
   if (itemKey === 'conversionRate' && config.showMonthlyGoals && config.showConversion) {
-    return (
-      <div className="h-48">
-        <ConversionRateCard />
-      </div>
-    );
+    return <ConversionRateCard />;
   }
 
   // Meta de faturamento
   if (itemKey === 'revenueGoal' && config.showMonthlyGoals && config.showRevenue) {
-    return (
-      <div className="h-48">
-        <RevenueGoalCard />
-      </div>
-    );
+    return <RevenueGoalCard />;
   }
 
   // Meta de receita
   if (itemKey === 'salesGoal' && config.showMonthlyGoals && config.showRevenue) {
-    return (
-      <div className="h-48">
-        <SalesGoalCard />
-      </div>
-    );
+    return <SalesGoalCard />;
   }
 
   return null;
