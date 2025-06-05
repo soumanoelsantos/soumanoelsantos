@@ -22,6 +22,8 @@ import Ferramentas from "./pages/Ferramentas";
 import DiagnosticoLanding from "./pages/DiagnosticoLanding";
 import DiagnosticoLandingV2 from "./pages/DiagnosticoLandingV2";
 import DevAI from "./pages/DevAI";
+import Dashboard from "./pages/Dashboard";
+import DashboardConfig from "./pages/DashboardConfig";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -42,6 +44,8 @@ const App = () => (
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/crm" element={<CrmPage />} />
             <Route path="/dev-ai" element={<DevAI />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/configurar" element={<DashboardConfig />} />
             <Route path="/teste" element={<DiagnosticoTest />} />
             <Route path="/checklist-contratacao" element={<CheckListContratacao />} />
             <Route path="/analise-swot" element={<AnaliseSwot />} />
