@@ -12,8 +12,8 @@ const DashboardMetrics = () => {
 
   return (
     <div className="space-y-6">
-      {/* Cards de métricas em grid de 4 colunas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Cards de métricas em grid de 6 colunas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {orderedItems.map((key, index) => {
           // Só renderiza cards que não são gráficos
           if (key === 'salesChart' || key === 'growthChart') return null;

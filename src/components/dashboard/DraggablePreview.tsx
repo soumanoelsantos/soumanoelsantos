@@ -26,25 +26,53 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
   // Criando array de métricas que corresponde exatamente ao dashboard real
   const allMetrics: MetricItem[] = [];
 
-  // Cards de métricas básicas (todos os que podem aparecer no dashboard)
-  if (config.showSales) {
-    allMetrics.push(
-      { key: 'showSales', title: 'Total de Vendas', enabled: true },
-      { key: 'showSales', title: 'Número de Vendas', enabled: true }
-    );
-  }
+  // Lista de todas as chaves de métricas que podem aparecer
+  const metricConfigKeys = [
+    'showSales', 'showLeads', 'showTicketMedio', 'showTeam',
+    'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
+    'showFaltaReceita', 'showConversao', 'showDiariaReceita',
+    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
+    'showHiperMetaReceita', 'showCallsDiarias', 'showFaltaReceitaSuper',
+    'showFaltaReceitaHiper', 'showMetaFaturamento', 'showMetaReceita',
+    'showFaturamento', 'showReceita', 'showQuantidadeVendas', 'showCashCollect'
+  ];
 
-  if (config.showLeads) {
-    allMetrics.push({ key: 'showLeads', title: 'Leads Gerados', enabled: true });
-  }
+  // Nomes amigáveis para as métricas
+  const metricTitles: { [key: string]: string[] } = {
+    'showSales': ['Total de Vendas', 'Número de Vendas'],
+    'showLeads': ['Leads Gerados'],
+    'showTicketMedio': ['Ticket Médio'],
+    'showTeam': ['Performance da Equipe'],
+    'showTicketFaturamento': ['Ticket Faturamento'],
+    'showTicketReceita': ['Ticket Receita'],
+    'showFaltaFaturamento': ['Falta de Faturamento'],
+    'showFaltaReceita': ['Falta de Receita'],
+    'showConversao': ['Conversão'],
+    'showDiariaReceita': ['Diária de Receita'],
+    'showSuperMetaFaturamento': ['Super Meta Faturamento'],
+    'showSuperMetaReceita': ['Super Meta Receita'],
+    'showHiperMetaFaturamento': ['Hiper Meta Faturamento'],
+    'showHiperMetaReceita': ['Hiper Meta Receita'],
+    'showCallsDiarias': ['Calls Diárias'],
+    'showFaltaReceitaSuper': ['Falta Receita (Super)'],
+    'showFaltaReceitaHiper': ['Falta Receita (Hiper)'],
+    'showMetaFaturamento': ['Meta Faturamento'],
+    'showMetaReceita': ['Meta Receita'],
+    'showFaturamento': ['Faturamento'],
+    'showReceita': ['Receita'],
+    'showQuantidadeVendas': ['Quantidade de Vendas'],
+    'showCashCollect': ['Cash Collect']
+  };
 
-  if (config.showTicketMedio) {
-    allMetrics.push({ key: 'showTicketMedio', title: 'Ticket Médio', enabled: true });
-  }
-
-  if (config.showTeam) {
-    allMetrics.push({ key: 'showTeam', title: 'Performance da Equipe', enabled: true });
-  }
+  // Adiciona cards de métricas habilitadas
+  metricConfigKeys.forEach(key => {
+    if (config[key as keyof DashboardConfig]) {
+      const titles = metricTitles[key] || [key];
+      titles.forEach(title => {
+        allMetrics.push({ key: key as any, title, enabled: true });
+      });
+    }
+  });
 
   // Metas mensais
   if (config.showMonthlyGoals && config.showConversion) {
@@ -110,14 +138,14 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
           
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className="space-y-2">
-              {/* Cards de métricas em grid de 4 colunas */}
+              {/* Cards de métricas em grid de 6 colunas */}
               {cards.length > 0 && (
                 <Droppable droppableId="cards" direction="horizontal">
                   {(provided) => (
                     <div
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5"
+                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-1"
                     >
                       {cards.map((metric, index) => (
                         <Draggable key={`card-${metric.key}-${index}`} draggableId={`card-${metric.key}-${index}`} index={index}>
@@ -125,12 +153,12 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
-                              className={`bg-white p-1.5 rounded text-xs flex items-center gap-1 transition-shadow ${
+                              className={`bg-white p-1 rounded text-xs flex items-center gap-1 transition-shadow ${
                                 snapshot.isDragging ? 'shadow-lg' : 'shadow-sm'
                               }`}
                             >
                               <div {...provided.dragHandleProps} className="cursor-grab">
-                                <GripVertical className="h-2.5 w-2.5 text-gray-400" />
+                                <GripVertical className="h-2 w-2 text-gray-400" />
                               </div>
                               <span className="text-xs truncate">{metric.title}</span>
                             </div>
