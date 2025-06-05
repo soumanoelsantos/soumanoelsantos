@@ -39,17 +39,21 @@ export const useDashboardConfig = () => {
     
     try {
       setIsLoading(true);
+      console.log('Loading config for user:', userId);
+      
       const { data, error } = await supabase
         .from('dashboard_configs')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
+        console.error('Error loading config:', error);
         throw error;
       }
 
       if (data) {
+        console.log('Config loaded:', data);
         setConfig({
           showSales: data.show_sales,
           showLeads: data.show_leads,
@@ -61,6 +65,8 @@ export const useDashboardConfig = () => {
           showMonthlyGoals: data.show_monthly_goals,
           showCharts: data.show_charts
         });
+      } else {
+        console.log('No config found, using defaults');
       }
     } catch (error) {
       console.error('Erro ao carregar configurações do dashboard:', error);
@@ -86,6 +92,7 @@ export const useDashboardConfig = () => {
 
     try {
       setIsLoading(true);
+      console.log('Saving config for user:', userId, newConfig);
       
       const configData = {
         user_id: userId,
@@ -100,13 +107,35 @@ export const useDashboardConfig = () => {
         show_charts: newConfig.showCharts
       };
 
-      const { error } = await supabase
-        .from('dashboard_configs')
-        .upsert(configData, { 
-          onConflict: 'user_id'
-        });
+      console.log('Config data to save:', configData);
 
-      if (error) throw error;
+      // Primeiro, vamos tentar fazer um insert
+      const { data: existingConfig } = await supabase
+        .from('dashboard_configs')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      let result;
+      if (existingConfig) {
+        // Update existing config
+        result = await supabase
+          .from('dashboard_configs')
+          .update(configData)
+          .eq('user_id', userId);
+      } else {
+        // Insert new config
+        result = await supabase
+          .from('dashboard_configs')
+          .insert(configData);
+      }
+
+      console.log('Save result:', result);
+
+      if (result.error) {
+        console.error('Save error:', result.error);
+        throw result.error;
+      }
 
       setConfig(newConfig);
       toast({
@@ -120,7 +149,7 @@ export const useDashboardConfig = () => {
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
-        description: "Não foi possível salvar suas configurações. Tente novamente."
+        description: `Não foi possível salvar suas configurações: ${error.message || 'Tente novamente.'}`
       });
       return false;
     } finally {
