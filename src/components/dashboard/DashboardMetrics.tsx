@@ -65,14 +65,42 @@ const DashboardMetrics = () => {
     }
   ];
 
-  const filteredMetrics = metricsCards.filter(metric => config[metric.key as keyof typeof config]);
+  // Ordena as métricas com base na configuração salva
+  const getOrderedMetrics = () => {
+    const enabledMetrics = metricsCards.filter(metric => config[metric.key as keyof typeof config]);
+    
+    if (!config.metricsOrder) {
+      return enabledMetrics;
+    }
+
+    // Ordena com base na ordem salva
+    const orderedMetrics: typeof metricsCards = [];
+    
+    config.metricsOrder.forEach(key => {
+      const metric = enabledMetrics.find(m => m.key === key);
+      if (metric) {
+        orderedMetrics.push(metric);
+      }
+    });
+
+    // Adiciona métricas que não estão na ordem salva (para casos de métricas novas)
+    enabledMetrics.forEach(metric => {
+      if (!config.metricsOrder.includes(metric.key)) {
+        orderedMetrics.push(metric);
+      }
+    });
+
+    return orderedMetrics;
+  };
+
+  const orderedMetrics = getOrderedMetrics();
 
   return (
     <div className="space-y-6">
       {/* Cards de Métricas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredMetrics.map((metric, index) => (
-          <Card key={index}>
+        {orderedMetrics.map((metric, index) => (
+          <Card key={`${metric.key}-${index}`}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">
                 {metric.title}

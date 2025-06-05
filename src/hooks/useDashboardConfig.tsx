@@ -14,6 +14,7 @@ export interface DashboardConfig {
   companyName: string;
   showMonthlyGoals: boolean;
   showCharts: boolean;
+  metricsOrder: string[];
 }
 
 const defaultConfig: DashboardConfig = {
@@ -25,7 +26,8 @@ const defaultConfig: DashboardConfig = {
   showTicketMedio: true,
   companyName: '',
   showMonthlyGoals: true,
-  showCharts: true
+  showCharts: true,
+  metricsOrder: ['showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam']
 };
 
 export const useDashboardConfig = () => {
@@ -63,7 +65,8 @@ export const useDashboardConfig = () => {
           showTicketMedio: data.show_ticket_medio,
           companyName: data.company_name || '',
           showMonthlyGoals: data.show_monthly_goals,
-          showCharts: data.show_charts
+          showCharts: data.show_charts,
+          metricsOrder: data.metrics_order || defaultConfig.metricsOrder
         });
       } else {
         console.log('No config found, using defaults');
@@ -104,7 +107,8 @@ export const useDashboardConfig = () => {
         show_revenue: newConfig.showRevenue,
         show_ticket_medio: newConfig.showTicketMedio,
         show_monthly_goals: newConfig.showMonthlyGoals,
-        show_charts: newConfig.showCharts
+        show_charts: newConfig.showCharts,
+        metrics_order: newConfig.metricsOrder
       };
 
       console.log('Config data to save:', configData);

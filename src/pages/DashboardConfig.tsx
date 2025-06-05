@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
+import DraggablePreview from '@/components/dashboard/DraggablePreview';
 
 const DashboardConfig = () => {
   const { isAuthenticated } = useAuth();
@@ -26,6 +27,13 @@ const DashboardConfig = () => {
     setConfig(prev => ({
       ...prev,
       [key]: value
+    }));
+  };
+
+  const handleReorderMetrics = (newOrder: string[]) => {
+    setConfig(prev => ({
+      ...prev,
+      metricsOrder: newOrder
     }));
   };
 
@@ -184,33 +192,12 @@ const DashboardConfig = () => {
             </CardContent>
           </Card>
 
-          {/* Preview das Configurações */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Preview</CardTitle>
-              <CardDescription>Visualize como ficará seu dashboard</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-gray-100 rounded-lg p-4 space-y-2">
-                <h3 className="font-medium text-gray-800">
-                  {config.companyName || 'Sua Empresa'} - Dashboard
-                </h3>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {config.showSales && <div className="bg-white p-2 rounded">Vendas</div>}
-                  {config.showLeads && <div className="bg-white p-2 rounded">Leads</div>}
-                  {config.showConversion && <div className="bg-white p-2 rounded">Conversão</div>}
-                  {config.showRevenue && <div className="bg-white p-2 rounded">Receita</div>}
-                  {config.showTicketMedio && <div className="bg-white p-2 rounded">Ticket Médio</div>}
-                  {config.showTeam && <div className="bg-white p-2 rounded">Equipe</div>}
-                </div>
-                {config.showCharts && (
-                  <div className="bg-white p-2 rounded mt-2">
-                    <div className="text-xs text-gray-600">Gráficos serão exibidos aqui</div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Preview das Configurações com Drag and Drop */}
+          <DraggablePreview 
+            config={config}
+            metricsOrder={config.metricsOrder}
+            onReorderMetrics={handleReorderMetrics}
+          />
         </div>
       </main>
     </div>
