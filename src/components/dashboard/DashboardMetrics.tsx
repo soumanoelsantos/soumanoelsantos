@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { TrendingUp, Users, Target, DollarSign } from 'lucide-react';
+import { TrendingUp, Users, Target, DollarSign, Award } from 'lucide-react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 
 const DashboardMetrics = () => {
@@ -53,6 +53,15 @@ const DashboardMetrics = () => {
       icon: TrendingUp,
       trend: '+15%',
       color: 'text-orange-600'
+    },
+    {
+      key: 'showTeam',
+      title: 'Performance da Equipe',
+      value: '85%',
+      description: 'Média geral da equipe',
+      icon: Award,
+      trend: '+3%',
+      color: 'text-indigo-600'
     }
   ];
 
