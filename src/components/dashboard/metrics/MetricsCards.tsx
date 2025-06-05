@@ -59,16 +59,22 @@ const MetricsCards: React.FC<MetricsCardsProps> = ({ config }) => {
 
   const getOrderedMetrics = () => {
     if (!config.metricsOrder || config.metricsOrder.length === 0) {
+      // Se não há ordem definida, usa a ordem padrão dos cards habilitados
       return allMetricsCards.filter(metric => config[metric.key as keyof typeof config]);
     }
 
     const orderedMetrics: typeof allMetricsCards = [];
     
+    // Primeiro, adiciona os itens na ordem especificada
     config.metricsOrder.forEach(key => {
-      const metrics = allMetricsCards.filter(m => m.key === key && config[key as keyof typeof config]);
-      orderedMetrics.push(...metrics);
+      // Filtra apenas os cards que correspondem à chave e estão habilitados
+      if (key.startsWith('show') && config[key as keyof typeof config]) {
+        const metrics = allMetricsCards.filter(m => m.key === key);
+        orderedMetrics.push(...metrics);
+      }
     });
 
+    // Depois, adiciona qualquer card habilitado que não estava na ordem especificada
     allMetricsCards.forEach(metric => {
       if (!config.metricsOrder.includes(metric.key) && config[metric.key as keyof typeof config]) {
         orderedMetrics.push(metric);
