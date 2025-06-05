@@ -1,4 +1,3 @@
-
 import React from "react";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -6,10 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import SecureTextInput from "@/components/security/SecureTextInput";
 import { isValidEmail, isValidPhone } from "@/utils/security/inputValidation";
 import { UseFormReturn } from "react-hook-form";
-import { LeadFormData } from "./schemas/leadFormSchema";
+import { LeadFormValues } from "./schemas/leadFormSchema";
 
 interface LeadFormFieldsProps {
-  form: UseFormReturn<LeadFormData>;
+  form: UseFormReturn<LeadFormValues>;
   statuses: string[];
 }
 
