@@ -34,12 +34,44 @@ serve(async (req) => {
       );
     }
 
+    // Get the current user session and verify authentication
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession()
+
+    if (!session?.user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - No valid session' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    // Verify admin status using the security definer function
+    const { data: isAdminResult, error: adminError } = await supabaseClient
+      .rpc('current_user_is_admin')
+
+    if (adminError || !isAdminResult) {
+      console.error('Admin verification failed:', adminError)
+      return new Response(
+        JSON.stringify({ error: 'Forbidden - Admin access required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
+    }
+
     // Get the user ID from the request
     const { user_id } = await req.json();
     
     if (!user_id) {
       return new Response(
         JSON.stringify({ error: 'User ID is required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Prevent admins from deleting themselves
+    if (user_id === session.user.id) {
+      return new Response(
+        JSON.stringify({ error: 'Cannot delete your own account' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
@@ -60,6 +92,9 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
+
+    // Log the admin action for audit trail
+    console.log(`User ${user_id} deleted by admin ${session.user.email}`);
 
     return new Response(
       JSON.stringify({ success: true, message: 'User deleted successfully' }),

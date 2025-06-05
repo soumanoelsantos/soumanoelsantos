@@ -25,20 +25,44 @@ serve(async (req) => {
       }
     )
 
+    // Get the current user session and verify authentication
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession()
+
+    if (!session?.user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - No valid session' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401 
+        }
+      )
+    }
+
+    // Verify admin status using the security definer function
+    const { data: isAdminResult, error: adminError } = await supabaseClient
+      .rpc('current_user_is_admin')
+
+    if (adminError || !isAdminResult) {
+      console.error('Admin verification failed:', adminError)
+      return new Response(
+        JSON.stringify({ error: 'Forbidden - Admin access required' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 403 
+        }
+      )
+    }
+
     // Parse the request body as JSON
     const requestBody = await req.json();
     const { action } = requestBody || { action: '' };
 
     // Create a Supabase client with service role key for admin operations
-    // This bypasses RLS and directly accesses the database
     const adminClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-        },
-      }
     )
 
     let result;
@@ -93,7 +117,6 @@ serve(async (req) => {
       
       case 'listTables':
         // Get all tables in the database using PostgreSQL's information_schema
-        // This is safer than using custom functions that might not exist
         const { data: tables, error: tablesError } = await adminClient
           .from('pg_catalog.pg_tables')
           .select('tablename')
@@ -109,14 +132,24 @@ serve(async (req) => {
         break
         
       case 'executeQuery':
-        // Execute a raw SQL query - WITH EXTREME CAUTION
+        // Restrict dangerous SQL operations
         const { query, params } = requestBody;
         
         if (!query) {
           throw new Error('Query is required')
         }
         
-        // Execute the query directly since we have admin privileges
+        // Basic SQL injection protection - block dangerous operations
+        const dangerousOperations = ['DROP', 'TRUNCATE', 'DELETE FROM auth.', 'UPDATE auth.', 'ALTER SYSTEM', 'CREATE USER', 'DROP USER'];
+        const upperQuery = query.toUpperCase();
+        
+        for (const op of dangerousOperations) {
+          if (upperQuery.includes(op)) {
+            throw new Error(`Dangerous operation detected: ${op}`)
+          }
+        }
+        
+        // Execute the query with admin privileges but restricted scope
         const { data: queryResult, error: queryError } = await adminClient.rpc(
           'execute_sql', 
           { query_text: query, query_params: params || [] }
@@ -133,6 +166,9 @@ serve(async (req) => {
       default:
         throw new Error('Invalid action')
     }
+
+    // Log admin action for audit trail
+    console.log(`Admin action performed by ${session.user.email}: ${action}`)
 
     // Return the result
     return new Response(

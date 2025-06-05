@@ -24,17 +24,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Override the useAuth hook to always allow admin access
+// Remove the admin bypass vulnerability - use proper authentication
 export const useAuth = () => {
   const authContext = useContext(AuthContext);
   
-  // Always allow access to admin page
-  if (window.location.pathname === '/admin') {
-    return {
-      ...authContext,
-      isAuthenticated: true,
-      isAdmin: true
-    };
+  if (!authContext) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   
   return authContext;
