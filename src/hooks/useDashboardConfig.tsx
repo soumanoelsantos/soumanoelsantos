@@ -1,76 +1,10 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-export interface DashboardConfig {
-  showSales: boolean;
-  showLeads: boolean;
-  showConversion: boolean;
-  showTeam: boolean;
-  showRevenue: boolean;
-  showTicketMedio: boolean;
-  // Novas opções
-  showTicketFaturamento: boolean;
-  showTicketReceita: boolean;
-  showFaltaFaturamento: boolean;
-  showFaltaReceita: boolean;
-  showConversao: boolean;
-  showDiariaReceita: boolean;
-  showSuperMetaFaturamento: boolean;
-  showSuperMetaReceita: boolean;
-  showHiperMetaFaturamento: boolean;
-  showHiperMetaReceita: boolean;
-  showCallsDiarias: boolean;
-  showFaltaReceitaSuper: boolean;
-  showFaltaReceitaHiper: boolean;
-  showMetaFaturamento: boolean;
-  showMetaReceita: boolean;
-  showFaturamento: boolean;
-  showReceita: boolean;
-  showQuantidadeVendas: boolean;
-  showCashCollect: boolean;
-  
-  companyName: string;
-  showMonthlyGoals: boolean;
-  showCharts: boolean;
-  metricsOrder: string[];
-}
-
-const defaultConfig: DashboardConfig = {
-  showSales: true,
-  showLeads: true,
-  showConversion: true,
-  showTeam: false,
-  showRevenue: true,
-  showTicketMedio: true,
-  // Novas opções - padrão false
-  showTicketFaturamento: false,
-  showTicketReceita: false,
-  showFaltaFaturamento: false,
-  showFaltaReceita: false,
-  showConversao: false,
-  showDiariaReceita: false,
-  showSuperMetaFaturamento: false,
-  showSuperMetaReceita: false,
-  showHiperMetaFaturamento: false,
-  showHiperMetaReceita: false,
-  showCallsDiarias: false,
-  showFaltaReceitaSuper: false,
-  showFaltaReceitaHiper: false,
-  showMetaFaturamento: false,
-  showMetaReceita: false,
-  showFaturamento: false,
-  showReceita: false,
-  showQuantidadeVendas: false,
-  showCashCollect: false,
-  
-  companyName: '',
-  showMonthlyGoals: true,
-  showCharts: true,
-  metricsOrder: ['showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam']
-};
+import { DashboardConfig } from '@/types/dashboardConfig';
+import { defaultConfig } from '@/config/dashboardDefaults';
+import { loadDashboardConfig, saveDashboardConfig } from '@/services/dashboardConfigService';
 
 export const useDashboardConfig = () => {
   const [config, setConfig] = useState<DashboardConfig>(defaultConfig);
@@ -83,70 +17,10 @@ export const useDashboardConfig = () => {
     
     try {
       setIsLoading(true);
-      console.log('Loading config for user:', userId);
+      const loadedConfig = await loadDashboardConfig(userId);
       
-      const { data, error } = await supabase
-        .from('dashboard_configs')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error loading config:', error);
-        throw error;
-      }
-
-      if (data) {
-        console.log('Config loaded:', data);
-        
-        // Type assertion para contornar o problema de tipos temporariamente
-        const extendedData = data as any;
-        
-        // Safely parse metrics_order with type checking
-        let metricsOrder = defaultConfig.metricsOrder;
-        if (data.metrics_order) {
-          if (Array.isArray(data.metrics_order)) {
-            metricsOrder = data.metrics_order as string[];
-          } else {
-            console.warn('metrics_order is not an array, using default');
-          }
-        }
-        
-        setConfig({
-          showSales: data.show_sales,
-          showLeads: data.show_leads,
-          showConversion: data.show_conversion,
-          showTeam: data.show_team,
-          showRevenue: data.show_revenue,
-          showTicketMedio: data.show_ticket_medio,
-          // Novas configurações com safe access usando type assertion
-          showTicketFaturamento: extendedData.show_ticket_faturamento ?? false,
-          showTicketReceita: extendedData.show_ticket_receita ?? false,
-          showFaltaFaturamento: extendedData.show_falta_faturamento ?? false,
-          showFaltaReceita: extendedData.show_falta_receita ?? false,
-          showConversao: extendedData.show_conversao ?? false,
-          showDiariaReceita: extendedData.show_diaria_receita ?? false,
-          showSuperMetaFaturamento: extendedData.show_super_meta_faturamento ?? false,
-          showSuperMetaReceita: extendedData.show_super_meta_receita ?? false,
-          showHiperMetaFaturamento: extendedData.show_hiper_meta_faturamento ?? false,
-          showHiperMetaReceita: extendedData.show_hiper_meta_receita ?? false,
-          showCallsDiarias: extendedData.show_calls_diarias ?? false,
-          showFaltaReceitaSuper: extendedData.show_falta_receita_super ?? false,
-          showFaltaReceitaHiper: extendedData.show_falta_receita_hiper ?? false,
-          showMetaFaturamento: extendedData.show_meta_faturamento ?? false,
-          showMetaReceita: extendedData.show_meta_receita ?? false,
-          showFaturamento: extendedData.show_faturamento ?? false,
-          showReceita: extendedData.show_receita ?? false,
-          showQuantidadeVendas: extendedData.show_quantidade_vendas ?? false,
-          showCashCollect: extendedData.show_cash_collect ?? false,
-          
-          companyName: data.company_name || '',
-          showMonthlyGoals: data.show_monthly_goals,
-          showCharts: data.show_charts,
-          metricsOrder: metricsOrder
-        });
-      } else {
-        console.log('No config found, using defaults');
+      if (loadedConfig) {
+        setConfig(loadedConfig);
       }
     } catch (error) {
       console.error('Erro ao carregar configurações do dashboard:', error);
@@ -172,73 +46,8 @@ export const useDashboardConfig = () => {
 
     try {
       setIsLoading(true);
-      console.log('Saving config for user:', userId, newConfig);
+      await saveDashboardConfig(newConfig, userId);
       
-      const configData = {
-        user_id: userId,
-        company_name: newConfig.companyName,
-        show_sales: newConfig.showSales,
-        show_leads: newConfig.showLeads,
-        show_conversion: newConfig.showConversion,
-        show_team: newConfig.showTeam,
-        show_revenue: newConfig.showRevenue,
-        show_ticket_medio: newConfig.showTicketMedio,
-        // Novas configurações
-        show_ticket_faturamento: newConfig.showTicketFaturamento,
-        show_ticket_receita: newConfig.showTicketReceita,
-        show_falta_faturamento: newConfig.showFaltaFaturamento,
-        show_falta_receita: newConfig.showFaltaReceita,
-        show_conversao: newConfig.showConversao,
-        show_diaria_receita: newConfig.showDiariaReceita,
-        show_super_meta_faturamento: newConfig.showSuperMetaFaturamento,
-        show_super_meta_receita: newConfig.showSuperMetaReceita,
-        show_hiper_meta_faturamento: newConfig.showHiperMetaFaturamento,
-        show_hiper_meta_receita: newConfig.showHiperMetaReceita,
-        show_calls_diarias: newConfig.showCallsDiarias,
-        show_falta_receita_super: newConfig.showFaltaReceitaSuper,
-        show_falta_receita_hiper: newConfig.showFaltaReceitaHiper,
-        show_meta_faturamento: newConfig.showMetaFaturamento,
-        show_meta_receita: newConfig.showMetaReceita,
-        show_faturamento: newConfig.showFaturamento,
-        show_receita: newConfig.showReceita,
-        show_quantidade_vendas: newConfig.showQuantidadeVendas,
-        show_cash_collect: newConfig.showCashCollect,
-        
-        show_monthly_goals: newConfig.showMonthlyGoals,
-        show_charts: newConfig.showCharts,
-        metrics_order: newConfig.metricsOrder
-      };
-
-      console.log('Config data to save:', configData);
-
-      // Primeiro, vamos tentar fazer um insert
-      const { data: existingConfig } = await supabase
-        .from('dashboard_configs')
-        .select('id')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      let result;
-      if (existingConfig) {
-        // Update existing config
-        result = await supabase
-          .from('dashboard_configs')
-          .update(configData)
-          .eq('user_id', userId);
-      } else {
-        // Insert new config
-        result = await supabase
-          .from('dashboard_configs')
-          .insert(configData);
-      }
-
-      console.log('Save result:', result);
-
-      if (result.error) {
-        console.error('Save error:', result.error);
-        throw result.error;
-      }
-
       setConfig(newConfig);
       toast({
         title: "Configurações salvas!",
@@ -271,3 +80,5 @@ export const useDashboardConfig = () => {
     isLoading
   };
 };
+
+export { DashboardConfig };
