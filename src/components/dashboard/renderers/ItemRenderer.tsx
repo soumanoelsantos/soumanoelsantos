@@ -42,22 +42,14 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     );
   }
 
-  // Gráfico de vendas por mês - ocupa toda a linha
+  // Gráfico de vendas por mês
   if (itemKey === 'salesChart' && config.showCharts) {
-    return (
-      <div className="col-span-full">
-        <SalesChart />
-      </div>
-    );
+    return <SalesChart />;
   }
 
-  // Gráfico de tendência de crescimento - ocupa toda a linha
+  // Gráfico de tendência de crescimento
   if (itemKey === 'growthChart' && config.showCharts) {
-    return (
-      <div className="col-span-full">
-        <GrowthChart />
-      </div>
-    );
+    return <GrowthChart />;
   }
 
   // Taxa de conversão

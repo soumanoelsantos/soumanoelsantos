@@ -11,17 +11,40 @@ const DashboardMetrics = () => {
   const orderedItems = getOrderedItems();
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {orderedItems.map((key, index) => {
-        const components = <ItemRenderer itemKey={key} config={config} />;
-        if (!components) return null;
-        
-        return (
-          <div key={`${key}-${index}`}>
-            {components}
-          </div>
-        );
-      })}
+    <div className="space-y-6">
+      {/* Cards de métricas em grid de 4 colunas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {orderedItems.map((key, index) => {
+          // Só renderiza cards que não são gráficos
+          if (key === 'salesChart' || key === 'growthChart') return null;
+          
+          const components = <ItemRenderer itemKey={key} config={config} />;
+          if (!components) return null;
+          
+          return (
+            <React.Fragment key={`${key}-${index}`}>
+              {components}
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {/* Gráficos ocupando toda a linha */}
+      <div className="space-y-6">
+        {orderedItems.map((key, index) => {
+          // Só renderiza gráficos
+          if (key !== 'salesChart' && key !== 'growthChart') return null;
+          
+          const components = <ItemRenderer itemKey={key} config={config} />;
+          if (!components) return null;
+          
+          return (
+            <div key={`${key}-${index}`} className="w-full">
+              {components}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
