@@ -4,6 +4,8 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { UserIcon, LogOut, Settings, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSecureSession } from "@/hooks/security/useSecureSession";
+import { useAuditLogger } from "@/hooks/security/useAuditLogger";
 
 interface MemberHeaderProps {
   userEmail: string | null;
@@ -14,36 +16,29 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin, isLoading } = useAuth();
-  const [isAdminViewingAsUser, setIsAdminViewingAsUser] = useState(false);
-  const [originalAdminEmail, setOriginalAdminEmail] = useState<string | null>(null);
+  const { isAdminViewing, originalAdminEmail, clearAdminSession } = useSecureSession();
+  const { logAdminAction } = useAuditLogger();
   
   // Check if we're on the members page
   const isMembersPage = location.pathname === "/membros";
   
-  useEffect(() => {
-    const adminViewingFlag = localStorage.getItem('adminViewingAsUser') === 'true';
-    const adminEmail = localStorage.getItem('adminOriginalEmail');
-    
-    setIsAdminViewingAsUser(adminViewingFlag);
-    setOriginalAdminEmail(adminEmail);
-  }, []);
-  
-  const handleReturnToAdmin = () => {
-    // Restore the original admin email
-    if (originalAdminEmail) {
-      localStorage.setItem('userEmail', originalAdminEmail);
+  const handleReturnToAdmin = async () => {
+    try {
+      await logAdminAction('ADMIN_SESSION_END', `Returned from viewing as user: ${userEmail}`);
+      clearAdminSession();
+      navigate('/admin');
+    } catch (error) {
+      console.error('Error returning to admin:', error);
+      clearAdminSession();
+      navigate('/admin');
     }
-    
-    // Remove the admin viewing flag
-    localStorage.removeItem('adminViewingAsUser');
-    localStorage.removeItem('adminOriginalEmail');
-    
-    // Navigate to admin page
-    navigate('/admin');
   };
   
   const handleLogout = async () => {
     try {
+      if (isAdminViewing) {
+        await logAdminAction('ADMIN_LOGOUT_WHILE_VIEWING', `Logged out while viewing as: ${userEmail}`);
+      }
       await onLogout();
     } catch (error) {
       console.error("Error during logout:", error);
@@ -64,7 +59,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
               <span>{userEmail}</span>
             </div>
             
-            {isAdminViewingAsUser && (
+            {isAdminViewing && (
               <Button 
                 variant="outline"
                 size="sm"
@@ -77,7 +72,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ userEmail, onLogout }) => {
               </Button>
             )}
             
-            {!isMembersPage && (
+            {!isMembersPage && isAdmin && (
               <Button 
                 variant="outline"
                 size="sm"

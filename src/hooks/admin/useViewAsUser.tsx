@@ -1,27 +1,32 @@
 
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { User } from "@/types/admin";
+import { useSecureSession } from "@/hooks/security/useSecureSession";
+import { useAuditLogger } from "@/hooks/security/useAuditLogger";
 
 export const useViewAsUser = () => {
   const { toast } = useToast();
-  
-  const viewAsUser = async (userId: string, users: User[], adminEmail: string | null | undefined) => {
+  const { startAdminSession } = useSecureSession();
+  const { logAdminAction } = useAuditLogger();
+
+  const viewAsUser = async (userId: string, users: User[], adminEmail: string | null) => {
     try {
       const userToView = users.find(u => u.id === userId);
-      if (!userToView) return { success: false };
+      if (!userToView) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Usuário não encontrado.",
+          className: "bg-white border-red-200"
+        });
+        return { success: false };
+      }
       
-      // Armazenar o ID do administrador para restaurá-lo mais tarde
-      localStorage.setItem('adminViewingAsUser', 'true');
-      localStorage.setItem('adminOriginalEmail', adminEmail || '');
+      // Log the admin action
+      await logAdminAction('VIEW_AS_USER', `Viewing as user: ${userToView.email}`);
       
-      // Configurar a sessão para visualizar como o usuário selecionado
-      const { data, error } = await supabase.auth.setSession({
-        access_token: '', // Token vazio para forçar login como outro usuário
-        refresh_token: ''
-      });
-      
-      if (error) throw error;
+      // Start secure admin session
+      startAdminSession(adminEmail || '');
       
       toast({
         title: "Visualizando como usuário",
@@ -32,6 +37,9 @@ export const useViewAsUser = () => {
       return { success: true, userEmail: userToView.email };
     } catch (error: any) {
       console.error("Erro ao visualizar como usuário:", error);
+      
+      await logAdminAction('VIEW_AS_USER_ERROR', `Failed to view as user: ${error.message}`);
+      
       toast({
         variant: "destructive",
         title: "Erro ao trocar de usuário",

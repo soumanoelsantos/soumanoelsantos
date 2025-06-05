@@ -1,67 +1,128 @@
 
 import React from "react";
-import { UseFormReturn } from "react-hook-form";
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { LeadFormValues } from "./schemas/leadFormSchema";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SecureTextInput from "@/components/security/SecureTextInput";
+import { isValidEmail, isValidPhone } from "@/utils/security/inputValidation";
+import { UseFormReturn } from "react-hook-form";
+import { LeadFormData } from "./schemas/leadFormSchema";
 
 interface LeadFormFieldsProps {
-  form: UseFormReturn<LeadFormValues>;
+  form: UseFormReturn<LeadFormData>;
   statuses: string[];
 }
 
 const LeadFormFields: React.FC<LeadFormFieldsProps> = ({ form, statuses }) => {
   return (
-    <>
+    <div className="space-y-4">
       <FormField
         control={form.control}
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome</FormLabel>
+            <FormLabel>Nome *</FormLabel>
             <FormControl>
-              <Input placeholder="Nome do lead" {...field} />
+              <SecureTextInput
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Nome do lead"
+                maxLength={100}
+                rateLimitKey="lead_name_input"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Email</FormLabel>
+            <FormLabel>Email *</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="Email" {...field} />
+              <Input
+                {...field}
+                type="email"
+                placeholder="email@exemplo.com"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  field.onChange(value);
+                  // Validate email format
+                  if (value && !isValidEmail(value)) {
+                    form.setError("email", { 
+                      type: "manual", 
+                      message: "Formato de email inválido" 
+                    });
+                  } else {
+                    form.clearErrors("email");
+                  }
+                }}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Telefone</FormLabel>
+            <FormLabel>Telefone *</FormLabel>
             <FormControl>
-              <Input placeholder="Telefone" {...field} />
+              <Input
+                {...field}
+                type="tel"
+                placeholder="(11) 99999-9999"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  field.onChange(value);
+                  // Validate phone format
+                  if (value && !isValidPhone(value)) {
+                    form.setError("phone", { 
+                      type: "manual", 
+                      message: "Formato de telefone inválido" 
+                    });
+                  } else {
+                    form.clearErrors("phone");
+                  }
+                }}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      
+
+      <FormField
+        control={form.control}
+        name="status"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Status</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um status" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {statuses.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       <FormField
         control={form.control}
         name="notes"
@@ -69,38 +130,20 @@ const LeadFormFields: React.FC<LeadFormFieldsProps> = ({ form, statuses }) => {
           <FormItem>
             <FormLabel>Observações</FormLabel>
             <FormControl>
-              <Textarea 
-                placeholder="Observações sobre o lead" 
-                {...field} 
-                value={field.value || ''} 
+              <SecureTextInput
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Observações sobre o lead..."
+                maxLength={500}
+                multiline
+                rateLimitKey="lead_notes_input"
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      
-      <FormField
-        control={form.control}
-        name="status"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Status</FormLabel>
-            <FormControl>
-              <select
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                {...field}
-              >
-                {statuses.map(status => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+    </div>
   );
 };
 
