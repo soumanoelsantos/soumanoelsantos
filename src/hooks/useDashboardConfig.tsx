@@ -99,6 +99,9 @@ export const useDashboardConfig = () => {
       if (data) {
         console.log('Config loaded:', data);
         
+        // Type assertion para contornar o problema de tipos temporariamente
+        const extendedData = data as any;
+        
         // Safely parse metrics_order with type checking
         let metricsOrder = defaultConfig.metricsOrder;
         if (data.metrics_order) {
@@ -116,26 +119,26 @@ export const useDashboardConfig = () => {
           showTeam: data.show_team,
           showRevenue: data.show_revenue,
           showTicketMedio: data.show_ticket_medio,
-          // Novas configurações com safe access usando optional chaining
-          showTicketFaturamento: data.show_ticket_faturamento ?? false,
-          showTicketReceita: data.show_ticket_receita ?? false,
-          showFaltaFaturamento: data.show_falta_faturamento ?? false,
-          showFaltaReceita: data.show_falta_receita ?? false,
-          showConversao: data.show_conversao ?? false,
-          showDiariaReceita: data.show_diaria_receita ?? false,
-          showSuperMetaFaturamento: data.show_super_meta_faturamento ?? false,
-          showSuperMetaReceita: data.show_super_meta_receita ?? false,
-          showHiperMetaFaturamento: data.show_hiper_meta_faturamento ?? false,
-          showHiperMetaReceita: data.show_hiper_meta_receita ?? false,
-          showCallsDiarias: data.show_calls_diarias ?? false,
-          showFaltaReceitaSuper: data.show_falta_receita_super ?? false,
-          showFaltaReceitaHiper: data.show_falta_receita_hiper ?? false,
-          showMetaFaturamento: data.show_meta_faturamento ?? false,
-          showMetaReceita: data.show_meta_receita ?? false,
-          showFaturamento: data.show_faturamento ?? false,
-          showReceita: data.show_receita ?? false,
-          showQuantidadeVendas: data.show_quantidade_vendas ?? false,
-          showCashCollect: data.show_cash_collect ?? false,
+          // Novas configurações com safe access usando type assertion
+          showTicketFaturamento: extendedData.show_ticket_faturamento ?? false,
+          showTicketReceita: extendedData.show_ticket_receita ?? false,
+          showFaltaFaturamento: extendedData.show_falta_faturamento ?? false,
+          showFaltaReceita: extendedData.show_falta_receita ?? false,
+          showConversao: extendedData.show_conversao ?? false,
+          showDiariaReceita: extendedData.show_diaria_receita ?? false,
+          showSuperMetaFaturamento: extendedData.show_super_meta_faturamento ?? false,
+          showSuperMetaReceita: extendedData.show_super_meta_receita ?? false,
+          showHiperMetaFaturamento: extendedData.show_hiper_meta_faturamento ?? false,
+          showHiperMetaReceita: extendedData.show_hiper_meta_receita ?? false,
+          showCallsDiarias: extendedData.show_calls_diarias ?? false,
+          showFaltaReceitaSuper: extendedData.show_falta_receita_super ?? false,
+          showFaltaReceitaHiper: extendedData.show_falta_receita_hiper ?? false,
+          showMetaFaturamento: extendedData.show_meta_faturamento ?? false,
+          showMetaReceita: extendedData.show_meta_receita ?? false,
+          showFaturamento: extendedData.show_faturamento ?? false,
+          showReceita: extendedData.show_receita ?? false,
+          showQuantidadeVendas: extendedData.show_quantidade_vendas ?? false,
+          showCashCollect: extendedData.show_cash_collect ?? false,
           
           companyName: data.company_name || '',
           showMonthlyGoals: data.show_monthly_goals,

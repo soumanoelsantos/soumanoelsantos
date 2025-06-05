@@ -78,14 +78,33 @@ export type Database = {
           created_at: string
           id: string
           metrics_order: Json | null
+          show_calls_diarias: boolean | null
+          show_cash_collect: boolean | null
           show_charts: boolean | null
+          show_conversao: boolean | null
           show_conversion: boolean | null
+          show_diaria_receita: boolean | null
+          show_falta_faturamento: boolean | null
+          show_falta_receita: boolean | null
+          show_falta_receita_hiper: boolean | null
+          show_falta_receita_super: boolean | null
+          show_faturamento: boolean | null
+          show_hiper_meta_faturamento: boolean | null
+          show_hiper_meta_receita: boolean | null
           show_leads: boolean | null
+          show_meta_faturamento: boolean | null
+          show_meta_receita: boolean | null
           show_monthly_goals: boolean | null
+          show_quantidade_vendas: boolean | null
+          show_receita: boolean | null
           show_revenue: boolean | null
           show_sales: boolean | null
+          show_super_meta_faturamento: boolean | null
+          show_super_meta_receita: boolean | null
           show_team: boolean | null
+          show_ticket_faturamento: boolean | null
           show_ticket_medio: boolean | null
+          show_ticket_receita: boolean | null
           updated_at: string
           user_id: string
         }
@@ -94,14 +113,33 @@ export type Database = {
           created_at?: string
           id?: string
           metrics_order?: Json | null
+          show_calls_diarias?: boolean | null
+          show_cash_collect?: boolean | null
           show_charts?: boolean | null
+          show_conversao?: boolean | null
           show_conversion?: boolean | null
+          show_diaria_receita?: boolean | null
+          show_falta_faturamento?: boolean | null
+          show_falta_receita?: boolean | null
+          show_falta_receita_hiper?: boolean | null
+          show_falta_receita_super?: boolean | null
+          show_faturamento?: boolean | null
+          show_hiper_meta_faturamento?: boolean | null
+          show_hiper_meta_receita?: boolean | null
           show_leads?: boolean | null
+          show_meta_faturamento?: boolean | null
+          show_meta_receita?: boolean | null
           show_monthly_goals?: boolean | null
+          show_quantidade_vendas?: boolean | null
+          show_receita?: boolean | null
           show_revenue?: boolean | null
           show_sales?: boolean | null
+          show_super_meta_faturamento?: boolean | null
+          show_super_meta_receita?: boolean | null
           show_team?: boolean | null
+          show_ticket_faturamento?: boolean | null
           show_ticket_medio?: boolean | null
+          show_ticket_receita?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -110,14 +148,33 @@ export type Database = {
           created_at?: string
           id?: string
           metrics_order?: Json | null
+          show_calls_diarias?: boolean | null
+          show_cash_collect?: boolean | null
           show_charts?: boolean | null
+          show_conversao?: boolean | null
           show_conversion?: boolean | null
+          show_diaria_receita?: boolean | null
+          show_falta_faturamento?: boolean | null
+          show_falta_receita?: boolean | null
+          show_falta_receita_hiper?: boolean | null
+          show_falta_receita_super?: boolean | null
+          show_faturamento?: boolean | null
+          show_hiper_meta_faturamento?: boolean | null
+          show_hiper_meta_receita?: boolean | null
           show_leads?: boolean | null
+          show_meta_faturamento?: boolean | null
+          show_meta_receita?: boolean | null
           show_monthly_goals?: boolean | null
+          show_quantidade_vendas?: boolean | null
+          show_receita?: boolean | null
           show_revenue?: boolean | null
           show_sales?: boolean | null
+          show_super_meta_faturamento?: boolean | null
+          show_super_meta_receita?: boolean | null
           show_team?: boolean | null
+          show_ticket_faturamento?: boolean | null
           show_ticket_medio?: boolean | null
+          show_ticket_receita?: boolean | null
           updated_at?: string
           user_id?: string
         }
