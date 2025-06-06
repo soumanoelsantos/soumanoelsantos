@@ -12,8 +12,18 @@ import { useToast } from "@/hooks/use-toast";
 import { perguntasPlanejamento } from "@/data/perguntasPlanejamento";
 import { PerguntaPlanejamento, RespostaPlanejamento } from "@/types/planejamentoEstrategico";
 
+interface DiagnosticoResultados {
+  comercial: { score: number; total: number; percentage: number };
+  gestao: { score: number; total: number; percentage: number };
+  rh: { score: number; total: number; percentage: number };
+  marketing: { score: number; total: number; percentage: number };
+  financeiro: { score: number; total: number; percentage: number };
+  cliente: { score: number; total: number; percentage: number };
+  sistema: { score: number; total: number; percentage: number };
+}
+
 interface PlanejamentoEstrategicoFormProps {
-  onComplete: (respostas: RespostaPlanejamento[]) => void;
+  onComplete: (respostas: RespostaPlanejamento[], resultados: DiagnosticoResultados) => void;
 }
 
 const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = ({ onComplete }) => {
@@ -89,6 +99,31 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
     }
   };
 
+  const calcularResultadosDiagnostico = (respostasFinal: RespostaPlanejamento[]): DiagnosticoResultados => {
+    const areas = ['comercial', 'gestao', 'rh', 'marketing', 'financeiro', 'cliente', 'sistema'];
+    const resultados: any = {};
+
+    areas.forEach(area => {
+      const perguntasArea = perguntasPlanejamento.filter(p => p.categoria === 'diagnostico' && p.id.includes(area));
+      const respostasArea = respostasFinal.filter(r => perguntasArea.some(p => p.id === r.perguntaId));
+      
+      let score = 0;
+      respostasArea.forEach(resposta => {
+        if (resposta.resposta === 'sim') {
+          score += 1;
+        }
+      });
+
+      resultados[area] = {
+        score,
+        total: perguntasArea.length,
+        percentage: perguntasArea.length > 0 ? Math.round((score / perguntasArea.length) * 100) : 0
+      };
+    });
+
+    return resultados;
+  };
+
   const finalizarQuestionario = () => {
     salvarResposta();
     const respostasFinal = respostas.filter(r => r.perguntaId !== pergunta.id);
@@ -105,8 +140,9 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
       resposta: respostaTemp,
       swotClassificacao
     });
-    
-    onComplete(respostasFinal);
+
+    const resultadosDiagnostico = calcularResultadosDiagnostico(respostasFinal);
+    onComplete(respostasFinal, resultadosDiagnostico);
   };
 
   const handleMultipleChoice = (value: string, checked: boolean) => {
