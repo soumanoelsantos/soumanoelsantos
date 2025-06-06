@@ -31,7 +31,11 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
     // Carregar resposta existente se houver
     const respostaExistente = respostas.find(r => r.perguntaId === pergunta.id);
     if (respostaExistente) {
-      setRespostaTemp(respostaExistente.resposta);
+      // Convert number to string if needed to match our state type
+      const resposta = typeof respostaExistente.resposta === 'number' 
+        ? String(respostaExistente.resposta)
+        : respostaExistente.resposta;
+      setRespostaTemp(resposta);
     } else {
       setRespostaTemp(pergunta.tipo === 'multipla_escolha_multi' ? [] : "");
     }
