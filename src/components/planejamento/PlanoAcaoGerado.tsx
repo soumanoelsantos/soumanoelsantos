@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar, CheckCircle2, Clock, Target, TrendingUp, Users, ArrowLeft, Eye } from "lucide-react";
 import { PlanejamentoEstrategicoData, PlanoAcao } from "@/types/planejamentoEstrategico";
+import { useAuth } from "@/hooks/useAuth";
+import { savePlanejamentoEstrategicoToSupabase } from "@/utils/storage/planejamentoEstrategicoUtils";
 import FerramentasResultados from "./FerramentasResultados";
 import AiTipsDialog from "./AiTipsDialog";
 
@@ -16,15 +17,27 @@ interface PlanoAcaoGeradoProps {
   onVoltar?: () => void;
 }
 
-const ACOES_STORAGE_KEY = 'planejamento_acoes_estado';
-
 const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgresso, onVoltar }) => {
   const [acoesLocal, setAcoesLocal] = useState<PlanoAcao[]>(dados.planoAcao);
   const [showResults, setShowResults] = useState(false);
+  const { userId } = useAuth();
+
+  // Função para salvar estado das ações no Supabase
+  const salvarEstadoAcoes = async (novasAcoes: PlanoAcao[]) => {
+    if (!userId) return;
+
+    const dadosAtualizados = {
+      ...dados,
+      planoAcao: novasAcoes,
+      dataAtualizacao: new Date()
+    };
+
+    await savePlanejamentoEstrategicoToSupabase(userId, dadosAtualizados);
+  };
 
   // Carregar estado das ações do localStorage ao inicializar
   useEffect(() => {
-    const estadoSalvo = localStorage.getItem(ACOES_STORAGE_KEY);
+    const estadoSalvo = localStorage.getItem('planejamento_acoes_estado');
     if (estadoSalvo) {
       try {
         const estadoParseado = JSON.parse(estadoSalvo);
@@ -41,7 +54,7 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
         onUpdateProgresso(novoProgresso);
       } catch (error) {
         console.error('Erro ao carregar estado das ações:', error);
-        localStorage.removeItem(ACOES_STORAGE_KEY);
+        localStorage.removeItem('planejamento_acoes_estado');
       }
     }
   }, [dados.planoAcao, onUpdateProgresso]);
@@ -52,10 +65,10 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
       id: acao.id,
       concluida: acao.concluida
     }));
-    localStorage.setItem(ACOES_STORAGE_KEY, JSON.stringify(estadoAcoes));
+    localStorage.setItem('planejamento_acoes_estado', JSON.stringify(estadoAcoes));
   }, [acoesLocal]);
 
-  const toggleAcaoConcluida = (acaoId: string) => {
+  const toggleAcaoConcluida = async (acaoId: string) => {
     const novasAcoes = acoesLocal.map(acao => 
       acao.id === acaoId ? { ...acao, concluida: !acao.concluida } : acao
     );
@@ -64,9 +77,12 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
     const acoesCompletas = novasAcoes.filter(acao => acao.concluida).length;
     const novoProgresso = (acoesCompletas / novasAcoes.length) * 100;
     onUpdateProgresso(novoProgresso);
+
+    // Salvar no Supabase
+    await salvarEstadoAcoes(novasAcoes);
   };
 
-  const reordenarAcoes = (result: any) => {
+  const reordenarAcoes = async (result: any) => {
     if (!result.destination) return;
 
     const novasAcoes = [...acoesLocal];
@@ -83,6 +99,9 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
     });
 
     setAcoesLocal(novasAcoes);
+
+    // Salvar no Supabase
+    await salvarEstadoAcoes(novasAcoes);
   };
 
   const getIconeCategoria = (categoria: string) => {

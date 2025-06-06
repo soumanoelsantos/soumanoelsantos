@@ -573,6 +573,54 @@ export type Database = {
         }
         Relationships: []
       }
+      planejamento_estrategico: {
+        Row: {
+          acoes_comerciais: Json | null
+          created_at: string
+          data_atualizacao: string
+          data_inicio: string
+          empresa_nome: string
+          ferramentas_geradas: Json
+          id: string
+          plano_acao: Json
+          progresso: number
+          respostas: Json
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acoes_comerciais?: Json | null
+          created_at?: string
+          data_atualizacao?: string
+          data_inicio?: string
+          empresa_nome: string
+          ferramentas_geradas?: Json
+          id?: string
+          plano_acao?: Json
+          progresso?: number
+          respostas?: Json
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acoes_comerciais?: Json | null
+          created_at?: string
+          data_atualizacao?: string
+          data_inicio?: string
+          empresa_nome?: string
+          ferramentas_geradas?: Json
+          id?: string
+          plano_acao?: Json
+          progresso?: number
+          respostas?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
