@@ -1,4 +1,3 @@
-
 import { PerguntaPlanejamento } from "@/types/planejamentoEstrategico";
 
 export const perguntasPlanejamento: PerguntaPlanejamento[] = [
@@ -333,3 +332,6 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     obrigatoria: true
   }
 ];
+
+// Exporta as perguntas do diagnóstico como principal
+export { perguntasDiagnostico as perguntasPlanejamento } from './perguntasDiagnostico';
