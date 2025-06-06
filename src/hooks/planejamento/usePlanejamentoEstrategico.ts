@@ -1,13 +1,300 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { PlanejamentoEstrategicoData, RespostaPlanejamento, PlanoAcao } from "@/types/planejamentoEstrategico";
+import { PlanejamentoEstrategicoData, RespostaPlanejamento, PlanoAcao, AcaoComercialSemanal } from "@/types/planejamentoEstrategico";
 
 export const usePlanejamentoEstrategico = () => {
   const { toast } = useToast();
   const [etapa, setEtapa] = useState<'questionario' | 'resultado'>('questionario');
   const [dados, setDados] = useState<PlanejamentoEstrategicoData | null>(null);
   const [gerandoPlano, setGerandoPlano] = useState(false);
+
+  const gerarAcoesImplementacao = (): PlanoAcao[] => {
+    const acoesImplementacao: PlanoAcao[] = [
+      // Semana 1-2
+      { id: 'impl_1', acao: 'Enviar o vídeo de boas-vindas', categoria: 'Onboarding', prazo: '1 semana', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Vídeo institucional, plataforma de envio', metricas: 'Taxa de visualização do vídeo', tipo: 'implementacao' },
+      { id: 'impl_2', acao: 'Enviar planilha de integração', categoria: 'Onboarding', prazo: '1 semana', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Planilha estruturada, documentação', metricas: 'Preenchimento completo da planilha', tipo: 'implementacao' },
+      { id: 'impl_3', acao: 'Enviar planilha CAC', categoria: 'Financeiro', prazo: '1 semana', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), responsavel: 'Marketing/Vendas', recursos: 'Planilha de cálculo CAC, treinamento', metricas: 'CAC calculado por canal', tipo: 'implementacao' },
+      { id: 'impl_4', acao: 'Preencher PDCA', categoria: 'Gestão', prazo: '2 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), responsavel: 'Gestores', recursos: 'Metodologia PDCA, template', metricas: 'PDCA implementado por área', tipo: 'implementacao' },
+      { id: 'impl_5', acao: 'Enviar calculadora de metas', categoria: 'Planejamento', prazo: '2 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), responsavel: 'Planejamento', recursos: 'Ferramenta de cálculo, capacitação', metricas: 'Metas definidas e calculadas', tipo: 'implementacao' },
+      
+      // Semana 3-4
+      { id: 'impl_6', acao: 'Alinhamento de salários e comissões', categoria: 'RH', prazo: '3 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), responsavel: 'RH/Diretoria', recursos: 'Pesquisa salarial, estrutura de comissões', metricas: 'Estrutura salarial definida', tipo: 'implementacao' },
+      { id: 'impl_7', acao: 'Indicar sistemas', categoria: 'Tecnologia', prazo: '3 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), responsavel: 'TI', recursos: 'Análise de sistemas, orçamentos', metricas: 'Sistemas recomendados e avaliados', tipo: 'implementacao' },
+      { id: 'impl_8', acao: 'Agendar reunião com a equipe de vendas', categoria: 'Vendas', prazo: '3 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), responsavel: 'Gerente de Vendas', recursos: 'Agenda, pauta estruturada', metricas: 'Reunião realizada com participação integral', tipo: 'implementacao' },
+      { id: 'impl_9', acao: 'Fazer pesquisa 360º anônima com os vendedores', categoria: 'RH', prazo: '4 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Ferramenta de pesquisa, questionário', metricas: 'Taxa de participação na pesquisa', tipo: 'implementacao' },
+      
+      // Semana 5-8
+      { id: 'impl_10', acao: 'Solicitar ao Alan (Boi) a criação do Dashboard', categoria: 'Tecnologia', prazo: '5 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000), responsavel: 'TI', recursos: 'Especificações técnicas, dados', metricas: 'Dashboard funcionando com dados reais', tipo: 'implementacao' },
+      { id: 'impl_11', acao: 'Cadastrar vendedores no Looker', categoria: 'Tecnologia', prazo: '6 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000), responsavel: 'TI', recursos: 'Acesso ao Looker, treinamento', metricas: 'Vendedores ativos no sistema', tipo: 'implementacao' },
+      { id: 'impl_12', acao: 'Mapeamento da jornada do cliente', categoria: 'Marketing', prazo: '6 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000), responsavel: 'Marketing/Vendas', recursos: 'Workshop de mapeamento, ferramentas', metricas: 'Jornada documentada e validada', tipo: 'implementacao' },
+      { id: 'impl_13', acao: 'Pedir Manoel agendar reunião de Planejamento estratégico', categoria: 'Estratégia', prazo: '7 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 49 * 24 * 60 * 60 * 1000), responsavel: 'CEO', recursos: 'Agenda executiva, pauta estratégica', metricas: 'Reunião agendada e realizada', tipo: 'implementacao' },
+      { id: 'impl_14', acao: 'Criar e enviar contrato de rotina do colaborador - CRC', categoria: 'RH', prazo: '8 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 56 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Template de contrato, jurídico', metricas: 'Contratos assinados por todos', tipo: 'implementacao' },
+      
+      // Semana 9-12
+      { id: 'impl_15', acao: 'Enviar resultado da pesquisa 360º', categoria: 'RH', prazo: '9 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 63 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Relatório de resultados, apresentação', metricas: 'Feedback entregue individualmente', tipo: 'implementacao' },
+      { id: 'impl_16', acao: 'Criar e enviar contrato de expectativa', categoria: 'RH', prazo: '10 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 70 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Template de expectativas, alinhamento', metricas: 'Contratos de expectativa assinados', tipo: 'implementacao' },
+      { id: 'impl_17', acao: 'Feedback SCI', categoria: 'Gestão', prazo: '11 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 77 * 24 * 60 * 60 * 1000), responsavel: 'Gestores', recursos: 'Metodologia SCI, treinamento', metricas: 'Feedback SCI implementado', tipo: 'implementacao' },
+      { id: 'impl_18', acao: 'Mapear Equipe DISC Assessment', categoria: 'RH', prazo: '12 semanas', prioridade: 'baixa', concluida: false, dataVencimento: new Date(Date.now() + 84 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Ferramenta DISC, consultoria', metricas: 'Perfis DISC mapeados para toda equipe', tipo: 'implementacao' },
+      
+      // Semana 13-16
+      { id: 'impl_19', acao: 'Implementação de novos funis', categoria: 'Marketing', prazo: '13 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 91 * 24 * 60 * 60 * 1000), responsavel: 'Marketing', recursos: 'Automação de marketing, CRM', metricas: 'Funis ativos e convertendo', tipo: 'implementacao' },
+      { id: 'impl_20', acao: 'Criar e enviar Job description', categoria: 'RH', prazo: '14 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 98 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Template JD, aprovação gestores', metricas: 'Job descriptions criadas para todos os cargos', tipo: 'implementacao' },
+      { id: 'impl_21', acao: 'Criar persona do cliente', categoria: 'Marketing', prazo: '15 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 105 * 24 * 60 * 60 * 1000), responsavel: 'Marketing', recursos: 'Pesquisa de mercado, dados de clientes', metricas: 'Personas validadas e documentadas', tipo: 'implementacao' },
+      { id: 'impl_22', acao: 'Fazer cliente oculto', categoria: 'Qualidade', prazo: '16 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 112 * 24 * 60 * 60 * 1000), responsavel: 'Qualidade', recursos: 'Empresa especializada, roteiro', metricas: 'Relatório de cliente oculto completo', tipo: 'implementacao' },
+      
+      // Semana 17-20
+      { id: 'impl_23', acao: 'Mapeamento de Processos', categoria: 'Processos', prazo: '17 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 119 * 24 * 60 * 60 * 1000), responsavel: 'Operações', recursos: 'Consultoria em processos, ferramentas', metricas: 'Processos críticos mapeados', tipo: 'implementacao' },
+      { id: 'impl_24', acao: 'Desenhar organograma', categoria: 'RH', prazo: '18 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 126 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Software de organograma, aprovação', metricas: 'Organograma atualizado e divulgado', tipo: 'implementacao' },
+      { id: 'impl_25', acao: 'Cadastrar no Google Agenda as reuniões do próximo mês', categoria: 'Gestão', prazo: '19 semanas', prioridade: 'baixa', concluida: false, dataVencimento: new Date(Date.now() + 133 * 24 * 60 * 60 * 1000), responsavel: 'Assistente/Secretaria', recursos: 'Google Workspace, agenda compartilhada', metricas: 'Reuniões organizadas e sincronizadas', tipo: 'implementacao' },
+      { id: 'impl_26', acao: 'Enviar melhor performance no último dia útil do mês', categoria: 'RH', prazo: '20 semanas', prioridade: 'baixa', concluida: false, dataVencimento: new Date(Date.now() + 140 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Sistema de reconhecimento, comunicação', metricas: 'Reconhecimento mensal implementado', tipo: 'implementacao' },
+      
+      // Semana 21-24
+      { id: 'impl_27', acao: 'Enviar relatório de atividades realizadas no mês', categoria: 'Gestão', prazo: '21 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 147 * 24 * 60 * 60 * 1000), responsavel: 'Gestores', recursos: 'Template de relatório, sistema', metricas: 'Relatórios mensais entregues', tipo: 'implementacao' },
+      { id: 'impl_28', acao: 'Propor diversificação de canais de vendas', categoria: 'Vendas', prazo: '22 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 154 * 24 * 60 * 60 * 1000), responsavel: 'Vendas', recursos: 'Análise de canais, investimento', metricas: 'Novos canais implementados', tipo: 'implementacao' },
+      { id: 'impl_29', acao: 'Criar plano Endomarketing', categoria: 'Marketing', prazo: '23 semanas', prioridade: 'media', concluida: false, dataVencimento: new Date(Date.now() + 161 * 24 * 60 * 60 * 1000), responsavel: 'Marketing/RH', recursos: 'Estratégia de comunicação interna', metricas: 'Engajamento interno mensurado', tipo: 'implementacao' },
+      { id: 'impl_30', acao: 'Criar plano de carreira', categoria: 'RH', prazo: '24 semanas', prioridade: 'alta', concluida: false, dataVencimento: new Date(Date.now() + 168 * 24 * 60 * 60 * 1000), responsavel: 'RH', recursos: 'Estrutura de cargos, competências', metricas: 'Planos de carreira definidos', tipo: 'implementacao' }
+    ];
+
+    return acoesImplementacao;
+  };
+
+  const gerarAcoesComerciais = (respostas: RespostaPlanejamento[]): AcaoComercialSemanal[] => {
+    const setor = respostas.find(r => r.perguntaId === 'empresa_setor')?.resposta as string || '';
+    const faturamento = respostas.find(r => r.perguntaId === 'faturamento_atual')?.resposta as string || '';
+    const crescimento = respostas.find(r => r.perguntaId === 'crescimento_atual')?.resposta as string || '';
+    
+    const acoesComerciais: AcaoComercialSemanal[] = [
+      // Semana 1-4: Foco em prospecção e organização
+      {
+        id: 'com_1',
+        acao: 'Implementar lista de prospecção diária de 20 novos contatos qualificados',
+        meta: 'Prospectar 100 novos leads por semana',
+        prazo: 'Diariamente',
+        responsavel: 'Equipe de Vendas/SDR',
+        metricas: 'Número de leads qualificados adicionados ao funil',
+        semana: 1
+      },
+      {
+        id: 'com_2',
+        acao: 'Criar sequência de follow-up automatizada para leads não convertidos',
+        meta: 'Reativar 15% dos leads dormentes',
+        prazo: 'Semanal',
+        responsavel: 'Marketing/Vendas',
+        metricas: 'Taxa de reativação de leads',
+        semana: 2
+      },
+      {
+        id: 'com_3',
+        acao: 'Implementar sistema de pontuação de leads (lead scoring)',
+        meta: 'Priorizar 30% dos leads mais qualificados',
+        prazo: 'Até final da semana',
+        responsavel: 'Marketing',
+        metricas: 'Aumento na taxa de conversão',
+        semana: 3
+      },
+      {
+        id: 'com_4',
+        acao: 'Criar campanhas de nutrição específicas por segmento',
+        meta: 'Aumentar engajamento em 25%',
+        prazo: 'Semanal',
+        responsavel: 'Marketing',
+        metricas: 'Taxa de abertura e cliques dos emails',
+        semana: 4
+      },
+      
+      // Semana 5-8: Foco em conversão e fechamento
+      {
+        id: 'com_5',
+        acao: 'Implementar script de qualificação BANT para todas as chamadas',
+        meta: 'Qualificar 80% dos leads antes da demo',
+        prazo: 'Diariamente',
+        responsavel: 'Vendas',
+        metricas: 'Qualidade dos leads passados para vendas',
+        semana: 5
+      },
+      {
+        id: 'com_6',
+        acao: 'Criar apresentação personalizada por tipo de cliente',
+        meta: 'Aumentar taxa de fechamento em 20%',
+        prazo: 'Até final da semana',
+        responsavel: 'Vendas',
+        metricas: 'Taxa de conversão por tipo de apresentação',
+        semana: 6
+      },
+      {
+        id: 'com_7',
+        acao: 'Implementar técnica de criação de urgência nas propostas',
+        meta: 'Reduzir ciclo de vendas em 15%',
+        prazo: 'Diariamente',
+        responsavel: 'Vendas',
+        metricas: 'Tempo médio do ciclo de vendas',
+        semana: 7
+      },
+      {
+        id: 'com_8',
+        acao: 'Desenvolver programa de indicação de clientes',
+        meta: 'Gerar 10% das vendas via indicação',
+        prazo: 'Mensal',
+        responsavel: 'Vendas/Marketing',
+        metricas: 'Número de vendas por indicação',
+        semana: 8
+      },
+      
+      // Semana 9-12: Foco em retenção e expansão
+      {
+        id: 'com_9',
+        acao: 'Implementar processo de upsell sistemático',
+        meta: 'Aumentar ticket médio em 30%',
+        prazo: 'Mensalmente',
+        responsavel: 'Vendas/CS',
+        metricas: 'Valor médio por cliente',
+        semana: 9
+      },
+      {
+        id: 'com_10',
+        acao: 'Criar programa de reativação de clientes inativos',
+        meta: 'Reativar 20% da base inativa',
+        prazo: 'Quinzenal',
+        responsavel: 'Customer Success',
+        metricas: 'Taxa de reativação de clientes',
+        semana: 10
+      },
+      {
+        id: 'com_11',
+        acao: 'Implementar pesquisa de satisfação pós-venda',
+        meta: 'NPS acima de 8.0',
+        prazo: 'Após cada venda',
+        responsavel: 'Customer Success',
+        metricas: 'Score NPS e taxa de resposta',
+        semana: 11
+      },
+      {
+        id: 'com_12',
+        acao: 'Desenvolver estratégia de cross-sell baseada em uso',
+        meta: 'Aumentar receita por cliente em 25%',
+        prazo: 'Mensalmente',
+        responsavel: 'Vendas/CS',
+        metricas: 'Receita adicional por cliente',
+        semana: 12
+      },
+      
+      // Semana 13-16: Foco em otimização e análise
+      {
+        id: 'com_13',
+        acao: 'Implementar análise de concorrência semanal',
+        meta: 'Identificar 3 oportunidades competitivas',
+        prazo: 'Semanalmente',
+        responsavel: 'Marketing/Vendas',
+        metricas: 'Oportunidades identificadas e exploradas',
+        semana: 13
+      },
+      {
+        id: 'com_14',
+        acao: 'Otimizar funil de vendas baseado em dados',
+        meta: 'Aumentar conversão geral em 15%',
+        prazo: 'Mensalmente',
+        responsavel: 'Vendas/Marketing',
+        metricas: 'Taxa de conversão por etapa do funil',
+        semana: 14
+      },
+      {
+        id: 'com_15',
+        acao: 'Implementar sistema de CRM com automações',
+        meta: 'Reduzir tarefas manuais em 40%',
+        prazo: 'Até final da semana',
+        responsavel: 'TI/Vendas',
+        metricas: 'Tempo economizado em tarefas administrativas',
+        semana: 15
+      },
+      {
+        id: 'com_16',
+        acao: 'Criar dashboard de vendas em tempo real',
+        meta: 'Visibilidade total do pipeline',
+        prazo: 'Até final da semana',
+        responsavel: 'TI/Vendas',
+        metricas: 'Precisão das previsões de vendas',
+        semana: 16
+      },
+      
+      // Semana 17-20: Foco em expansão e novos mercados
+      {
+        id: 'com_17',
+        acao: 'Testar novos canais de aquisição digital',
+        meta: 'Encontrar 2 novos canais rentáveis',
+        prazo: 'Quinzenal',
+        responsavel: 'Marketing',
+        metricas: 'CAC e ROI por canal',
+        semana: 17
+      },
+      {
+        id: 'com_18',
+        acao: 'Implementar estratégia de SEO para vendas',
+        meta: 'Aumentar tráfego orgânico em 50%',
+        prazo: 'Mensalmente',
+        responsavel: 'Marketing',
+        metricas: 'Posicionamento e tráfego orgânico',
+        semana: 18
+      },
+      {
+        id: 'com_19',
+        acao: 'Desenvolver parcerias estratégicas',
+        meta: 'Estabelecer 3 parcerias comerciais',
+        prazo: 'Mensalmente',
+        responsavel: 'Vendas/CEO',
+        metricas: 'Número de vendas via parceiros',
+        semana: 19
+      },
+      {
+        id: 'com_20',
+        acao: 'Implementar programa de afiliados',
+        meta: 'Recrutar 10 afiliados ativos',
+        prazo: 'Mensalmente',
+        responsavel: 'Marketing/Vendas',
+        metricas: 'Vendas geradas por afiliados',
+        semana: 20
+      },
+      
+      // Semana 21-24: Foco em consolidação e escala
+      {
+        id: 'com_21',
+        acao: 'Criar programa de capacitação contínua em vendas',
+        meta: 'Aumentar performance da equipe em 20%',
+        prazo: 'Semanalmente',
+        responsavel: 'Vendas/RH',
+        metricas: 'Performance individual e coletiva',
+        semana: 21
+      },
+      {
+        id: 'com_22',
+        acao: 'Implementar sistema de gamificação nas vendas',
+        meta: 'Aumentar motivação e resultados',
+        prazo: 'Mensalmente',
+        responsavel: 'Vendas/RH',
+        metricas: 'Engajamento da equipe e resultados',
+        semana: 22
+      },
+      {
+        id: 'com_23',
+        acao: 'Desenvolver estratégia de precificação dinâmica',
+        meta: 'Otimizar margem em 15%',
+        prazo: 'Quinzenalmente',
+        responsavel: 'Vendas/Financeiro',
+        metricas: 'Margem média por venda',
+        semana: 23
+      },
+      {
+        id: 'com_24',
+        acao: 'Implementar sistema de previsão de vendas IA',
+        meta: 'Precisão de 90% nas previsões',
+        prazo: 'Mensalmente',
+        responsavel: 'TI/Vendas',
+        metricas: 'Precisão das previsões',
+        semana: 24
+      }
+    ];
+
+    return acoesComerciais;
+  };
 
   const gerarPlanoAcaoCompleto = (respostas: RespostaPlanejamento[]): PlanoAcao[] => {
     const acoes: PlanoAcao[] = [];
@@ -1086,13 +1373,23 @@ export const usePlanejamentoEstrategico = () => {
       const ferramentasGeradas = gerarFerramentasCompletas(respostas);
       
       // Gerar plano de ação abrangente
-      const planoAcao = gerarPlanoAcaoCompleto(respostas);
+      const planoAcaoEstrategico = gerarPlanoAcaoCompleto(respostas);
+      
+      // Gerar ações de implementação específicas
+      const acoesImplementacao = gerarAcoesImplementacao();
+      
+      // Gerar ações comerciais semanais
+      const acoesComerciais = gerarAcoesComerciais(respostas);
+      
+      // Combinar todas as ações
+      const planoAcaoCompleto = [...planoAcaoEstrategico, ...acoesImplementacao];
       
       const dadosCompletos: PlanejamentoEstrategicoData = {
         empresaNome,
         respostas,
         ferramentasGeradas,
-        planoAcao,
+        planoAcao: planoAcaoCompleto,
+        acoesComerciais,
         progresso: 0,
         dataInicio: new Date(),
         dataAtualizacao: new Date(),
@@ -1104,7 +1401,7 @@ export const usePlanejamentoEstrategico = () => {
       
       toast({
         title: "Plano Estratégico Gerado!",
-        description: `Foram criadas ${planoAcao.length} ações estratégicas para os próximos 6 meses.`,
+        description: `Foram criadas ${planoAcaoCompleto.length} ações estratégicas e ${acoesComerciais.length} ações comerciais semanais.`,
       });
       
     } catch (error) {

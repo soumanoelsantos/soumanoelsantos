@@ -3,7 +3,7 @@ export interface PerguntaPlanejamento {
   id: string;
   categoria: 'diagnostico' | 'swot' | 'negocio' | 'puv' | 'equipe' | 'fase';
   pergunta: string;
-  tipo: 'texto' | 'multipla_escolha' | 'escala' | 'sim_nao' | 'swot_guiada';
+  tipo: 'texto' | 'multipla_escolha' | 'multipla_escolha_multi' | 'escala' | 'sim_nao' | 'swot_guiada';
   opcoes?: string[];
   direcionamento?: { [key: string]: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null };
   obrigatoria: boolean;
@@ -12,7 +12,7 @@ export interface PerguntaPlanejamento {
 
 export interface RespostaPlanejamento {
   perguntaId: string;
-  resposta: string | number;
+  resposta: string | number | string[]; // Permitir array para múltipla escolha
   observacoes?: string;
   swotClassificacao?: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null;
 }
@@ -28,6 +28,17 @@ export interface PlanoAcao {
   responsavel?: string;
   recursos?: string;
   metricas?: string;
+  tipo?: 'estrategica' | 'comercial_semanal' | 'implementacao';
+}
+
+export interface AcaoComercialSemanal {
+  id: string;
+  acao: string;
+  meta: string;
+  prazo: string;
+  responsavel: string;
+  metricas: string;
+  semana: number;
 }
 
 export interface PlanejamentoEstrategicoData {
@@ -48,6 +59,7 @@ export interface PlanejamentoEstrategicoData {
     faseEmpresa?: any;
   };
   planoAcao: PlanoAcao[];
+  acoesComerciais?: AcaoComercialSemanal[];
   progresso: number; // 0-100
   dataInicio: Date;
   dataAtualizacao: Date;

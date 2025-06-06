@@ -302,7 +302,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     id: "principais_cargos",
     categoria: "equipe",
     pergunta: "Quais áreas/departamentos existem na empresa?",
-    tipo: "multipla_escolha",
+    tipo: "multipla_escolha_multi",
     opcoes: ["Vendas", "Marketing", "Operacional/Produção", "Financeiro", "RH", "TI", "Atendimento ao Cliente", "Apenas o(s) sócio(s)"],
     obrigatoria: true
   },
