@@ -14,18 +14,26 @@ import {
   Target,
   Eye,
   TrendingUp,
-  Zap
+  Zap,
+  ArrowLeft,
+  Download,
+  GripVertical
 } from "lucide-react";
 import { PlanejamentoEstrategicoData, PlanoAcao } from "@/types/planejamentoEstrategico";
 import FerramentasResultados from "./FerramentasResultados";
+import { generatePDF } from "@/utils/pdfGenerator";
+import { useToast } from "@/hooks/use-toast";
 
 interface PlanoAcaoGeradoProps {
   dados: PlanejamentoEstrategicoData;
   onUpdateProgresso: (progresso: number) => void;
+  onVoltar?: () => void;
 }
 
-const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgresso }) => {
+const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgresso, onVoltar }) => {
   const [acoesLocal, setAcoesLocal] = useState<PlanoAcao[]>(dados.planoAcao);
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const toggleAcaoConcluida = (acaoId: string) => {
     const novasAcoes = acoesLocal.map(acao => 
@@ -36,6 +44,56 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
     const acoesCompletas = novasAcoes.filter(acao => acao.concluida).length;
     const novoProgresso = (acoesCompletas / novasAcoes.length) * 100;
     onUpdateProgresso(novoProgresso);
+  };
+
+  const reordenarAcoes = (sourceIndex: number, destinationIndex: number) => {
+    const novasAcoes = [...acoesLocal];
+    const [itemMovido] = novasAcoes.splice(sourceIndex, 1);
+    novasAcoes.splice(destinationIndex, 0, itemMovido);
+
+    // Ajustar datas cronologicamente
+    const hoje = new Date();
+    novasAcoes.forEach((acao, index) => {
+      const novaData = new Date(hoje);
+      novaData.setDate(hoje.getDate() + (index * 30)); // 30 dias entre cada ação
+      acao.dataVencimento = novaData;
+    });
+
+    setAcoesLocal(novasAcoes);
+    
+    toast({
+      title: "Ordem atualizada",
+      description: "As ações foram reordenadas e as datas ajustadas cronologicamente.",
+    });
+  };
+
+  const handleDragStart = (e: React.DragEvent, acaoId: string, index: number) => {
+    setDraggedItemId(acaoId);
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const dragIndex = parseInt(e.dataTransfer.getData("text/plain"));
+    if (dragIndex !== dropIndex) {
+      reordenarAcoes(dragIndex, dropIndex);
+    }
+    setDraggedItemId(null);
+  };
+
+  const downloadPDF = () => {
+    const element = document.getElementById('plano-acoes-completo');
+    if (element) {
+      toast({
+        title: "Download iniciado!",
+        description: "O PDF do plano de ação está sendo gerado.",
+      });
+      generatePDF(element, `plano-acao-${dados.empresaNome}.pdf`);
+    }
   };
 
   const acoesCompletas = acoesLocal.filter(acao => acao.concluida).length;
@@ -65,13 +123,27 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
     return new Intl.DateTimeFormat('pt-BR').format(new Date(data));
   };
 
-  const renderizarAcoes = (acoes: PlanoAcao[], titulo: string) => (
+  const renderizarAcoesDraggable = (acoes: PlanoAcao[], titulo: string) => (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">{titulo}</h3>
-      {acoes.map((acao) => (
-        <Card key={acao.id} className={`transition-all ${acao.concluida ? 'bg-green-50 border-green-200' : ''}`}>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900">{titulo}</h3>
+        <p className="text-sm text-gray-500">Arraste para reordenar</p>
+      </div>
+      {acoes.map((acao, index) => (
+        <Card 
+          key={acao.id} 
+          className={`transition-all cursor-move ${acao.concluida ? 'bg-green-50 border-green-200' : ''} ${
+            draggedItemId === acao.id ? 'opacity-50' : ''
+          }`}
+          draggable
+          onDragStart={(e) => handleDragStart(e, acao.id, index)}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, index)}
+        >
           <CardContent className="p-4">
             <div className="flex items-start gap-4">
+              <GripVertical className="h-5 w-5 text-gray-400 mt-1" />
+              
               <Checkbox
                 checked={acao.concluida}
                 onCheckedChange={() => toggleAcaoConcluida(acao.id)}
@@ -137,7 +209,29 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" id="plano-acoes-completo">
+      {/* Header com navegação */}
+      <div className="flex items-center justify-between">
+        {onVoltar && (
+          <Button
+            variant="outline"
+            onClick={onVoltar}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        )}
+        
+        <Button
+          onClick={downloadPDF}
+          className="flex items-center gap-2 bg-[#1d365c] hover:bg-[#2a4a73]"
+        >
+          <Download className="h-4 w-4" />
+          Baixar PDF Completo
+        </Button>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -167,11 +261,11 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
         </TabsList>
 
         <TabsContent value="plano-acao">
-          {renderizarAcoes(acoesEstrategicas, "Plano de Ação Estratégico")}
+          {renderizarAcoesDraggable(acoesEstrategicas, "Plano de Ação Estratégico")}
         </TabsContent>
 
         <TabsContent value="implementacao">
-          {renderizarAcoes(acoesImplementacao, "Plano de Implementação - 6 Meses")}
+          {renderizarAcoesDraggable(acoesImplementacao, "Plano de Implementação - 6 Meses")}
         </TabsContent>
 
         <TabsContent value="comerciais">

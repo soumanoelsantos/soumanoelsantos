@@ -14,7 +14,8 @@ const PlanejamentoEstrategico: React.FC = () => {
     dados,
     gerandoPlano,
     processarRespostas,
-    handleUpdateProgresso
+    handleUpdateProgresso,
+    voltarParaFormulario
   } = usePlanejamentoEstrategico();
 
   if (!isAuthenticated) {
@@ -26,7 +27,13 @@ const PlanejamentoEstrategico: React.FC = () => {
   }
 
   if (etapa === 'resultado' && dados) {
-    return <PlanoAcaoGerado dados={dados} onUpdateProgresso={handleUpdateProgresso} />;
+    return (
+      <PlanoAcaoGerado 
+        dados={dados} 
+        onUpdateProgresso={handleUpdateProgresso}
+        onVoltar={voltarParaFormulario}
+      />
+    );
   }
 
   return <PlanejamentoEstrategicoForm onComplete={processarRespostas} />;
