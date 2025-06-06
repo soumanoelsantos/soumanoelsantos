@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { RespostaPlanejamento, PlanejamentoEstrategicoData } from '@/types/planejamentoEstrategico';
 import { useToast } from '@/hooks/use-toast';
 import { useActionPlanGenerator } from './useActionPlanGenerator';
@@ -15,6 +15,8 @@ interface DiagnosticoResultados {
   sistema: { score: number; total: number; percentage: number };
 }
 
+const STORAGE_KEY = 'planejamento_estrategico_dados';
+
 export const usePlanejamentoEstrategico = () => {
   const [etapa, setEtapa] = useState<'formulario' | 'resultado'>('formulario');
   const [dados, setDados] = useState<PlanejamentoEstrategicoData | null>(null);
@@ -23,6 +25,45 @@ export const usePlanejamentoEstrategico = () => {
   
   const { gerarPlanoAcao } = useActionPlanGenerator();
   const { gerarAcoesComerciais } = useCommercialActionsGenerator();
+
+  // Verificar se existe um plano salvo ao inicializar
+  useEffect(() => {
+    const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+    if (dadosSalvos) {
+      try {
+        const dadosParseados = JSON.parse(dadosSalvos);
+        // Converter strings de data de volta para objetos Date
+        if (dadosParseados.dataInicio) {
+          dadosParseados.dataInicio = new Date(dadosParseados.dataInicio);
+        }
+        if (dadosParseados.dataAtualizacao) {
+          dadosParseados.dataAtualizacao = new Date(dadosParseados.dataAtualizacao);
+        }
+        if (dadosParseados.planoAcao) {
+          dadosParseados.planoAcao = dadosParseados.planoAcao.map((acao: any) => ({
+            ...acao,
+            dataVencimento: new Date(acao.dataVencimento)
+          }));
+        }
+        
+        setDados(dadosParseados);
+        setEtapa('resultado');
+        
+        console.log('Plano estratégico carregado do localStorage:', dadosParseados.empresaNome);
+      } catch (error) {
+        console.error('Erro ao carregar dados salvos:', error);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  }, []);
+
+  // Salvar dados sempre que mudarem
+  useEffect(() => {
+    if (dados && etapa === 'resultado') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+      console.log('Dados do plano estratégico salvos no localStorage');
+    }
+  }, [dados, etapa]);
 
   const gerarSwotAPartirRespostas = (respostas: RespostaPlanejamento[]) => {
     const forcas: string[] = [];
@@ -106,17 +147,30 @@ export const usePlanejamentoEstrategico = () => {
 
   const handleUpdateProgresso = (novoProgresso: number) => {
     if (dados) {
-      setDados({
+      const dadosAtualizados = {
         ...dados,
         progresso: novoProgresso,
         dataAtualizacao: new Date()
-      });
+      };
+      setDados(dadosAtualizados);
     }
   };
 
   const voltarParaFormulario = () => {
     setEtapa('formulario');
     setDados(null);
+    localStorage.removeItem(STORAGE_KEY);
+    console.log('Dados do plano estratégico removidos - voltando ao formulário');
+  };
+
+  const limparPlanoSalvo = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setDados(null);
+    setEtapa('formulario');
+    toast({
+      title: "Plano removido",
+      description: "Dados do planejamento estratégico foram removidos.",
+    });
   };
 
   return {
@@ -125,6 +179,7 @@ export const usePlanejamentoEstrategico = () => {
     gerandoPlano,
     processarRespostas,
     handleUpdateProgresso,
-    voltarParaFormulario
+    voltarParaFormulario,
+    limparPlanoSalvo
   };
 };

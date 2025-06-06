@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,9 +16,44 @@ interface PlanoAcaoGeradoProps {
   onVoltar?: () => void;
 }
 
+const ACOES_STORAGE_KEY = 'planejamento_acoes_estado';
+
 const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgresso, onVoltar }) => {
   const [acoesLocal, setAcoesLocal] = useState<PlanoAcao[]>(dados.planoAcao);
   const [showResults, setShowResults] = useState(false);
+
+  // Carregar estado das ações do localStorage ao inicializar
+  useEffect(() => {
+    const estadoSalvo = localStorage.getItem(ACOES_STORAGE_KEY);
+    if (estadoSalvo) {
+      try {
+        const estadoParseado = JSON.parse(estadoSalvo);
+        // Atualizar apenas o status de conclusão das ações existentes
+        const acoesAtualizadas = dados.planoAcao.map(acao => {
+          const acaoSalva = estadoParseado.find((a: any) => a.id === acao.id);
+          return acaoSalva ? { ...acao, concluida: acaoSalva.concluida } : acao;
+        });
+        setAcoesLocal(acoesAtualizadas);
+        
+        // Recalcular progresso
+        const acoesCompletas = acoesAtualizadas.filter(acao => acao.concluida).length;
+        const novoProgresso = (acoesCompletas / acoesAtualizadas.length) * 100;
+        onUpdateProgresso(novoProgresso);
+      } catch (error) {
+        console.error('Erro ao carregar estado das ações:', error);
+        localStorage.removeItem(ACOES_STORAGE_KEY);
+      }
+    }
+  }, [dados.planoAcao, onUpdateProgresso]);
+
+  // Salvar estado das ações sempre que mudarem
+  useEffect(() => {
+    const estadoAcoes = acoesLocal.map(acao => ({
+      id: acao.id,
+      concluida: acao.concluida
+    }));
+    localStorage.setItem(ACOES_STORAGE_KEY, JSON.stringify(estadoAcoes));
+  }, [acoesLocal]);
 
   const toggleAcaoConcluida = (acaoId: string) => {
     const novasAcoes = acoesLocal.map(acao => 
