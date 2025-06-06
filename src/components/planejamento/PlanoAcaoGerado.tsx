@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar, CheckCircle2, Clock, Target, TrendingUp, Users, ArrowLeft, Eye } from "lucide-react";
 import { PlanejamentoEstrategicoData, PlanoAcao } from "@/types/planejamentoEstrategico";
 import FerramentasResultados from "./FerramentasResultados";
+import AiTipsDialog from "./AiTipsDialog";
 
 interface PlanoAcaoGeradoProps {
   dados: PlanejamentoEstrategicoData;
@@ -108,12 +109,18 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
               <p className="text-blue-100">Plano Estratégico - 6 Meses</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowResults(true)} className="text-blue-600">
+              <Button 
+                onClick={() => setShowResults(true)} 
+                className="bg-white text-blue-600 border-2 border-white hover:bg-blue-50 font-semibold"
+              >
                 <Eye className="mr-2 h-4 w-4" />
                 Ver Diagnóstico
               </Button>
               {onVoltar && (
-                <Button variant="outline" onClick={onVoltar} className="text-blue-600">
+                <Button 
+                  onClick={onVoltar} 
+                  className="bg-green-600 text-white border-2 border-green-600 hover:bg-green-700 font-semibold"
+                >
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Novo Plano
                 </Button>
@@ -198,7 +205,7 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
                                 </div>
                               </div>
                               
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
                                 <div>
                                   <p className="text-gray-600"><strong>Prazo:</strong> {acao.prazo}</p>
                                   <p className="text-gray-600"><strong>Data:</strong> {formatarData(acao.dataVencimento)}</p>
@@ -214,10 +221,15 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
                               </div>
                               
                               {acao.metricas && (
-                                <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                                <div className="mb-3 p-3 bg-blue-50 rounded-lg">
                                   <p className="text-sm"><strong>Métricas de Sucesso:</strong> {acao.metricas}</p>
                                 </div>
                               )}
+
+                              {/* AI Tips Button */}
+                              <div className="flex justify-end">
+                                <AiTipsDialog acao={acao} />
+                              </div>
                             </div>
                           </div>
                         </div>
