@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { PlanejamentoEstrategicoData, PlanoAcao } from "@/types/planejamentoEstrategico";
 import FerramentasResultados from "./FerramentasResultados";
+import AiTipsDialog from "./AiTipsDialog";
 import { generatePDF } from "@/utils/pdfGenerator";
 import { useToast } from "@/hooks/use-toast";
 
@@ -196,6 +197,11 @@ const PlanoAcaoGerado: React.FC<PlanoAcaoGeradoProps> = ({ dados, onUpdateProgre
                     <span className="font-medium">Responsável:</span> {acao.responsavel}
                   </div>
                 )}
+
+                {/* Botão AI Tips */}
+                <div className="flex items-center gap-2 pt-2">
+                  <AiTipsDialog acao={acao} />
+                </div>
               </div>
               
               {acao.concluida && (
