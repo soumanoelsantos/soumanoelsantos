@@ -24,6 +24,36 @@ export const usePlanejamentoEstrategico = () => {
   const { gerarPlanoAcao } = useActionPlanGenerator();
   const { gerarAcoesComerciais } = useCommercialActionsGenerator();
 
+  const gerarSwotAPartirRespostas = (respostas: RespostaPlanejamento[]) => {
+    const forcas: string[] = [];
+    const fraquezas: string[] = [];
+    const oportunidades: string[] = [];
+    const ameacas: string[] = [];
+
+    respostas.forEach(resposta => {
+      if (resposta.swotClassificacao) {
+        const texto = typeof resposta.resposta === 'string' ? resposta.resposta : String(resposta.resposta);
+        
+        switch (resposta.swotClassificacao) {
+          case 'Força':
+            forcas.push(texto);
+            break;
+          case 'Fraqueza':
+            fraquezas.push(texto);
+            break;
+          case 'Oportunidade':
+            oportunidades.push(texto);
+            break;
+          case 'Ameaça':
+            ameacas.push(texto);
+            break;
+        }
+      }
+    });
+
+    return { forcas, fraquezas, oportunidades, ameacas };
+  };
+
   const processarRespostas = async (respostas: RespostaPlanejamento[], resultados: DiagnosticoResultados) => {
     setGerandoPlano(true);
     
@@ -33,6 +63,10 @@ export const usePlanejamentoEstrategico = () => {
       
       const empresaNome = respostas.find(r => r.perguntaId === 'empresa_nome')?.resposta as string || 'Empresa';
       
+      // Gerar SWOT baseado nas respostas
+      const swot = gerarSwotAPartirRespostas(respostas);
+      
+      // Gerar plano de ação muito mais robusto
       const planoAcao = gerarPlanoAcao(resultados);
       const acoesComerciais = gerarAcoesComerciais();
       
@@ -40,7 +74,8 @@ export const usePlanejamentoEstrategico = () => {
         empresaNome,
         respostas,
         ferramentasGeradas: {
-          diagnostico: resultados
+          diagnostico: resultados,
+          swot
         },
         planoAcao,
         acoesComerciais,
@@ -55,7 +90,7 @@ export const usePlanejamentoEstrategico = () => {
       
       toast({
         title: "Plano gerado com sucesso!",
-        description: "Seu plano de ação estratégico está pronto.",
+        description: `Foram criadas ${planoAcao.length} ações estratégicas para os próximos 6 meses.`,
       });
     } catch (error) {
       console.error('Erro ao gerar plano:', error);
