@@ -1,3 +1,4 @@
+
 import html2pdf from 'html2pdf.js';
 import { getDefaultPdfOptionsConfig } from './pdf/pdfOptions';
 import { getPUVPdfOptionsConfig, getPUVPdfStyles } from './pdf/puvStyles';
@@ -83,13 +84,7 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
           scale: 1.5,
           logging: true, 
           useCORS: true,
-          allowTaint: true,
-          windowWidth: 1200,
-          windowHeight: 1600,
-          scrollX: 0,
-          scrollY: 0,
-          width: 1200,
-          height: null
+          allowTaint: true
         },
         jsPDF: { 
           unit: 'mm', 
