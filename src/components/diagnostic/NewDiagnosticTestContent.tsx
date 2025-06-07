@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useIntegratedData } from '@/hooks/useIntegratedData';
-import { generateIntelligentActionPlan } from '@/utils/intelligentActionGenerator';
+import { generateIntelligentActions } from '@/utils/intelligentActionGenerator';
 import SimpleDiagnosticForm from './SimpleDiagnosticForm';
 import ActionPlanManager from './ActionPlanManager';
 import { Loader2 } from 'lucide-react';
@@ -114,8 +114,52 @@ const NewDiagnosticTestContent = () => {
       // Simular processamento
       await new Promise(resolve => setTimeout(resolve, 3000));
       
+      // Criar resultados de diagnóstico simulados baseados nos dados do formulário
+      const diagnosticResults = {
+        comercial: {
+          pontuacao: data.problemasComerciais ? 3 : 7,
+          nivel: data.problemasComerciais ? 'critico' as const : 'bom' as const,
+          problemas: data.problemasComerciais ? [data.problemasComerciais] : [],
+          solucoes: []
+        },
+        marketing: {
+          pontuacao: data.problemasMarketing ? 4 : 6,
+          nivel: data.problemasMarketing ? 'atencao' as const : 'bom' as const,
+          problemas: data.problemasMarketing ? [data.problemasMarketing] : [],
+          solucoes: []
+        },
+        gestao: {
+          pontuacao: data.problemasGestao ? 3 : 7,
+          nivel: data.problemasGestao ? 'critico' as const : 'bom' as const,
+          problemas: data.problemasGestao ? [data.problemasGestao] : [],
+          solucoes: []
+        },
+        financeiro: {
+          pontuacao: data.problemasFinanceiros ? 4 : 6,
+          nivel: data.problemasFinanceiros ? 'atencao' as const : 'bom' as const,
+          problemas: data.problemasFinanceiros ? [data.problemasFinanceiros] : [],
+          solucoes: []
+        },
+        rh: {
+          pontuacao: data.problemasRH ? 4 : 6,
+          nivel: data.problemasRH ? 'atencao' as const : 'bom' as const,
+          problemas: data.problemasRH ? [data.problemasRH] : [],
+          solucoes: []
+        },
+        operacional: {
+          pontuacao: data.problemasOperacionais ? 3 : 7,
+          nivel: data.problemasOperacionais ? 'critico' as const : 'bom' as const,
+          problemas: data.problemasOperacionais ? [data.problemasOperacionais] : [],
+          solucoes: []
+        }
+      };
+      
       // Gerar plano inteligente com ações organizadas
-      const generatedPlan = generateIntelligentActionPlan(data, integratedData);
+      const generatedPlan = generateIntelligentActions({
+        results: diagnosticResults,
+        companyName: data.empresaNome,
+        maxActions: 60
+      });
       
       console.log(`Plano gerado com ${generatedPlan.length} ações`);
       
@@ -131,7 +175,7 @@ const NewDiagnosticTestContent = () => {
       
       toast({
         title: "Plano de aceleração gerado com sucesso!",
-        description: `${generatedPlan.length} ações estratégicas foram criadas para acelerar sua empresa. O plano foi personalizado com base nos dados das suas ferramentas.`,
+        description: `${generatedPlan.length} ações estratégicas foram criadas para acelerar sua empresa.`,
       });
       
     } catch (error) {

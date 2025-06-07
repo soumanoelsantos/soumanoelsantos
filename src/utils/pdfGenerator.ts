@@ -13,6 +13,10 @@ import { getDiagnosticPdfOptionsConfig, getDiagnosticPdfStyles } from './pdf/dia
  */
 export const generatePDF = (element: HTMLElement, fileName?: string) => {
   try {
+    console.log('Starting PDF generation...');
+    console.log('Element:', element);
+    console.log('Element content:', element.innerHTML);
+    
     // Default options
     let options = getDefaultPdfOptionsConfig();
     
@@ -72,8 +76,10 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       `;
       element.appendChild(scriptElement);
     }
-    // Check if it's a diagnostic PDF (action plan)
-    else if (element.classList.contains('pdf-export') || element.querySelector('.action-plan-content')) {
+    // Check if it's a diagnostic PDF (action plan) - this is our case
+    else if (element.classList.contains('pdf-export') || element.querySelector('.action-plan-content') || fileName?.includes('plano_acao')) {
+      console.log('Detected action plan PDF generation');
+      
       // Add diagnostic specific styles
       const styleElement = document.createElement('style');
       styleElement.textContent = getDiagnosticPdfStyles();
@@ -86,6 +92,8 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       if (fileName) {
         options.filename = fileName;
       }
+      
+      console.log('Applied diagnostic styles and options');
     }
     else {
       // Override filename if provided
@@ -94,31 +102,45 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       }
     }
 
+    console.log('PDF options:', options);
+    console.log('Starting html2pdf conversion...');
+
     // Generate PDF
-    html2pdf().from(element).set(options).save();
-    
-    // Remove any temporary style elements after a delay
-    setTimeout(() => {
-      const styleElements = element.querySelectorAll('style');
-      styleElements.forEach(el => {
-        if (el.textContent?.includes('puv-preview') || 
-            el.textContent?.includes('mapa-equipe-preview') ||
-            el.textContent?.includes('swot-pdf-container') ||
-            el.textContent?.includes('pdf-export')) {
-          el.remove();
-        }
+    return html2pdf()
+      .from(element)
+      .set(options)
+      .save()
+      .then(() => {
+        console.log('PDF generated successfully');
+        
+        // Remove any temporary style elements after a delay
+        setTimeout(() => {
+          const styleElements = element.querySelectorAll('style');
+          styleElements.forEach(el => {
+            if (el.textContent?.includes('puv-preview') || 
+                el.textContent?.includes('mapa-equipe-preview') ||
+                el.textContent?.includes('swot-pdf-container') ||
+                el.textContent?.includes('pdf-export')) {
+              el.remove();
+            }
+          });
+          
+          // Remove any temporary script elements
+          const scriptElements = element.querySelectorAll('script');
+          scriptElements.forEach(el => {
+            if (el.textContent?.includes('soumanoelsantos.com.br')) {
+              el.remove();
+            }
+          });
+        }, 1000);
+        
+        return true;
+      })
+      .catch((error: any) => {
+        console.error('Error during PDF generation:', error);
+        return false;
       });
-      
-      // Remove any temporary script elements
-      const scriptElements = element.querySelectorAll('script');
-      scriptElements.forEach(el => {
-        if (el.textContent?.includes('soumanoelsantos.com.br')) {
-          el.remove();
-        }
-      });
-    }, 1000);
     
-    return true;
   } catch (error) {
     console.error('Error generating PDF:', error);
     return false;

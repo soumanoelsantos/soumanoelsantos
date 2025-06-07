@@ -82,8 +82,30 @@ const ActionPlanManager = ({
   };
 
   const downloadPDF = () => {
-    if (!pdfRef.current) return;
-    generatePDF(pdfRef.current, `plano_acao_${companyName.replace(/\s+/g, '_')}.pdf`);
+    if (!pdfRef.current) {
+      console.error('PDF ref not found');
+      return;
+    }
+    
+    console.log('Generating PDF with', actions.length, 'actions');
+    console.log('PDF element:', pdfRef.current);
+    
+    // Temporarily show the PDF content
+    const pdfElement = pdfRef.current;
+    pdfElement.style.display = 'block';
+    pdfElement.style.position = 'absolute';
+    pdfElement.style.left = '-9999px';
+    pdfElement.style.top = '0';
+    
+    // Generate PDF with a delay to ensure content is rendered
+    setTimeout(() => {
+      generatePDF(pdfElement, `plano_acao_${companyName.replace(/\s+/g, '_')}.pdf`);
+      
+      // Hide the element again after PDF generation
+      setTimeout(() => {
+        pdfElement.style.display = 'none';
+      }, 2000);
+    }, 500);
   };
 
   return (
@@ -162,8 +184,19 @@ const ActionPlanManager = ({
         onSaveEdit={handleSaveEdit}
       />
 
-      {/* PDF Content (Hidden) */}
-      <div ref={pdfRef} className="pdf-export" style={{ display: 'none' }}>
+      {/* PDF Content (Hidden but rendered) */}
+      <div 
+        ref={pdfRef} 
+        className="pdf-export" 
+        style={{ 
+          display: 'none',
+          width: '210mm',
+          minHeight: '297mm',
+          backgroundColor: 'white',
+          color: 'black',
+          padding: '20mm'
+        }}
+      >
         <ActionPlanPdfContent companyName={companyName} actions={actions} />
       </div>
     </div>
