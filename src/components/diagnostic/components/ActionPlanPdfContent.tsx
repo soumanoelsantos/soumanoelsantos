@@ -8,83 +8,165 @@ interface ActionPlanPdfContentProps {
 }
 
 const ActionPlanPdfContent = ({ companyName, actions }: ActionPlanPdfContentProps) => {
-  const totalActions = actions.length;
-  const completedActions = actions.filter(a => a.status === 'realizado').length;
-  const inProgressActions = actions.filter(a => a.status === 'em_andamento').length;
-  const completionPercentage = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
+  const groupedActions = actions.reduce((acc, action) => {
+    if (!acc[action.categoria]) {
+      acc[action.categoria] = [];
+    }
+    acc[action.categoria].push(action);
+    return acc;
+  }, {} as Record<string, ActionItem[]>);
+
+  const categoryNames = {
+    comercial: 'Comercial',
+    marketing: 'Marketing',
+    gestao: 'Gestão',
+    financeiro: 'Financeiro',
+    rh: 'Recursos Humanos',
+    operacional: 'Operacional',
+    tecnologia: 'Tecnologia',
+    cultura: 'Cultura Organizacional'
+  };
+
+  const priorityColors = {
+    alta: '#ef4444',
+    media: '#f59e0b',
+    baixa: '#10b981'
+  };
+
+  const statusNames = {
+    pendente: 'Pendente',
+    em_andamento: 'Em Andamento',
+    realizado: 'Realizado',
+    atrasado: 'Atrasado'
+  };
 
   return (
-    <div className="action-plan-section p-8 bg-white">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Plano de Aceleração Empresarial</h1>
-        <h2 className="text-xl text-gray-600">{companyName}</h2>
-        <p className="text-gray-500 mt-2">{totalActions} ações estratégicas para acelerar seu negócio</p>
-      </div>
-
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4">Resumo do Progresso</h3>
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{totalActions}</div>
-            <div className="text-sm text-gray-600">Total de Ações</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{completedActions}</div>
-            <div className="text-sm text-gray-600">Concluídas</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-600">{inProgressActions}</div>
-            <div className="text-sm text-gray-600">Em Andamento</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">{completionPercentage}%</div>
-            <div className="text-sm text-gray-600">Progresso</div>
-          </div>
+    <div className="pdf-export bg-white text-black p-8 max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-8 border-b pb-6">
+        <h1 className="text-3xl font-bold text-black mb-2">
+          Plano de Aceleração Empresarial
+        </h1>
+        <h2 className="text-xl text-gray-700 mb-4">{companyName}</h2>
+        <div className="text-sm text-gray-600">
+          <p>Total de ações: {actions.length}</p>
+          <p>Data de geração: {new Date().toLocaleDateString('pt-BR')}</p>
         </div>
       </div>
 
-      <div className="space-y-6">
-        {actions.map((action, index) => (
-          <div key={action.id} className="border border-gray-200 rounded-lg p-4">
-            <div className="mb-3">
-              <h4 className="font-semibold text-gray-900">
-                {index + 1}. {action.acao}
-              </h4>
-              <div className="flex space-x-2 mt-2">
-                <span className="badge text-xs px-2 py-1 rounded">{action.categoria}</span>
-                <span className="badge text-xs px-2 py-1 rounded">{action.prioridade}</span>
-                <span className="badge text-xs px-2 py-1 rounded">{action.status}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-sm mb-3">
-              <div>
-                <strong>Prazo:</strong> {action.prazo}
-              </div>
-              <div>
-                <strong>Responsável:</strong> {action.responsavel}
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <h5 className="font-medium text-sm">Métricas de Sucesso:</h5>
-              <p className="text-xs text-gray-600">{action.metricas}</p>
-            </div>
-
-            <div className="mb-3">
-              <h5 className="font-medium text-sm">Como Fazer na Prática:</h5>
-              <ul className="list-decimal list-inside text-xs space-y-1 mt-1">
-                {(action.comoFazer || []).map((step, stepIndex) => (
-                  <li key={stepIndex} className="text-gray-700">{step}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-blue-50 p-2 rounded text-xs">
-              <strong>💡 Dica da IA:</strong> {action.dicaIA}
-            </div>
+      {/* Statistics Summary */}
+      <div className="mb-8">
+        <h3 className="text-lg font-bold text-black mb-4">Resumo Executivo</h3>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="border p-3 rounded">
+            <p className="font-semibold text-black">Total de Ações</p>
+            <p className="text-2xl font-bold text-black">{actions.length}</p>
           </div>
-        ))}
+          <div className="border p-3 rounded">
+            <p className="font-semibold text-black">Categorias</p>
+            <p className="text-2xl font-bold text-black">{Object.keys(groupedActions).length}</p>
+          </div>
+        </div>
+        
+        <div className="mb-4">
+          <h4 className="font-semibold text-black mb-2">Distribuição por Categoria</h4>
+          {Object.entries(groupedActions).map(([categoria, categoryActions]) => (
+            <div key={categoria} className="flex justify-between py-1 border-b">
+              <span className="text-black">{categoryNames[categoria as keyof typeof categoryNames]}</span>
+              <span className="font-semibold text-black">{categoryActions.length} ações</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Actions by Category */}
+      {Object.entries(groupedActions).map(([categoria, categoryActions]) => (
+        <div key={categoria} className="mb-8 page-break-inside-avoid">
+          <h3 className="text-xl font-bold text-black mb-4 border-b pb-2">
+            {categoryNames[categoria as keyof typeof categoryNames]}
+          </h3>
+          
+          <div className="space-y-4">
+            {categoryActions.slice(0, 20).map((action, index) => (
+              <div key={action.id} className="border border-gray-300 rounded p-4 bg-white">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-semibold text-black text-sm flex-1 mr-4">
+                    {index + 1}. {action.acao}
+                  </h4>
+                  <div className="flex gap-2">
+                    <span 
+                      className="px-2 py-1 rounded text-xs text-white font-medium"
+                      style={{ backgroundColor: priorityColors[action.prioridade] }}
+                    >
+                      {action.prioridade.charAt(0).toUpperCase() + action.prioridade.slice(1)}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-xs text-black mb-3">
+                  <div>
+                    <strong className="text-black">Responsável:</strong> {action.responsavel}
+                  </div>
+                  <div>
+                    <strong className="text-black">Prazo:</strong> {action.prazo}
+                  </div>
+                  <div>
+                    <strong className="text-black">Status:</strong> {statusNames[action.status]}
+                  </div>
+                  <div>
+                    <strong className="text-black">Recursos:</strong> {action.recursos}
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <strong className="text-black text-xs">Benefícios:</strong>
+                  <p className="text-xs text-black mt-1">{action.beneficios}</p>
+                </div>
+
+                <div className="mb-3">
+                  <strong className="text-black text-xs">Métricas:</strong>
+                  <p className="text-xs text-black mt-1">{action.metricas}</p>
+                </div>
+
+                {action.comoFazer && action.comoFazer.length > 0 && (
+                  <div className="mb-3">
+                    <strong className="text-black text-xs">Como fazer na prática:</strong>
+                    <ol className="list-decimal list-inside text-xs text-black mt-1 space-y-1">
+                      {action.comoFazer.map((step, stepIndex) => (
+                        <li key={stepIndex} className="text-black">{step}</li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+
+                {action.dicaIA && (
+                  <div className="bg-blue-50 p-2 rounded">
+                    <strong className="text-black text-xs">💡 Dica da IA:</strong>
+                    <p className="text-xs text-black mt-1">{action.dicaIA}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            {categoryActions.length > 20 && (
+              <div className="text-center py-4 border-t">
+                <p className="text-sm text-gray-600">
+                  E mais {categoryActions.length - 20} ações nesta categoria...
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+
+      {/* Footer */}
+      <div className="text-center mt-12 pt-6 border-t">
+        <p className="text-sm text-gray-600">
+          Plano gerado em {new Date().toLocaleDateString('pt-BR')} - {companyName}
+        </p>
+        <p className="text-xs text-gray-500 mt-1">
+          Este plano foi criado especificamente para acelerar o crescimento da sua empresa
+        </p>
       </div>
     </div>
   );
