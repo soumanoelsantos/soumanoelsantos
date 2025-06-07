@@ -5,7 +5,6 @@ import DownloadPdfButton from './DownloadPdfButton';
 import ResetDiagnosticButton from './ResetDiagnosticButton';
 import BackToMemberAreaButton from './BackToMemberAreaButton';
 import { AnswersDataType } from '@/types/diagnostic';
-import CTASection from '../CTASection';
 import { useDiagnostic } from '@/hooks/useDiagnostic';
 import AnswersDisplay from './AnswersDisplay';
 
@@ -39,11 +38,6 @@ const DiagnosticResults = ({ results, answersData, pdfRef }: DiagnosticResultsPr
           <AnswersDisplay answersData={answersData} />
         </div>
       )}
-      
-      {/* Marketing CTA Section with photo */}
-      <div className="pdf-marketing-section">
-        <CTASection source="diagnostic_results" />
-      </div>
       
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 print:hidden">
         <DownloadPdfButton pdfRef={pdfRef} />

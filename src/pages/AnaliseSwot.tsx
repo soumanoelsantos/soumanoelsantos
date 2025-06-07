@@ -9,7 +9,6 @@ import SwotInfo from "@/components/swot/SwotInfo";
 import SwotActions from "@/components/swot/SwotActions";
 import SwotActionPlan from "@/components/swot/SwotActionPlan";
 import { useSwotAnalysis } from "@/hooks/useSwotAnalysis";
-import CTASection from "@/components/CTASection";
 
 const AnaliseSwot: React.FC = () => {
   const navigate = useNavigate();
@@ -114,10 +113,6 @@ const AnaliseSwot: React.FC = () => {
 
         {/* Action Plan Component */}
         <SwotActionPlan swotData={swotData} isLoading={isLoading} />
-        
-        <div className="mt-12">
-          <CTASection source="analise_swot" />
-        </div>
       </div>
     </div>
   );

@@ -8,7 +8,6 @@ import MapaNegocioForm from "@/components/mapa-negocio/MapaNegocioForm";
 import MapaNegocioPreview from "@/components/mapa-negocio/MapaNegocioPreview";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 import { useToast } from "@/hooks/use-toast";
-import CTASection from "@/components/CTASection";
 
 const MapaNegocio = () => {
   const navigate = useNavigate();
@@ -83,10 +82,6 @@ const MapaNegocio = () => {
             onPreviewClick={handleShowPreview}
           />
         )}
-        
-        <div className="mt-12">
-          <CTASection source="mapa_negocio" />
-        </div>
       </div>
     </div>
   );
