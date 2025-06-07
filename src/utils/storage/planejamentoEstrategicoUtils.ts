@@ -24,10 +24,10 @@ export const savePlanejamentoEstrategicoToSupabase = async (
     const planejamentoData = {
       user_id: userId,
       empresa_nome: data.empresaNome,
-      respostas: data.respostas,
-      ferramentas_geradas: data.ferramentasGeradas,
-      plano_acao: data.planoAcao,
-      acoes_comerciais: data.acoesComerciais || [],
+      respostas: data.respostas as any,
+      ferramentas_geradas: data.ferramentasGeradas as any,
+      plano_acao: data.planoAcao as any,
+      acoes_comerciais: (data.acoesComerciais || []) as any,
       progresso: data.progresso,
       data_inicio: data.dataInicio.toISOString(),
       data_atualizacao: new Date().toISOString(),
@@ -86,21 +86,21 @@ export const loadPlanejamentoEstrategicoFromSupabase = async (
       return null;
     }
 
-    // Converter dados do Supabase para o formato esperado
+    // Converter dados do Supabase para o formato esperado com type assertions
     const planejamentoData: PlanejamentoEstrategicoData = {
       id: data.id,
       empresaNome: data.empresa_nome,
-      respostas: data.respostas,
-      ferramentasGeradas: data.ferramentas_geradas,
-      planoAcao: data.plano_acao.map((acao: any) => ({
+      respostas: data.respostas as any,
+      ferramentasGeradas: data.ferramentas_geradas as any,
+      planoAcao: (data.plano_acao as any[]).map((acao: any) => ({
         ...acao,
         dataVencimento: new Date(acao.dataVencimento)
       })),
-      acoesComerciais: data.acoes_comerciais || [],
+      acoesComerciais: (data.acoes_comerciais as any) || [],
       progresso: data.progresso,
       dataInicio: new Date(data.data_inicio),
       dataAtualizacao: new Date(data.data_atualizacao),
-      status: data.status
+      status: data.status as 'em_andamento' | 'concluido' | 'pausado'
     };
 
     console.log('Planejamento estratégico carregado do Supabase:', planejamentoData.empresaNome);
