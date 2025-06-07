@@ -23,7 +23,6 @@ import {
   Trash2, 
   Plus,
   Brain,
-  Lightbulb,
   AlertTriangle,
   Timer,
   CheckSquare,
@@ -76,7 +75,6 @@ interface ActionPlanManagerProps {
   diagnosticData?: DiagnosticData;
 }
 
-// Sistema expandido de ações sugeridas - muito mais abrangente
 const sugestedActions = [
   // I. Planejamento Estratégico
   "Revisar a Missão, Visão e Valores da empresa para alinhamento com o momento atual",
@@ -342,7 +340,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const [editingAction, setEditingAction] = useState<ActionItem | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -621,45 +618,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     });
   };
 
-  const addSuggestedAction = (suggestion: string) => {
-    // Filter out actions that already exist to prevent duplicates
-    const existingActions = acoes.map(acao => acao.acao.toLowerCase());
-    const suggestionLower = suggestion.toLowerCase();
-    
-    if (existingActions.includes(suggestionLower)) {
-      toast({
-        title: "Ação já existe",
-        description: "Esta ação já está presente no seu plano.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newAction: ActionItem = {
-      id: Date.now().toString(),
-      acao: suggestion,
-      categoria: 'comercial',
-      prioridade: 'media',
-      prazo: '4 semanas',
-      responsavel: '',
-      recursos: 'A definir',
-      metricas: 'A definir',
-      beneficios: 'A definir',
-      dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
-      concluida: false,
-      detalhesImplementacao: '',
-      dicaIA: 'Ação sugerida baseada em boas práticas. Personalize conforme sua realidade.',
-      status: 'pendente',
-      semana: Math.ceil(acoes.length / 4) + 1
-    };
-    
-    setAcoes(prev => [...prev, newAction]);
-    toast({
-      title: "Ação sugerida adicionada",
-      description: `"${suggestion}" foi adicionada ao seu plano.`,
-    });
-  };
-
   const handleGeneratePDF = () => {
     if (!pdfRef.current) {
       toast({
@@ -766,7 +724,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     return status.replace('_', ' ');
   };
 
-  // AI Tips Dialog Component - Melhorado com dicas práticas detalhadas
+  // AI Tips Dialog Component
   const AITipsDialog = ({ acao }: { acao: ActionItem }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [pergunta, setPergunta] = useState("");
@@ -1159,17 +1117,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       </div>
 
       {/* Controles - não aparecem no PDF */}
-      <div className="flex justify-between items-center print:hidden">
-        <div className="flex gap-2">
-          <Button 
-            onClick={() => setShowSuggestions(!showSuggestions)}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white"
-          >
-            <Lightbulb className="mr-2 h-4 w-4" />
-            {showSuggestions ? 'Ocultar' : 'Ver'} Sugestões de Ações ({sugestedActions.length}+ disponíveis)
-          </Button>
-        </div>
-        
+      <div className="flex justify-end items-center print:hidden">
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -1188,54 +1136,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           </DialogContent>
         </Dialog>
       </div>
-
-      {/* Sugestões de Ações */}
-      {showSuggestions && (
-        <Card className="print:hidden">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-yellow-500" />
-              Sugestões de Ações Estratégicas ({sugestedActions.length}+ disponíveis)
-            </CardTitle>
-            <p className="text-gray-600">
-              Clique em qualquer sugestão para adicioná-la ao seu plano de ação. 
-              Temos centenas de ações práticas baseadas em conhecimento especializado para acelerar resultados.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {sugestedActions
-                .filter(suggestion => {
-                  // Filter out suggestions that already exist in the action plan
-                  const existingActions = acoes.map(acao => acao.acao.toLowerCase());
-                  return !existingActions.includes(suggestion.toLowerCase());
-                })
-                .map((suggestion, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="text-left h-auto p-3 hover:bg-blue-50 hover:border-blue-300 transition-colors"
-                  onClick={() => addSuggestedAction(suggestion)}
-                >
-                  <div className="flex items-start gap-2">
-                    <Plus className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">{suggestion}</span>
-                  </div>
-                </Button>
-              ))}
-            </div>
-            {sugestedActions.filter(suggestion => {
-              const existingActions = acoes.map(acao => acao.acao.toLowerCase());
-              return !existingActions.includes(suggestion.toLowerCase());
-            }).length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                <p>Parabéns! Você já tem todas as nossas ações sugeridas no seu plano.</p>
-                <p className="text-sm mt-2">Continue implementando para acelerar os resultados da sua empresa!</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
 
       {/* Lista de Ações Timeline - não aparecem no PDF */}
       <div className="print:hidden">
