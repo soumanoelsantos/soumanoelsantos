@@ -7,6 +7,7 @@ import {
   loadChecklistData,
   loadMapaEquipeData
 } from "@/utils/storage";
+import { Colaborador } from "@/types/mapaEquipe";
 
 export const useToolCompletionCheck = (userId: string | null) => {
   const [completedTools, setCompletedTools] = useState<Record<string, boolean>>({});
@@ -48,11 +49,13 @@ export const useToolCompletionCheck = (userId: string | null) => {
           console.log("Double-checking mapa_equipe data directly");
           const mapaEquipeData = await loadMapaEquipeData(userId);
           // Consider it completed if there's data and at least one collaborator with a name
+          const colaboradores = mapaEquipeData?.colaboradores as Colaborador[];
           mapaEquipeCompleted = !!mapaEquipeData && 
-            !!mapaEquipeData.colaboradores && 
-            mapaEquipeData.colaboradores.length > 0 &&
-            !!mapaEquipeData.colaboradores[0].nome &&
-            mapaEquipeData.colaboradores[0].nome.trim() !== "";
+            !!colaboradores && 
+            Array.isArray(colaboradores) &&
+            colaboradores.length > 0 &&
+            !!colaboradores[0]?.nome &&
+            colaboradores[0].nome.trim() !== "";
           console.log("Direct mapa_equipe check result:", mapaEquipeCompleted, mapaEquipeData);
         }
         

@@ -40,19 +40,19 @@ export const useDiagnosticData = () => {
       try {
         const loadedData = await loadDiagnosticDataFromSupabase(userId);
         
-        if (loadedData.results) {
-          setResults(loadedData.results);
+        if (loadedData?.results) {
+          setResults(loadedData.results as DiagnosticResults);
         }
         
-        if (loadedData.answersData) {
-          setAnswersData(loadedData.answersData);
+        if (loadedData?.answers_data) {
+          setAnswersData(loadedData.answers_data as AnswersDataType);
         }
         
-        if (loadedData.diagnosticId) {
-          setDiagnosticId(loadedData.diagnosticId);
+        if (loadedData?.id) {
+          setDiagnosticId(loadedData.id);
         }
         
-        if (loadedData.results && loadedData.answersData) {
+        if (loadedData?.results && loadedData?.answers_data) {
           setShowResults(true);
         }
       } catch (error) {

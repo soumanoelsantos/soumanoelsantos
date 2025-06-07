@@ -32,8 +32,8 @@ export const useMapaEquipeOperations = (
       
       if (data) {
         console.log("Loaded mapa equipe data:", data);
-        setEmpresaNome(data.empresaNome || "");
-        setColaboradores(data.colaboradores || []);
+        setEmpresaNome(data.empresa_nome || "");
+        setColaboradores((data.colaboradores as Colaborador[]) || []);
         
         toast({
           title: "Dados carregados",
@@ -41,7 +41,7 @@ export const useMapaEquipeOperations = (
         });
         
         // Auto-show preview if we already have data
-        if (data.empresaNome && data.colaboradores && data.colaboradores.length > 0 && data.colaboradores[0].nome) {
+        if (data.empresa_nome && data.colaboradores && Array.isArray(data.colaboradores) && data.colaboradores.length > 0 && (data.colaboradores[0] as Colaborador)?.nome) {
           console.log("Auto-showing preview with loaded data");
           setShowPreview(true);
         }
