@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import MemberHeader from "@/components/MemberHeader";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
-import CTASection from "@/components/CTASection";
 
 const CrmPage = () => {
   const navigate = useNavigate();
@@ -51,8 +50,6 @@ const CrmPage = () => {
           <div className="mb-8">
             <KanbanBoard />
           </div>
-          
-          <CTASection source="crm_page" />
         </div>
       </div>
     </div>
