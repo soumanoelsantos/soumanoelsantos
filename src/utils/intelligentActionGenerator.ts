@@ -1,5 +1,5 @@
-
 import { IntegratedData } from '@/hooks/useIntegratedData';
+import { ActionItem } from '@/components/diagnostic/NewDiagnosticTestContent';
 
 interface DiagnosticData {
   empresaNome: string;
@@ -17,25 +17,6 @@ interface DiagnosticData {
   objetivos6Meses: string;
 }
 
-interface ActionItem {
-  id: string;
-  acao: string;
-  categoria: string;
-  prioridade: 'alta' | 'media' | 'baixa';
-  prazo: string;
-  responsavel: string;
-  recursos: string;
-  metricas: string;
-  beneficios: string;
-  dataVencimento: Date;
-  concluida: boolean;
-  detalhesImplementacao: string;
-  dicaIA: string;
-  status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';
-  semana: number;
-  comoFazer: string[];
-}
-
 export const generateIntelligentActionPlan = (
   diagnosticData: DiagnosticData, 
   integratedData: IntegratedData
@@ -44,7 +25,7 @@ export const generateIntelligentActionPlan = (
   let actionId = 1;
 
   // Categorias intercaladas
-  const categorias = ['comercial', 'marketing', 'gestao', 'financeiro', 'rh', 'operacional', 'tecnologia', 'cultura'];
+  const categorias: ActionItem['categoria'][] = ['comercial', 'marketing', 'gestao', 'financeiro', 'rh', 'operacional', 'tecnologia', 'cultura'];
 
   // Templates expandidos para cada categoria
   const actionTemplates = {
@@ -421,12 +402,12 @@ export const generateIntelligentActionPlan = (
   for (let round = 0; round < totalAcoesPorCategoria; round++) {
     for (let catIndex = 0; catIndex < categorias.length; catIndex++) {
       const categoria = categorias[catIndex];
-      const templates = actionTemplates[categoria as keyof typeof actionTemplates];
+      const templates = actionTemplates[categoria];
       const acaoIndex = round % templates.length;
       const acaoTemplate = templates[acaoIndex];
 
       // Definir prioridade baseada no round
-      let prioridade: 'alta' | 'media' | 'baixa' = 'media';
+      let prioridade: ActionItem['prioridade'] = 'media';
       if (round < 8) prioridade = 'alta';
       else if (round >= 20) prioridade = 'baixa';
 
@@ -472,7 +453,7 @@ export const generateIntelligentActionPlan = (
         concluida: false,
         detalhesImplementacao: `Implementar ${acaoTemplate.toLowerCase()} seguindo as melhores práticas da indústria`,
         dicaIA: `Esta ação de ${categoria} deve ser implementada gradualmente. Comece mapeando a situação atual, defina objetivos claros, envolva a equipe no processo e monitore resultados semanalmente para ajustar conforme necessário.`,
-        status: 'pendente' as const,
+        status: 'pendente',
         semana: semanas,
         comoFazer: generateComoFazer(acaoTemplate, categoria)
       };

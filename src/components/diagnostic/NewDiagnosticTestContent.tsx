@@ -24,10 +24,10 @@ interface DiagnosticData {
   objetivos6Meses: string;
 }
 
-interface ActionItem {
+export interface ActionItem {
   id: string;
   acao: string;
-  categoria: string;
+  categoria: 'comercial' | 'marketing' | 'gestao' | 'financeiro' | 'rh' | 'operacional' | 'tecnologia' | 'cultura';
   prioridade: 'alta' | 'media' | 'baixa';
   prazo: string;
   responsavel: string;
@@ -164,6 +164,13 @@ const NewDiagnosticTestContent = () => {
     });
   };
 
+  const updateActionPlan = (updatedPlan: ActionItem[]) => {
+    setActionPlan(updatedPlan);
+    if (userId) {
+      localStorage.setItem(`diagnostic_plan_${userId}`, JSON.stringify(updatedPlan));
+    }
+  };
+
   if (isLoading || loadingIntegratedData) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -182,6 +189,7 @@ const NewDiagnosticTestContent = () => {
         companyName={companyName}
         diagnosticData={diagnosticData}
         onBack={handleNewDiagnostic}
+        onUpdatePlan={updateActionPlan}
       />
     );
   }

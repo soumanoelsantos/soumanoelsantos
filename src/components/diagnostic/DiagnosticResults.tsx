@@ -8,6 +8,7 @@ import { AnswersDataType } from '@/types/diagnostic';
 import { useDiagnostic } from '@/hooks/useDiagnostic';
 import AnswersDisplay from './AnswersDisplay';
 import ActionPlanManager from './ActionPlanManager';
+import { ActionItem } from './NewDiagnosticTestContent';
 
 interface DiagnosticResultsProps {
   results: {
@@ -27,6 +28,16 @@ const DiagnosticResults = ({ results, answersData, pdfRef }: DiagnosticResultsPr
     resetDiagnostic();
   };
 
+  // Convert actionPlan to ActionItem[] if it exists
+  const convertedActionPlan: ActionItem[] = actionPlan && typeof actionPlan === 'object' && !Array.isArray(actionPlan) 
+    ? Object.values(actionPlan).flat().filter(item => 
+        typeof item === 'object' && 
+        item !== null && 
+        'id' in item && 
+        'acao' in item
+      ) as ActionItem[]
+    : [];
+
   return (
     <div ref={pdfRef} className="mt-10 space-y-8 pdf-container">
       <div className="pdf-results-card">
@@ -41,9 +52,9 @@ const DiagnosticResults = ({ results, answersData, pdfRef }: DiagnosticResultsPr
       )}
 
       {/* Display action plan if available */}
-      {actionPlan && Object.keys(actionPlan).length > 0 && (
+      {convertedActionPlan.length > 0 && (
         <div className="pdf-action-plan">
-          <ActionPlanManager actionPlan={actionPlan} />
+          <ActionPlanManager actionPlan={convertedActionPlan} />
         </div>
       )}
       
