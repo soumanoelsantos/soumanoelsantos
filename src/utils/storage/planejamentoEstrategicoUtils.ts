@@ -10,7 +10,7 @@ export const savePlanejamentoEstrategicoToSupabase = async (
     const { error } = await supabase
       .from('planejamento_estrategico')
       .upsert({
-        // Note: user_id is handled by the RLS policies, not inserted directly
+        user_id: userId,
         empresa_nome: data.empresaNome,
         respostas: data.respostas as any,
         plano_acao: data.planoAcao as any,
