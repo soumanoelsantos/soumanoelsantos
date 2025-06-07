@@ -5,244 +5,78 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar, Filter, CheckCircle2, Clock, AlertTriangle, Target, TrendingUp, Users, DollarSign, Settings, Lightbulb } from 'lucide-react';
+import { Calendar, Filter, CheckCircle2, Clock, AlertTriangle, Target, TrendingUp, Users, DollarSign, Settings, Lightbulb, ArrowLeft } from 'lucide-react';
 import { format, addDays, isWeekend } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface ActionItem {
   id: string;
-  titulo: string;
-  categoria: 'comercial' | 'gestao' | 'financeiro' | 'rh' | 'marketing' | 'operacional';
+  acao: string;
+  categoria: 'comercial' | 'gestao' | 'financeiro' | 'rh' | 'marketing' | 'operacional' | 'tecnologia' | 'cultura';
+  prioridade: 'alta' | 'media' | 'baixa';
   prazo: string;
-  data: Date;
-  status: 'pendente' | 'em_andamento' | 'atrasado' | 'realizado';
+  responsavel: string;
+  recursos: string;
+  metricas: string;
+  beneficios: string;
+  dataVencimento: Date;
+  concluida: boolean;
+  detalhesImplementacao: string;
+  dicaIA: string;
+  status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';
+  semana: number;
   comoFazer: string[];
-  recursos?: string;
-  impacto: 'alto' | 'medio' | 'baixo';
 }
 
 interface ActionPlanManagerProps {
-  actionPlan: {[key: string]: string[]};
+  actionPlan: ActionItem[];
+  companyName?: string;
+  diagnosticData?: any;
+  onBack?: () => void;
 }
 
-const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ actionPlan }) => {
+const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ 
+  actionPlan: initialActionPlan, 
+  companyName,
+  onBack 
+}) => {
   const [filtroCategoria, setFiltroCategoria] = useState<string>('todas');
   const [filtroStatus, setFiltroStatus] = useState<string>('todos');
+  const [actionItems, setActionItems] = useState<ActionItem[]>(initialActionPlan);
 
-  // Generate comprehensive action items
-  const generateActionItems = (): ActionItem[] => {
-    const actions: ActionItem[] = [];
-    let actionId = 1;
-    let currentDate = new Date();
-    
-    // Skip to next Monday if today is weekend
-    while (isWeekend(currentDate)) {
-      currentDate = addDays(currentDate, 1);
-    }
-
-    const categoriaActions = {
-      comercial: [
-        'Implementar CRM para controle do funil de vendas',
-        'Criar script de vendas padronizado e treinar equipe',
-        'Desenvolver estratégia de follow-up automatizada',
-        'Definir metas claras e sistema de comissões',
-        'Criar processo de qualificação de leads',
-        'Implementar sistema de indicadores comerciais',
-        'Desenvolver material de apoio às vendas',
-        'Criar programa de relacionamento com clientes',
-        'Estabelecer processo de pós-venda estruturado',
-        'Implementar pesquisa de satisfação do cliente',
-        'Criar estratégia de up-sell e cross-sell',
-        'Desenvolver parcerias comerciais estratégicas',
-        'Implementar sistema de previsão de vendas',
-        'Criar programa de fidelização de clientes',
-        'Estabelecer processo de recuperação de clientes inativos',
-        'Implementar sistema de gestão de propostas',
-        'Criar estratégia de precificação dinâmica',
-        'Desenvolver canais de venda alternativos',
-        'Implementar sistema de gestão de território',
-        'Criar programa de capacitação contínua da equipe comercial'
-      ],
-      marketing: [
-        'Criar presença digital profissional (site + redes sociais)',
-        'Desenvolver estratégia de conteúdo relevante',
-        'Implementar campanhas de Google Ads segmentadas',
-        'Criar programa de indicações de clientes',
-        'Investir em branding e identidade visual consistente',
-        'Desenvolver estratégia de SEO para site',
-        'Criar campanhas de e-mail marketing automatizadas',
-        'Implementar sistema de lead scoring',
-        'Desenvolver conteúdo educativo para prospects',
-        'Criar estratégia de marketing de relacionamento',
-        'Implementar sistema de automação de marketing',
-        'Desenvolver parcerias para co-marketing',
-        'Criar programa de embaixadores da marca',
-        'Implementar análise de concorrência sistemática',
-        'Desenvolver estratégia de marketing local',
-        'Criar sistema de monitoramento de marca',
-        'Implementar estratégia de marketing de conteúdo',
-        'Desenvolver campanhas sazonais estratégicas',
-        'Criar programa de eventos e networking',
-        'Implementar sistema de análise de ROI de marketing'
-      ],
-      gestao: [
-        'Criar organograma com responsabilidades bem definidas',
-        'Implementar reuniões semanais de alinhamento',
-        'Estabelecer processos documentados para principais atividades',
-        'Usar ferramentas de gestão de projetos (Trello, Asana)',
-        'Definir indicadores de performance (KPIs) por setor',
-        'Implementar sistema de gestão da qualidade',
-        'Criar manual de procedimentos operacionais',
-        'Estabelecer sistema de gestão de riscos',
-        'Implementar controle de documentos e registros',
-        'Criar sistema de gestão de fornecedores',
-        'Estabelecer processo de melhoria contínua',
-        'Implementar sistema de gestão de projetos',
-        'Criar comitê de tomada de decisões estratégicas',
-        'Estabelecer sistema de comunicação interna',
-        'Implementar gestão por processos',
-        'Criar sistema de gestão de mudanças',
-        'Estabelecer controles internos robustos',
-        'Implementar sistema de gestão de desempenho',
-        'Criar programa de inovação empresarial',
-        'Estabelecer sistema de planejamento estratégico'
-      ],
-      financeiro: [
-        'Implementar controle de fluxo de caixa diário',
-        'Separar completamente finanças pessoais das empresariais',
-        'Negociar prazos com fornecedores e clientes',
-        'Criar reserva de emergência de 6 meses',
-        'Automatizar cobrança e reduzir inadimplência',
-        'Implementar orçamento empresarial detalhado',
-        'Criar sistema de análise de custos por produto/serviço',
-        'Estabelecer controles de gastos por departamento',
-        'Implementar sistema de conciliação bancária',
-        'Criar relatórios financeiros gerenciais mensais',
-        'Estabelecer sistema de análise de investimentos',
-        'Implementar controle de estoques financeiro',
-        'Criar sistema de análise de rentabilidade',
-        'Estabelecer política de crédito estruturada',
-        'Implementar sistema de gestão tributária',
-        'Criar indicadores financeiros de performance',
-        'Estabelecer sistema de auditoria interna',
-        'Implementar gestão de capital de giro',
-        'Criar sistema de análise de viabilidade',
-        'Estabelecer controles de compliance financeiro'
-      ],
-      rh: [
-        'Criar programa de integração para novos funcionários',
-        'Implementar avaliações de desempenho trimestrais',
-        'Desenvolver plano de carreira interno',
-        'Investir em treinamentos e capacitação',
-        'Melhorar comunicação interna e feedback constante',
-        'Criar política de remuneração estratégica',
-        'Implementar sistema de gestão de talentos',
-        'Desenvolver programa de liderança',
-        'Criar sistema de reconhecimento e recompensas',
-        'Estabelecer política de benefícios competitiva',
-        'Implementar pesquisa de clima organizacional',
-        'Criar programa de desenvolvimento pessoal',
-        'Estabelecer sistema de sucessão',
-        'Implementar gestão de competências',
-        'Criar programa de mentoring interno',
-        'Estabelecer política de home office',
-        'Implementar sistema de gestão de conflitos',
-        'Criar programa de bem-estar dos funcionários',
-        'Estabelecer sistema de comunicação interna',
-        'Implementar gestão de diversidade e inclusão'
-      ],
-      operacional: [
-        'Mapear e otimizar processos principais',
-        'Implementar controle de qualidade rigoroso',
-        'Automatizar tarefas repetitivas',
-        'Investir em tecnologia adequada',
-        'Criar indicadores de produtividade',
-        'Implementar sistema de gestão de estoques',
-        'Estabelecer controles de segurança do trabalho',
-        'Criar sistema de manutenção preventiva',
-        'Implementar gestão de cadeia de suprimentos',
-        'Estabelecer sistema de logística eficiente',
-        'Criar programa de redução de desperdícios',
-        'Implementar sistema de gestão ambiental',
-        'Estabelecer controles de capacidade produtiva',
-        'Criar sistema de rastreabilidade de produtos',
-        'Implementar gestão de facilities',
-        'Estabelecer sistema de backup e segurança de dados',
-        'Criar programa de inovação tecnológica',
-        'Implementar sistema de gestão de energia',
-        'Estabelecer controles de terceirização',
-        'Criar sistema de gestão de ativos'
-      ]
-    };
-
-    // Generate actions for each category
-    Object.entries(categoriaActions).forEach(([categoria, acoesList]) => {
-      acoesList.forEach((acao) => {
-        // Find next business day
-        while (isWeekend(currentDate)) {
-          currentDate = addDays(currentDate, 1);
+  const toggleActionStatus = (actionId: string, comoFazerIndex?: number) => {
+    setActionItems(prev => prev.map(action => {
+      if (action.id === actionId) {
+        if (comoFazerIndex !== undefined) {
+          // Toggle individual step
+          const updatedComoFazer = [...action.comoFazer];
+          const step = updatedComoFazer[comoFazerIndex];
+          if (step.startsWith('✓ ')) {
+            updatedComoFazer[comoFazerIndex] = step.substring(2);
+          } else {
+            updatedComoFazer[comoFazerIndex] = '✓ ' + step;
+          }
+          
+          // Check if all steps are completed
+          const allCompleted = updatedComoFazer.every(step => step.startsWith('✓ '));
+          
+          return {
+            ...action,
+            comoFazer: updatedComoFazer,
+            concluida: allCompleted,
+            status: allCompleted ? 'realizado' as const : 'pendente' as const
+          };
+        } else {
+          // Toggle entire action
+          return {
+            ...action,
+            concluida: !action.concluida,
+            status: action.status === 'realizado' ? 'pendente' as const : 'realizado' as const
+          };
         }
-
-        const comoFazerMap: {[key: string]: string[]} = {
-          'Implementar CRM para controle do funil de vendas': [
-            '1. Pesquisar e escolher uma ferramenta de CRM adequada ao seu negócio',
-            '2. Configurar os estágios do funil de vendas no sistema',
-            '3. Treinar a equipe para usar a ferramenta corretamente',
-            '4. Importar a base de clientes existente',
-            '5. Estabelecer rotina de atualização diária dos dados'
-          ],
-          'Criar presença digital profissional (site + redes sociais)': [
-            '1. Contratar ou desenvolver um site responsivo e otimizado',
-            '2. Criar perfis profissionais nas principais redes sociais',
-            '3. Desenvolver calendário de conteúdo semanal',
-            '4. Investir em fotografias profissionais da empresa',
-            '5. Implementar ferramentas de análise e monitoramento'
-          ],
-          'Implementar controle de fluxo de caixa diário': [
-            '1. Escolher uma ferramenta de controle financeiro',
-            '2. Categorizar todas as receitas e despesas',
-            '3. Estabelecer rotina de lançamentos diários',
-            '4. Criar relatórios semanais de acompanhamento',
-            '5. Definir alertas para situações críticas de caixa'
-          ]
-        };
-
-        const defaultComoFazer = [
-          '1. Definir responsável pela implementação da ação',
-          '2. Estabelecer cronograma detalhado de execução',
-          '3. Identificar recursos necessários (pessoas, tempo, dinheiro)',
-          '4. Criar indicadores para medir o sucesso da implementação',
-          '5. Acompanhar progresso semanalmente e ajustar conforme necessário'
-        ];
-
-        actions.push({
-          id: `action-${actionId++}`,
-          titulo: acao,
-          categoria: categoria as ActionItem['categoria'],
-          prazo: '30 dias',
-          data: new Date(currentDate),
-          status: 'pendente',
-          comoFazer: comoFazerMap[acao] || defaultComoFazer,
-          recursos: 'Equipe interna + Investimento baixo/médio',
-          impacto: Math.random() > 0.6 ? 'alto' : Math.random() > 0.3 ? 'medio' : 'baixo'
-        });
-
-        // Move to next business day
-        currentDate = addDays(currentDate, 1);
-      });
-    });
-
-    return actions.slice(0, 300); // Limit to 300 actions
-  };
-
-  const [actionItems, setActionItems] = useState<ActionItem[]>(generateActionItems());
-
-  const toggleActionStatus = (actionId: string) => {
-    setActionItems(prev => prev.map(action => 
-      action.id === actionId 
-        ? { ...action, status: action.status === 'realizado' ? 'pendente' : 'realizado' }
-        : action
-    ));
+      }
+      return action;
+    }));
   };
 
   const filteredActions = useMemo(() => {
@@ -261,6 +95,8 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ actionPlan }) => 
       case 'marketing': return <Target className="h-4 w-4" />;
       case 'financeiro': return <DollarSign className="h-4 w-4" />;
       case 'operacional': return <Settings className="h-4 w-4" />;
+      case 'tecnologia': return <Settings className="h-4 w-4" />;
+      case 'cultura': return <Users className="h-4 w-4" />;
       default: return <CheckCircle2 className="h-4 w-4" />;
     }
   };
@@ -273,6 +109,8 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ actionPlan }) => 
       case 'marketing': return 'bg-orange-100 text-orange-800';
       case 'financeiro': return 'bg-red-100 text-red-800';
       case 'operacional': return 'bg-gray-100 text-gray-800';
+      case 'tecnologia': return 'bg-cyan-100 text-cyan-800';
+      case 'cultura': return 'bg-pink-100 text-pink-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -295,8 +133,56 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ actionPlan }) => 
     }
   };
 
+  const acoesRealizadas = actionItems.filter(action => action.concluida).length;
+  const progresso = (acoesRealizadas / actionItems.length) * 100;
+
   return (
     <div className="space-y-6 action-plan-section">
+      {/* Header */}
+      <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-2xl mb-2">
+                {companyName ? `Plano de Aceleração - ${companyName}` : 'Plano de Aceleração Empresarial'}
+              </CardTitle>
+              <p className="text-blue-100">
+                {actionItems.length} ações estratégicas personalizadas
+              </p>
+            </div>
+            {onBack && (
+              <Button 
+                onClick={onBack} 
+                className="bg-white text-blue-600 border-2 border-white hover:bg-blue-50 font-semibold"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Novo Diagnóstico
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Progresso */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium">Progresso do Plano</h3>
+            <span className="text-2xl font-bold text-blue-600">{Math.round(progresso)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-300"
+              style={{ width: `${progresso}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>{acoesRealizadas} de {actionItems.length} ações concluídas</span>
+            <span>{actionItems.length - acoesRealizadas} restantes</span>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -321,6 +207,8 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ actionPlan }) => 
                   <SelectItem value="financeiro">Financeiro</SelectItem>
                   <SelectItem value="rh">RH</SelectItem>
                   <SelectItem value="operacional">Operacional</SelectItem>
+                  <SelectItem value="tecnologia">Tecnologia</SelectItem>
+                  <SelectItem value="cultura">Cultura</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -349,13 +237,13 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ actionPlan }) => 
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <Checkbox
-                        checked={action.status === 'realizado'}
+                        checked={action.concluida}
                         onCheckedChange={() => toggleActionStatus(action.id)}
                         className="mt-1"
                       />
                       <div>
-                        <h4 className={`font-medium ${action.status === 'realizado' ? 'line-through text-gray-500' : ''}`}>
-                          {action.titulo}
+                        <h4 className={`font-medium ${action.concluida ? 'line-through text-gray-500' : ''}`}>
+                          {action.acao}
                         </h4>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className={getCorCategoria(action.categoria)}>
@@ -372,23 +260,29 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ actionPlan }) => 
                     <div className="text-right text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {format(action.data, 'dd/MM/yyyy', { locale: ptBR })}
+                        {format(action.dataVencimento, 'dd/MM/yyyy', { locale: ptBR })}
                       </div>
                       <div>Prazo: {action.prazo}</div>
                     </div>
                   </div>
 
-                  {/* Como Fazer na Prática */}
+                  {/* Como Fazer na Prática - Individual para cada ação */}
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <h5 className="font-semibold text-blue-800 flex items-center gap-2 mb-2">
                       <Lightbulb className="h-4 w-4" />
                       Como Fazer na Prática:
                     </h5>
                     <div className="space-y-2">
-                      {action.comoFazer.map((passo, index) => (
+                      {action.comoFazer?.map((passo, index) => (
                         <div key={index} className="flex items-start gap-2">
-                          <Checkbox className="mt-0.5" />
-                          <span className="text-sm text-blue-900">{passo}</span>
+                          <Checkbox 
+                            checked={passo.startsWith('✓ ')}
+                            onCheckedChange={() => toggleActionStatus(action.id, index)}
+                            className="mt-0.5" 
+                          />
+                          <span className={`text-sm ${passo.startsWith('✓ ') ? 'line-through text-gray-500' : 'text-blue-900'}`}>
+                            {passo.startsWith('✓ ') ? passo.substring(2) : passo}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -397,6 +291,12 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ actionPlan }) => 
                   {action.recursos && (
                     <div className="mt-2 text-sm text-gray-600">
                       <strong>Recursos necessários:</strong> {action.recursos}
+                    </div>
+                  )}
+
+                  {action.metricas && (
+                    <div className="mt-2 text-sm text-gray-600">
+                      <strong>Métricas de sucesso:</strong> {action.metricas}
                     </div>
                   )}
                 </CardContent>
