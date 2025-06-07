@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -36,6 +37,9 @@ interface ActionItem {
   dataVencimento: Date;
   concluida: boolean;
   detalhesImplementacao: string;
+  dicaIA: string;
+  status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';
+  semana: number;
 }
 
 const NewDiagnosticTestContent = () => {
