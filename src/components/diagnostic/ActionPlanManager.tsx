@@ -83,243 +83,170 @@ interface ActionPlanManagerProps {
   diagnosticData?: DiagnosticData;
 }
 
-const sugestedActions = [
-  // I. Planejamento Estratégico
-  "Revisar a Missão, Visão e Valores da empresa para alinhamento com o momento atual",
-  "Definir ou reafirmar o nicho de mercado para focar esforços em segmento específico",
-  "Realizar análise completa da concorrência (benchmarking) com pontos fortes e fracos",
-  "Executar análise SWOT detalhada (Forças, Fraquezas, Oportunidades, Ameaças)",
-  "Estabelecer metas SMART para todas as áreas da empresa",
-  "Desenvolver plano de negócios flexível como documento vivo de orientação",
-  "Criar cronograma de revisão estratégica com periodicidade definida",
-  "Identificar e priorizar as maiores oportunidades de crescimento",
-  "Mapear cenário econômico e político para antecipar tendências e riscos",
-  "Definir indicadores-chave de performance (KPIs) para monitorar progresso",
-  
-  // II. Marketing e Vendas Avançado
-  "Otimizar site/loja online com foco em SEO para melhorar ranqueamento",
-  "Implementar estratégia de marketing de conteúdo (blogs, vídeos, e-books)",
-  "Desenvolver estratégia de mídias sociais para engajamento e construção de comunidade",
-  "Criar campanhas de e-mail marketing segmentadas para nutrir leads",
-  "Implementar anúncios pagos no Google Ads e Meta Ads para visibilidade",
-  "Estabelecer parcerias estratégicas de co-marketing para novas audiências",
-  "Otimizar funil de vendas mapeando cada etapa da jornada do cliente",
-  "Oferecer webinars ou workshops gratuitos para gerar leads qualificados",
-  "Solicitar e publicar depoimentos de clientes para construir prova social",
-  "Participar de eventos do setor para networking e prospecção",
-  "Desenvolver programa de indicação transformando clientes em promotores",
-  "Implementar sistema CRM para gerenciar interações com clientes",
-  "Oferecer testes gratuitos ou demonstrações para reduzir barreiras",
-  "Treinar equipe de vendas em técnicas avançadas de fechamento",
-  "Criar urgência e escassez ética em ofertas para estimular decisão",
-  "Personalizar comunicação com cliente tornando experiência relevante",
-  "Utilizar ferramentas de automação de marketing para otimizar processos",
-  "Realizar pesquisas de mercado para desenvolvimento de novas ofertas",
-  "Desenvolver landing pages otimizadas para conversão de leads",
-  "Analisar métricas de marketing e vendas regularmente para otimização",
-  
-  // III. Produto e Serviço
-  "Inovar continuamente no produto/serviço para manter competitividade",
-  "Implementar sistema de escuta ativa do feedback do cliente",
-  "Realizar testes A/B em ofertas e páginas para otimizar performance",
-  "Garantir qualidade consistente do produto/serviço",
-  "Padronizar processos de entrega do serviço para eficiência",
-  "Investir em P&D para desenvolvimento de novas soluções",
-  "Simplificar experiência do usuário (UX) tornando produto intuitivo",
-  "Criar diferenciais competitivos claros e únicos",
-  "Oferecer suporte ao cliente excepcional para gerar fidelidade",
-  "Desenvolver versões premium ou pacotes agregados",
-  
-  // IV. Finanças e Gestão
-  "Elaborar planejamento financeiro detalhado com orçamento e projeções",
-  "Implementar controle rigoroso do fluxo de caixa para evitar surpresas",
-  "Buscar fontes de financiamento estratégicas (investidores, crédito)",
-  "Negociar com fornecedores para redução de custos operacionais",
-  "Otimizar gestão de estoques reduzindo custos de armazenagem",
-  "Monitorar custos fixos e variáveis identificando oportunidades",
-  "Realizar análise de viabilidade econômica para novos projetos",
-  "Revisar estrutura de preços regularmente conforme mercado",
-  "Digitalizar processos financeiros com automação de pagamentos",
-  "Buscar assessoria contábil e financeira especializada",
-  "Gerenciar recebíveis e inadimplência para reduzir perdas",
-  "Definir ponto de equilíbrio para cobertura de custos",
-  "Considerar otimização fiscal dentro da legalidade",
-  "Monitorar margem de lucro para garantir saúde financeira",
-  "Criar reservas de emergência para imprevistos e oportunidades",
-  
-  // V. Pessoas e Liderança
-  "Contratar talentos alinhados à cultura da empresa",
-  "Investir em treinamento e desenvolvimento da equipe",
-  "Delegar tarefas de forma eficaz otimizando tempo da liderança",
-  "Fomentar ambiente de trabalho positivo e colaborativo",
-  "Implementar sistema de reconhecimento e recompensas",
-  "Estabelecer metas claras e feedback regular para equipe",
-  "Promover comunicação transparente e aberta",
-  "Incentivar proatividade e inovação na equipe",
-  "Desenvolver líderes internos para crescimento futuro",
-  "Realizar pesquisas de clima organizacional",
-  "Oferecer flexibilidade para melhorar qualidade de vida",
-  "Promover saúde mental e bem-estar dos colaboradores",
-  "Criar plano de carreira para colaboradores-chave",
-  "Promover diversidade e inclusão no ambiente",
-  "Celebrar conquistas da equipe reforçando propósito",
-  
-  // VI. Processos e Tecnologia
-  "Mapear e otimizar processos internos identificando gargalos",
-  "Digitalizar e automatizar tarefas repetitivas",
-  "Implementar sistema de gestão empresarial (ERP)",
-  "Utilizar ferramentas de gestão de projetos para organização",
-  "Assegurar segurança da informação protegendo dados sensíveis",
-  "Adotar computação em nuvem para flexibilidade e escalabilidade",
-  "Investir em hardware e software atualizados",
-  "Padronizar documentos e modelos para agilizar tarefas",
-  "Criar manual de procedimentos operacionais padrão (POPs)",
-  "Implementar metodologias ágeis para acelerar desenvolvimento",
-  
-  // VII. Inovação e Cultura
-  "Criar cultura de inovação incentivando experimentação",
-  "Destinar orçamento específico para projetos de inovação",
-  "Promover aprendizado contínuo na equipe",
-  "Buscar mentoria e aconselhamento externo",
-  "Participar de aceleradoras ou incubadoras",
-  "Desenvolver cultura orientada a dados para decisões",
-  "Fomentar responsabilidade social corporativa (RSC)",
-  "Promover sustentabilidade nas operações",
-  "Encorajar pensamento 'fora da caixa' para soluções criativas",
-  "Comunicar regularmente visão de futuro da empresa",
-  
-  // VIII. Relacionamento e Networking
-  "Fortalecer relacionamento com fornecedores-chave",
-  "Construir rede de contatos (networking) ativa",
-  "Participar de associações e câmaras de comércio",
-  "Buscar parceiros estratégicos para crescimento",
-  "Cultivar relações com influenciadores do setor",
-  "Oferecer conteúdo de valor para rede de contatos",
-  "Participar de grupos de discussão e fóruns online",
-  "Realizar eventos para clientes e parceiros",
-  "Solicitar indicações de clientes satisfeitos",
-  "Manter relacionamento pós-venda ativo",
-  
-  // Ações Comerciais Específicas
-  "Criar scripts de vendas padronizados para equipe comercial",
-  "Implementar processo de qualificação de leads eficiente",
-  "Desenvolver estratégia de geração de leads por prospecção ativa",
-  "Estabelecer territórios de vendas e gestão territorial",
-  "Criar sistema estruturado de follow-up comercial",
-  "Desenvolver estratégias de preços e promoções competitivas",
-  "Fazer análise de Pareto dos clientes e produtos",
-  "Criar roteiro de visitação empresarial estruturado",
-  "Implementar análise de métricas comerciais avançadas",
-  "Desenvolver estratégias de upsell e cross-sell",
-  
-  // Gestão e Organização
-  "Desenhar organograma empresarial claro e funcional",
-  "Implementar reuniões mensais estruturadas no Google Agenda",
-  "Criar sistema de relatórios de performance mensal",
-  "Desenvolver relatórios de atividades realizadas",
-  "Implementar gestão de tempo otimizada",
-  "Criar manual de boas práticas operacionais",
-  "Estabelecer canais de comunicação interno eficientes",
-  "Implementar processos de avaliação de desempenho",
-  "Criar check-list para processos de contratação",
-  "Desenvolver programa de gestão de talentos",
-  
-  // RH e Desenvolvimento Humano
-  "Mapear equipe com DISC Assessment para perfil comportamental",
-  "Implementar feedback estruturado e contínuo",
-  "Criar e enviar contratos de rotina do colaborador",
-  "Desenvolver contratos de expectativa com equipe",
-  "Implementar pesquisa 360º anônima com vendedores",
-  "Criar job descriptions detalhadas para cada função",
-  "Desenvolver plano de carreira estruturado",
-  "Implementar resolução de conflitos estruturada",
-  "Promover ambiente de positividade e motivação",
-  "Criar processo de conexão com colaboradores",
-  
-  // Marketing Digital e Comunicação
-  "Criar persona detalhada do cliente ideal",
-  "Desenvolver storytelling corporativo envolvente",
-  "Implementar estratégias de marketing digital avançadas",
-  "Criar estratégias de engajamento com audiência",
-  "Melhorar experiência do cliente em todos os touchpoints",
-  "Criar plano de encantamento de cliente",
-  "Desenvolver plano de endomarketing interno",
-  "Implementar sistema de feedback do cliente",
-  "Criar estratégias de abordagem e apresentação comercial",
-  "Desenvolver abordagem positiva e consultiva",
-  
-  // Operações e Processos
-  "Mapear processos operacionais detalhadamente",
-  "Implementar cliente oculto para análise de atendimento",
-  "Criar dashboard de vendas visual e informativo",
-  "Desenvolver fluxo de cadência comercial",
-  "Implementar sistema de gestão de leads",
-  "Criar processo de pós-venda estruturado",
-  "Desenvolver plano de fidelidade de clientes",
-  "Modelar funil de vendas otimizado",
-  "Criar sistema de métricas de acompanhamento",
-  "Implementar controles de qualidade rigorosos",
-  
-  // Cultura e Compliance
-  "Criar plano de ação para desenvolvimento de cultura",
-  "Implementar manual de cultura organizacional",
-  "Desenvolver programa de compliance empresarial",
-  "Implementar pesquisa de clima organizacional",
-  "Criar programa de diversidade e inclusão",
-  "Desenvolver código de ética empresarial",
-  "Implementar programa de responsabilidade social",
-  "Criar sistema de comunicação de valores",
-  "Desenvolver rituais e tradições da empresa",
-  "Implementar programa de bem-estar corporativo",
-  
-  // Inovação e Desenvolvimento
-  "Criar laboratório de inovação interno",
-  "Implementar programa de ideias dos colaboradores",
-  "Desenvolver parcerias com universidades",
-  "Criar programa de aceleração interna",
-  "Implementar metodologia de design thinking",
-  "Desenvolver cultura de experimentação",
-  "Criar fundo de investimento em inovação",
-  "Implementar hackathons internos",
-  "Desenvolver programa de intraempreendedorismo",
-  "Criar observatório de tendências do mercado",
-  
-  // Sustentabilidade e ESG
-  "Implementar práticas sustentáveis nas operações",
-  "Criar relatório de sustentabilidade anual",
-  "Desenvolver programa de redução de desperdício",
-  "Implementar economia circular nos processos",
-  "Criar comitê de sustentabilidade interno",
-  "Desenvolver métricas de impacto ambiental",
-  "Implementar programa de neutralização de carbono",
-  "Criar parcerias com ONGs ambientais",
-  "Desenvolver produtos/serviços sustentáveis",
-  "Implementar certificações ambientais",
-  
-  // Transformação Digital
-  "Implementar inteligência artificial nos processos",
-  "Criar estratégia de transformação digital",
-  "Desenvolver aplicativo mobile da empresa",
-  "Implementar chatbots para atendimento",
-  "Criar plataforma de e-commerce robusta",
-  "Desenvolver sistema de business intelligence",
-  "Implementar análise de big data",
-  "Criar marketplace próprio",
-  "Desenvolver API para integrações",
-  "Implementar assinatura digital nos processos",
-  
-  // Expansão e Crescimento
-  "Criar plano de expansão geográfica",
-  "Desenvolver estratégia de franchising",
-  "Implementar programa de parcerias comerciais",
-  "Criar plano de internacionalização",
-  "Desenvolver novos canais de distribuição",
-  "Implementar estratégia omnichannel",
-  "Criar programa de aquisições estratégicas",
-  "Desenvolver joint ventures",
-  "Implementar licenciamento de marca",
-  "Criar rede de representantes comerciais"
-];
+// Lista expandida de ações sugeridas distribuídas por categoria
+const sugestedActionsByCategory = {
+  comercial: [
+    "Criar scripts de vendas padronizados para equipe comercial",
+    "Implementar processo de qualificação de leads eficiente",
+    "Desenvolver estratégia de geração de leads por prospecção ativa",
+    "Estabelecer territórios de vendas e gestão territorial",
+    "Criar sistema estruturado de follow-up comercial",
+    "Desenvolver estratégias de preços e promoções competitivas",
+    "Fazer análise de Pareto dos clientes e produtos",
+    "Criar roteiro de visitação empresarial estruturado",
+    "Implementar análise de métricas comerciais avançadas",
+    "Desenvolver estratégias de upsell e cross-sell",
+    "Otimizar funil de vendas mapeando cada etapa da jornada do cliente",
+    "Oferecer webinars ou workshops gratuitos para gerar leads qualificados",
+    "Solicitar e publicar depoimentos de clientes para construir prova social",
+    "Participar de eventos do setor para networking e prospecção",
+    "Desenvolver programa de indicação transformando clientes em promotores",
+    "Implementar sistema CRM para gerenciar interações com clientes",
+    "Oferecer testes gratuitos ou demonstrações para reduzir barreiras",
+    "Treinar equipe de vendas em técnicas avançadas de fechamento",
+    "Criar urgência e escassez ética em ofertas para estimular decisão",
+    "Personalizar comunicação com cliente tornando experiência relevante"
+  ],
+  marketing: [
+    "Otimizar site/loja online com foco em SEO para melhorar ranqueamento",
+    "Implementar estratégia de marketing de conteúdo (blogs, vídeos, e-books)",
+    "Desenvolver estratégia de mídias sociais para engajamento e construção de comunidade",
+    "Criar campanhas de e-mail marketing segmentadas para nutrir leads",
+    "Implementar anúncios pagos no Google Ads e Meta Ads para visibilidade",
+    "Estabelecer parcerias estratégicas de co-marketing para novas audiências",
+    "Utilizar ferramentas de automação de marketing para otimizar processos",
+    "Realizar pesquisas de mercado para desenvolvimento de novas ofertas",
+    "Desenvolver landing pages otimizadas para conversão de leads",
+    "Analisar métricas de marketing e vendas regularmente para otimização",
+    "Criar persona detalhada do cliente ideal",
+    "Desenvolver storytelling corporativo envolvente",
+    "Implementar estratégias de marketing digital avançadas",
+    "Criar estratégias de engajamento com audiência",
+    "Melhorar experiência do cliente em todos os touchpoints",
+    "Criar plano de encantamento de cliente",
+    "Desenvolver plano de endomarketing interno",
+    "Implementar sistema de feedback do cliente",
+    "Criar estratégias de abordagem e apresentação comercial",
+    "Desenvolver abordagem positiva e consultiva"
+  ],
+  gestao: [
+    "Revisar a Missão, Visão e Valores da empresa para alinhamento com o momento atual",
+    "Definir ou reafirmar o nicho de mercado para focar esforços em segmento específico",
+    "Realizar análise completa da concorrência (benchmarking) com pontos fortes e fracos",
+    "Executar análise SWOT detalhada (Forças, Fraquezas, Oportunidades, Ameaças)",
+    "Estabelecer metas SMART para todas as áreas da empresa",
+    "Desenvolver plano de negócios flexível como documento vivo de orientação",
+    "Criar cronograma de revisão estratégica com periodicidade definida",
+    "Identificar e priorizar as maiores oportunidades de crescimento",
+    "Mapear cenário econômico e político para antecipar tendências e riscos",
+    "Definir indicadores-chave de performance (KPIs) para monitorar progresso",
+    "Desenhar organograma empresarial claro e funcional",
+    "Implementar reuniões mensais estruturadas no Google Agenda",
+    "Criar sistema de relatórios de performance mensal",
+    "Desenvolver relatórios de atividades realizadas",
+    "Implementar gestão de tempo otimizada",
+    "Criar manual de boas práticas operacionais",
+    "Estabelecer canais de comunicação interno eficientes",
+    "Implementar processos de avaliação de desempenho",
+    "Criar check-list para processos de contratação",
+    "Desenvolver programa de gestão de talentos"
+  ],
+  rh: [
+    "Contratar talentos alinhados à cultura da empresa",
+    "Investir em treinamento e desenvolvimento da equipe",
+    "Delegar tarefas de forma eficaz otimizando tempo da liderança",
+    "Fomentar ambiente de trabalho positivo e colaborativo",
+    "Implementar sistema de reconhecimento e recompensas",
+    "Estabelecer metas claras e feedback regular para equipe",
+    "Promover comunicação transparente e aberta",
+    "Incentivar proatividade e inovação na equipe",
+    "Desenvolver líderes internos para crescimento futuro",
+    "Realizar pesquisas de clima organizacional",
+    "Oferecer flexibilidade para melhorar qualidade de vida",
+    "Promover saúde mental e bem-estar dos colaboradores",
+    "Criar plano de carreira para colaboradores-chave",
+    "Promover diversidade e inclusão no ambiente",
+    "Celebrar conquistas da equipe reforçando propósito",
+    "Mapear equipe com DISC Assessment para perfil comportamental",
+    "Implementar feedback estruturado e contínuo",
+    "Criar e enviar contratos de rotina do colaborador",
+    "Desenvolver contratos de expectativa com equipe",
+    "Implementar pesquisa 360º anônima com vendedores"
+  ],
+  financeiro: [
+    "Elaborar planejamento financeiro detalhado com orçamento e projeções",
+    "Implementar controle rigoroso do fluxo de caixa para evitar surpresas",
+    "Buscar fontes de financiamento estratégicas (investidores, crédito)",
+    "Negociar com fornecedores para redução de custos operacionais",
+    "Otimizar gestão de estoques reduzindo custos de armazenagem",
+    "Monitorar custos fixos e variáveis identificando oportunidades",
+    "Realizar análise de viabilidade econômica para novos projetos",
+    "Revisar estrutura de preços regularmente conforme mercado",
+    "Digitalizar processos financeiros com automação de pagamentos",
+    "Buscar assessoria contábil e financeira especializada",
+    "Gerenciar recebíveis e inadimplência para reduzir perdas",
+    "Definir ponto de equilíbrio para cobertura de custos",
+    "Considerar otimização fiscal dentro da legalidade",
+    "Monitorar margem de lucro para garantir saúde financeira",
+    "Criar reservas de emergência para imprevistos e oportunidades"
+  ],
+  operacional: [
+    "Mapear e otimizar processos internos identificando gargalos",
+    "Digitalizar e automatizar tarefas repetitivas",
+    "Implementar sistema de gestão empresarial (ERP)",
+    "Utilizar ferramentas de gestão de projetos para organização",
+    "Assegurar segurança da informação protegendo dados sensíveis",
+    "Adotar computação em nuvem para flexibilidade e escalabilidade",
+    "Investir em hardware e software atualizados",
+    "Padronizar documentos e modelos para agilizar tarefas",
+    "Criar manual de procedimentos operacionais padrão (POPs)",
+    "Implementar metodologias ágeis para acelerar desenvolvimento",
+    "Mapear processos operacionais detalhadamente",
+    "Implementar cliente oculto para análise de atendimento",
+    "Criar dashboard de vendas visual e informativo",
+    "Desenvolver fluxo de cadência comercial",
+    "Implementar sistema de gestão de leads",
+    "Criar processo de pós-venda estruturado",
+    "Desenvolver plano de fidelidade de clientes",
+    "Modelar funil de vendas otimizado",
+    "Criar sistema de métricas de acompanhamento",
+    "Implementar controles de qualidade rigorosos"
+  ],
+  tecnologia: [
+    "Implementar inteligência artificial nos processos",
+    "Criar estratégia de transformação digital",
+    "Desenvolver aplicativo mobile da empresa",
+    "Implementar chatbots para atendimento",
+    "Criar plataforma de e-commerce robusta",
+    "Desenvolver sistema de business intelligence",
+    "Implementar análise de big data",
+    "Criar marketplace próprio",
+    "Desenvolver API para integrações",
+    "Implementar assinatura digital nos processos"
+  ],
+  cultura: [
+    "Criar cultura de inovação incentivando experimentação",
+    "Destinar orçamento específico para projetos de inovação",
+    "Promover aprendizado contínuo na equipe",
+    "Buscar mentoria e aconselhamento externo",
+    "Participar de aceleradoras ou incubadoras",
+    "Desenvolver cultura orientada a dados para decisões",
+    "Fomentar responsabilidade social corporativa (RSC)",
+    "Promover sustentabilidade nas operações",
+    "Encorajar pensamento 'fora da caixa' para soluções criativas",
+    "Comunicar regularmente visão de futuro da empresa",
+    "Criar plano de ação para desenvolvimento de cultura",
+    "Implementar manual de cultura organizacional",
+    "Desenvolver programa de compliance empresarial",
+    "Implementar pesquisa de clima organizacional",
+    "Criar programa de diversidade e inclusão",
+    "Desenvolver código de ética empresarial",
+    "Implementar programa de responsabilidade social",
+    "Criar sistema de comunicação de valores",
+    "Desenvolver rituais e tradições da empresa",
+    "Implementar programa de bem-estar corporativo"
+  ]
+};
 
 const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ 
   initialActions, 
@@ -327,6 +254,46 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   companyName,
   diagnosticData 
 }) => {
+  // Função para gerar ações distribuídas por categoria
+  const generateBalancedActions = (initialActions: ActionItem[]) => {
+    const categorias = Object.keys(sugestedActionsByCategory);
+    const acoesGeradas: ActionItem[] = [];
+    
+    // Se já temos ações iniciais, usar elas
+    if (initialActions.length > 0) {
+      return initialActions;
+    }
+    
+    // Gerar ações balanceadas de cada categoria
+    const acoesPorCategoria = Math.ceil(300 / categorias.length); // ~43 ações por categoria
+    
+    categorias.forEach((categoria, categoriaIndex) => {
+      const acoesCategoria = sugestedActionsByCategory[categoria as keyof typeof sugestedActionsByCategory];
+      
+      for (let i = 0; i < Math.min(acoesPorCategoria, acoesCategoria.length); i++) {
+        acoesGeradas.push({
+          id: `${categoria}-${i}-${Date.now()}`,
+          acao: acoesCategoria[i],
+          categoria: categoria,
+          prioridade: i < 5 ? 'alta' : i < 15 ? 'media' : 'baixa',
+          prazo: '90 dias',
+          responsavel: '',
+          recursos: 'A definir',
+          metricas: 'A definir',
+          beneficios: 'Melhoria nos resultados da empresa',
+          dataVencimento: new Date(),
+          concluida: false,
+          detalhesImplementacao: '',
+          dicaIA: 'Ação sugerida pelo sistema. Adapte conforme necessidade da empresa.',
+          status: 'pendente',
+          semana: 1
+        });
+      }
+    });
+    
+    return acoesGeradas;
+  };
+
   // Função para distribuir ações de segunda a sexta evitando datas duplicadas
   const distribuirAcoesNasSemanas = (acoes: ActionItem[]) => {
     const dataInicio = new Date();
@@ -376,7 +343,8 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
 
   // Ensure all actions have proper default values and distribute across weekdays
   const [acoes, setAcoes] = useState<ActionItem[]>(() => {
-    const acoesComDefaults = initialActions.map(action => ({
+    const acoesIniciais = generateBalancedActions(initialActions);
+    const acoesComDefaults = acoesIniciais.map(action => ({
       ...action,
       status: (action.status || 'pendente') as 'pendente' | 'em_andamento' | 'realizado' | 'atrasado',
       categoria: action.categoria || 'gestao',
@@ -1239,7 +1207,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
             <SelectTrigger className="w-48">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
               <SelectItem value="todas">Todas as categorias</SelectItem>
               <SelectItem value="comercial">Comercial</SelectItem>
               <SelectItem value="gestao">Gestão</SelectItem>
