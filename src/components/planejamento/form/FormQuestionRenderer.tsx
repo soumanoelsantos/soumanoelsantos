@@ -48,12 +48,19 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
       );
     
     case "multipla_escolha_multi":
+      // Garantir que temos um array para trabalhar
       const respostasArray = Array.isArray(respostaTemp) ? respostaTemp : [];
+      
+      console.log('=== MULTIPLA_ESCOLHA_MULTI RENDER ===');
+      console.log('respostaTemp:', respostaTemp);
+      console.log('respostasArray:', respostasArray);
+      console.log('pergunta.opcoes:', pergunta.opcoes);
+      
       return (
         <div className="space-y-3">
           {pergunta.opcoes?.map((opcao, index) => {
             const isChecked = respostasArray.includes(opcao);
-            console.log('Renderizando checkbox:', { opcao, isChecked, respostasArray });
+            console.log(`Opção ${opcao}: isChecked = ${isChecked}`);
             
             return (
               <div key={index} className="flex items-center space-x-2">
@@ -61,11 +68,11 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
                   id={`opcao-multi-${index}`}
                   checked={isChecked}
                   onCheckedChange={(checked) => {
-                    console.log('Checkbox mudou:', { opcao, checked });
-                    onMultipleChoiceChange(opcao, checked as boolean);
+                    console.log(`Checkbox ${opcao} mudou para:`, checked);
+                    onMultipleChoiceChange(opcao, Boolean(checked));
                   }}
                 />
-                <Label htmlFor={`opcao-multi-${index}`}>{opcao}</Label>
+                <Label htmlFor={`opcao-multi-${index}`} className="cursor-pointer">{opcao}</Label>
               </div>
             );
           })}
@@ -116,14 +123,21 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
       );
 
     case "swot_guiada_multi":
+      // Garantir que temos um array para trabalhar
       const respostasSwotArray = Array.isArray(respostaTemp) ? respostaTemp : [];
+      
+      console.log('=== SWOT_GUIADA_MULTI RENDER ===');
+      console.log('respostaTemp:', respostaTemp);
+      console.log('respostasSwotArray:', respostasSwotArray);
+      console.log('pergunta.opcoes:', pergunta.opcoes);
+      
       return (
         <div className="space-y-4">
           <div className="space-y-3">
             {pergunta.opcoes?.map((opcao, index) => {
               const direcionamento = pergunta.direcionamento?.[opcao];
               const isChecked = respostasSwotArray.includes(opcao);
-              console.log('Renderizando SWOT checkbox:', { opcao, isChecked, respostasSwotArray });
+              console.log(`SWOT Opção ${opcao}: isChecked = ${isChecked}`);
               
               return (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
@@ -132,11 +146,11 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
                       id={`swot-opcao-${index}`}
                       checked={isChecked}
                       onCheckedChange={(checked) => {
-                        console.log('SWOT Checkbox mudou:', { opcao, checked });
-                        onMultipleChoiceChange(opcao, checked as boolean);
+                        console.log(`SWOT Checkbox ${opcao} mudou para:`, checked);
+                        onMultipleChoiceChange(opcao, Boolean(checked));
                       }}
                     />
-                    <Label htmlFor={`swot-opcao-${index}`} className="font-medium">{opcao}</Label>
+                    <Label htmlFor={`swot-opcao-${index}`} className="font-medium cursor-pointer">{opcao}</Label>
                   </div>
                   {direcionamento && (
                     <div className={`px-3 py-1 rounded-full text-sm font-medium ${

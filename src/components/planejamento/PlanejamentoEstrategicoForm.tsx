@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -35,17 +36,23 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
   const pergunta = perguntasPlanejamento[perguntaAtual];
 
   useEffect(() => {
+    console.log('Pergunta atual mudou:', perguntaAtual, pergunta.tipo);
+    
     // Carregar resposta existente se houver
     const respostaExistente = respostas.find(r => r.perguntaId === pergunta.id);
     if (respostaExistente) {
       const resposta = typeof respostaExistente.resposta === 'number' 
         ? String(respostaExistente.resposta)
         : respostaExistente.resposta;
+      console.log('Carregando resposta existente:', resposta);
       setRespostaTemp(resposta);
     } else {
-      setRespostaTemp(pergunta.tipo === 'multipla_escolha_multi' || pergunta.tipo === 'swot_guiada_multi' ? [] : "");
+      // Inicializar com valor apropriado baseado no tipo
+      const valorInicial = (pergunta.tipo === 'multipla_escolha_multi' || pergunta.tipo === 'swot_guiada_multi') ? [] : "";
+      console.log('Inicializando com valor:', valorInicial);
+      setRespostaTemp(valorInicial);
     }
-  }, [perguntaAtual, pergunta.id, respostas]);
+  }, [perguntaAtual, pergunta.id, pergunta.tipo, respostas]);
 
   const salvarResposta = () => {
     if (pergunta.obrigatoria && validateRequiredField(respostaTemp)) {
@@ -129,24 +136,43 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
   };
 
   const handleMultipleChoice = (value: string, checked: boolean) => {
-    console.log('handleMultipleChoice chamado:', { value, checked, respostaTemp });
+    console.log('=== handleMultipleChoice DEBUG ===');
+    console.log('Value:', value);
+    console.log('Checked:', checked);
+    console.log('Current respostaTemp:', respostaTemp);
+    console.log('Is Array:', Array.isArray(respostaTemp));
     
-    // Garantir que sempre trabalhamos com um array
-    const currentArray = Array.isArray(respostaTemp) ? respostaTemp : [];
+    // Garantir que sempre temos um array para trabalhar
+    let currentArray: string[] = [];
+    
+    if (Array.isArray(respostaTemp)) {
+      currentArray = [...respostaTemp];
+    } else if (respostaTemp && typeof respostaTemp === 'string') {
+      // Se por algum motivo temos uma string, converter para array
+      currentArray = [respostaTemp];
+    }
+    
+    console.log('Current array:', currentArray);
+    
+    let newArray: string[];
     
     if (checked) {
       // Adicionar se não estiver presente
       if (!currentArray.includes(value)) {
-        const newArray = [...currentArray, value];
-        console.log('Adicionando:', value, 'Array resultante:', newArray);
-        setRespostaTemp(newArray);
+        newArray = [...currentArray, value];
+        console.log('Adding value - new array:', newArray);
+      } else {
+        newArray = currentArray;
+        console.log('Value already exists, keeping current array');
       }
     } else {
       // Remover se estiver presente
-      const newArray = currentArray.filter(item => item !== value);
-      console.log('Removendo:', value, 'Array resultante:', newArray);
-      setRespostaTemp(newArray);
+      newArray = currentArray.filter(item => item !== value);
+      console.log('Removing value - new array:', newArray);
     }
+    
+    console.log('Final array to set:', newArray);
+    setRespostaTemp(newArray);
   };
 
   const gerarDicaIA = async () => {
