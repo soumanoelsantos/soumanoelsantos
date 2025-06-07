@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -35,8 +34,16 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
 
   const pergunta = perguntasPlanejamento[perguntaAtual];
 
+  // Função para verificar se é tipo que aceita múltiplas respostas
+  const isMultipleSelectionType = (tipo: string) => {
+    return tipo === 'multipla_escolha_multi' || tipo === 'swot_guiada_multi';
+  };
+
   useEffect(() => {
-    console.log('Pergunta atual mudou:', perguntaAtual, pergunta.tipo);
+    console.log('=== PERGUNTA MUDOU ===');
+    console.log('Pergunta atual:', perguntaAtual);
+    console.log('Tipo da pergunta:', pergunta.tipo);
+    console.log('É múltipla seleção?', isMultipleSelectionType(pergunta.tipo));
     
     // Carregar resposta existente se houver
     const respostaExistente = respostas.find(r => r.perguntaId === pergunta.id);
@@ -48,13 +55,58 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
       setRespostaTemp(resposta);
     } else {
       // Inicializar com valor apropriado baseado no tipo
-      const valorInicial = (pergunta.tipo === 'multipla_escolha_multi' || pergunta.tipo === 'swot_guiada_multi') ? [] : "";
-      console.log('Inicializando com valor:', valorInicial);
+      const valorInicial = isMultipleSelectionType(pergunta.tipo) ? [] : "";
+      console.log('Inicializando com valor:', valorInicial, 'para tipo:', pergunta.tipo);
       setRespostaTemp(valorInicial);
     }
   }, [perguntaAtual, pergunta.id, pergunta.tipo, respostas]);
 
+  const handleMultipleChoice = (value: string, checked: boolean) => {
+    console.log('=== HANDLE MULTIPLE CHOICE ===');
+    console.log('Valor:', value);
+    console.log('Checked:', checked);
+    console.log('Estado atual respostaTemp:', respostaTemp);
+    console.log('Tipo do estado:', typeof respostaTemp, 'É array?', Array.isArray(respostaTemp));
+    
+    // Garantir que sempre temos um array para trabalhar
+    let currentArray: string[] = [];
+    
+    if (Array.isArray(respostaTemp)) {
+      currentArray = [...respostaTemp];
+    } else {
+      // Se não é array, inicializar como array vazio
+      currentArray = [];
+      console.log('Convertendo para array vazio pois respostaTemp não era array');
+    }
+    
+    console.log('Array atual para trabalhar:', currentArray);
+    
+    let newArray: string[];
+    
+    if (checked) {
+      // Adicionar se não estiver presente
+      if (!currentArray.includes(value)) {
+        newArray = [...currentArray, value];
+        console.log('Adicionando valor. Novo array:', newArray);
+      } else {
+        newArray = currentArray;
+        console.log('Valor já existe, mantendo array atual');
+      }
+    } else {
+      // Remover se estiver presente
+      newArray = currentArray.filter(item => item !== value);
+      console.log('Removendo valor. Novo array:', newArray);
+    }
+    
+    console.log('Array final a ser definido:', newArray);
+    setRespostaTemp(newArray);
+  };
+
   const salvarResposta = () => {
+    console.log('=== SALVANDO RESPOSTA ===');
+    console.log('Pergunta obrigatória?', pergunta.obrigatoria);
+    console.log('Resposta temp:', respostaTemp);
+    
     if (pergunta.obrigatoria && validateRequiredField(respostaTemp)) {
       toast({
         title: "Campo obrigatório",
@@ -80,6 +132,12 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
         swotClassificacao = pergunta.direcionamento[respostaString] || null;
       }
     }
+
+    console.log('Salvando resposta:', {
+      perguntaId: pergunta.id,
+      resposta: respostaTemp,
+      swotClassificacao
+    });
 
     novasRespostas.push({
       perguntaId: pergunta.id,
@@ -135,46 +193,6 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
     onComplete(respostasFinal, resultadosDiagnostico);
   };
 
-  const handleMultipleChoice = (value: string, checked: boolean) => {
-    console.log('=== handleMultipleChoice DEBUG ===');
-    console.log('Value:', value);
-    console.log('Checked:', checked);
-    console.log('Current respostaTemp:', respostaTemp);
-    console.log('Is Array:', Array.isArray(respostaTemp));
-    
-    // Garantir que sempre temos um array para trabalhar
-    let currentArray: string[] = [];
-    
-    if (Array.isArray(respostaTemp)) {
-      currentArray = [...respostaTemp];
-    } else if (respostaTemp && typeof respostaTemp === 'string') {
-      // Se por algum motivo temos uma string, converter para array
-      currentArray = [respostaTemp];
-    }
-    
-    console.log('Current array:', currentArray);
-    
-    let newArray: string[];
-    
-    if (checked) {
-      // Adicionar se não estiver presente
-      if (!currentArray.includes(value)) {
-        newArray = [...currentArray, value];
-        console.log('Adding value - new array:', newArray);
-      } else {
-        newArray = currentArray;
-        console.log('Value already exists, keeping current array');
-      }
-    } else {
-      // Remover se estiver presente
-      newArray = currentArray.filter(item => item !== value);
-      console.log('Removing value - new array:', newArray);
-    }
-    
-    console.log('Final array to set:', newArray);
-    setRespostaTemp(newArray);
-  };
-
   const gerarDicaIA = async () => {
     setIaAtiva(true);
     try {
@@ -206,7 +224,7 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
           categoria={pergunta.categoria}
           pergunta={pergunta.pergunta}
           obrigatoria={pergunta.obrigatoria}
-          isMultipleChoice={pergunta.tipo === 'multipla_escolha_multi' || pergunta.tipo === 'swot_guiada_multi'}
+          isMultipleChoice={isMultipleSelectionType(pergunta.tipo)}
         />
         
         <CardContent className="space-y-6">

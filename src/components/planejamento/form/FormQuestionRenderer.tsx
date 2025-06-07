@@ -22,6 +22,11 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
   onRespostaChange,
   onMultipleChoiceChange
 }) => {
+  console.log('=== FORM QUESTION RENDERER ===');
+  console.log('Tipo da pergunta:', pergunta.tipo);
+  console.log('RespostaTemp:', respostaTemp);
+  console.log('É array?', Array.isArray(respostaTemp));
+
   switch (pergunta.tipo) {
     case "texto":
       return (
@@ -49,18 +54,17 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
     
     case "multipla_escolha_multi":
       // Garantir que temos um array para trabalhar
-      const respostasArray = Array.isArray(respostaTemp) ? respostaTemp : [];
+      const respostasMultiArray = Array.isArray(respostaTemp) ? respostaTemp : [];
       
       console.log('=== MULTIPLA_ESCOLHA_MULTI RENDER ===');
       console.log('respostaTemp:', respostaTemp);
-      console.log('respostasArray:', respostasArray);
-      console.log('pergunta.opcoes:', pergunta.opcoes);
+      console.log('respostasMultiArray:', respostasMultiArray);
       
       return (
         <div className="space-y-3">
           {pergunta.opcoes?.map((opcao, index) => {
-            const isChecked = respostasArray.includes(opcao);
-            console.log(`Opção ${opcao}: isChecked = ${isChecked}`);
+            const isChecked = respostasMultiArray.includes(opcao);
+            console.log(`Multi Opção ${opcao}: isChecked = ${isChecked}`);
             
             return (
               <div key={index} className="flex items-center space-x-2">
@@ -68,7 +72,7 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
                   id={`opcao-multi-${index}`}
                   checked={isChecked}
                   onCheckedChange={(checked) => {
-                    console.log(`Checkbox ${opcao} mudou para:`, checked);
+                    console.log(`Multi Checkbox ${opcao} mudou para:`, checked);
                     onMultipleChoiceChange(opcao, Boolean(checked));
                   }}
                 />
@@ -137,7 +141,7 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
             {pergunta.opcoes?.map((opcao, index) => {
               const direcionamento = pergunta.direcionamento?.[opcao];
               const isChecked = respostasSwotArray.includes(opcao);
-              console.log(`SWOT Opção ${opcao}: isChecked = ${isChecked}`);
+              console.log(`SWOT Multi Opção ${opcao}: isChecked = ${isChecked}`);
               
               return (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
@@ -146,7 +150,7 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
                       id={`swot-opcao-${index}`}
                       checked={isChecked}
                       onCheckedChange={(checked) => {
-                        console.log(`SWOT Checkbox ${opcao} mudou para:`, checked);
+                        console.log(`SWOT Multi Checkbox ${opcao} mudou para:`, checked);
                         onMultipleChoiceChange(opcao, Boolean(checked));
                       }}
                     />
