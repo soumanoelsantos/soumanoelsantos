@@ -26,20 +26,16 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isAuthenticated, loginRedirectPath, isLoading } = useAuth();
+  const { login, isAuthenticated, isLoading } = useAuth();
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isTryingLogin, setIsTryingLogin] = useState(false);
-  
-  // Get the redirect path from the search params or state - default to /membros
-  const searchParams = new URLSearchParams(location.search);
-  const redirectPath = searchParams.get('from') || (location.state as any)?.from || '/membros';
 
-  // Redirect authenticated users
+  // Redirect authenticated users directly to /membros
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(loginRedirectPath || redirectPath);
+      navigate('/membros');
     }
-  }, [isAuthenticated, navigate, redirectPath, loginRedirectPath]);
+  }, [isAuthenticated, navigate]);
 
   // Initialize form with react-hook-form
   const form = useForm<LoginFormValues>({
@@ -50,7 +46,7 @@ const Login = () => {
     },
   });
 
-  // Form submission handler with improved error handling
+  // Form submission handler - always redirect to /membros
   const onSubmit = async (values: LoginFormValues) => {
     try {
       setLoginError(null);
@@ -58,7 +54,8 @@ const Login = () => {
       
       console.log("Login attempted with:", values.email);
       
-      await login(values.email, values.password, redirectPath);
+      // Always redirect to /membros after successful login
+      await login(values.email, values.password, '/membros');
       
       toast({
         title: "Login bem-sucedido",
