@@ -271,57 +271,408 @@ export const generateIntelligentActionPlan = (
     ]
   };
 
-  // Função para gerar dica da IA mais específica e prática
+  // Função para gerar dica da IA mais específica e prática com estrutura detalhada
   const generateAITip = (acao: string, categoria: string): string => {
-    const tips = {
+    const tipsStructured = {
       gestao: [
-        "Para implementar esta ação de gestão, comece mapeando a situação atual e envolvendo a equipe no processo. Defina marcos claros, estabeleça reuniões de acompanhamento semanal e documente todo o progresso para facilitar futuras melhorias.",
-        "Esta ação requer planejamento detalhado e execução gradual. Inicie com um projeto piloto, colete feedback da equipe, ajuste o processo e depois expanda para toda a organização.",
-        "Foque na padronização e documentação. Crie templates, checklists e procedimentos claros. Treine a equipe adequadamente e estabeleça métricas de sucesso para acompanhar o progresso."
+        `1. Definir Escopo e Objetivos
+Meta: Estabelecer controle total sobre operações e processos.
+
+Escopo: Interno (toda empresa) com foco em padronização e eficiência.
+
+2. Mapear Processos Atuais
+Método: Entrevistar gestores de cada área para documentar fluxos atuais.
+
+Ferramentas: Lucidchart, Draw.io ou Bizagi para fluxogramas.
+
+3. Identificar Responsáveis e Prazos
+Responsável: Diretor de operações + um representante de cada área.
+
+Prazo: 30 dias para mapeamento, 60 dias para implementação.
+
+4. Implementar Gradualmente
+Fase 1: Processos críticos (vendas, produção, financeiro).
+
+Fase 2: Processos de apoio (RH, marketing, TI).
+
+5. Ferramentas e Recursos Necessários
+Software: ERP básico (R$ 200-500/mês) ou planilhas estruturadas.
+
+Treinamento: 8 horas de capacitação para cada colaborador.
+
+6. Métricas de Sucesso
+Redução de 30% no tempo de execução de tarefas.
+
+Diminuição de 50% em retrabalhos e erros.
+
+7. Benefícios Esperados
+Maior controle operacional e tomada de decisão baseada em dados.
+
+Redução de custos e aumento da produtividade em 20-40%.`
       ],
       comercial: [
-        "Para maximizar resultados comerciais, analise seus dados históricos primeiro. Identifique padrões de sucesso, mapeie o perfil do cliente ideal e estruture processos que possam ser replicados pela equipe.",
-        "Implemente esta ação comercial gradualmente: teste com um grupo pequeno de clientes, refine o processo, treine a equipe e depois expanda. Sempre acompanhe métricas de conversão e ROI."
+        `1. Estruturar o Funil de Vendas
+Meta: Aumentar conversão e previsibilidade das vendas.
+
+Etapas: Prospecção → Qualificação → Proposta → Negociação → Fechamento.
+
+2. Escolher e Configurar CRM
+Opções: HubSpot (gratuito), Pipedrive (R$ 65/mês), RD Station (R$ 150/mês).
+
+Configuração: Campos personalizados, automações e relatórios.
+
+3. Treinar Equipe Comercial
+Programa: 16 horas de treinamento em vendas consultivas.
+
+Conteúdo: Scripts, objeções, técnicas de fechamento.
+
+4. Definir Métricas e Metas
+KPIs: Taxa de conversão, ticket médio, ciclo de vendas.
+
+Metas: Aumento de 25% nas vendas em 3 meses.
+
+5. Implementar Follow-up Automatizado
+Sistema: E-mails automáticos + ligações programadas.
+
+Frequência: 1º dia, 3º dia, 1 semana, 2 semanas.
+
+6. Recursos Necessários
+Investimento: R$ 500-2.000/mês (CRM + treinamento).
+
+Equipe: Vendedor + supervisor comercial.
+
+7. Resultados Esperados
+Aumento de 30-50% na taxa de conversão.
+
+Redução de 40% no ciclo de vendas.`
       ],
       marketing: [
-        "Para esta ação de marketing, comece definindo personas detalhadas e objetivos SMART. Crie um calendário editorial, teste diferentes formatos de conteúdo e use analytics para otimizar resultados.",
-        "Implemente esta estratégia de marketing de forma multicanal. Mantenha consistência de marca, teste diferentes mensagens e canais, e sempre meça ROI para direcionar investimentos futuros."
+        `1. Definir Estratégia e Público-Alvo
+Meta: Aumentar visibilidade e geração de leads qualificados.
+
+Público: Personas detalhadas com dores, desejos e comportamentos.
+
+2. Criar Identidade Visual Consistente
+Elementos: Logo, cores, tipografia, tom de voz.
+
+Aplicação: Site, redes sociais, materiais impressos.
+
+3. Estruturar Presença Digital
+Website: Responsivo, otimizado para SEO e conversões.
+
+Redes sociais: 2-3 plataformas principais do seu público.
+
+4. Implementar Marketing de Conteúdo
+Formato: Blog posts, vídeos, infográficos, posts redes sociais.
+
+Frequência: 3-4 posts por semana.
+
+5. Configurar Automação de Marketing
+Ferramenta: RD Station, HubSpot ou Mailchimp.
+
+Fluxos: Nutrição de leads, welcome series, reativação.
+
+6. Orçamento e Recursos
+Investimento: R$ 800-3.000/mês (ferramentas + ads + criação).
+
+Equipe: Gestor de marketing + freelancer/agência.
+
+7. Métricas de Sucesso
+Aumento de 200% no tráfego do site em 6 meses.
+
+Geração de 50+ leads qualificados por mês.`
       ],
       financeiro: [
-        "Esta ação financeira requer disciplina e controle rigoroso. Implemente controles diários, automatize processos quando possível e crie dashboards para acompanhar indicadores em tempo real.",
-        "Comece organizando e categorizando todas as informações financeiras. Use ferramentas adequadas ao porte da empresa, treine a equipe e estabeleça rotinas de revisão regular dos resultados."
+        `1. Implementar Controle de Fluxo de Caixa
+Meta: Ter visibilidade total das entradas e saídas diárias.
+
+Método: Planilha ou software financeiro atualizado diariamente.
+
+2. Separar Contas Pessoais e Empresariais
+Ação: Abrir conta PJ e transferir todas movimentações empresariais.
+
+Prazo: 15 dias para implementação completa.
+
+3. Categorizar Receitas e Despesas
+Categorias: Vendas, custos, despesas operacionais, investimentos.
+
+Detalhamento: Por centro de custo e responsável.
+
+4. Criar Relatórios Gerenciais
+Frequência: DRE mensal, fluxo de caixa semanal.
+
+Indicadores: Margem bruta, EBITDA, ponto de equilíbrio.
+
+5. Ferramentas Recomendadas
+Básico: Planilha Google Sheets com templates prontos.
+
+Profissional: ContaAzul (R$ 60/mês), Omie (R$ 90/mês).
+
+6. Recursos Necessários
+Investimento: R$ 200-1.000/mês (software + contador).
+
+Tempo: 2 horas diárias para controle.
+
+7. Benefícios Imediatos
+Redução de 20% nos custos através de controle.
+
+Melhoria na tomada de decisões financeiras.`
       ],
       rh: [
-        "Esta ação de RH deve ser implementada com transparência e comunicação clara. Envolva a equipe no processo, colete feedback regular e ajuste políticas conforme necessário.",
-        "Para implementar esta ação de pessoas, comece mapeando a situação atual, defina políticas claras e justas, e invista em treinamento adequado para gestores e colaboradores."
+        `1. Mapear Perfis e Competências
+Meta: Ter clareza sobre cada cargo e suas responsabilidades.
+
+Método: Job description detalhado + competências técnicas e comportamentais.
+
+2. Estruturar Processo Seletivo
+Etapas: Triagem curricular → Entrevista → Teste técnico → Entrevista final.
+
+Tempo: Máximo 15 dias por vaga.
+
+3. Criar Programa de Integração
+Duração: 90 dias com marcos aos 30, 60 e 90 dias.
+
+Conteúdo: Cultura, processos, treinamentos específicos.
+
+4. Implementar Avaliação de Performance
+Frequência: Trimestral com metas claras e mensuráveis.
+
+Método: Avaliação 360 graus + autoavaliação.
+
+5. Desenvolver Plano de Carreira
+Estrutura: Níveis hierárquicos + trilhas de desenvolvimento.
+
+Critérios: Performance, tempo, competências desenvolvidas.
+
+6. Ferramentas e Recursos
+Software: Gupy (recrutamento), Convenia (gestão RH).
+
+Investimento: R$ 300-1.500/mês conforme porte.
+
+7. Resultados Esperados
+Redução de 40% no turnover.
+
+Aumento de 30% na satisfação dos colaboradores.`
       ],
       operacional: [
-        "Para esta ação operacional, mapeie todos os processos primeiro, identifique gargalos e oportunidades de melhoria. Implemente mudanças gradualmente e monitore impactos na produtividade.",
-        "Foque na padronização e otimização. Crie procedimentos claros, treine a equipe adequadamente e use tecnologia para automatizar tarefas repetitivas."
+        `1. Mapear Processos Críticos
+Meta: Documentar e otimizar fluxos operacionais principais.
+
+Método: Value Stream Mapping (VSM) + entrevistas com operadores.
+
+2. Identificar Gargalos e Desperdícios
+Análise: Tempos, movimentações, retrabalhos, estoques.
+
+Ferramentas: Cronoanálise + observação direta.
+
+3. Padronizar Procedimentos
+Criação: POPs (Procedimentos Operacionais Padrão) ilustrados.
+
+Formato: Passo a passo com fotos e check-lists.
+
+4. Implementar Controle de Qualidade
+Pontos: Inspeção em etapas críticas do processo.
+
+Ferramentas: Check-lists, formulários, indicadores.
+
+5. Treinar Equipe Operacional
+Programa: 12 horas de treinamento nos novos processos.
+
+Método: Prático com supervisão e acompanhamento.
+
+6. Recursos Necessários
+Investimento: R$ 1.000-5.000 (consultoria + treinamento).
+
+Tempo: 60-90 dias para implementação completa.
+
+7. Benefícios Operacionais
+Aumento de 25% na produtividade.
+
+Redução de 50% em defeitos e retrabalhos.`
       ],
       tecnologia: [
-        "Para esta implementação tecnológica, avalie necessidades reais primeiro, pesquise soluções adequadas ao orçamento e porte da empresa. Priorize segurança e facilidade de uso.",
-        "Implemente tecnologia gradualmente: piloto → treinamento → expansão → otimização. Sempre tenha backup dos dados e planos de contingência para problemas técnicos."
+        `1. Avaliar Infraestrutura Atual
+Meta: Identificar necessidades e oportunidades de melhoria.
+
+Auditoria: Hardware, software, segurança, backup.
+
+2. Priorizar Investimentos
+Critérios: Segurança → Produtividade → Inovação.
+
+Orçamento: Definir budget anual para TI.
+
+3. Implementar Backup e Segurança
+Cloud: Google Drive, Dropbox Business ou AWS.
+
+Segurança: Antivírus, firewall, senhas seguras.
+
+4. Automatizar Processos Repetitivos
+Identificação: Tarefas manuais que consomem tempo.
+
+Ferramentas: Zapier, Power Automate, scripts personalizados.
+
+5. Capacitar Equipe em Tecnologia
+Treinamento: 8 horas sobre ferramentas digitais.
+
+Conteúdo: Produtividade, segurança, novas tecnologias.
+
+6. Orçamento e Cronograma
+Investimento: R$ 1.000-5.000/mês conforme necessidades.
+
+Implementação: 3-6 meses de forma gradual.
+
+7. ROI Esperado
+Aumento de 40% na produtividade da equipe.
+
+Redução de 60% em problemas técnicos.`
       ],
       cultura: [
-        "Para implementar esta ação cultural, seja autêntico e consistente. Envolva a equipe na definição de valores, comunique através de ações práticas e reconheça comportamentos alinhados.",
-        "Mudanças culturais acontecem gradualmente. Comunique claramente o 'porquê' das mudanças, dê exemplo como liderança e celebre pequenas vitórias no caminho."
+        `1. Definir Missão, Visão e Valores
+Meta: Criar identidade organizacional autêntica e inspiradora.
+
+Método: Workshops com lideranças + validação com equipe.
+
+2. Comunicar Cultura de Forma Consistente
+Canais: Reuniões, murais, intranet, eventos internos.
+
+Frequência: Comunicação semanal sobre valores.
+
+3. Criar Rituais e Tradições
+Exemplos: Café da manhã mensal, premiações, comemorações.
+
+Objetivo: Fortalecer senso de pertencimento.
+
+4. Implementar Reconhecimento Regular
+Sistema: Funcionário do mês, feedback positivo público.
+
+Critérios: Alinhamento com valores + performance.
+
+5. Desenvolver Lideranças Culturais
+Programa: Capacitação de gestores como embaixadores.
+
+Duração: 16 horas de treinamento em liderança.
+
+6. Medir Clima Organizacional
+Pesquisa: Trimestral com perguntas sobre cultura.
+
+Indicadores: Engajamento, satisfação, senso de propósito.
+
+7. Resultados Culturais
+Melhoria de 40% no clima organizacional.
+
+Redução de 50% no absenteísmo.`
       ],
       pesquisa: [
-        "Para esta pesquisa, defina objetivos claros e perguntas específicas. Use metodologia adequada, garanta anonimato quando necessário e communique resultados e ações decorrentes transparentemente.",
-        "Implemente pesquisas de forma sistemática e regular. Crie processo de análise, definição de ações corretivas e acompanhamento de melhorias baseadas nos resultados obtidos."
+        `1. Definir Objetivos da Pesquisa
+Meta: Coletar dados para melhoria contínua e tomada de decisão.
+
+Escopo: Clientes, funcionários, mercado conforme necessidade.
+
+2. Estruturar Questionário
+Perguntas: Máximo 10-15 questões objetivas + 2-3 abertas.
+
+Escala: NPS (0-10) ou Likert (1-5) para padronização.
+
+3. Escolher Canais de Aplicação
+Digital: Google Forms, SurveyMonkey, TypeForm.
+
+Presencial: Entrevistas, grupos focais quando necessário.
+
+4. Definir Amostra e Frequência
+Amostra: Mínimo 30 respondentes para validez estatística.
+
+Frequência: Trimestral para clientes, semestral para funcionários.
+
+5. Analisar e Comunicar Resultados
+Relatório: Dashboard com insights e planos de ação.
+
+Comunicação: Transparente sobre resultados e melhorias.
+
+6. Recursos Necessários
+Investimento: R$ 200-800/mês (ferramenta + análise).
+
+Equipe: 1 pessoa dedicada 8 horas/mês.
+
+7. Benefícios da Pesquisa
+Taxa de resposta >70% com insights acionáveis.
+
+Melhoria contínua baseada em dados reais.`
       ],
       endomarketing: [
-        "Para esta ação de endomarketing, foque na autenticidade e relevância para a equipe. Crie conteúdo que realmente agregue valor, use canais preferidos pelos funcionários e meça engajamento.",
-        "Implemente endomarketing de forma consistente e planejada. Desenvolva calendário de ações, envolva lideranças como porta-vozes e sempre colete feedback para melhorar."
+        `1. Estruturar Comunicação Interna
+Meta: Engajar equipe e fortalecer cultura organizacional.
+
+Canais: Newsletter, mural digital, reuniões, eventos.
+
+2. Criar Conteúdo Relevante
+Temas: Conquistas, novidades, reconhecimentos, treinamentos.
+
+Formato: Textos curtos, vídeos, infográficos.
+
+3. Implementar Programa de Reconhecimento
+Sistema: Funcionário destaque mensal + premiação.
+
+Critérios: Performance, valores, inovação, colaboração.
+
+4. Desenvolver Eventos Internos
+Frequência: Mensal (café da manhã, happy hour, palestras).
+
+Objetivo: Networking interno e fortalecimento de vínculos.
+
+5. Criar Sistema de Feedback
+Canais: Caixa de sugestões, pesquisas, conversas diretas.
+
+Resposta: Retorno obrigatório em até 15 dias.
+
+6. Orçamento e Recursos
+Investimento: R$ 300-1.500/mês (eventos + materiais).
+
+Equipe: Coordenador RH + voluntários internos.
+
+7. Resultados Esperados
+Engajamento >80% nas ações internas.
+
+Melhoria de 35% no clima organizacional.`
       ],
       aceleracao: [
-        "Para esta ação de aceleração, analise o mercado e capacidade interna primeiro. Desenvolva plano piloto, teste em pequena escala, valide resultados e então escale rapidamente.",
-        "Foque em ações que geram resultados exponenciais. Use tecnologia como alavanca, automatize processos, crie parcerias estratégicas e sempre monitore ROI para direcionamento."
+        `1. Definir Estratégia de Crescimento
+Meta: Crescimento exponencial sustentável.
+
+Foco: Inovação, automação, parcerias estratégicas.
+
+2. Implementar Growth Hacking
+Métricas: AARRR (Aquisição, Ativação, Retenção, Receita, Referência).
+
+Testes: A/B testing em campanhas e processos.
+
+3. Criar Laboratório de Inovação
+Espaço: Físico ou virtual para ideação e prototipagem.
+
+Time: Multidisciplinar com perfis inovadores.
+
+4. Automatizar Processos Críticos
+Identificação: Tarefas repetitivas que consomem recursos.
+
+Ferramentas: RPA, integração de sistemas, IA aplicada.
+
+5. Desenvolver Parcerias Estratégicas
+Tipo: Fornecedores, distribuidores, complementares.
+
+Critério: Win-win com potencial de escala.
+
+6. Investimento em Aceleração
+Budget: 10-20% da receita dedicado à inovação.
+
+ROI Esperado: >300% em 12-18 meses.
+
+7. Resultados de Aceleração
+Crescimento >50% em métricas-chave.
+
+Vantagem competitiva sustentável no mercado.`
       ]
     };
 
-    const categoryTips = tips[categoria as keyof typeof tips] || tips.gestao;
+    const categoryTips = tipsStructured[categoria as keyof typeof tipsStructured] || tipsStructured.gestao;
     return categoryTips[Math.floor(Math.random() * categoryTips.length)];
   };
 
