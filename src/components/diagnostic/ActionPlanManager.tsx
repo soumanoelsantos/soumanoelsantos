@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,7 +24,9 @@ import {
   Trash2, 
   Plus,
   Brain,
-  Lightbulb
+  Lightbulb,
+  AlertTriangle,
+  Timer
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -43,6 +46,9 @@ interface ActionItem {
   dataVencimento: Date;
   concluida: boolean;
   detalhesImplementacao: string;
+  dicaIA: string;
+  status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';
+  semana: number;
 }
 
 interface DiagnosticData {
@@ -78,17 +84,48 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const [editingAction, setEditingAction] = useState<ActionItem | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [aiTipAction, setAiTipAction] = useState<ActionItem | null>(null);
-  const [isAiTipDialogOpen, setIsAiTipDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'timeline' | 'kanban'>('timeline');
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
 
-  const acoesCompletas = acoes.filter(acao => acao.concluida).length;
+  // Calcular estatísticas
+  const acoesCompletas = acoes.filter(acao => acao.concluida || acao.status === 'realizado').length;
+  const acoesAtrasadas = acoes.filter(acao => acao.status === 'atrasado').length;
+  const acoesEmAndamento = acoes.filter(acao => acao.status === 'em_andamento').length;
+  const acoesPendentes = acoes.filter(acao => acao.status === 'pendente').length;
   const progresso = (acoesCompletas / acoes.length) * 100;
+
+  // Atualizar status das ações baseado na data
+  useEffect(() => {
+    const hoje = new Date();
+    setAcoes(prev => prev.map(acao => {
+      if (acao.concluida) {
+        return { ...acao, status: 'realizado' };
+      }
+      if (acao.dataVencimento < hoje && acao.status !== 'realizado') {
+        return { ...acao, status: 'atrasado' };
+      }
+      return acao;
+    }));
+  }, []);
 
   const toggleAcaoConcluida = (acaoId: string) => {
     setAcoes(prev => prev.map(acao => 
-      acao.id === acaoId ? { ...acao, concluida: !acao.concluida } : acao
+      acao.id === acaoId ? { 
+        ...acao, 
+        concluida: !acao.concluida,
+        status: !acao.concluida ? 'realizado' : 'pendente'
+      } : acao
+    ));
+  };
+
+  const updateActionStatus = (acaoId: string, newStatus: ActionItem['status']) => {
+    setAcoes(prev => prev.map(acao => 
+      acao.id === acaoId ? { 
+        ...acao, 
+        status: newStatus,
+        concluida: newStatus === 'realizado'
+      } : acao
     ));
   };
 
@@ -125,7 +162,9 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const addNewAction = (newAction: Omit<ActionItem, 'id'>) => {
     const actionWithId: ActionItem = {
       ...newAction,
-      id: Date.now().toString()
+      id: Date.now().toString(),
+      dicaIA: "Nova ação adicionada. Defina marcos específicos e acompanhe o progresso semanalmente.",
+      semana: Math.ceil(acoes.length / 4) + 1
     };
     setAcoes(prev => [...prev, actionWithId]);
     setIsAddDialogOpen(false);
@@ -171,18 +210,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       case 'operacional': return <Clock className="h-4 w-4" />;
       case 'tecnologia': return <Target className="h-4 w-4" />;
       case 'cultura': return <Users className="h-4 w-4" />;
-      case 'qualidade': return <CheckCircle2 className="h-4 w-4" />;
-      case 'estrategia': return <Target className="h-4 w-4" />;
-      case 'dados': return <Target className="h-4 w-4" />;
-      case 'inovacao': return <Lightbulb className="h-4 w-4" />;
-      case 'risco': return <Target className="h-4 w-4" />;
-      case 'compliance': return <CheckCircle2 className="h-4 w-4" />;
-      case 'capacitacao': return <Users className="h-4 w-4" />;
-      case 'lideranca': return <Users className="h-4 w-4" />;
-      case 'sustentabilidade': return <Target className="h-4 w-4" />;
-      case 'comunidade': return <Users className="h-4 w-4" />;
-      case 'expansao': return <TrendingUp className="h-4 w-4" />;
-      case 'consolidacao': return <Target className="h-4 w-4" />;
       default: return <CheckCircle2 className="h-4 w-4" />;
     }
   };
@@ -197,18 +224,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       case 'operacional': return 'bg-gray-100 text-gray-800';
       case 'tecnologia': return 'bg-indigo-100 text-indigo-800';
       case 'cultura': return 'bg-pink-100 text-pink-800';
-      case 'qualidade': return 'bg-emerald-100 text-emerald-800';
-      case 'estrategia': return 'bg-cyan-100 text-cyan-800';
-      case 'dados': return 'bg-violet-100 text-violet-800';
-      case 'inovacao': return 'bg-yellow-100 text-yellow-800';
-      case 'risco': return 'bg-rose-100 text-rose-800';
-      case 'compliance': return 'bg-teal-100 text-teal-800';
-      case 'capacitacao': return 'bg-amber-100 text-amber-800';
-      case 'lideranca': return 'bg-lime-100 text-lime-800';
-      case 'sustentabilidade': return 'bg-green-100 text-green-800';
-      case 'comunidade': return 'bg-blue-100 text-blue-800';
-      case 'expansao': return 'bg-purple-100 text-purple-800';
-      case 'consolidacao': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -220,6 +235,30 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       case 'baixa': return 'bg-green-500';
       default: return 'bg-gray-500';
     }
+  };
+
+  const getCorStatus = (status: string) => {
+    switch(status) {
+      case 'realizado': return 'bg-green-100 text-green-800 border-green-200';
+      case 'em_andamento': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'atrasado': return 'bg-red-100 text-red-800 border-red-200';
+      case 'pendente': return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getIconeStatus = (status: string) => {
+    switch(status) {
+      case 'realizado': return <CheckCircle2 className="h-4 w-4" />;
+      case 'em_andamento': return <Clock className="h-4 w-4" />;
+      case 'atrasado': return <AlertTriangle className="h-4 w-4" />;
+      case 'pendente': return <Timer className="h-4 w-4" />;
+      default: return <Timer className="h-4 w-4" />;
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('pt-BR');
   };
 
   const ActionForm = ({ 
@@ -242,7 +281,10 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       beneficios: action?.beneficios || '',
       dataVencimento: action?.dataVencimento || new Date(),
       concluida: action?.concluida || false,
-      detalhesImplementacao: action?.detalhesImplementacao || ''
+      detalhesImplementacao: action?.detalhesImplementacao || '',
+      dicaIA: action?.dicaIA || '',
+      status: action?.status || 'pendente',
+      semana: action?.semana || 1
     });
 
     const handleSave = () => {
@@ -281,18 +323,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
                 <SelectItem value="operacional">Operacional</SelectItem>
                 <SelectItem value="tecnologia">Tecnologia</SelectItem>
                 <SelectItem value="cultura">Cultura</SelectItem>
-                <SelectItem value="qualidade">Qualidade</SelectItem>
-                <SelectItem value="estrategia">Estratégia</SelectItem>
-                <SelectItem value="dados">Dados/KPIs</SelectItem>
-                <SelectItem value="inovacao">Inovação</SelectItem>
-                <SelectItem value="risco">Gestão de Riscos</SelectItem>
-                <SelectItem value="compliance">Compliance</SelectItem>
-                <SelectItem value="capacitacao">Capacitação</SelectItem>
-                <SelectItem value="lideranca">Liderança</SelectItem>
-                <SelectItem value="sustentabilidade">Sustentabilidade</SelectItem>
-                <SelectItem value="comunidade">Comunidade</SelectItem>
-                <SelectItem value="expansao">Expansão</SelectItem>
-                <SelectItem value="consolidacao">Consolidação</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -314,13 +344,18 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="prazo">Prazo</Label>
-            <Input
-              id="prazo"
-              value={formData.prazo}
-              onChange={(e) => setFormData(prev => ({ ...prev, prazo: e.target.value }))}
-              placeholder="Ex: 30 dias, 2 semanas..."
-            />
+            <Label htmlFor="status">Status</Label>
+            <Select value={formData.status} onValueChange={(value: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado') => setFormData(prev => ({ ...prev, status: value }))}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pendente">Pendente</SelectItem>
+                <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                <SelectItem value="realizado">Realizado</SelectItem>
+                <SelectItem value="atrasado">Atrasado</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
@@ -344,16 +379,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           />
         </div>
 
-        <div>
-          <Label htmlFor="metricas">Como Medir o Sucesso</Label>
-          <Textarea
-            id="metricas"
-            value={formData.metricas}
-            onChange={(e) => setFormData(prev => ({ ...prev, metricas: e.target.value }))}
-            placeholder="Como você vai saber se a ação foi bem-sucedida?"
-          />
-        </div>
-
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={onCancel}>
             Cancelar
@@ -363,82 +388,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           </Button>
         </div>
       </div>
-    );
-  };
-
-  const AITipsDialog = ({ action }: { action: ActionItem }) => {
-    const [pergunta, setPergunta] = useState("");
-    const [respostaAi, setRespostaAi] = useState("");
-
-    const gerarDicas = () => {
-      const dicas = `Para implementar "${action.acao}", recomendo:
-
-1. **Primeira Semana**: Mapeie a situação atual e defina marcos específicos
-2. **Recursos Necessários**: ${action.recursos || 'Avalie os recursos disponíveis'}
-3. **Métricas de Acompanhamento**: ${action.metricas || 'Defina indicadores claros de progresso'}
-4. **Benefícios Esperados**: ${action.beneficios}
-
-**Dicas Práticas:**
-- Divida a ação em tarefas menores e mais gerenciáveis
-- Estabeleça check-points semanais para acompanhar o progresso
-- Documente todo o processo para futuras implementações
-- Envolva a equipe desde o início para garantir o engajamento`;
-
-      setRespostaAi(dicas);
-    };
-
-    return (
-      <Dialog open={isAiTipDialogOpen} onOpenChange={setIsAiTipDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-purple-600" />
-              Como Implementar: {action.acao}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <Card className="bg-blue-50 border-blue-200">
-              <CardContent className="p-4">
-                <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                  <Lightbulb className="h-4 w-4" />
-                  Benefícios desta Ação:
-                </h4>
-                <p className="text-blue-800 text-sm">{action.beneficios}</p>
-              </CardContent>
-            </Card>
-
-            <div>
-              <Button onClick={gerarDicas} className="mb-4">
-                <Brain className="mr-2 h-4 w-4" />
-                Gerar Dicas da IA
-              </Button>
-
-              {respostaAi && (
-                <Card>
-                  <CardContent className="p-4">
-                    <pre className="whitespace-pre-wrap text-sm">{respostaAi}</pre>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="pergunta-ai">Faça uma pergunta específica sobre esta ação:</Label>
-              <Textarea
-                id="pergunta-ai"
-                value={pergunta}
-                onChange={(e) => setPergunta(e.target.value)}
-                placeholder="Como posso começar? Quais são os primeiros passos? Que ferramentas preciso?"
-                className="mt-2"
-              />
-              <Button className="mt-2" onClick={() => setRespostaAi("Esta funcionalidade será implementada em breve com IA real.")}>
-                Perguntar para IA
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     );
   };
 
@@ -452,9 +401,9 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
             <div className="flex justify-between items-start">
               <div>
                 <CardTitle className="text-2xl mb-2">{companyName}</CardTitle>
-                <p className="text-blue-100">Plano de Ação Estratégico - 6 Meses</p>
+                <p className="text-blue-100">Programa de Aceleração Empresarial - 6 Meses</p>
                 <p className="text-blue-100 text-sm mt-2">
-                  {acoes.length} ações para acelerar o crescimento da empresa
+                  {acoes.length} ações estratégicas para transformar sua empresa
                 </p>
               </div>
               <div className="flex gap-2">
@@ -477,11 +426,62 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           </CardHeader>
         </Card>
 
-        {/* Progresso */}
+        {/* Dashboard de Progresso */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="bg-green-50 border-green-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-green-600">Realizadas</p>
+                  <p className="text-2xl font-bold text-green-800">{acoesCompletas}</p>
+                </div>
+                <CheckCircle2 className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-blue-600">Em Andamento</p>
+                  <p className="text-2xl font-bold text-blue-800">{acoesEmAndamento}</p>
+                </div>
+                <Clock className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-red-50 border-red-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-red-600">Atrasadas</p>
+                  <p className="text-2xl font-bold text-red-800">{acoesAtrasadas}</p>
+                </div>
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-50 border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Pendentes</p>
+                  <p className="text-2xl font-bold text-gray-800">{acoesPendentes}</p>
+                </div>
+                <Timer className="h-8 w-8 text-gray-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Progresso Geral */}
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium">Progresso do Plano</h3>
+              <h3 className="text-lg font-medium">Progresso do Programa</h3>
               <span className="text-2xl font-bold text-blue-600">{Math.round(progresso)}%</span>
             </div>
             <Progress value={progresso} className="mb-4" />
@@ -496,70 +496,27 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
         {diagnosticData && (
           <ProblemSolutionsDisplay diagnosticData={diagnosticData} />
         )}
-
-        {/* Lista de Ações - só no PDF */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Ações do Plano de Aceleração</h2>
-          {acoes.map((acao, index) => (
-            <Card key={acao.id} className={acao.concluida ? 'bg-green-50 border-green-200' : ''}>
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-medium text-sm">
-                      {index + 1}
-                    </span>
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-3">
-                      <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
-                        {acao.acao}
-                      </h4>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className={`w-3 h-3 rounded-full ${getCorPrioridade(acao.prioridade)}`}
-                          title={`Prioridade ${acao.prioridade}`}
-                        />
-                        <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
-                          {getIconeCategoria(acao.categoria)}
-                          <span className="ml-1 capitalize">{acao.categoria}</span>
-                        </Badge>
-                      </div>
-                    </div>
-                    
-                    {acao.beneficios && (
-                      <div className="mb-3 p-3 bg-blue-50 rounded-lg">
-                        <p className="text-sm"><strong>Benefícios:</strong> {acao.beneficios}</p>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
-                      <div>
-                        <p className="text-gray-600"><strong>Prazo:</strong> {acao.prazo}</p>
-                        {acao.responsavel && (
-                          <p className="text-gray-600"><strong>Responsável:</strong> {acao.responsavel}</p>
-                        )}
-                      </div>
-                      <div>
-                        {acao.recursos && (
-                          <p className="text-gray-600"><strong>Recursos:</strong> {acao.recursos}</p>
-                        )}
-                        {acao.metricas && (
-                          <p className="text-gray-600"><strong>Métricas:</strong> {acao.metricas}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
 
       {/* Controles - não aparecem no PDF */}
       <div className="flex justify-between items-center print:hidden">
-        <h2 className="text-xl font-semibold">Ações do Plano</h2>
+        <div className="flex gap-2">
+          <Button 
+            variant={viewMode === 'timeline' ? 'default' : 'outline'}
+            onClick={() => setViewMode('timeline')}
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            Timeline
+          </Button>
+          <Button 
+            variant={viewMode === 'kanban' ? 'default' : 'outline'}
+            onClick={() => setViewMode('kanban')}
+          >
+            <Target className="mr-2 h-4 w-4" />
+            Kanban
+          </Button>
+        </div>
+        
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -579,126 +536,216 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
         </Dialog>
       </div>
 
-      {/* Lista de Ações Interativas - não aparecem no PDF */}
+      {/* Lista de Ações - não aparecem no PDF */}
       <div className="print:hidden">
-        <DragDropContext onDragEnd={reordenarAcoes}>
-          <Droppable droppableId="acoes">
-            {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="space-y-4"
-              >
-                {acoes.map((acao, index) => (
-                  <Draggable key={acao.id} draggableId={acao.id} index={index}>
-                    {(provided, snapshot) => (
-                      <Card
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`${
-                          snapshot.isDragging ? 'shadow-lg scale-105' : ''
-                        } ${acao.concluida ? 'bg-green-50 border-green-200' : ''}`}
-                      >
-                        <CardContent className="p-6">
-                          <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0">
-                              <Checkbox
-                                checked={acao.concluida}
-                                onCheckedChange={() => toggleAcaoConcluida(acao.id)}
-                                className="mt-1"
-                              />
-                            </div>
-                            
-                            <div className="flex-1">
-                              <div className="flex items-start justify-between mb-3">
-                                <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
-                                  {acao.acao}
-                                </h4>
-                                <div className="flex items-center gap-2">
-                                  <div 
-                                    className={`w-3 h-3 rounded-full ${getCorPrioridade(acao.prioridade)}`}
-                                    title={`Prioridade ${acao.prioridade}`}
-                                  />
-                                  <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
-                                    {getIconeCategoria(acao.categoria)}
-                                    <span className="ml-1 capitalize">{acao.categoria}</span>
-                                  </Badge>
-                                </div>
+        {viewMode === 'timeline' ? (
+          <DragDropContext onDragEnd={reordenarAcoes}>
+            <Droppable droppableId="acoes">
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="space-y-4"
+                >
+                  {acoes.map((acao, index) => (
+                    <Draggable key={acao.id} draggableId={acao.id} index={index}>
+                      {(provided, snapshot) => (
+                        <Card
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`${
+                            snapshot.isDragging ? 'shadow-lg scale-105' : ''
+                          } ${getCorStatus(acao.status)}`}
+                        >
+                          <CardContent className="p-6">
+                            <div className="flex items-start gap-4">
+                              <div className="flex-shrink-0">
+                                <Checkbox
+                                  checked={acao.concluida}
+                                  onCheckedChange={() => toggleAcaoConcluida(acao.id)}
+                                  className="mt-1"
+                                />
                               </div>
                               
-                              {acao.beneficios && (
-                                <div className="mb-3 p-3 bg-blue-50 rounded-lg">
-                                  <p className="text-sm"><strong>Benefícios:</strong> {acao.beneficios}</p>
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between mb-3">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                        Semana {acao.semana}
+                                      </span>
+                                      <Badge variant="outline" className={getCorStatus(acao.status)}>
+                                        {getIconeStatus(acao.status)}
+                                        <span className="ml-1 capitalize">{acao.status.replace('_', ' ')}</span>
+                                      </Badge>
+                                    </div>
+                                    <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
+                                      {acao.acao}
+                                    </h4>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div 
+                                      className={`w-3 h-3 rounded-full ${getCorPrioridade(acao.prioridade)}`}
+                                      title={`Prioridade ${acao.prioridade}`}
+                                    />
+                                    <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
+                                      {getIconeCategoria(acao.categoria)}
+                                      <span className="ml-1 capitalize">{acao.categoria}</span>
+                                    </Badge>
+                                  </div>
                                 </div>
-                              )}
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
-                                <div>
-                                  <p className="text-gray-600"><strong>Prazo:</strong> {acao.prazo}</p>
-                                  {acao.responsavel && (
-                                    <p className="text-gray-600"><strong>Responsável:</strong> {acao.responsavel}</p>
-                                  )}
+                                {/* Dica da IA - sempre visível */}
+                                <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                  <div className="flex items-start gap-2">
+                                    <Brain className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                                    <div>
+                                      <p className="text-sm font-medium text-purple-800 mb-1">Dica da IA:</p>
+                                      <p className="text-sm text-purple-700">{acao.dicaIA}</p>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div>
-                                  {acao.recursos && (
-                                    <p className="text-gray-600"><strong>Recursos:</strong> {acao.recursos}</p>
-                                  )}
-                                  {acao.metricas && (
-                                    <p className="text-gray-600"><strong>Métricas:</strong> {acao.metricas}</p>
-                                  )}
-                                </div>
-                              </div>
+                                
+                                {acao.beneficios && (
+                                  <div className="mb-3 p-3 bg-blue-50 rounded-lg">
+                                    <p className="text-sm"><strong>Benefícios:</strong> {acao.beneficios}</p>
+                                  </div>
+                                )}
 
-                              <div className="flex justify-end gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    setAiTipAction(acao);
-                                    setIsAiTipDialogOpen(true);
-                                  }}
-                                  className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
-                                >
-                                  <Brain className="mr-1 h-3 w-3" />
-                                  Dicas IA
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    setEditingAction(acao);
-                                    setIsEditDialogOpen(true);
-                                  }}
-                                >
-                                  <Edit className="mr-1 h-3 w-3" />
-                                  Editar
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => deleteAction(acao.id)}
-                                  className="text-red-600 hover:bg-red-50"
-                                >
-                                  <Trash2 className="mr-1 h-3 w-3" />
-                                  Excluir
-                                </Button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+                                  <div>
+                                    <p className="text-gray-600"><strong>Data:</strong> {formatDate(acao.dataVencimento)}</p>
+                                    {acao.responsavel && (
+                                      <p className="text-gray-600"><strong>Responsável:</strong> {acao.responsavel}</p>
+                                    )}
+                                  </div>
+                                  <div>
+                                    {acao.recursos && (
+                                      <p className="text-gray-600"><strong>Recursos:</strong> {acao.recursos}</p>
+                                    )}
+                                    {acao.metricas && (
+                                      <p className="text-gray-600"><strong>Métricas:</strong> {acao.metricas}</p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="flex justify-between items-center">
+                                  <div className="flex gap-2">
+                                    <Select
+                                      value={acao.status}
+                                      onValueChange={(value: ActionItem['status']) => updateActionStatus(acao.id, value)}
+                                    >
+                                      <SelectTrigger className="w-32 h-8">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="pendente">Pendente</SelectItem>
+                                        <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                                        <SelectItem value="realizado">Realizado</SelectItem>
+                                        <SelectItem value="atrasado">Atrasado</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
+                                  <div className="flex justify-end gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        setEditingAction(acao);
+                                        setIsEditDialogOpen(true);
+                                      }}
+                                    >
+                                      <Edit className="mr-1 h-3 w-3" />
+                                      Editar
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => deleteAction(acao.id)}
+                                      className="text-red-600 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="mr-1 h-3 w-3" />
+                                      Excluir
+                                    </Button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        ) : (
+          // Kanban View
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {(['pendente', 'em_andamento', 'atrasado', 'realizado'] as const).map(status => (
+              <Card key={status} className="h-fit">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    {getIconeStatus(status)}
+                    <span className="capitalize">{status.replace('_', ' ')}</span>
+                    <Badge variant="secondary" className="ml-auto">
+                      {acoes.filter(a => a.status === status).length}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {acoes.filter(acao => acao.status === status).map(acao => (
+                    <Card key={acao.id} className="p-3 hover:shadow-md transition-shadow">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
+                            {acao.categoria}
+                          </Badge>
+                          <div 
+                            className={`w-2 h-2 rounded-full ${getCorPrioridade(acao.prioridade)}`}
+                            title={`Prioridade ${acao.prioridade}`}
+                          />
+                        </div>
+                        <p className="text-sm font-medium">{acao.acao}</p>
+                        <p className="text-xs text-gray-500">
+                          Semana {acao.semana} • {formatDate(acao.dataVencimento)}
+                        </p>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingAction(acao);
+                              setIsEditDialogOpen(true);
+                            }}
+                            className="h-6 px-2 text-xs"
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => deleteAction(acao.id)}
+                            className="h-6 px-2 text-xs text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Dialogs */}
+      {/* Dialog de Edição */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -716,10 +763,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           )}
         </DialogContent>
       </Dialog>
-
-      {aiTipAction && (
-        <AITipsDialog action={aiTipAction} />
-      )}
     </div>
   );
 };

@@ -30,6 +30,9 @@ interface ActionItem {
   dataVencimento: Date;
   concluida: boolean;
   detalhesImplementacao: string;
+  dicaIA: string;
+  status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';
+  semana: number;
 }
 
 export const generateIntelligentActionPlan = (
@@ -39,7 +42,7 @@ export const generateIntelligentActionPlan = (
   const actions: ActionItem[] = [];
   let actionId = 1;
 
-  // Análise dos dados integrados para personalizar ações
+  // Análise dos dados integrados
   const hasSwotData = integratedData.swot && Object.values(integratedData.swot).some((arr: any) => 
     Array.isArray(arr) && arr.some(item => item.text && item.text.trim())
   );
@@ -58,326 +61,353 @@ export const generateIntelligentActionPlan = (
 
   const hasPhaseTest = integratedData.phaseTest && integratedData.phaseTest.score;
 
-  // SEMANA 1-2: Diagnóstico e Fundamentos
-  if (!hasSwotData) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Realizar Análise SWOT completa da empresa usando a ferramenta disponível',
-      categoria: 'gestao',
-      prioridade: 'alta',
-      prazo: '7 dias',
-      responsavel: 'Diretor/Sócio',
-      recursos: 'Ferramenta SWOT da plataforma, tempo para análise estratégica',
-      metricas: 'Análise SWOT completa com pelo menos 3 itens em cada quadrante',
-      beneficios: 'Visão estratégica clara dos pontos fortes, fracos, oportunidades e ameaças',
-      dataVencimento: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Acesse a ferramenta SWOT na plataforma e preencha todos os quadrantes com análise detalhada'
-    });
-  } else {
-    // Se já tem SWOT, usar os dados para ações específicas
-    const weaknesses = integratedData.swot.weaknesses?.filter((w: any) => w.text?.trim()) || [];
-    if (weaknesses.length > 0) {
-      actions.push({
+  // Template de ações base para diferentes categorias
+  const actionTemplates = {
+    gestao: [
+      "Criar organograma detalhado da empresa",
+      "Implementar sistema de reuniões periódicas estruturadas",
+      "Desenvolver manual de procedimentos operacionais",
+      "Estabelecer política de delegação de responsabilidades",
+      "Criar sistema de acompanhamento de metas por setor",
+      "Implementar software de gestão empresarial (ERP)",
+      "Desenvolver política de tomada de decisões",
+      "Criar comitê executivo de gestão",
+      "Implementar sistema de gestão por indicadores (KPIs)",
+      "Desenvolver plano de sucessão organizacional",
+      "Criar política de comunicação interna",
+      "Implementar gestão por processos",
+      "Desenvolver sistema de gestão de projetos",
+      "Criar política de gestão de mudanças",
+      "Implementar sistema de gestão da qualidade",
+      "Desenvolver programa de melhoria contínua",
+      "Criar sistema de gestão de riscos empresariais",
+      "Implementar balanced scorecard",
+      "Desenvolver política de governança corporativa",
+      "Criar sistema de auditoria interna"
+    ],
+    comercial: [
+      "Implementar CRM profissional",
+      "Criar funil de vendas estruturado",
+      "Desenvolver scripts de vendas padronizados",
+      "Estabelecer processo de qualificação de leads",
+      "Criar programa de treinamento em vendas",
+      "Implementar sistema de follow-up automatizado",
+      "Desenvolver estratégia de pricing dinâmico",
+      "Criar programa de pós-venda",
+      "Implementar análise de concorrência",
+      "Desenvolver estratégia de cross-selling",
+      "Criar sistema de gestão de pipeline",
+      "Implementar programa de indicações",
+      "Desenvolver estratégia de up-selling",
+      "Criar sistema de forecasting de vendas",
+      "Implementar gestão de contas-chave",
+      "Desenvolver programa de fidelização",
+      "Criar estratégia de segmentação de clientes",
+      "Implementar sistema de vendas consultivas",
+      "Desenvolver programa de parcerias comerciais",
+      "Criar sistema de gestão de propostas"
+    ],
+    marketing: [
+      "Desenvolver identidade visual profissional",
+      "Criar estratégia de marketing digital",
+      "Implementar presença nas redes sociais",
+      "Desenvolver site responsivo e otimizado",
+      "Criar estratégia de conteúdo (blog/artigos)",
+      "Implementar campanhas de Google Ads",
+      "Desenvolver estratégia de e-mail marketing",
+      "Criar programa de marketing de relacionamento",
+      "Implementar análise de ROI em marketing",
+      "Desenvolver estratégia de SEO",
+      "Criar campanhas de remarketing",
+      "Implementar marketing automation",
+      "Desenvolver estratégia de influencers",
+      "Criar programa de eventos e networking",
+      "Implementar análise de comportamento do cliente",
+      "Desenvolver estratégia de branding",
+      "Criar programa de relações públicas",
+      "Implementar marketing de conteúdo B2B",
+      "Desenvolver estratégia omnichannel",
+      "Criar sistema de lead scoring"
+    ],
+    financeiro: [
+      "Implementar controle de fluxo de caixa diário",
+      "Separar contas pessoais das empresariais",
+      "Criar sistema de controle de custos",
+      "Implementar orçamento empresarial anual",
+      "Desenvolver análise de rentabilidade por produto",
+      "Criar reserva de emergência empresarial",
+      "Implementar sistema de cobrança automatizada",
+      "Desenvolver política de crédito e cobrança",
+      "Criar análise de viabilidade de investimentos",
+      "Implementar controle de estoque financeiro",
+      "Desenvolver sistema de precificação estratégica",
+      "Criar dashboard financeiro executivo",
+      "Implementar controle de contas a pagar/receber",
+      "Desenvolver análise de break-even",
+      "Criar política de investimentos",
+      "Implementar sistema de auditoria financeira",
+      "Desenvolver planejamento tributário",
+      "Criar análise de margem de contribuição",
+      "Implementar sistema de budget por departamento",
+      "Desenvolver análise de ROI por projeto"
+    ],
+    rh: [
+      "Criar descrição de cargos e responsabilidades",
+      "Implementar processo de recrutamento estruturado",
+      "Desenvolver programa de integração (onboarding)",
+      "Estabelecer política salarial e benefícios",
+      "Criar sistema de avaliação de desempenho",
+      "Implementar programa de treinamento e desenvolvimento",
+      "Desenvolver plano de carreira interno",
+      "Criar política de feedback contínuo",
+      "Implementar sistema de gestão por competências",
+      "Desenvolver programa de reconhecimento",
+      "Criar política de trabalho remoto/híbrido",
+      "Implementar pesquisa de clima organizacional",
+      "Desenvolver programa de mentoria interna",
+      "Criar sistema de gestão de talentos",
+      "Implementar programa de sucessão",
+      "Desenvolver política de diversidade e inclusão",
+      "Criar programa de bem-estar dos funcionários",
+      "Implementar sistema de comunicação interna",
+      "Desenvolver política de desenvolvimento de liderança",
+      "Criar programa de retenção de talentos"
+    ],
+    operacional: [
+      "Mapear todos os processos principais",
+      "Implementar controle de qualidade rigoroso",
+      "Criar manual de procedimentos operacionais",
+      "Desenvolver sistema de gestão de fornecedores",
+      "Implementar controle de estoque inteligente",
+      "Criar sistema de logística otimizada",
+      "Desenvolver programa de produtividade",
+      "Implementar automação de processos repetitivos",
+      "Criar sistema de gestão de projetos operacionais",
+      "Desenvolver política de terceirização estratégica",
+      "Implementar sistema de gestão de ativos",
+      "Criar programa de redução de desperdícios",
+      "Desenvolver sistema de gestão da cadeia de suprimentos",
+      "Implementar controle de tempo e produtividade",
+      "Criar sistema de gestão de facilidades",
+      "Desenvolver programa de otimização de custos",
+      "Implementar sistema de gestão de contratos",
+      "Criar política de gestão de estoques",
+      "Desenvolver sistema de gestão de manutenção",
+      "Implementar programa de inovação operacional"
+    ],
+    tecnologia: [
+      "Avaliar e modernizar infraestrutura de TI",
+      "Implementar sistema de backup automatizado",
+      "Criar política de segurança da informação",
+      "Desenvolver sistema de gestão de dados",
+      "Implementar automação de processos (RPA)",
+      "Criar sistema de business intelligence",
+      "Desenvolver aplicativo móvel empresarial",
+      "Implementar sistema de videoconferência profissional",
+      "Criar política de uso de tecnologia",
+      "Desenvolver sistema de gestão documental",
+      "Implementar solução de cloud computing",
+      "Criar sistema de monitoramento de performance",
+      "Desenvolver integração entre sistemas",
+      "Implementar solução de e-commerce",
+      "Criar sistema de gestão de relacionamento digital",
+      "Desenvolver dashboard executivo em tempo real",
+      "Implementar sistema de assinatura digital",
+      "Criar política de transformação digital",
+      "Desenvolver sistema de análise preditiva",
+      "Implementar solução de inteligência artificial"
+    ],
+    cultura: [
+      "Definir missão, visão e valores empresariais",
+      "Criar código de ética e conduta",
+      "Implementar programa de cultura organizacional",
+      "Desenvolver rituais e tradições empresariais",
+      "Criar programa de comunicação de valores",
+      "Implementar sistema de reconhecimento cultural",
+      "Desenvolver programa de engajamento",
+      "Criar espaços de convivência e colaboração",
+      "Implementar programa de voluntariado corporativo",
+      "Desenvolver política de responsabilidade social",
+      "Criar programa de diversidade e inclusão",
+      "Implementar sistema de feedback cultural",
+      "Desenvolver programa de embaixadores da cultura",
+      "Criar eventos de integração e team building",
+      "Implementar programa de desenvolvimento de liderança cultural",
+      "Desenvolver sistema de onboarding cultural",
+      "Criar programa de storytelling empresarial",
+      "Implementar política de work-life balance",
+      "Desenvolver programa de inovação colaborativa",
+      "Criar sistema de gestão da mudança cultural"
+    ]
+  };
+
+  // Função para gerar dica da IA baseada na ação
+  const generateAITip = (acao: string, categoria: string): string => {
+    const tips = {
+      gestao: [
+        "Comece mapeando a situação atual antes de implementar mudanças. Envolva a equipe no processo de definição para garantir engajamento.",
+        "Defina marcos claros e mensuráveis. Estabeleça reuniões semanais de acompanhamento para ajustar a rota conforme necessário.",
+        "Documente todo o processo para facilitar futuras implementações. Crie um cronograma realista considerando outros projetos em andamento.",
+        "Implemente gradualmente, testando em pequena escala primeiro. Busque feedback constante da equipe e faça ajustes necessários."
+      ],
+      comercial: [
+        "Analise seus dados históricos de vendas para identificar padrões. Implemente um sistema de CRM simples antes de partir para soluções complexas.",
+        "Treine sua equipe antes de implementar novos processos. Defina métricas claras de sucesso e acompanhe semanalmente.",
+        "Teste diferentes abordagens com pequenos grupos de clientes. Documente o que funciona e padronize os processos vencedores.",
+        "Integre marketing e vendas desde o início. Crie materiais de apoio que facilitem o trabalho da equipe comercial."
+      ],
+      marketing: [
+        "Comece definindo seu público-alvo claramente. Crie personas detalhadas antes de desenvolver qualquer material ou campanha.",
+        "Teste pequeno antes de investir grande. Use dados e analytics para tomar decisões, não apenas intuição.",
+        "Mantenha consistência visual e de mensagem em todos os canais. Crie um calendário editorial para organizar o conteúdo.",
+        "Meça ROI de cada ação de marketing. Foque nos canais que trazem melhor retorno e otimize constantemente."
+      ],
+      financeiro: [
+        "Implemente controles simples primeiro, como fluxo de caixa diário. Automatize processos repetitivos para reduzir erros.",
+        "Separe imediatamente contas pessoais das empresariais. Crie reservas de emergência antes de fazer investimentos.",
+        "Use ferramentas gratuitas no início, como planilhas bem estruturadas. Evolua para softwares pagos conforme a complexidade aumenta.",
+        "Monitore indicadores financeiros semanalmente. Crie dashboards simples que mostrem a saúde financeira em tempo real."
+      ],
+      rh: [
+        "Documente processos desde o recrutamento até o desligamento. Crie descrições de cargo claras para evitar conflitos futuros.",
+        "Implemente feedback regular, não apenas anual. Use ferramentas simples como formulários online para pesquisas de clima.",
+        "Invista em treinamento interno antes de buscar externos. Desenvolva lideranças internas para reduzir turnover.",
+        "Crie políticas claras e comunique bem. Use onboarding estruturado para acelerar a adaptação de novos funcionários."
+      ],
+      operacional: [
+        "Mapeie processos atuais antes de otimizar. Elimine desperdícios e gargalos identificados no mapeamento.",
+        "Automatize tarefas repetitivas e de baixo valor. Invista em treinamento da equipe para usar novas ferramentas.",
+        "Implemente controles de qualidade em pontos críticos. Use indicadores simples para monitorar performance operacional.",
+        "Padronize procedimentos para reduzir variações. Crie checklists para garantir que nada seja esquecido."
+      ],
+      tecnologia: [
+        "Avalie necessidades reais antes de comprar tecnologia. Comece com soluções simples e gratuitas quando possível.",
+        "Treine a equipe antes de implementar novas tecnologias. Crie backups e planos de contingência para sistemas críticos.",
+        "Integre sistemas gradualmente para evitar problemas. Monitore performance e faça ajustes conforme necessário.",
+        "Mantenha foco na segurança desde o início. Use senhas fortes e atualize sistemas regularmente."
+      ],
+      cultura: [
+        "Envolva a equipe na definição de valores e cultura. Seja autêntico - a cultura deve refletir a realidade da empresa.",
+        "Comunique valores através de ações, não apenas palavras. Reconheça comportamentos que demonstram os valores da empresa.",
+        "Implemente mudanças culturais gradualmente. Use storytelling para comunicar a cultura de forma envolvente.",
+        "Meça engajamento regularmente através de pesquisas. Ajuste estratégias baseado no feedback da equipe."
+      ]
+    };
+
+    const categoryTips = tips[categoria as keyof typeof tips] || tips.gestao;
+    return categoryTips[Math.floor(Math.random() * categoryTips.length)];
+  };
+
+  // Gerar pelo menos 100 ações distribuídas em 26 semanas (6 meses)
+  const categoriasChave = ['gestao', 'comercial', 'marketing', 'financeiro', 'rh', 'operacional', 'tecnologia', 'cultura'];
+  
+  for (let semana = 1; semana <= 26; semana++) {
+    // Adicionar 4 ações por semana para garantir pelo menos 104 ações
+    for (let acaoPorSemana = 0; acaoPorSemana < 4; acaoPorSemana++) {
+      const categoria = categoriasChave[acaoPorSemana % categoriasChave.length];
+      const templates = actionTemplates[categoria as keyof typeof actionTemplates];
+      const acaoIndex = ((semana - 1) * 4 + acaoPorSemana) % templates.length;
+      const acaoTemplate = templates[acaoIndex];
+
+      // Definir prioridade baseada na semana
+      let prioridade: 'alta' | 'media' | 'baixa' = 'media';
+      if (semana <= 8) prioridade = 'alta';
+      else if (semana >= 20) prioridade = 'baixa';
+
+      // Calcular data de vencimento
+      const dataVencimento = new Date();
+      dataVencimento.setDate(dataVencimento.getDate() + (semana * 7));
+
+      // Definir status baseado na data
+      const hoje = new Date();
+      let status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado' = 'pendente';
+      if (dataVencimento < hoje) {
+        status = 'atrasado';
+      }
+
+      const action: ActionItem = {
         id: `action_${actionId++}`,
-        acao: `Implementar plano de melhoria baseado nas fraquezas identificadas na SWOT: ${weaknesses[0]?.text}`,
-        categoria: 'gestao',
-        prioridade: 'alta',
-        prazo: '14 dias',
-        responsavel: 'Gestor Responsável',
-        recursos: 'Plano de ação específico, recursos para implementação',
-        metricas: 'Melhoria mensurável na área identificada como fraqueza',
-        beneficios: 'Redução dos pontos fracos identificados na análise estratégica',
-        dataVencimento: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        acao: acaoTemplate,
+        categoria,
+        prioridade,
+        prazo: `${7} dias`,
+        responsavel: categoria === 'gestao' ? 'Diretor Geral' : 
+                    categoria === 'comercial' ? 'Gestor Comercial' :
+                    categoria === 'marketing' ? 'Gestor de Marketing' :
+                    categoria === 'financeiro' ? 'Gestor Financeiro' :
+                    categoria === 'rh' ? 'Gestor de RH' :
+                    categoria === 'operacional' ? 'Gestor Operacional' :
+                    categoria === 'tecnologia' ? 'Responsável de TI' :
+                    'Gestor Responsável',
+        recursos: categoria === 'tecnologia' ? 'Software, treinamento técnico, consultoria especializada' :
+                 categoria === 'financeiro' ? 'Sistema financeiro, tempo para análise, consultoria contábil' :
+                 categoria === 'marketing' ? 'Ferramentas de design, orçamento para campanhas, criação de conteúdo' :
+                 'Tempo da equipe, materiais de apoio, ferramentas básicas',
+        metricas: categoria === 'comercial' ? 'Aumento de 15% nas vendas, melhoria na conversão' :
+                 categoria === 'financeiro' ? 'Redução de 20% nos custos, controle 100% atualizado' :
+                 categoria === 'rh' ? 'Redução de 30% no turnover, melhoria no clima organizacional' :
+                 categoria === 'marketing' ? 'Aumento de 25% no engajamento, mais leads qualificados' :
+                 'Melhoria mensurável no indicador específico da área',
+        beneficios: categoria === 'gestao' ? 'Maior organização e eficiência operacional' :
+                   categoria === 'comercial' ? 'Aumento das vendas e melhor relacionamento com clientes' :
+                   categoria === 'marketing' ? 'Maior visibilidade da marca e geração de leads' :
+                   categoria === 'financeiro' ? 'Melhor controle financeiro e tomada de decisões' :
+                   categoria === 'rh' ? 'Equipe mais engajada e produtiva' :
+                   categoria === 'operacional' ? 'Processos mais eficientes e menor retrabalho' :
+                   categoria === 'tecnologia' ? 'Maior eficiência e competitividade' :
+                   'Cultura mais forte e alinhada',
+        dataVencimento,
         concluida: false,
-        detalhesImplementacao: 'Criar plano específico para resolver a principal fraqueza identificada'
-      });
+        detalhesImplementacao: `Implementar ${acaoTemplate.toLowerCase()} seguindo as melhores práticas da indústria`,
+        dicaIA: generateAITip(acaoTemplate, categoria),
+        status,
+        semana
+      };
+
+      actions.push(action);
     }
   }
 
-  if (!hasBusinessMap) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Mapear modelo de negócio completo usando Business Model Canvas',
-      categoria: 'gestao',
-      prioridade: 'alta',
-      prazo: '10 dias',
-      responsavel: 'Diretor/Sócio',
-      recursos: 'Ferramenta Mapa do Negócio da plataforma',
-      metricas: 'Canvas completo com todos os 9 blocos preenchidos',
-      beneficios: 'Clareza sobre modelo de negócio e identificação de oportunidades',
-      dataVencimento: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Use a ferramenta disponível na plataforma para mapear completamente seu modelo de negócio'
-    });
+  // Personalizar algumas ações baseadas nos dados coletados
+  if (diagnosticData.problemasComerciais && actions.length > 10) {
+    actions[5].acao = `Resolver problema comercial identificado: ${diagnosticData.problemasComerciais.substring(0, 100)}...`;
+    actions[5].dicaIA = "Foque na raiz do problema comercial. Analise dados de vendas, feedback de clientes e processos atuais. Implemente mudanças graduais e meça resultados semanalmente.";
   }
 
-  // SEMANA 3-4: Proposta de Valor e Pessoas
-  if (!hasPuvData) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Desenvolver Proposta Única de Valor usando a ferramenta Canvas PUV',
-      categoria: 'marketing',
-      prioridade: 'alta',
-      prazo: '14 dias',
-      responsavel: 'Gestor Comercial/Marketing',
-      recursos: 'Ferramenta PUV da plataforma, análise do cliente',
-      metricas: 'Proposta de valor clara e diferenciada definida',
-      beneficios: 'Maior clareza na comunicação de valor e diferenciação no mercado',
-      dataVencimento: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Complete o Canvas de Proposta Única de Valor na plataforma'
-    });
+  if (diagnosticData.problemasFinanceiros && actions.length > 20) {
+    actions[15].acao = `Implementar solução para problema financeiro: ${diagnosticData.problemasFinanceiros.substring(0, 100)}...`;
+    actions[15].dicaIA = "Problemas financeiros requerem ação imediata. Comece com controle de fluxo de caixa diário e separe contas pessoais das empresariais antes de implementar outras soluções.";
   }
 
-  if (!hasMapaEquipe) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Mapear perfil comportamental de toda a equipe usando Mapa da Equipe',
-      categoria: 'rh',
-      prioridade: 'media',
-      prazo: '21 dias',
-      responsavel: 'Gestor de RH',
-      recursos: 'Ferramenta Mapa da Equipe da plataforma',
-      metricas: '100% da equipe mapeada com perfis comportamentais',
-      beneficios: 'Gestão de pessoas mais eficaz baseada em dados comportamentais',
-      dataVencimento: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Use a ferramenta de Mapa da Equipe para avaliar cada colaborador'
-    });
-  } else {
-    // Se já tem mapa da equipe, usar dados para ações específicas
-    const colaboradores = integratedData.mapaEquipe.colaboradores || [];
-    const colaboradoresComBaixoPotencial = colaboradores.filter((c: any) => 
-      c.potencial === 'Stand by' || c.nivelMaturidade === 'M1 (Bebê)'
-    );
-    
-    if (colaboradoresComBaixoPotencial.length > 0) {
-      actions.push({
-        id: `action_${actionId++}`,
-        acao: `Implementar plano de desenvolvimento para colaboradores com baixo potencial identificados`,
-        categoria: 'rh',
-        prioridade: 'media',
-        prazo: '28 dias',
-        responsavel: 'Gestor de RH',
-        recursos: 'Programas de treinamento, mentoria',
-        metricas: 'Melhoria no desempenho dos colaboradores identificados',
-        beneficios: 'Desenvolvimento da equipe e melhor aproveitamento do potencial humano',
-        dataVencimento: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000),
-        concluida: false,
-        detalhesImplementacao: 'Criar plano específico para desenvolver colaboradores com potencial limitado'
-      });
-    }
+  if (diagnosticData.objetivos6Meses && actions.length > 50) {
+    actions[25].acao = `Executar estratégia para atingir objetivo: ${diagnosticData.objetivos6Meses.substring(0, 100)}...`;
+    actions[25].dicaIA = "Quebre grandes objetivos em metas menores e mensuráveis. Crie um plano de 90 dias com marcos específicos e ajuste a estratégia baseado nos resultados.";
   }
 
-  // SEMANA 5-6: Processos Comerciais
-  if (diagnosticData.problemasComerciais) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Implementar CRM e funil de vendas estruturado',
-      categoria: 'comercial',
-      prioridade: 'alta',
-      prazo: '35 dias',
-      responsavel: 'Gestor Comercial',
-      recursos: 'Sistema CRM, treinamento da equipe comercial',
-      metricas: '20% de melhoria na conversão de vendas',
-      beneficios: 'Maior previsibilidade e controle do processo comercial',
-      dataVencimento: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Escolher e implementar CRM adequado ao tamanho da empresa'
-    });
+  // Ajustar ações baseadas nos dados integrados
+  if (!hasSwotData && actions.length > 0) {
+    actions[0].acao = 'Realizar Análise SWOT completa usando a ferramenta da plataforma';
+    actions[0].prioridade = 'alta';
+    actions[0].dicaIA = "A análise SWOT é fundamental para estratégia. Use a ferramenta da plataforma para mapear forças, fraquezas, oportunidades e ameaças. Envolva a equipe nesta análise.";
   }
 
-  // SEMANA 7-8: Gestão Financeira
-  if (diagnosticData.problemasFinanceiros) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Implementar controle de fluxo de caixa diário e separação PJ/PF',
-      categoria: 'financeiro',
-      prioridade: 'alta',
-      prazo: '42 dias',
-      responsavel: 'Gestor Financeiro',
-      recursos: 'Sistema financeiro, conta PJ separada',
-      metricas: 'Controle diário 100% atualizado e contas separadas',
-      beneficios: 'Maior controle financeiro e profissionalização da gestão',
-      dataVencimento: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Abrir conta PJ e implementar rotina de controle financeiro diário'
-    });
+  if (!hasBusinessMap && actions.length > 5) {
+    actions[3].acao = 'Mapear modelo de negócio usando Business Model Canvas da plataforma';
+    actions[3].prioridade = 'alta';
+    actions[3].dicaIA = "O Business Model Canvas ajuda a visualizar como sua empresa cria, entrega e captura valor. Complete todos os 9 blocos com a equipe.";
   }
 
-  // SEMANA 9-10: Marketing e Presença Digital
-  if (diagnosticData.problemasMarketing) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Criar estratégia de marketing digital e presença online',
-      categoria: 'marketing',
-      prioridade: 'media',
-      prazo: '49 dias',
-      responsavel: 'Gestor de Marketing',
-      recursos: 'Criação de conteúdo, redes sociais, site',
-      metricas: '3 posts por semana e 500 seguidores em 60 dias',
-      beneficios: 'Maior visibilidade da marca e geração de leads',
-      dataVencimento: new Date(Date.now() + 49 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Definir estratégia de conteúdo e calendário editorial'
-    });
+  if (!hasPuvData && actions.length > 10) {
+    actions[8].acao = 'Desenvolver Proposta Única de Valor usando a ferramenta PUV da plataforma';
+    actions[8].categoria = 'marketing';
+    actions[8].dicaIA = "Uma PUV clara diferencia você da concorrência. Foque no que realmente importa para seus clientes e como você entrega isso de forma única.";
   }
 
-  // SEMANA 11-12: Processos Operacionais
-  if (diagnosticData.problemasOperacionais) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Padronizar processos operacionais principais',
-      categoria: 'operacional',
-      prioridade: 'alta',
-      prazo: '56 dias',
-      responsavel: 'Gestor Operacional',
-      recursos: 'Documentação de processos, treinamentos',
-      metricas: '100% dos processos críticos documentados',
-      beneficios: 'Redução de erros e maior consistência na entrega',
-      dataVencimento: new Date(Date.now() + 56 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Mapear, documentar e treinar equipe nos processos essenciais'
-    });
+  if (!hasMapaEquipe && actions.length > 15) {
+    actions[12].acao = 'Mapear perfil comportamental da equipe usando a ferramenta Mapa da Equipe';
+    actions[12].categoria = 'rh';
+    actions[12].dicaIA = "Conhecer o perfil da equipe permite gestão mais eficaz. Use os resultados para melhorar comunicação, motivação e alocação de tarefas.";
   }
 
-  // SEMANA 13-14: Gestão de Pessoas
-  if (diagnosticData.problemasRH) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: 'Implementar sistema de avaliação de desempenho e feedback',
-      categoria: 'rh',
-      prioridade: 'media',
-      prazo: '63 dias',
-      responsavel: 'Gestor de RH',
-      recursos: 'Sistema de avaliação, treinamento de gestores',
-      metricas: '100% da equipe avaliada trimestralmente',
-      beneficios: 'Melhoria no desempenho e motivação da equipe',
-      dataVencimento: new Date(Date.now() + 63 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Criar formulários e estabelecer rotina de avaliações'
-    });
-  }
-
-  // SEMANA 15-16: Cultura e Valores
-  actions.push({
-    id: `action_${actionId++}`,
-    acao: 'Definir e implementar valores e cultura organizacional',
-    categoria: 'gestao',
-    prioridade: 'media',
-    prazo: '70 dias',
-    responsavel: 'Diretor/Sócio',
-    recursos: 'Workshops com equipe, consultoria em cultura',
-    metricas: 'Valores definidos e comunicados para 100% da equipe',
-    beneficios: 'Maior alinhamento e engajamento da equipe',
-    dataVencimento: new Date(Date.now() + 70 * 24 * 60 * 60 * 1000),
-    concluida: false,
-    detalhesImplementacao: 'Realizar workshops participativos para definir valores'
-  });
-
-  // SEMANA 17-18: Inovação e Melhoria Contínua
-  actions.push({
-    id: `action_${actionId++}`,
-    acao: 'Implementar programa de inovação e melhoria contínua',
-    categoria: 'gestao',
-    prioridade: 'baixa',
-    prazo: '77 dias',
-    responsavel: 'Gestor de Inovação',
-    recursos: 'Sistema de sugestões, reuniões de brainstorming',
-    metricas: '10 ideias implementadas por trimestre',
-    beneficios: 'Melhoria contínua e engajamento da equipe',
-    dataVencimento: new Date(Date.now() + 77 * 24 * 60 * 60 * 1000),
-    concluida: false,
-    detalhesImplementacao: 'Criar caixa de sugestões e processo de avaliação de ideias'
-  });
-
-  // SEMANA 19-20: Métricas e Indicadores
-  actions.push({
-    id: `action_${actionId++}`,
-    acao: 'Implementar dashboard de KPIs e métricas principais',
-    categoria: 'gestao',
-    prioridade: 'alta',
-    prazo: '84 dias',
-    responsavel: 'Gestor Geral',
-    recursos: 'Software de BI, dashboard personalizado',
-    metricas: '15 KPIs principais acompanhados semanalmente',
-    beneficios: 'Tomada de decisão baseada em dados',
-    dataVencimento: new Date(Date.now() + 84 * 24 * 60 * 60 * 1000),
-    concluida: false,
-    detalhesImplementacao: 'Definir KPIs críticos e criar dashboard de acompanhamento'
-  });
-
-  // SEMANA 21-22: Automação e Tecnologia
-  actions.push({
-    id: `action_${actionId++}`,
-    acao: 'Automatizar processos repetitivos com ferramentas digitais',
-    categoria: 'operacional',
-    prioridade: 'media',
-    prazo: '91 dias',
-    responsavel: 'Responsável por Tecnologia',
-    recursos: 'Ferramentas de automação, integração de sistemas',
-    metricas: '5 processos automatizados, 20% economia de tempo',
-    beneficios: 'Maior eficiência e redução de erros manuais',
-    dataVencimento: new Date(Date.now() + 91 * 24 * 60 * 60 * 1000),
-    concluida: false,
-    detalhesImplementacao: 'Identificar processos repetitivos e implementar automações'
-  });
-
-  // SEMANA 23-24: Expansão e Crescimento
-  actions.push({
-    id: `action_${actionId++}`,
-    acao: 'Desenvolver plano de expansão e crescimento sustentável',
-    categoria: 'gestao',
-    prioridade: 'media',
-    prazo: '98 dias',
-    responsavel: 'Diretor Geral',
-    recursos: 'Análise de mercado, plano de investimentos',
-    metricas: 'Plano de expansão validado e aprovado',
-    beneficios: 'Crescimento estruturado e sustentável',
-    dataVencimento: new Date(Date.now() + 98 * 24 * 60 * 60 * 1000),
-    concluida: false,
-    detalhesImplementacao: 'Analisar oportunidades de mercado e criar plano de expansão'
-  });
-
-  // Adicionar mais ações baseadas nos objetivos específicos
-  if (diagnosticData.objetivos6Meses) {
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: `Implementar estratégias específicas para atingir objetivo: ${diagnosticData.objetivos6Meses.substring(0, 50)}...`,
-      categoria: 'gestao',
-      prioridade: 'alta',
-      prazo: '105 dias',
-      responsavel: 'Diretor Geral',
-      recursos: 'Recursos específicos para o objetivo',
-      metricas: 'Progresso mensurável em direção ao objetivo definido',
-      beneficios: 'Alcance dos objetivos estratégicos definidos',
-      dataVencimento: new Date(Date.now() + 105 * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Quebrar objetivo em metas menores e executar sistematicamente'
-    });
-  }
-
-  // Completar até 24 ações (uma por semana)
-  while (actions.length < 24) {
-    const remainingWeeks = 24 - actions.length;
-    const daysFromNow = (actions.length + 1) * 7;
-    
-    actions.push({
-      id: `action_${actionId++}`,
-      acao: `Revisar e ajustar estratégias implementadas - Semana ${actions.length + 1}`,
-      categoria: 'gestao',
-      prioridade: 'baixa',
-      prazo: '7 dias',
-      responsavel: 'Gestor Responsável',
-      recursos: 'Tempo para análise e ajustes',
-      metricas: 'Relatório de progresso e ajustes implementados',
-      beneficios: 'Melhoria contínua e otimização das estratégias',
-      dataVencimento: new Date(Date.now() + daysFromNow * 24 * 60 * 60 * 1000),
-      concluida: false,
-      detalhesImplementacao: 'Analisar resultados e fazer ajustes necessários'
-    });
-  }
-
-  return actions;
+  return actions.slice(0, 104); // Garantir exatamente 104 ações
 };
