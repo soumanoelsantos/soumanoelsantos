@@ -1,3 +1,4 @@
+
 import { IntegratedData } from '@/hooks/useIntegratedData';
 import { ActionItem } from '@/components/diagnostic/NewDiagnosticTestContent';
 
@@ -27,7 +28,7 @@ export const generateIntelligentActionPlan = (
   // Categorias intercaladas
   const categorias: ActionItem['categoria'][] = ['comercial', 'marketing', 'gestao', 'financeiro', 'rh', 'operacional', 'tecnologia', 'cultura'];
 
-  // Templates expandidos para cada categoria
+  // Templates expandidos para cada categoria (aumentados para gerar mais ações)
   const actionTemplates = {
     comercial: [
       "Implementar CRM profissional para gestão completa do funil de vendas",
@@ -54,7 +55,20 @@ export const generateIntelligentActionPlan = (
       "Desenvolver estratégia de vendas online integrada",
       "Implementar sistema de gestão de objeções",
       "Criar programa de capacitação em técnicas de negociação",
-      "Desenvolver estratégia de vendas B2B especializada"
+      "Desenvolver estratégia de vendas B2B especializada",
+      "Implementar sistema de análise de conversão por canal",
+      "Criar programa de mentoria comercial interna",
+      "Desenvolver estratégia de vendas consultivas",
+      "Implementar sistema de gamificação para vendas",
+      "Criar programa de customer success estruturado",
+      "Desenvolver estratégia de account management",
+      "Implementar sistema de análise de lifetime value",
+      "Criar programa de upselling automatizado",
+      "Desenvolver estratégia de vendas sazonais",
+      "Implementar sistema de gestão de pipeline avançado",
+      "Criar programa de vendas por indicação",
+      "Desenvolver estratégia de vendas corporativas",
+      "Implementar sistema de análise de churn"
     ],
     marketing: [
       "Criar identidade visual profissional e consistente da marca",
@@ -81,7 +95,20 @@ export const generateIntelligentActionPlan = (
       "Criar campanhas sazonais estratégicas",
       "Desenvolver programa de embaixadores da marca",
       "Implementar monitoramento de reputação online",
-      "Criar estratégia de marketing local geo-segmentado"
+      "Criar estratégia de marketing local geo-segmentado",
+      "Desenvolver programa de webinars educativos",
+      "Implementar estratégia de vídeo marketing",
+      "Criar programa de marketing viral",
+      "Desenvolver estratégia de growth hacking",
+      "Implementar sistema de análise de funil de marketing",
+      "Criar programa de co-marketing com parceiros",
+      "Desenvolver estratégia de marketplace",
+      "Implementar programa de affiliate marketing",
+      "Criar estratégia de marketing conversacional",
+      "Desenvolver programa de podcasting corporativo",
+      "Implementar estratégia de marketing experiencial",
+      "Criar programa de marketing de guerrilha",
+      "Desenvolver estratégia de marketing de conteúdo interativo"
     ],
     gestao: [
       "Criar organograma detalhado com hierarquias bem definidas",
@@ -108,7 +135,20 @@ export const generateIntelligentActionPlan = (
       "Desenvolver política de gestão de crises",
       "Implementar sistema de gestão do conhecimento",
       "Criar programa de inovação empresarial",
-      "Desenvolver sistema de gestão de compliance"
+      "Desenvolver sistema de gestão de compliance",
+      "Implementar programa de transformação digital",
+      "Criar sistema de gestão de performance organizacional",
+      "Desenvolver programa de liderança situacional",
+      "Implementar sistema de gestão ágil",
+      "Criar programa de inteligência competitiva",
+      "Desenvolver sistema de gestão de stakeholders",
+      "Implementar programa de sustentabilidade corporativa",
+      "Criar sistema de gestão de indicadores estratégicos",
+      "Desenvolver programa de gestão de talentos",
+      "Implementar sistema de gestão de processos digitais",
+      "Criar programa de inovação aberta",
+      "Desenvolver sistema de gestão de ecossistema",
+      "Implementar programa de gestão de mudança cultural"
     ],
     financeiro: [
       "Implementar controle rigoroso de fluxo de caixa diário",
@@ -135,7 +175,20 @@ export const generateIntelligentActionPlan = (
       "Implementar controle de indicadores financeiros",
       "Desenvolver política de gestão de risco financeiro",
       "Criar sistema de conciliação bancária automatizada",
-      "Implementar análise de sensibilidade financeira"
+      "Implementar análise de sensibilidade financeira",
+      "Desenvolver sistema de gestão de tesouraria",
+      "Criar programa de otimização fiscal",
+      "Implementar sistema de análise de crédito",
+      "Desenvolver política de hedge financeiro",
+      "Criar sistema de gestão de investimentos",
+      "Implementar programa de educação financeira",
+      "Desenvolver sistema de análise de cenários",
+      "Criar política de distribuição de lucros",
+      "Implementar sistema de controle de margem",
+      "Desenvolver programa de redução de custos",
+      "Criar sistema de análise de rentabilidade",
+      "Implementar política de gestão de caixa",
+      "Desenvolver sistema de análise de valor"
     ],
     rh: [
       "Criar descrições detalhadas de cargos e competências",
@@ -162,7 +215,20 @@ export const generateIntelligentActionPlan = (
       "Desenvolver programa de desenvolvimento pessoal",
       "Criar política de saúde e segurança do trabalho",
       "Implementar sistema de gestão de absenteísmo",
-      "Desenvolver programa de educação corporativa"
+      "Desenvolver programa de educação corporativa",
+      "Criar sistema de gestão de performance",
+      "Implementar programa de coaching interno",
+      "Desenvolver política de trabalho flexível",
+      "Criar sistema de gestão de engajamento",
+      "Implementar programa de voluntariado corporativo",
+      "Desenvolver política de diversidade e inclusão",
+      "Criar sistema de gestão de conhecimento",
+      "Implementar programa de desenvolvimento de líderes",
+      "Desenvolver política de qualidade de vida",
+      "Criar sistema de gestão de feedback 360",
+      "Implementar programa de mobilidade interna",
+      "Desenvolver política de reconhecimento e recompensas",
+      "Criar sistema de gestão de pessoas analytics"
     ],
     operacional: [
       "Mapear detalhadamente todos os processos críticos",
@@ -189,7 +255,20 @@ export const generateIntelligentActionPlan = (
       "Desenvolver política de gestão ambiental",
       "Implementar sistema de rastreabilidade de produtos",
       "Criar programa de segurança operacional",
-      "Desenvolver sistema de gestão de energia"
+      "Desenvolver sistema de gestão de energia",
+      "Implementar programa de lean manufacturing",
+      "Criar sistema de gestão de qualidade Six Sigma",
+      "Desenvolver política de gestão de resíduos",
+      "Implementar sistema de gestão de frota",
+      "Criar programa de melhoria contínua kaizen",
+      "Desenvolver sistema de gestão de layout",
+      "Implementar política de gestão de inventário",
+      "Criar sistema de gestão de compras estratégicas",
+      "Desenvolver programa de padronização de processos",
+      "Implementar sistema de gestão de documentos",
+      "Criar política de gestão de mudanças operacionais",
+      "Desenvolver sistema de gestão de indicadores operacionais",
+      "Implementar programa de automação industrial"
     ],
     tecnologia: [
       "Avaliar e modernizar completamente infraestrutura de TI",
@@ -216,7 +295,20 @@ export const generateIntelligentActionPlan = (
       "Desenvolver plataforma de automação de marketing",
       "Implementar sistema de gestão de projetos digitais",
       "Criar solução de análise de big data",
-      "Desenvolver sistema de IoT empresarial"
+      "Desenvolver sistema de IoT empresarial",
+      "Implementar solução de machine learning",
+      "Criar sistema de gestão de API",
+      "Desenvolver plataforma de integração",
+      "Implementar sistema de blockchain",
+      "Criar solução de realidade aumentada",
+      "Desenvolver sistema de chatbot inteligente",
+      "Implementar plataforma de colaboração digital",
+      "Criar sistema de gestão de dados",
+      "Desenvolver solução de cybersecurity",
+      "Implementar sistema de monitoramento de rede",
+      "Criar plataforma de e-learning",
+      "Desenvolver sistema de gestão de dispositivos",
+      "Implementar solução de disaster recovery"
     ],
     cultura: [
       "Definir claramente missão, visão e valores empresariais",
@@ -243,7 +335,20 @@ export const generateIntelligentActionPlan = (
       "Desenvolver política de transparência organizacional",
       "Criar programa de desenvolvimento de soft skills",
       "Implementar sistema de gestão de clima organizacional",
-      "Desenvolver programa de liderança participativa"
+      "Desenvolver programa de liderança participativa",
+      "Criar sistema de gestão de valores",
+      "Implementar programa de comunicação assertiva",
+      "Desenvolver política de feedback contínuo",
+      "Criar sistema de gestão de conflitos",
+      "Implementar programa de mindfulness corporativo",
+      "Desenvolver política de bem-estar mental",
+      "Criar sistema de gestão de diversidade",
+      "Implementar programa de inovação cultural",
+      "Desenvolver política de colaboração",
+      "Criar sistema de gestão de talentos culturais",
+      "Implementar programa de transformação cultural",
+      "Desenvolver política de inclusão social",
+      "Criar sistema de gestão de mudança comportamental"
     ]
   };
 
@@ -396,11 +501,13 @@ export const generateIntelligentActionPlan = (
     return passosGenericos[categoria] || passosGenericos.gestao;
   };
 
-  // Gerar ações intercalando categorias (máximo de ações possível)
-  const totalAcoesPorCategoria = 25; // 25 ações por categoria = 200 ações totais
+  // Gerar 300 ações intercalando categorias (aproximadamente 37-38 ações por categoria)
+  const totalAcoesPorCategoria = 38; // 38 ações por categoria = 304 ações totais
   
   for (let round = 0; round < totalAcoesPorCategoria; round++) {
     for (let catIndex = 0; catIndex < categorias.length; catIndex++) {
+      if (actions.length >= 300) break; // Limite de 300 ações
+      
       const categoria = categorias[catIndex];
       const templates = actionTemplates[categoria];
       const acaoIndex = round % templates.length;
@@ -408,12 +515,12 @@ export const generateIntelligentActionPlan = (
 
       // Definir prioridade baseada no round
       let prioridade: ActionItem['prioridade'] = 'media';
-      if (round < 8) prioridade = 'alta';
-      else if (round >= 20) prioridade = 'baixa';
+      if (round < 10) prioridade = 'alta';
+      else if (round >= 30) prioridade = 'baixa';
 
-      // Calcular data de vencimento (sem limite de 6 meses)
+      // Calcular data de vencimento e semanas (sem limite de 6 meses)
       const dataVencimento = new Date();
-      const semanas = Math.floor((round * categorias.length + catIndex) / 4) + 1;
+      const semanas = Math.floor((round * categorias.length + catIndex) / 8) + 1; // Mais espaçado
       dataVencimento.setDate(dataVencimento.getDate() + (semanas * 7));
 
       const action: ActionItem = {
@@ -421,7 +528,7 @@ export const generateIntelligentActionPlan = (
         acao: acaoTemplate,
         categoria,
         prioridade,
-        prazo: `${Math.min(semanas, 4)} semana${semanas > 1 ? 's' : ''}`,
+        prazo: `${Math.min(semanas, 8)} semana${semanas > 1 ? 's' : ''}`,
         responsavel: categoria === 'gestao' ? 'Diretor Geral' : 
                     categoria === 'comercial' ? 'Gestor Comercial' :
                     categoria === 'marketing' ? 'Gestor de Marketing' :
@@ -455,11 +562,13 @@ export const generateIntelligentActionPlan = (
         dicaIA: `Esta ação de ${categoria} deve ser implementada gradualmente. Comece mapeando a situação atual, defina objetivos claros, envolva a equipe no processo e monitore resultados semanalmente para ajustar conforme necessário.`,
         status: 'pendente',
         semana: semanas,
-        comoFazer: generateComoFazer(acaoTemplate, categoria)
+        comoFazer: generateComoFazer(acaoTemplate, categoria),
+        completedSteps: []
       };
 
       actions.push(action);
     }
+    if (actions.length >= 300) break; // Limite de 300 ações
   }
 
   // Personalizar algumas ações baseadas nos dados do diagnóstico

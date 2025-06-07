@@ -1,602 +1,706 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+
+import React, { useState, useRef } from 'react';
+import { 
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Calendar, Filter, CheckCircle2, Clock, AlertTriangle, Target, TrendingUp, Users, DollarSign, Settings, Lightbulb, ArrowLeft, Download, Edit, Trash2, Plus, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
-import { format, addDays, isWeekend } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { generatePDF } from '@/utils/pdfGenerator';
 import { useToast } from '@/hooks/use-toast';
+import { generatePDF } from '@/utils/pdfGenerator';
+import { 
+  ArrowLeft, 
+  Download, 
+  Plus, 
+  Filter,
+  BarChart3,
+  Target,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  TrendingUp
+} from 'lucide-react';
 import { ActionItem } from './NewDiagnosticTestContent';
+import DraggableActionItem from './DraggableActionItem';
 
 interface ActionPlanManagerProps {
   actionPlan: ActionItem[];
-  companyName?: string;
-  diagnosticData?: any;
-  onBack?: () => void;
-  onUpdatePlan?: (updatedPlan: ActionItem[]) => void;
+  companyName: string;
+  diagnosticData: any;
+  onBack: () => void;
+  onUpdatePlan: (plan: ActionItem[]) => void;
 }
 
-const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ 
-  actionPlan: initialActionPlan, 
-  companyName,
-  diagnosticData,
-  onBack,
+const ActionPlanManager = ({ 
+  actionPlan, 
+  companyName, 
+  diagnosticData, 
+  onBack, 
   onUpdatePlan 
-}) => {
+}: ActionPlanManagerProps) => {
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
-  const [filtroCategoria, setFiltroCategoria] = useState<string>('todas');
-  const [filtroStatus, setFiltroStatus] = useState<string>('todos');
-  const [actionItems, setActionItems] = useState<ActionItem[]>(initialActionPlan);
+  const [actions, setActions] = useState<ActionItem[]>(actionPlan);
+  const [filteredActions, setFilteredActions] = useState<ActionItem[]>(actionPlan);
+  const [filterCategory, setFilterCategory] = useState<string>('todas');
+  const [filterStatus, setFilterStatus] = useState<string>('todos');
+  const [searchTerm, setSearchTerm] = useState('');
   const [editingAction, setEditingAction] = useState<ActionItem | null>(null);
-  const [isAddingAction, setIsAddingAction] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
   const [newAction, setNewAction] = useState<Partial<ActionItem>>({
-    categoria: 'comercial',
+    acao: '',
+    categoria: 'gestao',
     prioridade: 'media',
-    status: 'pendente'
+    prazo: '1 semana',
+    responsavel: '',
+    recursos: '',
+    metricas: '',
+    beneficios: '',
+    detalhesImplementacao: '',
+    dicaIA: '',
+    status: 'pendente',
+    semana: 1,
+    comoFazer: []
   });
 
-  const updateActions = (updatedActions: ActionItem[]) => {
-    setActionItems(updatedActions);
-    onUpdatePlan?.(updatedActions);
-  };
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-  const toggleActionStatus = (actionId: string, comoFazerIndex?: number) => {
-    const updatedActions = actionItems.map(action => {
-      if (action.id === actionId) {
-        if (comoFazerIndex !== undefined) {
-          // Toggle individual step
-          const updatedComoFazer = [...action.comoFazer];
-          const step = updatedComoFazer[comoFazerIndex];
-          if (step.startsWith('✓ ')) {
-            updatedComoFazer[comoFazerIndex] = step.substring(2);
-          } else {
-            updatedComoFazer[comoFazerIndex] = '✓ ' + step;
-          }
-          
-          // Check if all steps are completed
-          const allCompleted = updatedComoFazer.every(step => step.startsWith('✓ '));
-          
-          return {
-            ...action,
-            comoFazer: updatedComoFazer,
-            concluida: allCompleted,
-            status: allCompleted ? 'realizado' as const : 'pendente' as const
-          };
-        } else {
-          // Toggle entire action
-          return {
-            ...action,
-            concluida: !action.concluida,
-            status: action.status === 'realizado' ? 'pendente' as const : 'realizado' as const
-          };
-        }
-      }
-      return action;
-    });
-    updateActions(updatedActions);
-  };
+  // Atualizar ações filtradas quando actions, filtros ou busca mudarem
+  React.useEffect(() => {
+    let filtered = actions;
 
-  const updateActionStatus = (actionId: string, newStatus: ActionItem['status']) => {
-    const updatedActions = actionItems.map(action => 
-      action.id === actionId 
-        ? { ...action, status: newStatus, concluida: newStatus === 'realizado' }
-        : action
-    );
-    updateActions(updatedActions);
-  };
+    // Filtro por categoria
+    if (filterCategory !== 'todas') {
+      filtered = filtered.filter(action => action.categoria === filterCategory);
+    }
 
-  const deleteAction = (actionId: string) => {
-    const updatedActions = actionItems.filter(action => action.id !== actionId);
-    updateActions(updatedActions);
-    toast({
-      title: "Ação removida",
-      description: "A ação foi removida do plano.",
-    });
-  };
+    // Filtro por status
+    if (filterStatus !== 'todos') {
+      filtered = filtered.filter(action => action.status === filterStatus);
+    }
 
-  const moveAction = (actionId: string, direction: 'up' | 'down') => {
-    const currentIndex = actionItems.findIndex(action => action.id === actionId);
-    if (currentIndex === -1) return;
-    
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    if (newIndex < 0 || newIndex >= actionItems.length) return;
-    
-    const updatedActions = [...actionItems];
-    [updatedActions[currentIndex], updatedActions[newIndex]] = [updatedActions[newIndex], updatedActions[currentIndex]];
-    
-    updateActions(updatedActions);
-  };
-
-  const saveAction = () => {
-    if (editingAction) {
-      const updatedActions = actionItems.map(action => 
-        action.id === editingAction.id ? editingAction : action
+    // Busca por texto
+    if (searchTerm) {
+      filtered = filtered.filter(action => 
+        action.acao.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        action.responsavel.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      updateActions(updatedActions);
-      setEditingAction(null);
+    }
+
+    setFilteredActions(filtered);
+  }, [actions, filterCategory, filterStatus, searchTerm]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = actions.findIndex(item => item.id === active.id);
+      const newIndex = actions.findIndex(item => item.id === over.id);
+      
+      const reorderedActions = arrayMove(actions, oldIndex, newIndex);
+      setActions(reorderedActions);
+      onUpdatePlan(reorderedActions);
+      
       toast({
-        title: "Ação atualizada",
-        description: "As alterações foram salvas.",
+        title: "Ordem atualizada",
+        description: "A ordem das ações foi atualizada com sucesso.",
       });
     }
   };
 
-  const addNewAction = () => {
+  const handleEdit = (action: ActionItem) => {
+    setEditingAction(action);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingAction) return;
+
+    const updatedActions = actions.map(action => 
+      action.id === editingAction.id ? editingAction : action
+    );
+    setActions(updatedActions);
+    onUpdatePlan(updatedActions);
+    setEditingAction(null);
+    
+    toast({
+      title: "Ação atualizada",
+      description: "A ação foi atualizada com sucesso.",
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    const updatedActions = actions.filter(action => action.id !== id);
+    setActions(updatedActions);
+    onUpdatePlan(updatedActions);
+    
+    toast({
+      title: "Ação removida",
+      description: "A ação foi removida com sucesso.",
+    });
+  };
+
+  const handleAdd = () => {
     if (!newAction.acao) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "O título da ação é obrigatório.",
+        description: "Por favor, preencha pelo menos o nome da ação.",
       });
       return;
     }
 
-    const action: ActionItem = {
+    const actionToAdd: ActionItem = {
       id: `action_${Date.now()}`,
-      acao: newAction.acao!,
-      categoria: newAction.categoria as ActionItem['categoria'] || 'comercial',
+      acao: newAction.acao || '',
+      categoria: newAction.categoria as ActionItem['categoria'] || 'gestao',
       prioridade: newAction.prioridade as ActionItem['prioridade'] || 'media',
       prazo: newAction.prazo || '1 semana',
-      responsavel: newAction.responsavel || 'Responsável',
+      responsavel: newAction.responsavel || 'A definir',
       recursos: newAction.recursos || 'A definir',
       metricas: newAction.metricas || 'A definir',
       beneficios: newAction.beneficios || 'A definir',
-      dataVencimento: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      dataVencimento: new Date(),
       concluida: false,
       detalhesImplementacao: newAction.detalhesImplementacao || '',
-      dicaIA: 'Ação criada manualmente pelo usuário',
+      dicaIA: newAction.dicaIA || 'Implemente esta ação seguindo as melhores práticas.',
       status: newAction.status as ActionItem['status'] || 'pendente',
-      semana: 1,
-      comoFazer: newAction.comoFazer || ['Definir passos específicos para implementação']
+      semana: newAction.semana || 1,
+      comoFazer: newAction.comoFazer || ['Definir plano de implementação', 'Executar plano', 'Monitorar resultados'],
+      completedSteps: []
     };
 
-    const updatedActions = [...actionItems, action];
-    updateActions(updatedActions);
-    setIsAddingAction(false);
+    const updatedActions = [...actions, actionToAdd];
+    setActions(updatedActions);
+    onUpdatePlan(updatedActions);
+    setShowAddDialog(false);
     setNewAction({
-      categoria: 'comercial',
+      acao: '',
+      categoria: 'gestao',
       prioridade: 'media',
-      status: 'pendente'
+      prazo: '1 semana',
+      responsavel: '',
+      recursos: '',
+      metricas: '',
+      beneficios: '',
+      detalhesImplementacao: '',
+      dicaIA: '',
+      status: 'pendente',
+      semana: 1,
+      comoFazer: []
     });
     
     toast({
       title: "Ação adicionada",
-      description: "Nova ação foi adicionada ao plano.",
+      description: "Nova ação foi adicionada com sucesso.",
     });
+  };
+
+  const handleStatusChange = (id: string, status: ActionItem['status']) => {
+    const updatedActions = actions.map(action => 
+      action.id === id ? { ...action, status } : action
+    );
+    setActions(updatedActions);
+    onUpdatePlan(updatedActions);
+  };
+
+  const handleStepComplete = (id: string, stepIndex: number, completed: boolean) => {
+    const updatedActions = actions.map(action => {
+      if (action.id === id) {
+        const completedSteps = action.completedSteps || new Array(action.comoFazer.length).fill(false);
+        completedSteps[stepIndex] = completed;
+        
+        // Se todos os passos estão completos, marcar como realizado
+        const allCompleted = completedSteps.every(step => step);
+        const newStatus = allCompleted ? 'realizado' : action.status;
+        
+        return { 
+          ...action, 
+          completedSteps, 
+          status: newStatus,
+          concluida: allCompleted 
+        };
+      }
+      return action;
+    });
+    
+    setActions(updatedActions);
+    onUpdatePlan(updatedActions);
   };
 
   const downloadPDF = () => {
     if (!pdfRef.current) return;
 
-    // Add PDF styles
-    pdfRef.current.classList.add('pdf-export');
-    
     toast({
       title: "Download iniciado!",
       description: "O PDF do seu plano de ação está sendo gerado.",
     });
 
-    generatePDF(pdfRef.current, `plano-acao-${companyName || 'empresa'}.pdf`);
-    
-    // Remove PDF styles after generation
-    setTimeout(() => {
-      pdfRef.current?.classList.remove('pdf-export');
-    }, 1000);
+    generatePDF(pdfRef.current, `plano_acao_${companyName.replace(/\s+/g, '_')}.pdf`);
   };
 
-  const filteredActions = useMemo(() => {
-    return actionItems.filter(action => {
-      const categoriaMatch = filtroCategoria === 'todas' || action.categoria === filtroCategoria;
-      const statusMatch = filtroStatus === 'todos' || action.status === filtroStatus;
-      return categoriaMatch && statusMatch;
-    });
-  }, [actionItems, filtroCategoria, filtroStatus]);
-
-  const getIconeCategoria = (categoria: string) => {
-    switch(categoria) {
-      case 'comercial': return <TrendingUp className="h-4 w-4" />;
-      case 'gestao': return <Target className="h-4 w-4" />;
-      case 'rh': return <Users className="h-4 w-4" />;
-      case 'marketing': return <Target className="h-4 w-4" />;
-      case 'financeiro': return <DollarSign className="h-4 w-4" />;
-      case 'operacional': return <Settings className="h-4 w-4" />;
-      case 'tecnologia': return <Settings className="h-4 w-4" />;
-      case 'cultura': return <Users className="h-4 w-4" />;
-      default: return <CheckCircle2 className="h-4 w-4" />;
-    }
-  };
-
-  const getCorCategoria = (categoria: string) => {
-    switch(categoria) {
-      case 'comercial': return 'bg-green-100 text-green-800';
-      case 'gestao': return 'bg-blue-100 text-blue-800';
-      case 'rh': return 'bg-purple-100 text-purple-800';
-      case 'marketing': return 'bg-orange-100 text-orange-800';
-      case 'financeiro': return 'bg-red-100 text-red-800';
-      case 'operacional': return 'bg-gray-100 text-gray-800';
-      case 'tecnologia': return 'bg-cyan-100 text-cyan-800';
-      case 'cultura': return 'bg-pink-100 text-pink-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'realizado': return 'text-green-600';
-      case 'em_andamento': return 'text-yellow-600';
-      case 'atrasado': return 'text-red-600';
-      default: return 'text-gray-600';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch(status) {
-      case 'realizado': return <CheckCircle2 className="h-4 w-4" />;
-      case 'em_andamento': return <Clock className="h-4 w-4" />;
-      case 'atrasado': return <AlertTriangle className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
-    }
-  };
-
-  const acoesRealizadas = actionItems.filter(action => action.concluida).length;
-  const progresso = actionItems.length > 0 ? (acoesRealizadas / actionItems.length) * 100 : 0;
+  // Calcular estatísticas
+  const totalActions = actions.length;
+  const completedActions = actions.filter(a => a.status === 'realizado').length;
+  const inProgressActions = actions.filter(a => a.status === 'em_andamento').length;
+  const pendingActions = actions.filter(a => a.status === 'pendente').length;
+  const completionPercentage = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
 
   return (
-    <div ref={pdfRef} className="space-y-6 action-plan-section">
+    <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white print:bg-white print:text-black">
-        <CardHeader>
-          <div className="flex justify-between items-start">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button variant="outline" onClick={onBack}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">Plano de Aceleração Empresarial</h1>
+            <p className="text-gray-600">{companyName} • {totalActions} ações estratégicas</p>
+          </div>
+        </div>
+        <div className="flex space-x-2">
+          <Button onClick={downloadPDF}>
+            <Download className="h-4 w-4 mr-2" />
+            Baixar PDF
+          </Button>
+        </div>
+      </div>
+
+      {/* Estatísticas de Progresso */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Target className="h-5 w-5 text-blue-600" />
+            </div>
             <div>
-              <CardTitle className="text-2xl mb-2">
-                {companyName ? `Plano de Aceleração - ${companyName}` : 'Plano de Aceleração Empresarial'}
-              </CardTitle>
-              <p className="text-blue-100 print:text-gray-600">
-                {actionItems.length} ações estratégicas personalizadas
-              </p>
-            </div>
-            <div className="flex gap-2 print:hidden">
-              <Button 
-                onClick={downloadPDF}
-                className="bg-white text-blue-600 border-2 border-white hover:bg-blue-50 font-semibold"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Baixar PDF
-              </Button>
-              {onBack && (
-                <Button 
-                  onClick={onBack} 
-                  className="bg-white text-blue-600 border-2 border-white hover:bg-blue-50 font-semibold"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Novo Diagnóstico
-                </Button>
-              )}
+              <p className="text-sm text-gray-600">Total de Ações</p>
+              <p className="text-2xl font-bold">{totalActions}</p>
             </div>
           </div>
-        </CardHeader>
-      </Card>
+        </Card>
 
-      {/* Progresso */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">Progresso do Plano</h3>
-            <span className="text-2xl font-bold text-blue-600">{Math.round(progresso)}%</span>
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Concluídas</p>
+              <p className="text-2xl font-bold">{completedActions}</p>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-            <div 
-              className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-300"
-              style={{ width: `${progresso}%` }}
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-yellow-100 rounded-lg">
+              <Clock className="h-5 w-5 text-yellow-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Em Andamento</p>
+              <p className="text-2xl font-bold">{inProgressActions}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Progresso</p>
+              <p className="text-2xl font-bold">{completionPercentage}%</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Filtros e Busca */}
+      <Card className="p-4">
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex items-center space-x-2">
+            <Filter className="h-4 w-4" />
+            <span className="text-sm font-medium">Filtros:</span>
+          </div>
+          
+          <div className="flex flex-wrap gap-4">
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todas">Todas</SelectItem>
+                <SelectItem value="comercial">Comercial</SelectItem>
+                <SelectItem value="marketing">Marketing</SelectItem>
+                <SelectItem value="gestao">Gestão</SelectItem>
+                <SelectItem value="financeiro">Financeiro</SelectItem>
+                <SelectItem value="rh">RH</SelectItem>
+                <SelectItem value="operacional">Operacional</SelectItem>
+                <SelectItem value="tecnologia">Tecnologia</SelectItem>
+                <SelectItem value="cultura">Cultura</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="pendente">Pendente</SelectItem>
+                <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                <SelectItem value="realizado">Realizado</SelectItem>
+                <SelectItem value="atrasado">Atrasado</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Input
+              placeholder="Buscar ações..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-64"
             />
-          </div>
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>{acoesRealizadas} de {actionItems.length} ações concluídas</span>
-            <span>{actionItems.length - acoesRealizadas} restantes</span>
-          </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Plano de Ação Personalizado ({filteredActions.length} ações)
-            </CardTitle>
-            <div className="print:hidden">
-              <Dialog open={isAddingAction} onOpenChange={setIsAddingAction}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Adicionar Ação
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Adicionar Nova Ação</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
+            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Ação
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Adicionar Nova Ação</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="acao">Ação</Label>
+                    <Textarea
+                      id="acao"
+                      value={newAction.acao}
+                      onChange={(e) => setNewAction({...newAction, acao: e.target.value})}
+                      placeholder="Descreva a ação..."
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="acao">Título da Ação</Label>
-                      <Input
-                        id="acao"
-                        value={newAction.acao || ''}
-                        onChange={(e) => setNewAction({...newAction, acao: e.target.value})}
-                        placeholder="Descreva a ação..."
-                      />
+                      <Label htmlFor="categoria">Categoria</Label>
+                      <Select 
+                        value={newAction.categoria} 
+                        onValueChange={(value) => setNewAction({...newAction, categoria: value as ActionItem['categoria']})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="comercial">Comercial</SelectItem>
+                          <SelectItem value="marketing">Marketing</SelectItem>
+                          <SelectItem value="gestao">Gestão</SelectItem>
+                          <SelectItem value="financeiro">Financeiro</SelectItem>
+                          <SelectItem value="rh">RH</SelectItem>
+                          <SelectItem value="operacional">Operacional</SelectItem>
+                          <SelectItem value="tecnologia">Tecnologia</SelectItem>
+                          <SelectItem value="cultura">Cultura</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="categoria">Categoria</Label>
-                        <Select value={newAction.categoria} onValueChange={(value) => setNewAction({...newAction, categoria: value as ActionItem['categoria']})}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="comercial">Comercial</SelectItem>
-                            <SelectItem value="marketing">Marketing</SelectItem>
-                            <SelectItem value="gestao">Gestão</SelectItem>
-                            <SelectItem value="financeiro">Financeiro</SelectItem>
-                            <SelectItem value="rh">RH</SelectItem>
-                            <SelectItem value="operacional">Operacional</SelectItem>
-                            <SelectItem value="tecnologia">Tecnologia</SelectItem>
-                            <SelectItem value="cultura">Cultura</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="prioridade">Prioridade</Label>
-                        <Select value={newAction.prioridade} onValueChange={(value) => setNewAction({...newAction, prioridade: value as ActionItem['prioridade']})}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="alta">Alta</SelectItem>
-                            <SelectItem value="media">Média</SelectItem>
-                            <SelectItem value="baixa">Baixa</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    
+                    <div>
+                      <Label htmlFor="prioridade">Prioridade</Label>
+                      <Select 
+                        value={newAction.prioridade} 
+                        onValueChange={(value) => setNewAction({...newAction, prioridade: value as ActionItem['prioridade']})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="alta">Alta</SelectItem>
+                          <SelectItem value="media">Média</SelectItem>
+                          <SelectItem value="baixa">Baixa</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="responsavel">Responsável</Label>
                       <Input
                         id="responsavel"
-                        value={newAction.responsavel || ''}
+                        value={newAction.responsavel}
                         onChange={(e) => setNewAction({...newAction, responsavel: e.target.value})}
-                        placeholder="Nome do responsável..."
+                        placeholder="Nome do responsável"
                       />
                     </div>
+                    
                     <div>
-                      <Label htmlFor="detalhes">Detalhes da Implementação</Label>
-                      <Textarea
-                        id="detalhes"
-                        value={newAction.detalhesImplementacao || ''}
-                        onChange={(e) => setNewAction({...newAction, detalhesImplementacao: e.target.value})}
-                        placeholder="Descreva como implementar esta ação..."
+                      <Label htmlFor="prazo">Prazo</Label>
+                      <Input
+                        id="prazo"
+                        value={newAction.prazo}
+                        onChange={(e) => setNewAction({...newAction, prazo: e.target.value})}
+                        placeholder="ex: 2 semanas"
                       />
-                    </div>
-                    <div className="flex gap-2">
-                      <Button onClick={addNewAction}>Adicionar</Button>
-                      <Button variant="outline" onClick={() => setIsAddingAction(false)}>Cancelar</Button>
                     </div>
                   </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {/* Filtros */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6 print:hidden">
-            <div className="flex-1">
-              <label className="text-sm font-medium mb-2 block">Filtrar por Categoria:</label>
-              <Select value={filtroCategoria} onValueChange={setFiltroCategoria}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Todas as categorias" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                  <SelectItem value="todas">Todas as categorias</SelectItem>
-                  <SelectItem value="comercial">Comercial</SelectItem>
-                  <SelectItem value="marketing">Marketing</SelectItem>
-                  <SelectItem value="gestao">Gestão</SelectItem>
-                  <SelectItem value="financeiro">Financeiro</SelectItem>
-                  <SelectItem value="rh">RH</SelectItem>
-                  <SelectItem value="operacional">Operacional</SelectItem>
-                  <SelectItem value="tecnologia">Tecnologia</SelectItem>
-                  <SelectItem value="cultura">Cultura</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex-1">
-              <label className="text-sm font-medium mb-2 block">Filtrar por Status:</label>
-              <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Todos os status" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                  <SelectItem value="todos">Todos os status</SelectItem>
-                  <SelectItem value="pendente">Pendente</SelectItem>
-                  <SelectItem value="em_andamento">Em Andamento</SelectItem>
-                  <SelectItem value="realizado">Realizado</SelectItem>
-                  <SelectItem value="atrasado">Atrasado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
-          {/* Lista de Ações */}
+                  <div>
+                    <Label htmlFor="metricas">Métricas de Sucesso</Label>
+                    <Textarea
+                      id="metricas"
+                      value={newAction.metricas}
+                      onChange={(e) => setNewAction({...newAction, metricas: e.target.value})}
+                      placeholder="Como medir o sucesso desta ação..."
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleAdd}>
+                      Adicionar Ação
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </Card>
+
+      {/* Lista de Ações com Drag and Drop */}
+      <DndContext 
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={filteredActions.map(a => a.id)} strategy={verticalListSortingStrategy}>
           <div className="space-y-4">
             {filteredActions.map((action, index) => (
-              <Card key={action.id} className={`border-l-4 ${action.status === 'realizado' ? 'border-l-green-500 bg-green-50' : 'border-l-blue-500'}`}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3 flex-1">
-                      <Checkbox
-                        checked={action.concluida}
-                        onCheckedChange={() => toggleActionStatus(action.id)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <h4 className={`font-medium ${action.concluida ? 'line-through text-gray-500' : ''}`}>
-                          {action.acao}
-                        </h4>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className={getCorCategoria(action.categoria)}>
-                            {getIconeCategoria(action.categoria)}
-                            <span className="ml-1 capitalize">{action.categoria}</span>
-                          </Badge>
-                          <Select value={action.status} onValueChange={(value) => updateActionStatus(action.id, value as ActionItem['status'])}>
-                            <SelectTrigger className="w-32 h-6 text-xs">
-                              <div className={`flex items-center gap-1 ${getStatusColor(action.status)}`}>
-                                {getStatusIcon(action.status)}
-                                <SelectValue />
-                              </div>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="pendente">Pendente</SelectItem>
-                              <SelectItem value="em_andamento">Em Andamento</SelectItem>
-                              <SelectItem value="realizado">Realizado</SelectItem>
-                              <SelectItem value="atrasado">Atrasado</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-right text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {format(action.dataVencimento, 'dd/MM/yyyy', { locale: ptBR })}
-                        </div>
-                        <div>Prazo: {action.prazo}</div>
-                      </div>
-                      <div className="flex flex-col gap-1 print:hidden">
-                        <Button size="sm" variant="outline" onClick={() => moveAction(action.id, 'up')} disabled={index === 0}>
-                          <ArrowUp className="h-3 w-3" />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => moveAction(action.id, 'down')} disabled={index === filteredActions.length - 1}>
-                          <ArrowDown className="h-3 w-3" />
-                        </Button>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button size="sm" variant="outline" onClick={() => setEditingAction(action)}>
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl">
-                            <DialogHeader>
-                              <DialogTitle>Editar Ação</DialogTitle>
-                            </DialogHeader>
-                            {editingAction && (
-                              <div className="space-y-4">
-                                <div>
-                                  <Label htmlFor="edit-acao">Título da Ação</Label>
-                                  <Input
-                                    id="edit-acao"
-                                    value={editingAction.acao}
-                                    onChange={(e) => setEditingAction({...editingAction, acao: e.target.value})}
-                                  />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <Label htmlFor="edit-categoria">Categoria</Label>
-                                    <Select value={editingAction.categoria} onValueChange={(value) => setEditingAction({...editingAction, categoria: value as ActionItem['categoria']})}>
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="comercial">Comercial</SelectItem>
-                                        <SelectItem value="marketing">Marketing</SelectItem>
-                                        <SelectItem value="gestao">Gestão</SelectItem>
-                                        <SelectItem value="financeiro">Financeiro</SelectItem>
-                                        <SelectItem value="rh">RH</SelectItem>
-                                        <SelectItem value="operacional">Operacional</SelectItem>
-                                        <SelectItem value="tecnologia">Tecnologia</SelectItem>
-                                        <SelectItem value="cultura">Cultura</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="edit-responsavel">Responsável</Label>
-                                    <Input
-                                      id="edit-responsavel"
-                                      value={editingAction.responsavel}
-                                      onChange={(e) => setEditingAction({...editingAction, responsavel: e.target.value})}
-                                    />
-                                  </div>
-                                </div>
-                                <div>
-                                  <Label htmlFor="edit-detalhes">Detalhes da Implementação</Label>
-                                  <Textarea
-                                    id="edit-detalhes"
-                                    value={editingAction.detalhesImplementacao}
-                                    onChange={(e) => setEditingAction({...editingAction, detalhesImplementacao: e.target.value})}
-                                  />
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button onClick={saveAction}>Salvar</Button>
-                                  <Button variant="outline" onClick={() => setEditingAction(null)}>Cancelar</Button>
-                                </div>
-                              </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
-                        <Button size="sm" variant="destructive" onClick={() => deleteAction(action.id)}>
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Como Fazer na Prática */}
-                  <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                    <h5 className="font-semibold text-blue-800 flex items-center gap-2 mb-2">
-                      <Lightbulb className="h-4 w-4" />
-                      Como Fazer na Prática:
-                    </h5>
-                    <div className="space-y-2">
-                      {action.comoFazer?.map((passo, passoIndex) => (
-                        <div key={passoIndex} className="flex items-start gap-2">
-                          <Checkbox 
-                            checked={passo.startsWith('✓ ')}
-                            onCheckedChange={() => toggleActionStatus(action.id, passoIndex)}
-                            className="mt-0.5" 
-                          />
-                          <span className={`text-sm ${passo.startsWith('✓ ') ? 'line-through text-gray-500' : 'text-blue-900'}`}>
-                            {passo.startsWith('✓ ') ? passo.substring(2) : passo}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {action.recursos && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      <strong>Recursos necessários:</strong> {action.recursos}
-                    </div>
-                  )}
-
-                  {action.metricas && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      <strong>Métricas de sucesso:</strong> {action.metricas}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <DraggableActionItem
+                key={action.id}
+                action={action}
+                index={index}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+                onStepComplete={handleStepComplete}
+              />
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </SortableContext>
+      </DndContext>
+
+      {filteredActions.length === 0 && (
+        <Card className="p-8 text-center">
+          <p className="text-gray-500">Nenhuma ação encontrada com os filtros aplicados.</p>
+        </Card>
+      )}
+
+      {/* Dialog de Edição */}
+      {editingAction && (
+        <Dialog open={!!editingAction} onOpenChange={() => setEditingAction(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Editar Ação</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-acao">Ação</Label>
+                <Textarea
+                  id="edit-acao"
+                  value={editingAction.acao}
+                  onChange={(e) => setEditingAction({...editingAction, acao: e.target.value})}
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-categoria">Categoria</Label>
+                  <Select 
+                    value={editingAction.categoria} 
+                    onValueChange={(value) => setEditingAction({...editingAction, categoria: value as ActionItem['categoria']})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="comercial">Comercial</SelectItem>
+                      <SelectItem value="marketing">Marketing</SelectItem>
+                      <SelectItem value="gestao">Gestão</SelectItem>
+                      <SelectItem value="financeiro">Financeiro</SelectItem>
+                      <SelectItem value="rh">RH</SelectItem>
+                      <SelectItem value="operacional">Operacional</SelectItem>
+                      <SelectItem value="tecnologia">Tecnologia</SelectItem>
+                      <SelectItem value="cultura">Cultura</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="edit-prioridade">Prioridade</Label>
+                  <Select 
+                    value={editingAction.prioridade} 
+                    onValueChange={(value) => setEditingAction({...editingAction, prioridade: value as ActionItem['prioridade']})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="alta">Alta</SelectItem>
+                      <SelectItem value="media">Média</SelectItem>
+                      <SelectItem value="baixa">Baixa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-responsavel">Responsável</Label>
+                  <Input
+                    id="edit-responsavel"
+                    value={editingAction.responsavel}
+                    onChange={(e) => setEditingAction({...editingAction, responsavel: e.target.value})}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="edit-prazo">Prazo</Label>
+                  <Input
+                    id="edit-prazo"
+                    value={editingAction.prazo}
+                    onChange={(e) => setEditingAction({...editingAction, prazo: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-metricas">Métricas de Sucesso</Label>
+                <Textarea
+                  id="edit-metricas"
+                  value={editingAction.metricas}
+                  onChange={(e) => setEditingAction({...editingAction, metricas: e.target.value})}
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setEditingAction(null)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSaveEdit}>
+                  Salvar Alterações
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Conteúdo oculto para PDF */}
+      <div ref={pdfRef} className="pdf-export" style={{ display: 'none' }}>
+        <div className="action-plan-section p-8 bg-white">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Plano de Aceleração Empresarial</h1>
+            <h2 className="text-xl text-gray-600">{companyName}</h2>
+            <p className="text-gray-500 mt-2">{totalActions} ações estratégicas para acelerar seu negócio</p>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">Resumo do Progresso</h3>
+            <div className="grid grid-cols-4 gap-4 mb-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{totalActions}</div>
+                <div className="text-sm text-gray-600">Total de Ações</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{completedActions}</div>
+                <div className="text-sm text-gray-600">Concluídas</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-600">{inProgressActions}</div>
+                <div className="text-sm text-gray-600">Em Andamento</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{completionPercentage}%</div>
+                <div className="text-sm text-gray-600">Progresso</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {actions.map((action, index) => (
+              <div key={action.id} className="border border-gray-200 rounded-lg p-4">
+                <div className="mb-3">
+                  <h4 className="font-semibold text-gray-900">
+                    {index + 1}. {action.acao}
+                  </h4>
+                  <div className="flex space-x-2 mt-2">
+                    <span className="badge text-xs px-2 py-1 rounded">{action.categoria}</span>
+                    <span className="badge text-xs px-2 py-1 rounded">{action.prioridade}</span>
+                    <span className="badge text-xs px-2 py-1 rounded">{action.status}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                  <div>
+                    <strong>Prazo:</strong> {action.prazo}
+                  </div>
+                  <div>
+                    <strong>Responsável:</strong> {action.responsavel}
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <h5 className="font-medium text-sm">Métricas de Sucesso:</h5>
+                  <p className="text-xs text-gray-600">{action.metricas}</p>
+                </div>
+
+                <div className="mb-3">
+                  <h5 className="font-medium text-sm">Como Fazer na Prática:</h5>
+                  <ul className="list-decimal list-inside text-xs space-y-1 mt-1">
+                    {action.comoFazer.map((step, stepIndex) => (
+                      <li key={stepIndex} className="text-gray-700">{step}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 p-2 rounded text-xs">
+                  <strong>💡 Dica da IA:</strong> {action.dicaIA}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

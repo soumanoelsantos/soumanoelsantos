@@ -41,6 +41,7 @@ export interface ActionItem {
   status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';
   semana: number;
   comoFazer: string[];
+  completedSteps?: boolean[];
 }
 
 const NewDiagnosticTestContent = () => {
