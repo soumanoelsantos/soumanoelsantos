@@ -24,24 +24,6 @@ interface DiagnosticData {
   objetivos6Meses: string;
 }
 
-interface ActionItem {
-  id: string;
-  acao: string;
-  categoria: string;
-  prioridade: 'alta' | 'media' | 'baixa';
-  prazo: string;
-  responsavel: string;
-  recursos: string;
-  metricas: string;
-  beneficios: string;
-  dataVencimento: Date;
-  concluida: boolean;
-  detalhesImplementacao: string;
-  dicaIA: string;
-  status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';
-  semana: number;
-}
-
 const NewDiagnosticTestContent = () => {
   const { userId } = useAuth();
   const { toast } = useToast();
