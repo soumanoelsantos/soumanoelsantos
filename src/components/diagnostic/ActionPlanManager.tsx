@@ -25,7 +25,10 @@ import {
   Brain,
   Lightbulb,
   AlertTriangle,
-  Timer
+  Timer,
+  CheckSquare,
+  FileText,
+  Wrench
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -103,6 +106,36 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
 
+  // Atualizar status das ações baseado na data automaticamente
+  useEffect(() => {
+    const updateStatusBasedOnDate = () => {
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+      
+      setAcoes(prev => prev.map(acao => {
+        if (acao.concluida || acao.status === 'realizado') {
+          return { ...acao, status: 'realizado' };
+        }
+        
+        const dataVencimento = new Date(acao.dataVencimento);
+        dataVencimento.setHours(0, 0, 0, 0);
+        
+        if (dataVencimento < hoje && acao.status !== 'realizado') {
+          return { ...acao, status: 'atrasado' };
+        }
+        
+        return acao;
+      }));
+    };
+
+    updateStatusBasedOnDate();
+    
+    // Update status every hour
+    const interval = setInterval(updateStatusBasedOnDate, 60 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   // Calcular estatísticas
   const acoesCompletas = acoes.filter(acao => acao.concluida || acao.status === 'realizado').length;
   const acoesAtrasadas = acoes.filter(acao => acao.status === 'atrasado').length;
@@ -110,19 +143,149 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const acoesPendentes = acoes.filter(acao => acao.status === 'pendente').length;
   const progresso = (acoesCompletas / acoes.length) * 100;
 
-  // Atualizar status das ações baseado na data
-  useEffect(() => {
-    const hoje = new Date();
-    setAcoes(prev => prev.map(acao => {
-      if (acao.concluida) {
-        return { ...acao, status: 'realizado' };
-      }
-      if (acao.dataVencimento < hoje && acao.status !== 'realizado') {
-        return { ...acao, status: 'atrasado' };
-      }
-      return acao;
-    }));
-  }, []);
+  // Função para gerar dicas práticas específicas baseadas na ação
+  const generatePracticalTips = (acao: ActionItem) => {
+    const acaoLower = acao.acao.toLowerCase();
+    
+    // Dicas específicas baseadas no conteúdo da ação
+    if (acaoLower.includes('crm') || acaoLower.includes('cliente')) {
+      return {
+        passoAPasso: [
+          "1. Faça uma lista de todos os clientes atuais em uma planilha",
+          "2. Categorize os clientes por: Ativo, Inativo, Prospect",
+          "3. Defina campos obrigatórios: Nome, Email, Telefone, Último contato",
+          "4. Escolha uma ferramenta: HubSpot (gratuito), Pipedrive ou RD Station",
+          "5. Importe os dados da planilha para a ferramenta escolhida",
+          "6. Configure automações básicas: email de boas-vindas e follow-up",
+          "7. Treine a equipe por 2 horas sobre como usar o sistema",
+          "8. Defina quem será responsável por manter os dados atualizados"
+        ],
+        ferramentas: ["HubSpot CRM (gratuito)", "Planilha Google Sheets", "Pipedrive", "RD Station"],
+        prazoRecomendado: "2-3 semanas",
+        dificuldade: "Média",
+        custoEstimado: "R$ 0-200/mês"
+      };
+    }
+    
+    if (acaoLower.includes('fluxo de caixa') || acaoLower.includes('financeiro')) {
+      return {
+        passoAPasso: [
+          "1. Abra uma planilha e crie colunas: Data, Descrição, Entrada, Saída, Saldo",
+          "2. Liste todas as contas bancárias da empresa",
+          "3. Registre o saldo atual de cada conta",
+          "4. Anote todas as receitas dos últimos 30 dias",
+          "5. Anote todas as despesas dos últimos 30 dias",
+          "6. Calcule o saldo diário para identificar padrões",
+          "7. Projete entradas e saídas para os próximos 90 dias",
+          "8. Configure alertas para quando o saldo ficar baixo",
+          "9. Faça reunião semanal de 30min para revisar os números"
+        ],
+        ferramentas: ["Planilha Excel/Google", "Conta Azul", "Omie", "Granito"],
+        prazoRecomendado: "1-2 semanas",
+        dificuldade: "Fácil",
+        custoEstimado: "R$ 0-50/mês"
+      };
+    }
+    
+    if (acaoLower.includes('site') || acaoLower.includes('website')) {
+      return {
+        passoAPasso: [
+          "1. Defina 3-5 páginas essenciais: Home, Sobre, Serviços, Contato",
+          "2. Escreva o texto de cada página em um documento",
+          "3. Colete 10-15 fotos de qualidade da empresa/produtos",
+          "4. Escolha uma plataforma: WordPress.com, Wix ou Hostinger",
+          "5. Selecione um template profissional relacionado ao seu segmento",
+          "6. Substitua textos e imagens do template pelo seu conteúdo",
+          "7. Configure formulário de contato com WhatsApp",
+          "8. Teste o site em celular e computador",
+          "9. Registre um domínio (.com.br) e conecte ao site"
+        ],
+        ferramentas: ["WordPress.com", "Wix", "Hostinger", "Canva para imagens"],
+        prazoRecomendado: "2-4 semanas",
+        dificuldade: "Média",
+        custoEstimado: "R$ 30-100/mês"
+      };
+    }
+    
+    if (acaoLower.includes('redes sociais') || acaoLower.includes('instagram') || acaoLower.includes('marketing')) {
+      return {
+        passoAPasso: [
+          "1. Crie perfil comercial no Instagram e Facebook",
+          "2. Configure foto do perfil com logo da empresa",
+          "3. Escreva bio clara: o que faz + cidade + contato",
+          "4. Planeje 30 posts para o primeiro mês",
+          "5. Use rule 80/20: 80% conteúdo útil, 20% vendas",
+          "6. Tire 50 fotos variadas dos produtos/serviços",
+          "7. Poste 3-5x por semana nos melhores horários",
+          "8. Responda comentários e DMs em até 2 horas",
+          "9. Use hashtags locais: #suacidade #seusegmento"
+        ],
+        ferramentas: ["Canva", "Later ou Buffer", "Instagram Creator Studio", "Unsplash"],
+        prazoRecomendado: "3-4 semanas",
+        dificuldade: "Fácil",
+        custoEstimado: "R$ 0-80/mês"
+      };
+    }
+    
+    if (acaoLower.includes('processo') || acaoLower.includes('procedimento')) {
+      return {
+        passoAPasso: [
+          "1. Escolha um processo específico para documentar primeiro",
+          "2. Acompanhe a execução do processo 3 vezes",
+          "3. Anote cada passo em detalhes",
+          "4. Identifique pontos onde há dúvidas ou erros",
+          "5. Crie um documento com: Objetivo, Responsável, Passos, Tempo",
+          "6. Teste o documento com outra pessoa executando",
+          "7. Ajuste o documento baseado no teste",
+          "8. Treine toda equipe no novo processo",
+          "9. Revise o processo mensalmente"
+        ],
+        ferramentas: ["Google Docs", "Notion", "Flowchart maker", "Loom para vídeos"],
+        prazoRecomendado: "2-3 semanas por processo",
+        dificuldade: "Média",
+        custoEstimado: "R$ 0-30/mês"
+      };
+    }
+    
+    if (acaoLower.includes('equipe') || acaoLower.includes('funcionário') || acaoLower.includes('rh')) {
+      return {
+        passoAPasso: [
+          "1. Liste todos os funcionários e suas funções atuais",
+          "2. Identifique gaps de competência em cada função",
+          "3. Converse individualmente com cada pessoa (30min)",
+          "4. Pergunte: satisfação, dificuldades, sugestões",
+          "5. Crie plano de desenvolvimento personalizado",
+          "6. Estabeleça metas trimestrais para cada pessoa",
+          "7. Agende reuniões mensais de feedback",
+          "8. Implemente reconhecimento: funcionário do mês",
+          "9. Documente políticas básicas: horário, benefícios, comportamento"
+        ],
+        ferramentas: ["Planilha de avaliação", "Google Forms", "Calendário", "WhatsApp Business"],
+        prazoRecomendado: "4-6 semanas",
+        dificuldade: "Média-Alta",
+        custoEstimado: "R$ 0-100/mês"
+      };
+    }
+    
+    // Dica genérica para ações não específicas
+    return {
+      passoAPasso: [
+        "1. Analise a situação atual desta área na sua empresa",
+        "2. Defina exatamente o que você quer alcançar",
+        "3. Quebre o objetivo em 3-5 etapas menores",
+        "4. Identifique recursos necessários: tempo, dinheiro, pessoas",
+        "5. Crie um cronograma realista com prazos",
+        "6. Execute a primeira etapa e teste o resultado",
+        "7. Ajuste o plano baseado no que aprendeu",
+        "8. Continue executando etapa por etapa",
+        "9. Monitore progresso semanalmente"
+      ],
+      ferramentas: ["Planilha de controle", "Google Calendar", "Bloco de notas"],
+      prazoRecomendado: "3-8 semanas",
+      dificuldade: "Média",
+      custoEstimado: "A definir"
+    };
+  };
 
   const toggleAcaoConcluida = (acaoId: string) => {
     setAcoes(prev => prev.map(acao => 
@@ -275,7 +438,12 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const formatDate = (date: Date | string) => {
     if (!date) return 'Data não definida';
     
-    const dateObj = date instanceof Date ? date : new Date(date);
+    let dateObj: Date;
+    if (typeof date === 'string') {
+      dateObj = new Date(date);
+    } else {
+      dateObj = date;
+    }
     
     // Check if the date is valid
     if (isNaN(dateObj.getTime())) {
@@ -290,44 +458,28 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     return status.replace('_', ' ');
   };
 
-  // AI Tips Dialog Component
+  // AI Tips Dialog Component - Melhorado com dicas práticas
   const AITipsDialog = ({ acao }: { acao: ActionItem }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [pergunta, setPergunta] = useState("");
     const [respostaAi, setRespostaAi] = useState("");
     const [carregando, setCarregando] = useState(false);
 
-    const obterDicasDetalhadas = () => {
-      return {
-        passoAPasso: [
-          "1. Analise a situação atual da sua empresa nesta área",
-          "2. Defina objetivos específicos e mensuráveis",
-          "3. Identifique recursos necessários (pessoas, tempo, orçamento)",
-          "4. Crie um cronograma detalhado de implementação",
-          "5. Estabeleça marcos de acompanhamento",
-          "6. Monitore resultados e faça ajustes conforme necessário"
-        ],
-        ferramentas: ["Planilhas de controle", "Software de gestão", "Indicadores de performance"],
-        prazoRecomendado: "30-60 dias",
-        dificuldade: "Média"
-      };
-    };
+    const dicas = generatePracticalTips(acao);
 
     const simularRespostaAi = async (pergunta: string) => {
       setCarregando(true);
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const respostasSimuladas = [
-        `Para implementar "${acao.acao.toLowerCase()}", recomendo começar com um diagnóstico da situação atual. Isso ajudará a identificar as principais lacunas e prioridades.`,
-        `Uma abordagem eficaz seria dividir esta ação em etapas menores e mais gerenciáveis. Comece implementando uma versão piloto.`,
-        `É importante envolver toda a equipe neste processo. Considere realizar workshops de treinamento e criar um sistema de acompanhamento regular.`
+      const respostasEspecificas = [
+        `Para "${acao.acao.toLowerCase()}", baseado na sua pergunta "${pergunta}", recomendo: Comece fazendo um levantamento da situação atual, defina metas específicas mensuráveis e crie um cronograma detalhado. É importante ter alguém responsável pelo acompanhamento semanal dos resultados.`,
+        `Sobre "${pergunta}" relacionado a "${acao.acao.toLowerCase()}": A chave é começar pequeno e testar. Implemente uma versão piloto primeiro, colete feedback real dos envolvidos e ajuste antes de expandir. Isso reduz riscos e aumenta as chances de sucesso.`,
+        `Para sua dúvida sobre "${pergunta}": Sugiro dividir esta implementação em fases. Primeira fase: preparação e planejamento (1 semana). Segunda fase: execução piloto (2 semanas). Terceira fase: avaliação e ajustes (1 semana). Quarta fase: expansão completa.`
       ];
       
-      setRespostaAi(respostasSimuladas[Math.floor(Math.random() * respostasSimuladas.length)]);
+      setRespostaAi(respostasEspecificas[Math.floor(Math.random() * respostasEspecificas.length)]);
       setCarregando(false);
     };
-
-    const dicas = obterDicasDetalhadas();
 
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -344,37 +496,74 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-purple-600" />
+              <Wrench className="h-5 w-5 text-purple-600" />
               Como Implementar: {acao.acao}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* Passo a passo */}
+            {/* Informações práticas */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg">
+              <div className="text-center">
+                <Clock className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                <p className="text-sm font-medium text-blue-900">Prazo Recomendado</p>
+                <p className="text-blue-700">{dicas.prazoRecomendado}</p>
+              </div>
+              <div className="text-center">
+                <Target className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                <p className="text-sm font-medium text-blue-900">Dificuldade</p>
+                <p className="text-blue-700">{dicas.dificuldade}</p>
+              </div>
+              <div className="text-center">
+                <TrendingUp className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                <p className="text-sm font-medium text-blue-900">Custo Estimado</p>
+                <p className="text-blue-700">{dicas.custoEstimado}</p>
+              </div>
+            </div>
+
+            {/* Passo a passo detalhado */}
             <div>
               <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-yellow-500" />
-                Passo a Passo para Implementação
+                <CheckSquare className="h-5 w-5 text-green-500" />
+                Passo a Passo Detalhado
               </h3>
               <div className="space-y-2">
                 {dicas.passoAPasso.map((passo, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="flex-shrink-0 w-6 h-6 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-semibold">
+                  <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex-shrink-0 w-7 h-7 bg-green-600 text-white text-sm rounded-full flex items-center justify-center font-semibold">
                       {index + 1}
                     </div>
-                    <p className="text-sm text-gray-700">{passo}</p>
+                    <p className="text-sm text-green-800 font-medium">{passo}</p>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Ferramentas recomendadas */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <Wrench className="h-5 w-5 text-orange-500" />
+                Ferramentas Recomendadas
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {dicas.ferramentas.map((ferramenta, index) => (
+                  <Badge key={index} variant="outline" className="bg-orange-50 text-orange-800 border-orange-200">
+                    {ferramenta}
+                  </Badge>
                 ))}
               </div>
             </div>
 
             {/* Perguntar para a IA */}
             <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-3">Ainda tem dúvidas? Pergunte para a IA</h3>
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <Brain className="h-5 w-5 text-purple-500" />
+                Tem dúvidas específicas? Pergunte para a IA
+              </h3>
               
               <div className="space-y-3">
                 <Textarea
-                  placeholder="Digite sua pergunta específica sobre como implementar esta ação..."
+                  placeholder="Ex: Como posso começar sem muito investimento? Que erros devo evitar? Como medir se está funcionando?"
                   value={pergunta}
                   onChange={(e) => setPergunta(e.target.value)}
                   className="min-h-[80px]"
@@ -399,13 +588,13 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
                 </Button>
 
                 {respostaAi && (
-                  <Card className="bg-blue-50 border-blue-200">
+                  <Card className="bg-purple-50 border-purple-200">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
-                        <Brain className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <Brain className="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5" />
                         <div>
-                          <h4 className="font-semibold text-blue-900 mb-2">Resposta da IA:</h4>
-                          <p className="text-blue-800 text-sm leading-relaxed">{respostaAi}</p>
+                          <h4 className="font-semibold text-purple-900 mb-2">Resposta da IA:</h4>
+                          <p className="text-purple-800 text-sm leading-relaxed">{respostaAi}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -740,17 +929,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
                                     {getIconeCategoria(acao.categoria)}
                                     <span className="ml-1 capitalize">{acao.categoria}</span>
                                   </Badge>
-                                </div>
-                              </div>
-
-                              {/* Dica da IA - sempre visível */}
-                              <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                                <div className="flex items-start gap-2">
-                                  <Brain className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                                  <div>
-                                    <p className="text-sm font-medium text-purple-800 mb-1">Dica da IA:</p>
-                                    <p className="text-sm text-purple-700">{acao.dicaIA}</p>
-                                  </div>
                                 </div>
                               </div>
                               
