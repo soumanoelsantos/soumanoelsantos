@@ -30,20 +30,14 @@ const Login = () => {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isTryingLogin, setIsTryingLogin] = useState(false);
   
-  // Get the redirect path from the search params or state - ALWAYS default to /membros
+  // Get the redirect path from the search params or state - default to /membros
   const searchParams = new URLSearchParams(location.search);
   const redirectPath = searchParams.get('from') || (location.state as any)?.from || '/membros';
-
-  console.log("Login: redirectPath determined as:", redirectPath);
-  console.log("Login: isAuthenticated:", isAuthenticated);
-  console.log("Login: loginRedirectPath:", loginRedirectPath);
 
   // Redirect authenticated users
   useEffect(() => {
     if (isAuthenticated) {
-      const finalPath = loginRedirectPath || redirectPath;
-      console.log("Login: User is authenticated, redirecting to:", finalPath);
-      navigate(finalPath);
+      navigate(loginRedirectPath || redirectPath);
     }
   }, [isAuthenticated, navigate, redirectPath, loginRedirectPath]);
 
@@ -63,7 +57,6 @@ const Login = () => {
       setIsTryingLogin(true);
       
       console.log("Login attempted with:", values.email);
-      console.log("Login: Will redirect to:", redirectPath);
       
       await login(values.email, values.password, redirectPath);
       

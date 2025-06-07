@@ -10,13 +10,9 @@ const MemberArea = () => {
   const location = useLocation();
   const { isAuthenticated, userEmail, userId, logout } = useAuth();
 
-  // Check authentication status
+  // Check authentication status but don't redirect if we're on the admin page
   useEffect(() => {
-    console.log("MemberArea: Current path:", location.pathname);
-    console.log("MemberArea: isAuthenticated:", isAuthenticated);
-    
-    if (!isAuthenticated) {
-      console.log("MemberArea: User not authenticated, redirecting to login");
+    if (!isAuthenticated && location.pathname !== '/admin') {
       navigate("/login", { state: { from: "/membros" } });
     }
   }, [isAuthenticated, navigate, location.pathname]);
@@ -29,14 +25,6 @@ const MemberArea = () => {
       console.error("Erro ao fazer logout:", error);
     }
   };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-800">Carregando...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
