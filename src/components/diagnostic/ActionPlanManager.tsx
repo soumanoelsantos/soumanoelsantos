@@ -76,6 +76,79 @@ interface ActionPlanManagerProps {
   diagnosticData?: DiagnosticData;
 }
 
+// Ações sugeridas para adicionar ao longo dos 6 meses
+const sugestedActions = [
+  "Alinhamento de salários e comissões",
+  "Indicar sistemas de gestão adequados",
+  "Agendar reunião com a equipe de vendas",
+  "Fazer pesquisa 360º anônima com os vendedores",
+  "Solicitar criação do Dashboard de vendas",
+  "Cadastrar vendedores no sistema de análise",
+  "Mapeamento da jornada do cliente",
+  "Agendar reunião de Planejamento estratégico",
+  "Criar e enviar contrato de rotina do colaborador",
+  "Enviar resultado da pesquisa 360º",
+  "Criar e enviar contrato de expectativa",
+  "Implementar feedback estruturado",
+  "Mapear equipe com DISC Assessment",
+  "Implementação de novos funis de vendas",
+  "Criar e enviar Job description",
+  "Criar persona detalhada do cliente",
+  "Fazer cliente oculto para análise",
+  "Mapeamento de processos operacionais",
+  "Desenhar organograma empresarial",
+  "Cadastrar reuniões mensais no Google Agenda",
+  "Enviar relatório de performance mensal",
+  "Enviar relatório de atividades realizadas",
+  "Propor diversificação de canais de vendas",
+  "Criar plano de Endomarketing",
+  "Criar plano de carreira estruturado",
+  "Desenvolver plano de pós-venda",
+  "Desenvolver plano de parcerias estratégicas",
+  "Desenvolver plano de gestão de talentos",
+  "Criação de Storytelling corporativo",
+  "Desenvolver fluxo de cadência comercial",
+  "Desenvolver plano de fidelidade",
+  "Implementar pesquisa de clima organizacional",
+  "Enviar Playbook de vendas",
+  "Criar Plano de ação para Cultura",
+  "Implementar Manual de Cultura",
+  "Sugerir estratégias de marketing digital",
+  "Criar estratégias de engajamento",
+  "Criação de Scripts de vendas",
+  "Melhorar a experiência do cliente",
+  "Criar plano de encantamento de cliente",
+  "Implementar programa de Compliance",
+  "Executar plano de Encantamento do cliente",
+  "Preencher conexão com o Colaborador",
+  "Criar processo de gestão de leads",
+  "Implementar resolução de conflitos",
+  "Implementar análise de métricas comerciais",
+  "Otimizar gestão de tempo",
+  "Implementar sistema CRM",
+  "Desenvolver manual de boas práticas",
+  "Criar sistema de feedback do cliente",
+  "Propor estratégias de Upsell e Cross-Sell",
+  "Estabelecer canais de comunicação interno",
+  "Criar estratégias de negociação e fechamento",
+  "Implementar processos de avaliação de desempenho",
+  "Criar estratégias de abordagem e apresentação",
+  "Criar processo de qualificação de leads",
+  "Criar estratégia de geração de leads por prospecção ativa",
+  "Desenvolver gestão de território",
+  "Promover ambiente de positividade",
+  "Estruturar sistema de Follow-up",
+  "Estratégias de preços e promoções",
+  "Desenvolver abordagem positiva",
+  "Fazer avaliação de concorrentes",
+  "Estratégias de fechamento de negócios",
+  "Desenvolver programa de talentos",
+  "Criar check list para contratação",
+  "Modelagem do Funil de vendas",
+  "Fazer Análise de Pareto",
+  "Criar roteiro de visitação empresarial"
+];
+
 const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ 
   initialActions, 
   onBack, 
@@ -103,6 +176,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const [editingAction, setEditingAction] = useState<ActionItem | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -298,7 +372,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     // Dica genérica para ações não específicas
     return {
       passoAPasso: [
-        "1. Analise a situação atual desta área na sua empresa (faça diagnóstico honest)",
+        "1. Analise a situação atual desta área na sua empresa (faça diagnóstico honesto)",
         "2. Defina exatamente o que você quer alcançar (meta específica e mensurável)",
         "3. Quebre o objetivo em 5-7 etapas menores e executáveis",
         "4. Identifique recursos necessários: tempo (horas/semana), dinheiro, pessoas",
@@ -378,6 +452,32 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     toast({
       title: "Nova ação adicionada",
       description: "A ação foi adicionada ao plano com sucesso.",
+    });
+  };
+
+  const addSuggestedAction = (suggestion: string) => {
+    const newAction: ActionItem = {
+      id: Date.now().toString(),
+      acao: suggestion,
+      categoria: 'comercial',
+      prioridade: 'media',
+      prazo: '4 semanas',
+      responsavel: '',
+      recursos: 'A definir',
+      metricas: 'A definir',
+      beneficios: 'A definir',
+      dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
+      concluida: false,
+      detalhesImplementacao: '',
+      dicaIA: 'Ação sugerida baseada em boas práticas. Personalize conforme sua realidade.',
+      status: 'pendente',
+      semana: Math.ceil(acoes.length / 4) + 1
+    };
+    
+    setAcoes(prev => [...prev, newAction]);
+    toast({
+      title: "Ação sugerida adicionada",
+      description: `"${suggestion}" foi adicionada ao seu plano.`,
     });
   };
 
@@ -882,9 +982,12 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       {/* Controles - não aparecem no PDF */}
       <div className="flex justify-between items-center print:hidden">
         <div className="flex gap-2">
-          <Button className="flex items-center gap-2">
-            <Calendar className="mr-2 h-4 w-4" />
-            Timeline
+          <Button 
+            onClick={() => setShowSuggestions(!showSuggestions)}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white"
+          >
+            <Lightbulb className="mr-2 h-4 w-4" />
+            {showSuggestions ? 'Ocultar' : 'Ver'} Sugestões de Ações
           </Button>
         </div>
         
@@ -906,6 +1009,38 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Sugestões de Ações */}
+      {showSuggestions && (
+        <Card className="print:hidden">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-yellow-500" />
+              Sugestões de Ações Complementares
+            </CardTitle>
+            <p className="text-gray-600">
+              Clique em qualquer sugestão para adicioná-la ao seu plano de ação
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {sugestedActions.map((suggestion, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="text-left h-auto p-3 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                  onClick={() => addSuggestedAction(suggestion)}
+                >
+                  <div className="flex items-start gap-2">
+                    <Plus className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">{suggestion}</span>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Lista de Ações Timeline - não aparecem no PDF */}
       <div className="print:hidden">
