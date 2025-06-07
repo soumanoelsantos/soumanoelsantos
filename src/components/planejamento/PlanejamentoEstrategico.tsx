@@ -12,11 +12,17 @@ const PlanejamentoEstrategico = () => {
     etapa,
     dados,
     gerandoPlano,
+    isLoading,
     processarRespostas,
     handleUpdateProgresso,
     voltarParaFormulario,
     limparPlanoSalvo
   } = usePlanejamentoEstrategico();
+
+  // Mostrar loading enquanto verifica se existe plano salvo
+  if (isLoading) {
+    return <PlanejamentoLoadingState />;
+  }
 
   if (gerandoPlano) {
     return <PlanejamentoLoadingState />;

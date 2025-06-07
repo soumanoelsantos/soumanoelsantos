@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { RespostaPlanejamento, PlanejamentoEstrategicoData } from '@/types/planejamentoEstrategico';
 import { useToast } from '@/hooks/use-toast';
@@ -26,6 +27,7 @@ export const usePlanejamentoEstrategico = () => {
   const [etapa, setEtapa] = useState<'formulario' | 'resultado'>('formulario');
   const [dados, setDados] = useState<PlanejamentoEstrategicoData | null>(null);
   const [gerandoPlano, setGerandoPlano] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { userId } = useAuth();
   
@@ -35,23 +37,38 @@ export const usePlanejamentoEstrategico = () => {
   // Verificar se existe um plano salvo ao inicializar
   useEffect(() => {
     const loadExistingPlan = async () => {
-      if (!userId) return;
+      if (!userId) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
+        console.log('Verificando se existe plano estratégico salvo para usuário:', userId);
         const dadosSalvos = await loadPlanejamentoEstrategicoFromSupabase(userId);
         
         if (dadosSalvos) {
+          console.log('Plano estratégico encontrado - redirecionando para resultados:', dadosSalvos.empresaNome);
           setDados(dadosSalvos);
           setEtapa('resultado');
-          console.log('Plano estratégico carregado do Supabase:', dadosSalvos.empresaNome);
+          
+          toast({
+            title: "Plano carregado",
+            description: `Planejamento estratégico de ${dadosSalvos.empresaNome} foi carregado com sucesso.`,
+          });
+        } else {
+          console.log('Nenhum plano estratégico encontrado - mantendo no formulário');
+          setEtapa('formulario');
         }
       } catch (error) {
         console.error('Erro ao carregar dados salvos:', error);
+        setEtapa('formulario');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadExistingPlan();
-  }, [userId]);
+  }, [userId, toast]);
 
   const gerarSwotAPartirRespostas = (respostas: RespostaPlanejamento[]) => {
     const forcas: string[] = [];
@@ -203,6 +220,7 @@ export const usePlanejamentoEstrategico = () => {
     etapa,
     dados,
     gerandoPlano,
+    isLoading,
     processarRespostas,
     handleUpdateProgresso,
     voltarParaFormulario,
