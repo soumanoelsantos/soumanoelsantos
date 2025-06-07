@@ -2,11 +2,10 @@
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Download, RefreshCw, Info } from 'lucide-react';
+import { Loader2, RefreshCw, Info } from 'lucide-react';
 import ActionPlanDisplay from '@/components/swot/ActionPlanDisplay';
 import { useSwotActionPlan } from '@/hooks/swot/useSwotActionPlan';
 import { SwotData } from '@/types/swot';
-import { generatePDF } from '@/utils/pdfGenerator';
 import ActionButton from '@/components/ui/action-button';
 import SwotPdfPreview from './SwotPdfPreview';
 import SwotCompanyInfoDialog from './SwotCompanyInfoDialog';
@@ -30,12 +29,6 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
   } = useSwotActionPlan(swotData, isLoading);
   
   const pdfRef = useRef<HTMLDivElement>(null);
-
-  const handleDownloadPDF = () => {
-    if (pdfRef.current) {
-      generatePDF(pdfRef.current, 'plano_acao_swot.pdf');
-    }
-  };
 
   const hasActionPlan = actionPlan && Object.keys(actionPlan).length > 0 && 
     Object.values(actionPlan).some(strategies => strategies && strategies.length > 0);
@@ -72,15 +65,6 @@ const SwotActionPlan: React.FC<SwotActionPlanProps> = ({ swotData, isLoading }) 
               <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-3">
                 <h3 className="text-lg font-semibold">Estratégias Recomendadas</h3>
                 <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-1"
-                    onClick={handleDownloadPDF}
-                  >
-                    <Download className="h-4 w-4" />
-                    <span>Baixar PDF</span>
-                  </Button>
                   <Button
                     variant="outline"
                     size="sm"

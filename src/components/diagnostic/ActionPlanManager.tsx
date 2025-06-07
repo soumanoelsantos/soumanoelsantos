@@ -16,10 +16,8 @@ import {
 } from '@dnd-kit/sortable';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { generatePDF } from '@/utils/pdfGenerator';
 import { 
-  ArrowLeft, 
-  Download
+  ArrowLeft
 } from 'lucide-react';
 import { ActionItem } from './NewDiagnosticTestContent';
 import DraggableActionItem from './DraggableActionItem';
@@ -81,33 +79,6 @@ const ActionPlanManager = ({
     }
   };
 
-  const downloadPDF = () => {
-    if (!pdfRef.current) {
-      console.error('PDF ref not found');
-      return;
-    }
-    
-    console.log('Generating PDF with', actions.length, 'actions');
-    console.log('PDF element:', pdfRef.current);
-    
-    // Temporarily show the PDF content
-    const pdfElement = pdfRef.current;
-    pdfElement.style.display = 'block';
-    pdfElement.style.position = 'absolute';
-    pdfElement.style.left = '-9999px';
-    pdfElement.style.top = '0';
-    
-    // Generate PDF with a delay to ensure content is rendered
-    setTimeout(() => {
-      generatePDF(pdfElement, `plano_acao_${companyName.replace(/\s+/g, '_')}.pdf`);
-      
-      // Hide the element again after PDF generation
-      setTimeout(() => {
-        pdfElement.style.display = 'none';
-      }, 2000);
-    }, 500);
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -121,12 +92,6 @@ const ActionPlanManager = ({
             <h1 className="text-2xl font-bold">Plano de Aceleração Empresarial</h1>
             <p className="text-gray-600">{companyName} • {actions.length} ações estratégicas</p>
           </div>
-        </div>
-        <div className="flex space-x-2">
-          <Button onClick={downloadPDF}>
-            <Download className="h-4 w-4 mr-2" />
-            Baixar PDF
-          </Button>
         </div>
       </div>
 
