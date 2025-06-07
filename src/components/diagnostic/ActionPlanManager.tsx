@@ -28,6 +28,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { generatePDF } from "@/utils/pdfGenerator";
+import ProblemSolutionsDisplay from "./ProblemSolutionsDisplay";
 
 interface ActionItem {
   id: string;
@@ -44,16 +45,34 @@ interface ActionItem {
   detalhesImplementacao: string;
 }
 
+interface DiagnosticData {
+  empresaNome: string;
+  segmento: string;
+  tempoMercado: string;
+  faturamentoMensal: string;
+  numeroFuncionarios: string;
+  problemasComerciais: string;
+  problemasGestao: string;
+  problemasFinanceiros: string;
+  problemasRH: string;
+  problemasMarketing: string;
+  problemasOperacionais: string;
+  maioresDificuldades: string;
+  objetivos6Meses: string;
+}
+
 interface ActionPlanManagerProps {
   initialActions: ActionItem[];
   onBack: () => void;
   companyName: string;
+  diagnosticData?: DiagnosticData;
 }
 
 const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({ 
   initialActions, 
   onBack, 
-  companyName 
+  companyName,
+  diagnosticData 
 }) => {
   const [acoes, setAcoes] = useState<ActionItem[]>(initialActions);
   const [editingAction, setEditingAction] = useState<ActionItem | null>(null);
@@ -131,7 +150,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       description: "O PDF do seu plano de ação está sendo gerado.",
     });
 
-    // Usar a função generatePDF do utils
     const success = generatePDF(pdfRef.current, `plano-acao-${companyName.toLowerCase().replace(/\s+/g, '-')}.pdf`);
     
     if (!success) {
@@ -353,7 +371,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     const [respostaAi, setRespostaAi] = useState("");
 
     const gerarDicas = () => {
-      // Simular resposta da IA com dicas específicas
       const dicas = `Para implementar "${action.acao}", recomendo:
 
 1. **Primeira Semana**: Mapeie a situação atual e defina marcos específicos
@@ -474,6 +491,11 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
             </div>
           </CardContent>
         </Card>
+
+        {/* Exibir Problemas e Soluções da IA */}
+        {diagnosticData && (
+          <ProblemSolutionsDisplay diagnosticData={diagnosticData} />
+        )}
 
         {/* Lista de Ações - só no PDF */}
         <div className="space-y-4">

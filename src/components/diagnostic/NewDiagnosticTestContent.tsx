@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -44,6 +43,7 @@ const NewDiagnosticTestContent = () => {
   const [hasExistingPlan, setHasExistingPlan] = useState(false);
   const [actionPlan, setActionPlan] = useState<ActionItem[]>([]);
   const [companyName, setCompanyName] = useState('');
+  const [diagnosticData, setDiagnosticData] = useState<DiagnosticData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -51,6 +51,7 @@ const NewDiagnosticTestContent = () => {
     const checkExistingPlan = () => {
       const savedPlan = localStorage.getItem(`diagnostic_plan_${userId}`);
       const savedCompany = localStorage.getItem(`diagnostic_company_${userId}`);
+      const savedDiagnosticData = localStorage.getItem(`diagnostic_data_${userId}`);
       
       if (savedPlan && savedCompany) {
         try {
@@ -58,6 +59,10 @@ const NewDiagnosticTestContent = () => {
           setActionPlan(plan);
           setCompanyName(savedCompany);
           setHasExistingPlan(true);
+          
+          if (savedDiagnosticData) {
+            setDiagnosticData(JSON.parse(savedDiagnosticData));
+          }
         } catch (error) {
           console.error('Erro ao carregar plano salvo:', error);
         }
@@ -460,9 +465,11 @@ const NewDiagnosticTestContent = () => {
       // Salvar no localStorage
       localStorage.setItem(`diagnostic_plan_${userId}`, JSON.stringify(generatedPlan));
       localStorage.setItem(`diagnostic_company_${userId}`, data.empresaNome);
+      localStorage.setItem(`diagnostic_data_${userId}`, JSON.stringify(data));
       
       setActionPlan(generatedPlan);
       setCompanyName(data.empresaNome);
+      setDiagnosticData(data);
       setHasExistingPlan(true);
       
       toast({
@@ -486,10 +493,12 @@ const NewDiagnosticTestContent = () => {
     // Limpar dados salvos
     localStorage.removeItem(`diagnostic_plan_${userId}`);
     localStorage.removeItem(`diagnostic_company_${userId}`);
+    localStorage.removeItem(`diagnostic_data_${userId}`);
     
     setHasExistingPlan(false);
     setActionPlan([]);
     setCompanyName('');
+    setDiagnosticData(null);
   };
 
   if (isLoading) {
@@ -505,6 +514,7 @@ const NewDiagnosticTestContent = () => {
       <ActionPlanManager 
         initialActions={actionPlan}
         companyName={companyName}
+        diagnosticData={diagnosticData}
         onBack={handleNewDiagnostic}
       />
     );
