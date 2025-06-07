@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -93,7 +92,8 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       beneficios: action.beneficios || '',
       detalhesImplementacao: action.detalhesImplementacao || '',
       dicaIA: action.dicaIA || 'Nova ação adicionada. Defina marcos específicos e acompanhe o progresso semanalmente.',
-      semana: action.semana || 1
+      semana: action.semana || 1,
+      dataVencimento: action.dataVencimento ? new Date(action.dataVencimento) : new Date()
     }))
   );
   
@@ -273,8 +273,17 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     }
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('pt-BR');
+  const formatDate = (date: Date | string) => {
+    if (!date) return 'Data não definida';
+    
+    const dateObj = date instanceof Date ? date : new Date(date);
+    
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      return 'Data inválida';
+    }
+    
+    return dateObj.toLocaleDateString('pt-BR');
   };
 
   const formatStatusDisplay = (status: string) => {
