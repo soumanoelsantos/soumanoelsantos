@@ -16,8 +16,8 @@ export const savePlanejamentoEstrategicoToSupabase = async (
         plano_acao: data.planoAcao,
         acoes_comerciais: data.acoesComerciais,
         ferramentas_geradas: data.ferramentasGeradas,
-        data_created: data.dataCreated,
-        data_atualizacao: data.dataAtualizacao
+        data_inicio: data.dataCreated.toISOString(),
+        data_atualizacao: data.dataAtualizacao.toISOString()
       });
 
     if (error) {
@@ -48,12 +48,12 @@ export const loadPlanejamentoEstrategicoFromSupabase = async (
     }
 
     return {
-      empresaNome: data.empresa_nome,
-      respostas: data.respostas || [],
-      planoAcao: data.plano_acao || [],
-      acoesComerciais: data.acoes_comerciais || [],
-      ferramentasGeradas: data.ferramentas_geradas || {},
-      dataCreated: new Date(data.data_created),
+      empresaNome: data.empresa_nome || '',
+      respostas: (data.respostas as any) || [],
+      planoAcao: (data.plano_acao as any) || [],
+      acoesComerciais: (data.acoes_comerciais as any) || [],
+      ferramentasGeradas: (data.ferramentas_geradas as any) || {},
+      dataCreated: new Date(data.data_inicio),
       dataAtualizacao: new Date(data.data_atualizacao)
     };
   } catch (error) {

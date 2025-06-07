@@ -1,4 +1,3 @@
-
 import { PerguntaPlanejamento } from "@/types/planejamentoEstrategico";
 
 export const perguntasPlanejamento: PerguntaPlanejamento[] = [
@@ -85,7 +84,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     categoria: "diagnostico",
     pergunta: "A empresa acompanha métricas de vendas regularmente?",
     tipo: "multipla_escolha",
-    opcoes: ["Sim, temos KPIs claros e acompanhamento semanal", "Sim, mas apenas métricas básicas", "Raramente acompanhamos", "Não acompanhamos métricas"],
+    opcoes: ["Sim, temos KPIs claros e acompanhamento semanal", "Sim, apenas métricas básicas", "Raramente acompanhamos", "Não acompanhamos métricas"],
     obrigatoria: true
   },
   {
@@ -317,12 +316,12 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     obrigatoria: true
   },
 
-  // Análise SWOT Guiada
+  // Análise SWOT Guiada - Fix the type issues
   {
     id: "swot_forca_1",
     categoria: "swot",
     pergunta: "Qual você considera a MAIOR FORÇA da sua empresa?",
-    tipo: "swot_guiada",
+    tipo: "swot_guiada_multi",
     opcoes: [
       "Equipe altamente qualificada e experiente",
       "Produto/serviço diferenciado no mercado",
@@ -349,7 +348,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     id: "swot_forca_2",
     categoria: "swot",
     pergunta: "Qual a SEGUNDA maior força da empresa?",
-    tipo: "swot_guiada",
+    tipo: "swot_guiada_multi",
     opcoes: [
       "Processos bem estruturados",
       "Inovação constante",
@@ -376,7 +375,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     id: "swot_fraqueza_1",
     categoria: "swot", 
     pergunta: "Qual você considera a MAIOR FRAQUEZA da empresa?",
-    tipo: "swot_guiada",
+    tipo: "swot_guiada_multi",
     opcoes: [
       "Falta de capital de giro",
       "Equipe pequena/sobrecarregada",
@@ -403,7 +402,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     id: "swot_fraqueza_2",
     categoria: "swot",
     pergunta: "Qual a SEGUNDA maior fraqueza?",
-    tipo: "swot_guiada", 
+    tipo: "swot_guiada_multi", 
     opcoes: [
       "Controle financeiro deficiente",
       "Falta de presença digital",
@@ -430,7 +429,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     id: "swot_oportunidade_1",
     categoria: "swot",
     pergunta: "Qual a MAIOR OPORTUNIDADE que você vê para a empresa?",
-    tipo: "swot_guiada",
+    tipo: "swot_guiada_multi",
     opcoes: [
       "Crescimento do mercado digital", 
       "Expansão para novos mercados/regiões",
@@ -457,7 +456,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     id: "swot_oportunidade_2", 
     categoria: "swot",
     pergunta: "Qual a SEGUNDA maior oportunidade?",
-    tipo: "swot_guiada",
+    tipo: "swot_guiada_multi",
     opcoes: [
       "Demanda crescente por sustentabilidade",
       "Mercado de exportação em crescimento", 
@@ -484,7 +483,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     id: "swot_ameaca_1",
     categoria: "swot",
     pergunta: "Qual a MAIOR AMEAÇA para o negócio?",
-    tipo: "swot_guiada",
+    tipo: "swot_guiada_multi",
     opcoes: [
       "Concorrência muito forte/desleal",
       "Crise econômica/recessão", 
@@ -511,7 +510,7 @@ export const perguntasPlanejamento: PerguntaPlanejamento[] = [
     id: "swot_ameaca_2",
     categoria: "swot",
     pergunta: "Qual a SEGUNDA maior ameaça?",
-    tipo: "swot_guiada",
+    tipo: "swot_guiada_multi",
     opcoes: [
       "Entrada de grandes players no mercado",
       "Sazonalidade das vendas",
