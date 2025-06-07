@@ -64,7 +64,7 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
     
     if ((pergunta.tipo === 'swot_guiada' || pergunta.tipo === 'swot_guiada_multi') && pergunta.direcionamento && respostaTemp) {
       if (pergunta.tipo === 'swot_guiada_multi' && Array.isArray(respostaTemp)) {
-        // Para múltipla escolha SWOT, usar a primeira classificação encontrada ou concatenar todas
+        // Para múltipla escolha SWOT, usar a primeira classificação encontrada
         const classificacoes = respostaTemp
           .map(resp => pergunta.direcionamento?.[resp])
           .filter(Boolean);
@@ -136,6 +136,9 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
       } else {
         setRespostaTemp(respostaTemp.filter(item => item !== value));
       }
+    } else {
+      // Se não é array, inicializar como array
+      setRespostaTemp(checked ? [value] : []);
     }
   };
 
