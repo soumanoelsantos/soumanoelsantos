@@ -1,47 +1,46 @@
 
 export const dicasPraticas = {
-  empresa_nome: {
-    dica: "Use o nome oficial da sua empresa. Se ainda não tem CNPJ, use o nome fantasia que pretende registrar.",
-    exemplo: "Exemplo: 'Padaria do João' ou 'JM Consultoria Empresarial'"
+  // Diagnóstico empresarial
+  "vendas_mes": {
+    dica: "Seja específico com dados reais de vendas. Considere variações sazonais e tendências dos últimos 3-6 meses.",
+    exemplo: "Se você vende mais no final do ano, mencione isso. Ex: 'Vendemos em média 50 unidades/mês, com picos de 80 em dezembro'."
   },
-  empresa_segmento: {
-    dica: "Seja específico sobre seu nicho de mercado. Evite termos muito genéricos.",
-    exemplo: "Em vez de 'comércio', use 'varejo de roupas femininas' ou 'e-commerce de produtos naturais'"
+  "faturamento_mensal": {
+    dica: "Informe o faturamento bruto médio, considerando oscilações. Se houver sazonalidade, mencione.",
+    exemplo: "R$ 150.000 mensais em média, variando entre R$ 120k no inverno e R$ 200k no verão."
   },
-  empresa_tempo_mercado: {
-    dica: "Considere desde quando a empresa opera, mesmo que informalmente.",
-    exemplo: "Se começou vendendo de casa há 2 anos e formalizou há 6 meses, considere os 2 anos"
+  
+  // SWOT
+  "forca_principal": {
+    dica: "Identifique o que realmente diferencia sua empresa da concorrência. Seja específico e objetivo.",
+    exemplo: "Atendimento personalizado com resposta em até 2 horas, equipe técnica certificada."
   },
-  diagnostico_comercial_1: {
-    dica: "Um processo de vendas estruturado inclui etapas claras: prospecção, qualificação, apresentação, negociação e fechamento.",
-    exemplo: "Tenho um CRM para acompanhar leads, scripts de vendas e um funil bem definido"
+  "fraqueza_principal": {
+    dica: "Seja honesto sobre limitações internas que afetam performance. Isso ajudará a criar ações específicas.",
+    exemplo: "Processos manuais que causam retrabalho, falta de sistema integrado de gestão."
   },
-  diagnostico_comercial_2: {
-    dica: "Métricas importantes: taxa de conversão, ticket médio, ciclo de vendas, CAC (custo de aquisição de cliente).",
-    exemplo: "Sei que minha taxa de conversão é 15% e meu ticket médio é R$ 350"
+  
+  // Negócio e Funcionários
+  "numero_funcionarios": {
+    dica: "Considere todos os colaboradores: CLT, PJ, terceirizados que trabalham regularmente.",
+    exemplo: "Inclua vendedores externos, consultores fixos, estagiários efetivos."
   },
-  diagnostico_gestao_1: {
-    dica: "Processos documentados garantem qualidade e permitem delegação eficiente.",
-    exemplo: "Tenho manuais de procedimentos para atendimento, produção e entrega"
+  "perfil_funcionarios": {
+    dica: "Avalie o nível técnico e experiência predominante da sua equipe.",
+    exemplo: "Se 70% são júnior, escolha 'Iniciantes/Júnior' mesmo tendo alguns sêniores."
   },
-  diagnostico_rh_1: {
-    dica: "Um bom processo de contratação inclui descrição de cargo, entrevistas estruturadas e período de experiência.",
-    exemplo: "Uso job descriptions claras e faço pelo menos 2 entrevistas antes de contratar"
+  "principais_gaps": {
+    dica: "Identifique as principais lacunas que impedem o crescimento. Seja específico sobre os problemas.",
+    exemplo: "Não escolha todas as opções - foque nos 3-5 gaps mais críticos para sua realidade."
   },
-  swot_forca_1: {
-    dica: "Pense em vantagens competitivas reais: qualidade superior, atendimento diferenciado, localização estratégica.",
-    exemplo: "Nossa equipe tem 15 anos de experiência média no setor"
+  
+  // Equipe
+  "estrutura_hierarquica": {
+    dica: "Descreva como as decisões são tomadas e como a empresa está organizada atualmente.",
+    exemplo: "Se você centraliza tudo, escolha 'Hierárquica tradicional' mesmo sendo pequena."
   },
-  swot_fraqueza_1: {
-    dica: "Seja honesto sobre limitações internas que prejudicam o crescimento.",
-    exemplo: "Dependemos muito do fundador para decisões importantes"
-  },
-  puv_problema: {
-    dica: "Identifique a dor real do seu cliente. Que problema específico você resolve?",
-    exemplo: "Empresas perdem tempo fazendo controle financeiro manual em planilhas"
-  },
-  puv_solucao: {
-    dica: "Descreva como sua solução elimina ou reduz significativamente o problema identificado.",
-    exemplo: "Software que automatiza o controle financeiro, reduzindo 80% do tempo gasto"
+  "principais_cargos": {
+    dica: "Marque apenas departamentos/áreas que realmente existem e funcionam na sua empresa.",
+    exemplo: "Se você faz o financeiro sozinho, não marque 'Financeiro' como departamento separado."
   }
 };

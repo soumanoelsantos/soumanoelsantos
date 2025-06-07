@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { RespostaPlanejamento, PlanejamentoEstrategicoData } from '@/types/planejamentoEstrategico';
 import { useToast } from '@/hooks/use-toast';
@@ -105,9 +104,8 @@ export const usePlanejamentoEstrategico = () => {
       // Gerar SWOT baseado nas respostas
       const swot = gerarSwotAPartirRespostas(respostas);
       
-      // Gerar plano de ação muito mais robusto
+      // Gerar apenas plano de ação estratégico (sem ações comerciais)
       const planoAcao = gerarPlanoAcao(resultados);
-      const acoesComerciais = gerarAcoesComerciais();
       
       const dadosCompletos: PlanejamentoEstrategicoData = {
         empresaNome,
@@ -117,7 +115,7 @@ export const usePlanejamentoEstrategico = () => {
           swot
         },
         planoAcao,
-        acoesComerciais,
+        acoesComerciais: [], // Array vazio - removido ações comerciais
         progresso: 0,
         dataInicio: new Date(),
         dataAtualizacao: new Date(),

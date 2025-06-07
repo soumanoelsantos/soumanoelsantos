@@ -1,27 +1,29 @@
 
 import { PerguntaPlanejamento } from "@/types/planejamentoEstrategico";
-import { negocioQuestions } from "./negocioQuestions";
 import { diagnosticoQuestions } from "./diagnosticoQuestions";
 import { swotQuestions } from "./swotQuestions";
-import { puvQuestions } from "./puvQuestions";
+import { negocioQuestions } from "./negocioQuestions";
 import { equipeQuestions } from "./equipeQuestions";
-import { faseQuestions } from "./faseQuestions";
 
 export const perguntasPlanejamento: PerguntaPlanejamento[] = [
-  ...negocioQuestions,
+  // Pergunta inicial sobre nome da empresa
+  {
+    id: "empresa_nome",
+    categoria: "diagnostico",
+    pergunta: "Qual é o nome da sua empresa?",
+    tipo: "texto",
+    obrigatoria: true
+  },
+  
+  // Perguntas de diagnóstico
   ...diagnosticoQuestions,
+  
+  // Perguntas SWOT
   ...swotQuestions,
-  ...puvQuestions,
-  ...equipeQuestions,
-  ...faseQuestions
+  
+  // Perguntas sobre o negócio (incluindo funcionários e gaps)
+  ...negocioQuestions,
+  
+  // Perguntas sobre equipe
+  ...equipeQuestions
 ];
-
-// Export individual question categories for specific use cases
-export {
-  negocioQuestions,
-  diagnosticoQuestions,
-  swotQuestions,
-  puvQuestions,
-  equipeQuestions,
-  faseQuestions
-};

@@ -1,26 +1,22 @@
 
 import React from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
-import PlanejamentoEstrategicoForm from "./PlanejamentoEstrategicoForm";
-import PlanoAcaoGerado from "./PlanoAcaoGerado";
-import PlanejamentoLoadingState from "./PlanejamentoLoadingState";
 import { usePlanejamentoEstrategico } from "@/hooks/planejamento/usePlanejamentoEstrategico";
+import PlanejamentoEstrategicoForm from "./PlanejamentoEstrategicoForm";
+import PlanejamentoLoadingState from "./PlanejamentoLoadingState";
+import DiagnosticoResultados from "./DiagnosticoResultados";
+import FerramentasResultados from "./FerramentasResultados";
+import PlanoAcaoGerado from "./PlanoAcaoGerado";
 
-const PlanejamentoEstrategico: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+const PlanejamentoEstrategico = () => {
   const {
     etapa,
     dados,
     gerandoPlano,
     processarRespostas,
     handleUpdateProgresso,
-    voltarParaFormulario
+    voltarParaFormulario,
+    limparPlanoSalvo
   } = usePlanejamentoEstrategico();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
 
   if (gerandoPlano) {
     return <PlanejamentoLoadingState />;
@@ -28,15 +24,55 @@ const PlanejamentoEstrategico: React.FC = () => {
 
   if (etapa === 'resultado' && dados) {
     return (
-      <PlanoAcaoGerado 
-        dados={dados} 
-        onUpdateProgresso={handleUpdateProgresso}
-        onVoltar={voltarParaFormulario}
-      />
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900">Planejamento Estratégico - {dados.empresaNome}</h1>
+          <div className="flex gap-4">
+            <button
+              onClick={voltarParaFormulario}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Novo Planejamento
+            </button>
+            <button
+              onClick={limparPlanoSalvo}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+            >
+              Limpar Dados
+            </button>
+          </div>
+        </div>
+
+        <DiagnosticoResultados 
+          resultados={dados.ferramentasGeradas.diagnostico}
+          empresaNome={dados.empresaNome}
+        />
+
+        <FerramentasResultados 
+          ferramentas={dados.ferramentasGeradas}
+          empresaNome={dados.empresaNome}
+        />
+
+        <PlanoAcaoGerado 
+          planoAcao={dados.planoAcao}
+          progresso={dados.progresso}
+          onUpdateProgresso={handleUpdateProgresso}
+        />
+      </div>
     );
   }
 
-  return <PlanejamentoEstrategicoForm onComplete={processarRespostas} />;
+  return (
+    <div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Planejamento Estratégico</h1>
+        <p className="text-gray-600">
+          Responda às perguntas abaixo para gerar seu planejamento estratégico personalizado.
+        </p>
+      </div>
+      <PlanejamentoEstrategicoForm onComplete={processarRespostas} />
+    </div>
+  );
 };
 
 export default PlanejamentoEstrategico;
