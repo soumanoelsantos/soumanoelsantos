@@ -1,7 +1,6 @@
 
 import React from "react";
 import MemberContentList from "@/components/MemberContentList";
-import MentorshipCard from "@/components/member/MentorshipCard";
 import DashboardCard from "@/components/member/DashboardCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -17,9 +16,6 @@ const MemberAreaContent: React.FC = () => {
       <div className="grid grid-cols-1 gap-8">
         <DashboardCard />
         <MemberContentList />
-        <div className="py-4">
-          <MentorshipCard />
-        </div>
       </div>
     </div>
   );
