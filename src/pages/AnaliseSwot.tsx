@@ -1,7 +1,8 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import MemberHeader from "@/components/MemberHeader";
 import BackToMemberAreaButton from "@/components/diagnostic/BackToMemberAreaButton";
 import SwotCategory from "@/components/swot/SwotCategory";
@@ -12,7 +13,9 @@ import { useSwotAnalysis } from "@/hooks/useSwotAnalysis";
 
 const AnaliseSwot: React.FC = () => {
   const navigate = useNavigate();
-  const { userEmail, logout } = useAuth();
+  const { isAuthenticated, userEmail, logout } = useAuth();
+  const { toast } = useToast();
+  
   const {
     swotData,
     isLoading,
@@ -23,10 +26,42 @@ const AnaliseSwot: React.FC = () => {
     handleResetAnalysis
   } = useSwotAnalysis();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast({
+        variant: "destructive",
+        title: "Acesso negado",
+        description: "Você precisa fazer login para acessar esta página",
+      });
+      navigate("/login", { state: { from: "/analise-swot" } });
+      return;
+    }
+  }, [isAuthenticated, navigate, toast]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao fazer logout",
+        description: "Tente novamente",
+      });
+    }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Redirecionando...</h2>
+          <p className="text-gray-600">Você será redirecionado para a página de login.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

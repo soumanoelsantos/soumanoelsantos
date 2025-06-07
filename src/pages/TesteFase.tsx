@@ -7,10 +7,12 @@ import { useAuth } from "@/hooks/useAuth";
 import PhaseQuestionList from "@/components/teste-fase/PhaseQuestionList";
 import PhaseResult from "@/components/teste-fase/PhaseResult";
 import { usePhaseTest } from "@/hooks/phase-test/usePhaseTest";
+import { useToast } from "@/hooks/use-toast";
 
 const TesteFase = () => {
   const navigate = useNavigate();
   const { isAuthenticated, userEmail, logout } = useAuth();
+  const { toast } = useToast();
   
   const {
     currentPhaseIndex,
@@ -26,11 +28,16 @@ const TesteFase = () => {
   } = usePhaseTest();
   
   useEffect(() => {
-    // Check if user is authenticated using the useAuth hook
     if (!isAuthenticated) {
+      toast({
+        variant: "destructive",
+        title: "Acesso negado",
+        description: "Você precisa fazer login para acessar esta página",
+      });
       navigate("/login", { state: { from: "/teste-fase" } });
+      return;
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, toast]);
   
   const handleLogout = async () => {
     try {
@@ -38,8 +45,24 @@ const TesteFase = () => {
       navigate("/login");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao fazer logout",
+        description: "Tente novamente",
+      });
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Redirecionando...</h2>
+          <p className="text-gray-600">Você será redirecionado para a página de login.</p>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

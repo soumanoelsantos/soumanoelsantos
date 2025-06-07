@@ -54,15 +54,23 @@ const NewDiagnosticTestContent = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar se já existe um plano salvo
     const checkExistingPlan = () => {
-      const savedPlan = localStorage.getItem(`diagnostic_plan_${userId}`);
-      const savedCompany = localStorage.getItem(`diagnostic_company_${userId}`);
-      const savedDiagnosticData = localStorage.getItem(`diagnostic_data_${userId}`);
-      
-      if (savedPlan && savedCompany) {
-        try {
+      if (!userId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const savedPlan = localStorage.getItem(`diagnostic_plan_${userId}`);
+        const savedCompany = localStorage.getItem(`diagnostic_company_${userId}`);
+        const savedDiagnosticData = localStorage.getItem(`diagnostic_data_${userId}`);
+        
+        console.log('Checking existing plan:', { savedPlan: !!savedPlan, savedCompany, savedDiagnosticData: !!savedDiagnosticData });
+        
+        if (savedPlan && savedCompany) {
           const plan = JSON.parse(savedPlan);
+          console.log('Found existing plan with', plan.length, 'actions');
+          
           setActionPlan(plan);
           setCompanyName(savedCompany);
           setHasExistingPlan(true);
@@ -70,27 +78,49 @@ const NewDiagnosticTestContent = () => {
           if (savedDiagnosticData) {
             setDiagnosticData(JSON.parse(savedDiagnosticData));
           }
-        } catch (error) {
-          console.error('Erro ao carregar plano salvo:', error);
         }
+      } catch (error) {
+        console.error('Erro ao carregar plano salvo:', error);
+        // Limpar dados corrompidos
+        localStorage.removeItem(`diagnostic_plan_${userId}`);
+        localStorage.removeItem(`diagnostic_company_${userId}`);
+        localStorage.removeItem(`diagnostic_data_${userId}`);
       }
+      
       setIsLoading(false);
     };
 
-    if (userId) {
-      checkExistingPlan();
-    }
+    checkExistingPlan();
   }, [userId]);
 
   const handleSubmit = async (data: DiagnosticData) => {
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Usuário não autenticado",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
+      console.log('Gerando plano de ação para:', data.empresaNome);
+      console.log('Dados integrados disponíveis:', integratedData);
+      
       // Simular processamento
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Usar o novo gerador inteligente que considera dados das outras ferramentas
+      // Gerar plano inteligente com exatamente 104 ações
       const generatedPlan = generateIntelligentActionPlan(data, integratedData);
+      
+      console.log(`Plano gerado com ${generatedPlan.length} ações`);
+      
+      // Verificar se foram geradas exatamente 104 ações
+      if (generatedPlan.length !== 104) {
+        console.warn(`Esperadas 104 ações, mas foram geradas ${generatedPlan.length}`);
+      }
       
       // Salvar no localStorage
       localStorage.setItem(`diagnostic_plan_${userId}`, JSON.stringify(generatedPlan));
@@ -103,8 +133,8 @@ const NewDiagnosticTestContent = () => {
       setHasExistingPlan(true);
       
       toast({
-        title: "Plano de ação personalizado gerado!",
-        description: `${generatedPlan.length} ações inteligentes foram criadas baseadas nos dados das suas ferramentas para acelerar sua empresa nos próximos 6 meses.`,
+        title: "Plano de aceleração gerado com sucesso!",
+        description: `${generatedPlan.length} ações estratégicas foram criadas para acelerar sua empresa nos próximos 6 meses. O plano foi personalizado com base nos dados das suas ferramentas.`,
       });
       
     } catch (error) {
@@ -120,6 +150,8 @@ const NewDiagnosticTestContent = () => {
   };
 
   const handleNewDiagnostic = () => {
+    if (!userId) return;
+    
     // Limpar dados salvos
     localStorage.removeItem(`diagnostic_plan_${userId}`);
     localStorage.removeItem(`diagnostic_company_${userId}`);
@@ -129,12 +161,20 @@ const NewDiagnosticTestContent = () => {
     setActionPlan([]);
     setCompanyName('');
     setDiagnosticData(null);
+    
+    toast({
+      title: "Novo diagnóstico iniciado",
+      description: "Você pode agora gerar um novo plano de ação.",
+    });
   };
 
   if (isLoading || loadingIntegratedData) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Carregando diagnóstico...</p>
+        </div>
       </div>
     );
   }
