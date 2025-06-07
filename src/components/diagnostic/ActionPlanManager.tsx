@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { generatePDF } from "@/utils/pdfGenerator";
 
 interface ActionItem {
   id: string;
@@ -62,6 +62,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const [aiTipAction, setAiTipAction] = useState<ActionItem | null>(null);
   const [isAiTipDialogOpen, setIsAiTipDialogOpen] = useState(false);
   const { toast } = useToast();
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   const acoesCompletas = acoes.filter(acao => acao.concluida).length;
   const progresso = (acoesCompletas / acoes.length) * 100;
@@ -115,12 +116,31 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     });
   };
 
-  const generatePDF = () => {
-    // Implementar geração de PDF
+  const handleGeneratePDF = () => {
+    if (!pdfRef.current) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao gerar PDF",
+        description: "Não foi possível encontrar o conteúdo para gerar o PDF.",
+      });
+      return;
+    }
+
     toast({
-      title: "PDF em desenvolvimento",
-      description: "A funcionalidade de gerar PDF será implementada em breve.",
+      title: "Download iniciado!",
+      description: "O PDF do seu plano de ação está sendo gerado.",
     });
+
+    // Usar a função generatePDF do utils
+    const success = generatePDF(pdfRef.current, `plano-acao-${companyName.toLowerCase().replace(/\s+/g, '-')}.pdf`);
+    
+    if (!success) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao gerar PDF",
+        description: "Ocorreu um erro ao gerar o PDF. Tente novamente.",
+      });
+    }
   };
 
   const getIconeCategoria = (categoria: string) => {
@@ -131,6 +151,20 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       case 'marketing': return <Target className="h-4 w-4" />;
       case 'financeiro': return <Target className="h-4 w-4" />;
       case 'operacional': return <Clock className="h-4 w-4" />;
+      case 'tecnologia': return <Target className="h-4 w-4" />;
+      case 'cultura': return <Users className="h-4 w-4" />;
+      case 'qualidade': return <CheckCircle2 className="h-4 w-4" />;
+      case 'estrategia': return <Target className="h-4 w-4" />;
+      case 'dados': return <Target className="h-4 w-4" />;
+      case 'inovacao': return <Lightbulb className="h-4 w-4" />;
+      case 'risco': return <Target className="h-4 w-4" />;
+      case 'compliance': return <CheckCircle2 className="h-4 w-4" />;
+      case 'capacitacao': return <Users className="h-4 w-4" />;
+      case 'lideranca': return <Users className="h-4 w-4" />;
+      case 'sustentabilidade': return <Target className="h-4 w-4" />;
+      case 'comunidade': return <Users className="h-4 w-4" />;
+      case 'expansao': return <TrendingUp className="h-4 w-4" />;
+      case 'consolidacao': return <Target className="h-4 w-4" />;
       default: return <CheckCircle2 className="h-4 w-4" />;
     }
   };
@@ -143,6 +177,20 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       case 'marketing': return 'bg-orange-100 text-orange-800';
       case 'financeiro': return 'bg-red-100 text-red-800';
       case 'operacional': return 'bg-gray-100 text-gray-800';
+      case 'tecnologia': return 'bg-indigo-100 text-indigo-800';
+      case 'cultura': return 'bg-pink-100 text-pink-800';
+      case 'qualidade': return 'bg-emerald-100 text-emerald-800';
+      case 'estrategia': return 'bg-cyan-100 text-cyan-800';
+      case 'dados': return 'bg-violet-100 text-violet-800';
+      case 'inovacao': return 'bg-yellow-100 text-yellow-800';
+      case 'risco': return 'bg-rose-100 text-rose-800';
+      case 'compliance': return 'bg-teal-100 text-teal-800';
+      case 'capacitacao': return 'bg-amber-100 text-amber-800';
+      case 'lideranca': return 'bg-lime-100 text-lime-800';
+      case 'sustentabilidade': return 'bg-green-100 text-green-800';
+      case 'comunidade': return 'bg-blue-100 text-blue-800';
+      case 'expansao': return 'bg-purple-100 text-purple-800';
+      case 'consolidacao': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -213,6 +261,20 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
                 <SelectItem value="marketing">Marketing</SelectItem>
                 <SelectItem value="financeiro">Financeiro</SelectItem>
                 <SelectItem value="operacional">Operacional</SelectItem>
+                <SelectItem value="tecnologia">Tecnologia</SelectItem>
+                <SelectItem value="cultura">Cultura</SelectItem>
+                <SelectItem value="qualidade">Qualidade</SelectItem>
+                <SelectItem value="estrategia">Estratégia</SelectItem>
+                <SelectItem value="dados">Dados/KPIs</SelectItem>
+                <SelectItem value="inovacao">Inovação</SelectItem>
+                <SelectItem value="risco">Gestão de Riscos</SelectItem>
+                <SelectItem value="compliance">Compliance</SelectItem>
+                <SelectItem value="capacitacao">Capacitação</SelectItem>
+                <SelectItem value="lideranca">Liderança</SelectItem>
+                <SelectItem value="sustentabilidade">Sustentabilidade</SelectItem>
+                <SelectItem value="comunidade">Comunidade</SelectItem>
+                <SelectItem value="expansao">Expansão</SelectItem>
+                <SelectItem value="consolidacao">Consolidação</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -365,51 +427,116 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-2xl mb-2">{companyName}</CardTitle>
-              <p className="text-blue-100">Plano de Ação Estratégico - 6 Meses</p>
+      {/* Conteúdo para PDF */}
+      <div ref={pdfRef} className="space-y-6">
+        {/* Header */}
+        <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+          <CardHeader>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle className="text-2xl mb-2">{companyName}</CardTitle>
+                <p className="text-blue-100">Plano de Ação Estratégico - 6 Meses</p>
+                <p className="text-blue-100 text-sm mt-2">
+                  {acoes.length} ações para acelerar o crescimento da empresa
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleGeneratePDF} 
+                  className="bg-white text-blue-600 border-2 border-white hover:bg-blue-50"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Baixar PDF
+                </Button>
+                <Button 
+                  onClick={onBack} 
+                  className="bg-green-600 text-white border-2 border-green-600 hover:bg-green-700"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Novo Diagnóstico
+                </Button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={generatePDF} 
-                className="bg-white text-blue-600 border-2 border-white hover:bg-blue-50"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Baixar PDF
-              </Button>
-              <Button 
-                onClick={onBack} 
-                className="bg-green-600 text-white border-2 border-green-600 hover:bg-green-700"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Novo Diagnóstico
-              </Button>
+          </CardHeader>
+        </Card>
+
+        {/* Progresso */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium">Progresso do Plano</h3>
+              <span className="text-2xl font-bold text-blue-600">{Math.round(progresso)}%</span>
             </div>
-          </div>
-        </CardHeader>
-      </Card>
+            <Progress value={progresso} className="mb-4" />
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>{acoesCompletas} de {acoes.length} ações concluídas</span>
+              <span>{acoes.length - acoesCompletas} restantes</span>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Progresso */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">Progresso do Plano</h3>
-            <span className="text-2xl font-bold text-blue-600">{Math.round(progresso)}%</span>
-          </div>
-          <Progress value={progresso} className="mb-4" />
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>{acoesCompletas} de {acoes.length} ações concluídas</span>
-            <span>{acoes.length - acoesCompletas} restantes</span>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Lista de Ações - só no PDF */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Ações do Plano de Aceleração</h2>
+          {acoes.map((acao, index) => (
+            <Card key={acao.id} className={acao.concluida ? 'bg-green-50 border-green-200' : ''}>
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-medium text-sm">
+                      {index + 1}
+                    </span>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-3">
+                      <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
+                        {acao.acao}
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className={`w-3 h-3 rounded-full ${getCorPrioridade(acao.prioridade)}`}
+                          title={`Prioridade ${acao.prioridade}`}
+                        />
+                        <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
+                          {getIconeCategoria(acao.categoria)}
+                          <span className="ml-1 capitalize">{acao.categoria}</span>
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    {acao.beneficios && (
+                      <div className="mb-3 p-3 bg-blue-50 rounded-lg">
+                        <p className="text-sm"><strong>Benefícios:</strong> {acao.beneficios}</p>
+                      </div>
+                    )}
 
-      {/* Controles */}
-      <div className="flex justify-between items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+                      <div>
+                        <p className="text-gray-600"><strong>Prazo:</strong> {acao.prazo}</p>
+                        {acao.responsavel && (
+                          <p className="text-gray-600"><strong>Responsável:</strong> {acao.responsavel}</p>
+                        )}
+                      </div>
+                      <div>
+                        {acao.recursos && (
+                          <p className="text-gray-600"><strong>Recursos:</strong> {acao.recursos}</p>
+                        )}
+                        {acao.metricas && (
+                          <p className="text-gray-600"><strong>Métricas:</strong> {acao.metricas}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Controles - não aparecem no PDF */}
+      <div className="flex justify-between items-center print:hidden">
         <h2 className="text-xl font-semibold">Ações do Plano</h2>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -430,122 +557,124 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
         </Dialog>
       </div>
 
-      {/* Lista de Ações */}
-      <DragDropContext onDragEnd={reordenarAcoes}>
-        <Droppable droppableId="acoes">
-          {(provided) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className="space-y-4"
-            >
-              {acoes.map((acao, index) => (
-                <Draggable key={acao.id} draggableId={acao.id} index={index}>
-                  {(provided, snapshot) => (
-                    <Card
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className={`${
-                        snapshot.isDragging ? 'shadow-lg scale-105' : ''
-                      } ${acao.concluida ? 'bg-green-50 border-green-200' : ''}`}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <Checkbox
-                              checked={acao.concluida}
-                              onCheckedChange={() => toggleAcaoConcluida(acao.id)}
-                              className="mt-1"
-                            />
-                          </div>
-                          
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between mb-3">
-                              <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
-                                {acao.acao}
-                              </h4>
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className={`w-3 h-3 rounded-full ${getCorPrioridade(acao.prioridade)}`}
-                                  title={`Prioridade ${acao.prioridade}`}
-                                />
-                                <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
-                                  {getIconeCategoria(acao.categoria)}
-                                  <span className="ml-1 capitalize">{acao.categoria}</span>
-                                </Badge>
-                              </div>
+      {/* Lista de Ações Interativas - não aparecem no PDF */}
+      <div className="print:hidden">
+        <DragDropContext onDragEnd={reordenarAcoes}>
+          <Droppable droppableId="acoes">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="space-y-4"
+              >
+                {acoes.map((acao, index) => (
+                  <Draggable key={acao.id} draggableId={acao.id} index={index}>
+                    {(provided, snapshot) => (
+                      <Card
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className={`${
+                          snapshot.isDragging ? 'shadow-lg scale-105' : ''
+                        } ${acao.concluida ? 'bg-green-50 border-green-200' : ''}`}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0">
+                              <Checkbox
+                                checked={acao.concluida}
+                                onCheckedChange={() => toggleAcaoConcluida(acao.id)}
+                                className="mt-1"
+                              />
                             </div>
                             
-                            {acao.beneficios && (
-                              <div className="mb-3 p-3 bg-blue-50 rounded-lg">
-                                <p className="text-sm"><strong>Benefícios:</strong> {acao.beneficios}</p>
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between mb-3">
+                                <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
+                                  {acao.acao}
+                                </h4>
+                                <div className="flex items-center gap-2">
+                                  <div 
+                                    className={`w-3 h-3 rounded-full ${getCorPrioridade(acao.prioridade)}`}
+                                    title={`Prioridade ${acao.prioridade}`}
+                                  />
+                                  <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
+                                    {getIconeCategoria(acao.categoria)}
+                                    <span className="ml-1 capitalize">{acao.categoria}</span>
+                                  </Badge>
+                                </div>
                               </div>
-                            )}
+                              
+                              {acao.beneficios && (
+                                <div className="mb-3 p-3 bg-blue-50 rounded-lg">
+                                  <p className="text-sm"><strong>Benefícios:</strong> {acao.beneficios}</p>
+                                </div>
+                              )}
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
-                              <div>
-                                <p className="text-gray-600"><strong>Prazo:</strong> {acao.prazo}</p>
-                                {acao.responsavel && (
-                                  <p className="text-gray-600"><strong>Responsável:</strong> {acao.responsavel}</p>
-                                )}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+                                <div>
+                                  <p className="text-gray-600"><strong>Prazo:</strong> {acao.prazo}</p>
+                                  {acao.responsavel && (
+                                    <p className="text-gray-600"><strong>Responsável:</strong> {acao.responsavel}</p>
+                                  )}
+                                </div>
+                                <div>
+                                  {acao.recursos && (
+                                    <p className="text-gray-600"><strong>Recursos:</strong> {acao.recursos}</p>
+                                  )}
+                                  {acao.metricas && (
+                                    <p className="text-gray-600"><strong>Métricas:</strong> {acao.metricas}</p>
+                                  )}
+                                </div>
                               </div>
-                              <div>
-                                {acao.recursos && (
-                                  <p className="text-gray-600"><strong>Recursos:</strong> {acao.recursos}</p>
-                                )}
-                                {acao.metricas && (
-                                  <p className="text-gray-600"><strong>Métricas:</strong> {acao.metricas}</p>
-                                )}
-                              </div>
-                            </div>
 
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setAiTipAction(acao);
-                                  setIsAiTipDialogOpen(true);
-                                }}
-                                className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
-                              >
-                                <Brain className="mr-1 h-3 w-3" />
-                                Dicas IA
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setEditingAction(acao);
-                                  setIsEditDialogOpen(true);
-                                }}
-                              >
-                                <Edit className="mr-1 h-3 w-3" />
-                                Editar
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => deleteAction(acao.id)}
-                                className="text-red-600 hover:bg-red-50"
-                              >
-                                <Trash2 className="mr-1 h-3 w-3" />
-                                Excluir
-                              </Button>
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setAiTipAction(acao);
+                                    setIsAiTipDialogOpen(true);
+                                  }}
+                                  className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+                                >
+                                  <Brain className="mr-1 h-3 w-3" />
+                                  Dicas IA
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setEditingAction(acao);
+                                    setIsEditDialogOpen(true);
+                                  }}
+                                >
+                                  <Edit className="mr-1 h-3 w-3" />
+                                  Editar
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => deleteAction(acao.id)}
+                                  className="text-red-600 hover:bg-red-50"
+                                >
+                                  <Trash2 className="mr-1 h-3 w-3" />
+                                  Excluir
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </div>
 
       {/* Dialogs */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
