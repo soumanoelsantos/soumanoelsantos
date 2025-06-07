@@ -214,9 +214,9 @@ const expandedTemplates = [
   ...actionTemplates,
   // Adicionar mais variações para cada categoria
   {
-    categoria: 'comercial',
+    categoria: 'comercial' as const,
     acao: 'Desenvolver script de vendas padronizado',
-    prioridade: 'media',
+    prioridade: 'media' as const,
     prazo: '1 semana',
     responsavel: 'Coordenador de Vendas',
     recursos: 'Treinamento, material de apoio',
@@ -233,9 +233,9 @@ const expandedTemplates = [
     ]
   },
   {
-    categoria: 'marketing',
+    categoria: 'marketing' as const,
     acao: 'Implementar estratégia de email marketing',
-    prioridade: 'media',
+    prioridade: 'media' as const,
     prazo: '2 semanas',
     responsavel: 'Especialista em Marketing Digital',
     recursos: 'Plataforma de email, designer',
@@ -301,7 +301,7 @@ export const generateIntelligentActionPlan = (
         status: 'pendente' as const,
         semana: semana,
         comoFazer: template.comoFazer.map((step, index) => 
-          `${formatDate(addBusinessDays(actionDate, index))}: ${step}`
+          `Etapa ${index + 1}: ${step}`
         ),
         completedSteps: new Array(template.comoFazer.length).fill(false)
       };
@@ -363,11 +363,11 @@ export const generateIntelligentActionPlan = (
       status: 'pendente' as const,
       semana: Math.ceil((index + 1) / 5),
       comoFazer: [
-        `${formatDate(actionDate)}: Estudar o caso de sucesso detalhadamente`,
-        `${formatDate(addBusinessDays(actionDate, 1))}: Identificar aplicabilidade ao seu negócio`,
-        `${formatDate(addBusinessDays(actionDate, 2))}: Adaptar estratégia para sua realidade`,
-        `${formatDate(addBusinessDays(actionDate, 3))}: Implementar versão adaptada`,
-        `${formatDate(addBusinessDays(actionDate, 4))}: Monitorar resultados e ajustar`
+        'Etapa 1: Estudar o caso de sucesso detalhadamente',
+        'Etapa 2: Identificar aplicabilidade ao seu negócio',
+        'Etapa 3: Adaptar estratégia para sua realidade',
+        'Etapa 4: Implementar versão adaptada',
+        'Etapa 5: Monitorar resultados e ajustar'
       ],
       completedSteps: new Array(5).fill(false)
     });
