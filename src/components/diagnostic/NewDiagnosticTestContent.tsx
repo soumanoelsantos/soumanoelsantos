@@ -93,22 +93,6 @@ const NewDiagnosticTestContent = () => {
     checkExistingPlan();
   }, [userId]);
 
-  const handleUpdateAction = (actionId: string, updates: Partial<ActionItem>) => {
-    setActionPlan(prevPlan => 
-      prevPlan.map(action => 
-        action.id === actionId ? { ...action, ...updates } : action
-      )
-    );
-    
-    // Salvar no localStorage
-    if (userId) {
-      const updatedPlan = actionPlan.map(action => 
-        action.id === actionId ? { ...action, ...updates } : action
-      );
-      localStorage.setItem(`diagnostic_plan_${userId}`, JSON.stringify(updatedPlan));
-    }
-  };
-
   const handleSubmit = async (data: DiagnosticData) => {
     if (!userId) {
       toast({
@@ -198,8 +182,10 @@ const NewDiagnosticTestContent = () => {
   if (hasExistingPlan && actionPlan.length > 0) {
     return (
       <ActionPlanManager 
-        actionPlan={actionPlan}
-        onUpdateAction={handleUpdateAction}
+        initialActions={actionPlan}
+        companyName={companyName}
+        diagnosticData={diagnosticData}
+        onBack={handleNewDiagnostic}
       />
     );
   }
