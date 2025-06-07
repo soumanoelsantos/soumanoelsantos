@@ -327,13 +327,60 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   companyName,
   diagnosticData 
 }) => {
+  // Função para distribuir ações de segunda a sexta evitando datas duplicadas
+  const distribuirAcoesNasSemanas = (acoes: ActionItem[]) => {
+    const dataInicio = new Date();
+    // Encontrar a próxima segunda-feira
+    const proximaSegunda = new Date(dataInicio);
+    const diasParaSegunda = (1 - dataInicio.getDay() + 7) % 7;
+    proximaSegunda.setDate(dataInicio.getDate() + diasParaSegunda);
+    
+    const datasUsadas = new Set<string>();
+    
+    return acoes.map((acao, index) => {
+      let dataAtual = new Date(proximaSegunda);
+      let diasAdicionais = 0;
+      
+      // Procurar próxima data disponível (segunda a sexta)
+      do {
+        dataAtual = new Date(proximaSegunda);
+        dataAtual.setDate(proximaSegunda.getDate() + diasAdicionais);
+        
+        // Se for fim de semana, pular para segunda
+        if (dataAtual.getDay() === 0) { // Domingo
+          diasAdicionais += 1;
+          continue;
+        }
+        if (dataAtual.getDay() === 6) { // Sábado
+          diasAdicionais += 2;
+          continue;
+        }
+        
+        const dataString = dataAtual.toISOString().split('T')[0];
+        
+        if (!datasUsadas.has(dataString)) {
+          datasUsadas.add(dataString);
+          break;
+        }
+        
+        diasAdicionais++;
+      } while (true);
+      
+      return {
+        ...acao,
+        dataVencimento: dataAtual,
+        semana: Math.ceil((diasAdicionais + 1) / 5)
+      };
+    });
+  };
+
   // Ensure all actions have proper default values and distribute across weekdays
   const [acoes, setAcoes] = useState<ActionItem[]>(() => {
     const acoesComDefaults = initialActions.map(action => ({
       ...action,
-      status: action.status || 'pendente' as const,
+      status: (action.status || 'pendente') as 'pendente' | 'em_andamento' | 'realizado' | 'atrasado',
       categoria: action.categoria || 'gestao',
-      prioridade: action.prioridade || 'media' as const,
+      prioridade: (action.prioridade || 'media') as 'alta' | 'media' | 'baixa',
       responsavel: action.responsavel || '',
       recursos: action.recursos || '',
       metricas: action.metricas || '',
@@ -384,53 +431,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     
     return () => clearInterval(interval);
   }, []);
-
-  // Função para distribuir ações de segunda a sexta evitando datas duplicadas
-  const distribuirAcoesNasSemanas = (acoes: ActionItem[]) => {
-    const dataInicio = new Date();
-    // Encontrar a próxima segunda-feira
-    const proximaSegunda = new Date(dataInicio);
-    const diasParaSegunda = (1 - dataInicio.getDay() + 7) % 7;
-    proximaSegunda.setDate(dataInicio.getDate() + diasParaSegunda);
-    
-    const datasUsadas = new Set<string>();
-    
-    return acoes.map((acao, index) => {
-      let dataAtual = new Date(proximaSegunda);
-      let diasAdicionais = 0;
-      
-      // Procurar próxima data disponível (segunda a sexta)
-      do {
-        dataAtual = new Date(proximaSegunda);
-        dataAtual.setDate(proximaSegunda.getDate() + diasAdicionais);
-        
-        // Se for fim de semana, pular para segunda
-        if (dataAtual.getDay() === 0) { // Domingo
-          diasAdicionais += 1;
-          continue;
-        }
-        if (dataAtual.getDay() === 6) { // Sábado
-          diasAdicionais += 2;
-          continue;
-        }
-        
-        const dataString = dataAtual.toISOString().split('T')[0];
-        
-        if (!datasUsadas.has(dataString)) {
-          datasUsadas.add(dataString);
-          break;
-        }
-        
-        diasAdicionais++;
-      } while (true);
-      
-      return {
-        ...acao,
-        dataVencimento: dataAtual,
-        semana: Math.ceil((diasAdicionais + 1) / 5)
-      };
-    });
-  };
 
   // Filtrar ações por categoria
   const acoesFiltradas = filtroCategoria === 'todas' 
