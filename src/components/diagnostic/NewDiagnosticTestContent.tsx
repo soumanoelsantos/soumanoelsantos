@@ -48,7 +48,7 @@ const NewDiagnosticTestContent = () => {
   const { data: integratedData, isLoading: loadingIntegratedData } = useIntegratedData();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasExistingPlan, setHasExistingPlan] = useState(false);
-  const [actionPlan, setActionPlan] = useState<ActionItem[]>([]);
+  const [actionPlan, setActionPlan] = useState<{[key: string]: string[]}>({});
   const [companyName, setCompanyName] = useState('');
   const [diagnosticData, setDiagnosticData] = useState<DiagnosticData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,7 +69,7 @@ const NewDiagnosticTestContent = () => {
         
         if (savedPlan && savedCompany) {
           const plan = JSON.parse(savedPlan);
-          console.log('Found existing plan with', plan.length, 'actions');
+          console.log('Found existing plan with', Object.keys(plan).length, 'categories');
           
           setActionPlan(plan);
           setCompanyName(savedCompany);
@@ -112,15 +112,10 @@ const NewDiagnosticTestContent = () => {
       // Simular processamento
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Gerar plano inteligente com exatamente 104 ações
+      // Gerar plano inteligente com ações organizadas por categoria
       const generatedPlan = generateIntelligentActionPlan(data, integratedData);
       
-      console.log(`Plano gerado com ${generatedPlan.length} ações`);
-      
-      // Verificar se foram geradas exatamente 104 ações
-      if (generatedPlan.length !== 104) {
-        console.warn(`Esperadas 104 ações, mas foram geradas ${generatedPlan.length}`);
-      }
+      console.log(`Plano gerado com ${Object.keys(generatedPlan).length} categorias`);
       
       // Salvar no localStorage
       localStorage.setItem(`diagnostic_plan_${userId}`, JSON.stringify(generatedPlan));
@@ -134,7 +129,7 @@ const NewDiagnosticTestContent = () => {
       
       toast({
         title: "Plano de aceleração gerado com sucesso!",
-        description: `${generatedPlan.length} ações estratégicas foram criadas para acelerar sua empresa nos próximos 6 meses. O plano foi personalizado com base nos dados das suas ferramentas.`,
+        description: `Ações estratégicas foram criadas para acelerar sua empresa nos próximos 6 meses. O plano foi personalizado com base nos dados das suas ferramentas.`,
       });
       
     } catch (error) {
@@ -158,7 +153,7 @@ const NewDiagnosticTestContent = () => {
     localStorage.removeItem(`diagnostic_data_${userId}`);
     
     setHasExistingPlan(false);
-    setActionPlan([]);
+    setActionPlan({});
     setCompanyName('');
     setDiagnosticData(null);
     
@@ -179,13 +174,10 @@ const NewDiagnosticTestContent = () => {
     );
   }
 
-  if (hasExistingPlan && actionPlan.length > 0) {
+  if (hasExistingPlan && Object.keys(actionPlan).length > 0) {
     return (
       <ActionPlanManager 
-        initialActions={actionPlan}
-        companyName={companyName}
-        diagnosticData={diagnosticData}
-        onBack={handleNewDiagnostic}
+        actionPlan={actionPlan}
       />
     );
   }
