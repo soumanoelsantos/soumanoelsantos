@@ -24,12 +24,29 @@ const HeroSection = () => {
           {/* Content Side */}
           <div className="lg:w-1/2 space-y-6 text-center lg:text-left">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white">
-              Conquiste até <span className="text-dark-primary">5 anos de lucros</span> e resultados em até <span className="text-dark-primary">12 meses</span>
+              Transforme sua <span className="text-dark-primary">Equipe Comercial</span> em um Time de Alta Performance
             </h1>
             
-            <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
-              Mais de <strong className="text-dark-primary">15.000</strong> empresários de diversos segmentos em todo Brasil já vivenciaram o <strong>Acelerador Empresarial</strong>. Entenda como sua empresa pode acelerar também.
-            </p>
+            <div className="space-y-4">
+              <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
+                <strong className="text-dark-primary">Conquiste até 3 anos de lucros e resultados em até 6 meses</strong>
+              </p>
+              
+              <div>
+                <p className="text-lg sm:text-xl text-gray-300 mb-3">
+                  <strong>Domine as etapas do crescimento da sua empresa:</strong>
+                </p>
+                <ul className="text-gray-300 space-y-2 text-left">
+                  <li>• Defina onde quer chegar e o que precisa ser feito</li>
+                  <li>• Alcance mais clientes e aumente suas vendas</li>
+                  <li>• Garanta o crescimento sustentável no longo prazo</li>
+                </ul>
+              </div>
+              
+              <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
+                Mais de <strong className="text-dark-primary">500</strong> empresários de diversos segmentos em todo Brasil já vivenciaram o <strong>Acelerador Empresarial</strong>. Entenda como sua empresa pode acelerar também.
+              </p>
+            </div>
 
             <div className="bg-dark-primary/20 p-6 rounded-2xl border border-dark-primary/30 backdrop-blur-sm">
               <h3 className="text-xl font-bold text-white mb-3">✅ Você tem esses problemas em sua empresa?</h3>
