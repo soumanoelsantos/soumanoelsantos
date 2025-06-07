@@ -28,14 +28,9 @@ const DiagnosticResults = ({ results, answersData, pdfRef }: DiagnosticResultsPr
     resetDiagnostic();
   };
 
-  // Convert actionPlan to ActionItem[] if it exists
-  const convertedActionPlan: ActionItem[] = actionPlan && typeof actionPlan === 'object' && !Array.isArray(actionPlan) 
-    ? Object.values(actionPlan).flat().filter(item => 
-        typeof item === 'object' && 
-        item !== null && 
-        'id' in item && 
-        'acao' in item
-      ) as ActionItem[]
+  // Convert actionPlan to ActionItem[] - actionPlan should already be ActionItem[]
+  const convertedActionPlan: ActionItem[] = Array.isArray(actionPlan) 
+    ? actionPlan 
     : [];
 
   return (
