@@ -44,7 +44,7 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
         : respostaExistente.resposta;
       setRespostaTemp(resposta);
     } else {
-      setRespostaTemp(pergunta.tipo === 'multipla_escolha_multi' ? [] : "");
+      setRespostaTemp(pergunta.tipo === 'multipla_escolha_multi' || pergunta.tipo === 'swot_guiada_multi' ? [] : "");
     }
   }, [perguntaAtual, pergunta.id, respostas]);
 
@@ -61,9 +61,18 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
     const novasRespostas = respostas.filter(r => r.perguntaId !== pergunta.id);
     
     let swotClassificacao: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null = null;
-    if (pergunta.tipo === 'swot_guiada' && pergunta.direcionamento && respostaTemp) {
-      const respostaString = Array.isArray(respostaTemp) ? respostaTemp[0] : String(respostaTemp);
-      swotClassificacao = pergunta.direcionamento[respostaString] || null;
+    
+    if ((pergunta.tipo === 'swot_guiada' || pergunta.tipo === 'swot_guiada_multi') && pergunta.direcionamento && respostaTemp) {
+      if (pergunta.tipo === 'swot_guiada_multi' && Array.isArray(respostaTemp)) {
+        // Para múltipla escolha SWOT, usar a primeira classificação encontrada ou concatenar todas
+        const classificacoes = respostaTemp
+          .map(resp => pergunta.direcionamento?.[resp])
+          .filter(Boolean);
+        swotClassificacao = classificacoes[0] || null;
+      } else {
+        const respostaString = Array.isArray(respostaTemp) ? respostaTemp[0] : String(respostaTemp);
+        swotClassificacao = pergunta.direcionamento[respostaString] || null;
+      }
     }
 
     novasRespostas.push({
@@ -97,9 +106,17 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
     const respostasFinal = respostas.filter(r => r.perguntaId !== pergunta.id);
     
     let swotClassificacao: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null = null;
-    if (pergunta.tipo === 'swot_guiada' && pergunta.direcionamento && respostaTemp) {
-      const respostaString = Array.isArray(respostaTemp) ? respostaTemp[0] : String(respostaTemp);
-      swotClassificacao = pergunta.direcionamento[respostaString] || null;
+    
+    if ((pergunta.tipo === 'swot_guiada' || pergunta.tipo === 'swot_guiada_multi') && pergunta.direcionamento && respostaTemp) {
+      if (pergunta.tipo === 'swot_guiada_multi' && Array.isArray(respostaTemp)) {
+        const classificacoes = respostaTemp
+          .map(resp => pergunta.direcionamento?.[resp])
+          .filter(Boolean);
+        swotClassificacao = classificacoes[0] || null;
+      } else {
+        const respostaString = Array.isArray(respostaTemp) ? respostaTemp[0] : String(respostaTemp);
+        swotClassificacao = pergunta.direcionamento[respostaString] || null;
+      }
     }
     
     respostasFinal.push({
@@ -153,7 +170,7 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
           categoria={pergunta.categoria}
           pergunta={pergunta.pergunta}
           obrigatoria={pergunta.obrigatoria}
-          isMultipleChoice={pergunta.tipo === 'multipla_escolha_multi'}
+          isMultipleChoice={pergunta.tipo === 'multipla_escolha_multi' || pergunta.tipo === 'swot_guiada_multi'}
         />
         
         <CardContent className="space-y-6">

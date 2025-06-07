@@ -1,9 +1,8 @@
-
 export interface PerguntaPlanejamento {
   id: string;
   categoria: 'diagnostico' | 'swot' | 'negocio' | 'puv' | 'equipe' | 'fase';
   pergunta: string;
-  tipo: 'texto' | 'multipla_escolha' | 'multipla_escolha_multi' | 'escala' | 'sim_nao' | 'swot_guiada';
+  tipo: 'texto' | 'multipla_escolha' | 'multipla_escolha_multi' | 'escala' | 'sim_nao' | 'swot_guiada' | 'swot_guiada_multi';
   opcoes?: string[];
   direcionamento?: { [key: string]: 'Força' | 'Fraqueza' | 'Oportunidade' | 'Ameaça' | null };
   obrigatoria: boolean;

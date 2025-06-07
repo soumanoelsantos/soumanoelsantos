@@ -105,6 +105,66 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
           )}
         </div>
       );
+
+    case "swot_guiada_multi":
+      return (
+        <div className="space-y-4">
+          <div className="space-y-3">
+            {pergunta.opcoes?.map((opcao, index) => {
+              const direcionamento = pergunta.direcionamento?.[opcao];
+              const isChecked = Array.isArray(respostaTemp) && respostaTemp.includes(opcao);
+              
+              return (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`swot-opcao-${index}`}
+                      checked={isChecked}
+                      onCheckedChange={(checked) => onMultipleChoiceChange(opcao, checked as boolean)}
+                    />
+                    <Label htmlFor={`swot-opcao-${index}`} className="font-medium">{opcao}</Label>
+                  </div>
+                  {direcionamento && (
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      direcionamento === 'Força' ? 'bg-green-100 text-green-800' :
+                      direcionamento === 'Fraqueza' ? 'bg-red-100 text-red-800' :
+                      direcionamento === 'Oportunidade' ? 'bg-blue-100 text-blue-800' :
+                      direcionamento === 'Ameaça' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      👉 {direcionamento}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          
+          {Array.isArray(respostaTemp) && respostaTemp.length > 0 && (
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                  <span className="text-blue-800 font-medium">Classificações selecionadas:</span>
+                </div>
+                <div className="space-y-1">
+                  {respostaTemp.map((resposta, idx) => {
+                    const classificacao = pergunta.direcionamento?.[resposta];
+                    if (classificacao) {
+                      return (
+                        <div key={idx} className="text-sm text-blue-700">
+                          • {resposta} → {classificacao}
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      );
     
     case "multipla_escolha":
       return (
