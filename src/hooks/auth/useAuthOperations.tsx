@@ -1,4 +1,3 @@
-
 import { useToast } from '@/hooks/use-toast';
 import { authService } from '@/services/auth';
 
@@ -35,8 +34,9 @@ export const useAuthOperations = (
         throw new Error(errorMessage);
       }
 
-      // Store redirect path in localStorage
-      handleRedirectPath(redirectPath);
+      // Store redirect path in localStorage - default to /membros if none specified
+      const finalRedirectPath = redirectPath || '/membros';
+      handleRedirectPath(finalRedirectPath);
 
       toast({
         title: "Login bem-sucedido",

@@ -30,14 +30,14 @@ const Login = () => {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isTryingLogin, setIsTryingLogin] = useState(false);
   
-  // Get the redirect path from the search params or state
+  // Get the redirect path from the search params or state - default to /membros
   const searchParams = new URLSearchParams(location.search);
-  const redirectPath = searchParams.get('from') || (location.state as any)?.from || null;
+  const redirectPath = searchParams.get('from') || (location.state as any)?.from || '/membros';
 
   // Redirect authenticated users
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(loginRedirectPath || redirectPath || '/membros');
+      navigate(loginRedirectPath || redirectPath);
     }
   }, [isAuthenticated, navigate, redirectPath, loginRedirectPath]);
 
