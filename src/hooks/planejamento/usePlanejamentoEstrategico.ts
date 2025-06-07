@@ -32,12 +32,12 @@ export const usePlanejamentoEstrategico = () => {
     console.log('usePlanejamentoEstrategico: Iniciando processamento...');
     
     await processarRespostasInterno(respostas, resultados, (dadosCompletos) => {
-      console.log('usePlanejamentoEstrategico: Dados recebidos do processor:', dadosCompletos);
+      console.log('usePlanejamentoEstrategico: Dados recebidos do processor:', dadosCompletos.empresaNome);
       
-      // Atualizar estado local
+      // Atualizar estado local PRIMEIRO
       setDados(dadosCompletos);
       
-      // Mudar para etapa de resultado
+      // Depois mudar para etapa de resultado
       console.log('usePlanejamentoEstrategico: Mudando para etapa resultado');
       setEtapa('resultado');
     });
