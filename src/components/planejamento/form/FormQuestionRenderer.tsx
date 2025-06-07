@@ -48,18 +48,27 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
       );
     
     case "multipla_escolha_multi":
+      const respostasArray = Array.isArray(respostaTemp) ? respostaTemp : [];
       return (
         <div className="space-y-3">
-          {pergunta.opcoes?.map((opcao, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <Checkbox
-                id={`opcao-multi-${index}`}
-                checked={Array.isArray(respostaTemp) && respostaTemp.includes(opcao)}
-                onCheckedChange={(checked) => onMultipleChoiceChange(opcao, checked as boolean)}
-              />
-              <Label htmlFor={`opcao-multi-${index}`}>{opcao}</Label>
-            </div>
-          ))}
+          {pergunta.opcoes?.map((opcao, index) => {
+            const isChecked = respostasArray.includes(opcao);
+            console.log('Renderizando checkbox:', { opcao, isChecked, respostasArray });
+            
+            return (
+              <div key={index} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`opcao-multi-${index}`}
+                  checked={isChecked}
+                  onCheckedChange={(checked) => {
+                    console.log('Checkbox mudou:', { opcao, checked });
+                    onMultipleChoiceChange(opcao, checked as boolean);
+                  }}
+                />
+                <Label htmlFor={`opcao-multi-${index}`}>{opcao}</Label>
+              </div>
+            );
+          })}
         </div>
       );
     
@@ -107,12 +116,14 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
       );
 
     case "swot_guiada_multi":
+      const respostasSwotArray = Array.isArray(respostaTemp) ? respostaTemp : [];
       return (
         <div className="space-y-4">
           <div className="space-y-3">
             {pergunta.opcoes?.map((opcao, index) => {
               const direcionamento = pergunta.direcionamento?.[opcao];
-              const isChecked = Array.isArray(respostaTemp) && respostaTemp.includes(opcao);
+              const isChecked = respostasSwotArray.includes(opcao);
+              console.log('Renderizando SWOT checkbox:', { opcao, isChecked, respostasSwotArray });
               
               return (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
@@ -120,7 +131,10 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
                     <Checkbox
                       id={`swot-opcao-${index}`}
                       checked={isChecked}
-                      onCheckedChange={(checked) => onMultipleChoiceChange(opcao, checked as boolean)}
+                      onCheckedChange={(checked) => {
+                        console.log('SWOT Checkbox mudou:', { opcao, checked });
+                        onMultipleChoiceChange(opcao, checked as boolean);
+                      }}
                     />
                     <Label htmlFor={`swot-opcao-${index}`} className="font-medium">{opcao}</Label>
                   </div>
@@ -140,7 +154,7 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
             })}
           </div>
           
-          {Array.isArray(respostaTemp) && respostaTemp.length > 0 && (
+          {respostasSwotArray.length > 0 && (
             <Card className="bg-blue-50 border-blue-200">
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 mb-2">
@@ -148,7 +162,7 @@ const FormQuestionRenderer: React.FC<FormQuestionRendererProps> = ({
                   <span className="text-blue-800 font-medium">Classificações selecionadas:</span>
                 </div>
                 <div className="space-y-1">
-                  {respostaTemp.map((resposta, idx) => {
+                  {respostasSwotArray.map((resposta, idx) => {
                     const classificacao = pergunta.direcionamento?.[resposta];
                     if (classificacao) {
                       return (

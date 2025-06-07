@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -28,7 +27,7 @@ interface PlanejamentoEstrategicoFormProps {
 const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = ({ onComplete }) => {
   const [perguntaAtual, setPerguntaAtual] = useState(0);
   const [respostas, setRespostas] = useState<RespostaPlanejamento[]>([]);
-  const [respostaTemp, setRespostaTemp] = useState<string | string[]>("");
+  const [respostaTemp, setRespostaTemp] = useState<string | string[]>("" as string | string[]);
   const [iaAtiva, setIaAtiva] = useState(false);
   const [dicaIA, setDicaIA] = useState<string>("");
   const { toast } = useToast();
@@ -130,15 +129,23 @@ const PlanejamentoEstrategicoForm: React.FC<PlanejamentoEstrategicoFormProps> = 
   };
 
   const handleMultipleChoice = (value: string, checked: boolean) => {
-    if (Array.isArray(respostaTemp)) {
-      if (checked) {
-        setRespostaTemp([...respostaTemp, value]);
-      } else {
-        setRespostaTemp(respostaTemp.filter(item => item !== value));
+    console.log('handleMultipleChoice chamado:', { value, checked, respostaTemp });
+    
+    // Garantir que sempre trabalhamos com um array
+    const currentArray = Array.isArray(respostaTemp) ? respostaTemp : [];
+    
+    if (checked) {
+      // Adicionar se não estiver presente
+      if (!currentArray.includes(value)) {
+        const newArray = [...currentArray, value];
+        console.log('Adicionando:', value, 'Array resultante:', newArray);
+        setRespostaTemp(newArray);
       }
     } else {
-      // Se não é array, inicializar como array
-      setRespostaTemp(checked ? [value] : []);
+      // Remover se estiver presente
+      const newArray = currentArray.filter(item => item !== value);
+      console.log('Removendo:', value, 'Array resultante:', newArray);
+      setRespostaTemp(newArray);
     }
   };
 
