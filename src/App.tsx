@@ -20,7 +20,6 @@ import CrmPage from "@/pages/CrmPage";
 import Dashboard from "@/pages/Dashboard";
 import DiagnosticoLanding from "@/pages/DiagnosticoLanding";
 import DevAI from "@/pages/DevAI";
-import PlanejamentoEstrategico from "@/pages/PlanejamentoEstrategico";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +46,6 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/diagnostico" element={<DiagnosticoLanding />} />
               <Route path="/dev-ai" element={<DevAI />} />
-              <Route path="/planejamento-estrategico" element={<PlanejamentoEstrategico />} />
             </Routes>
           </div>
           <Toaster />
