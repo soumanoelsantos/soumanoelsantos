@@ -65,7 +65,7 @@ const SolutionSection = () => {
           <div className="bg-gradient-to-r from-dark-primary/20 to-blue-600/20 p-8 rounded-2xl border border-dark-primary/30 mb-12">
             <div className="text-center">
               <h3 className="text-3xl font-bold text-white mb-6">
-                Mais de <span className="text-dark-primary">15.000</span> empresas já foram certificadas
+                Mais de <span className="text-dark-primary">500</span> empresários já foram certificados
               </h3>
               <p className="text-xl text-gray-300 mb-8">
                 Junte-se aos empresários que já transformaram seus negócios com nossa metodologia

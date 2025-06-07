@@ -24,13 +24,21 @@ const Hero = () => {
           <div className="lg:w-1/2 space-y-4 lg:space-y-6">
             <div className="space-y-3 lg:space-y-4 text-center lg:text-left">
               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Transforme sua empresa em uma <span className="text-dark-primary">máquina de vendas</span>
+                Transforme sua <span className="text-dark-primary">Equipe Comercial</span> em um Time de Alta Performance
               </h1>
               
               <div className="text-center">
-                <p className="text-base sm:text-lg text-dark-text/80">
-                  Em 30 minutos farei um <strong>PLANO DE AÇÃO GRATUITO</strong> para sua empresa <strong>DOBRAR</strong> o faturamento em 90 dias!
+                <p className="text-base sm:text-lg text-dark-text/80 mb-4">
+                  <strong>Conquiste até 3 anos de lucros e resultados em até 6 meses</strong>
                 </p>
+                <p className="text-base sm:text-lg text-dark-text/80">
+                  <strong>Domine as etapas do crescimento da sua empresa:</strong>
+                </p>
+                <ul className="text-base sm:text-lg text-dark-text/80 mt-3 space-y-2">
+                  <li>• Defina onde quer chegar e o que precisa ser feito</li>
+                  <li>• Alcance mais clientes e aumente suas vendas</li>
+                  <li>• Garanta o crescimento sustentável no longo prazo</li>
+                </ul>
               </div>
 
               <div className="flex flex-col items-center w-full">

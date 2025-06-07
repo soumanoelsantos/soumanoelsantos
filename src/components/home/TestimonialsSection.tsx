@@ -42,7 +42,7 @@ const TestimonialsSection = () => {
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} className="h-6 w-6 text-yellow-400 fill-current" />
               ))}
-              <span className="text-gray-300 ml-2">Mais de 15.000 empresários satisfeitos</span>
+              <span className="text-gray-300 ml-2">Mais de 500 empresários satisfeitos</span>
             </div>
           </div>
 
