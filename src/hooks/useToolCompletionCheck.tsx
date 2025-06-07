@@ -49,7 +49,7 @@ export const useToolCompletionCheck = (userId: string | null) => {
           console.log("Double-checking mapa_equipe data directly");
           const mapaEquipeData = await loadMapaEquipeData(userId);
           // Consider it completed if there's data and at least one collaborator with a name
-          const colaboradores = mapaEquipeData?.colaboradores as Colaborador[];
+          const colaboradores = mapaEquipeData?.colaboradores as unknown as Colaborador[];
           mapaEquipeCompleted = !!mapaEquipeData && 
             !!colaboradores && 
             Array.isArray(colaboradores) &&

@@ -41,11 +41,11 @@ export const useDiagnosticData = () => {
         const loadedData = await loadDiagnosticDataFromSupabase(userId);
         
         if (loadedData?.results) {
-          setResults(loadedData.results as DiagnosticResults);
+          setResults(loadedData.results as unknown as DiagnosticResults);
         }
         
         if (loadedData?.answers_data) {
-          setAnswersData(loadedData.answers_data as AnswersDataType);
+          setAnswersData(loadedData.answers_data as unknown as AnswersDataType);
         }
         
         if (loadedData?.id) {
