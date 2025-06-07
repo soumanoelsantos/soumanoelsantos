@@ -80,7 +80,23 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   companyName,
   diagnosticData 
 }) => {
-  const [acoes, setAcoes] = useState<ActionItem[]>(initialActions);
+  // Ensure all actions have proper default values
+  const [acoes, setAcoes] = useState<ActionItem[]>(
+    initialActions.map(action => ({
+      ...action,
+      status: action.status || 'pendente',
+      categoria: action.categoria || 'gestao',
+      prioridade: action.prioridade || 'media',
+      responsavel: action.responsavel || '',
+      recursos: action.recursos || '',
+      metricas: action.metricas || '',
+      beneficios: action.beneficios || '',
+      detalhesImplementacao: action.detalhesImplementacao || '',
+      dicaIA: action.dicaIA || 'Nova ação adicionada. Defina marcos específicos e acompanhe o progresso semanalmente.',
+      semana: action.semana || 1
+    }))
+  );
+  
   const [editingAction, setEditingAction] = useState<ActionItem | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -163,7 +179,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     const actionWithId: ActionItem = {
       ...newAction,
       id: Date.now().toString(),
-      dicaIA: "Nova ação adicionada. Defina marcos específicos e acompanhe o progresso semanalmente.",
+      dicaIA: newAction.dicaIA || "Nova ação adicionada. Defina marcos específicos e acompanhe o progresso semanalmente.",
       semana: Math.ceil(acoes.length / 4) + 1
     };
     setAcoes(prev => [...prev, actionWithId]);
@@ -259,6 +275,11 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('pt-BR');
+  };
+
+  const formatStatusDisplay = (status: string) => {
+    if (!status) return 'pendente';
+    return status.replace('_', ' ');
   };
 
   const ActionForm = ({ 
@@ -577,7 +598,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
                                       </span>
                                       <Badge variant="outline" className={getCorStatus(acao.status)}>
                                         {getIconeStatus(acao.status)}
-                                        <span className="ml-1 capitalize">{acao.status.replace('_', ' ')}</span>
+                                        <span className="ml-1 capitalize">{formatStatusDisplay(acao.status)}</span>
                                       </Badge>
                                     </div>
                                     <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
@@ -691,7 +712,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">
                     {getIconeStatus(status)}
-                    <span className="capitalize">{status.replace('_', ' ')}</span>
+                    <span className="capitalize">{formatStatusDisplay(status)}</span>
                     <Badge variant="secondary" className="ml-auto">
                       {acoes.filter(a => a.status === status).length}
                     </Badge>
