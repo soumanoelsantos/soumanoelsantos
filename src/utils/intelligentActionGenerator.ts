@@ -38,7 +38,17 @@ const comprehensiveActionTemplates = {
     'Explorar vendas consultivas e posicionamento como solucionador',
     'Desenvolver programas de parceria para revendedores/afiliados',
     'Realizar eventos de prospecção (Workshops, Feiras Virtuais)',
-    'Monitorar o ciclo de vendas e buscar reduzi-lo'
+    'Monitorar o ciclo de vendas e buscar reduzi-lo',
+    'Implementar CRM (Customer Relationship Management) avançado',
+    'Oferecer testes gratuitos ou demonstrações de produto/serviço',
+    'Treinar a equipe de vendas em técnicas de fechamento',
+    'Criar urgência e escassez em ofertas (com ética)',
+    'Personalizar a comunicação com o cliente',
+    'Utilizar ferramentas de automação de vendas',
+    'Realizar pesquisas de mercado para novas ofertas',
+    'Desenvolver landing pages otimizadas para conversão',
+    'Analisar as métricas de vendas regularmente',
+    'Implementar sistema de follow-up automático'
   ],
   marketing: [
     'Otimizar o Site/Loja Online (SEO completo)',
@@ -60,7 +70,17 @@ const comprehensiveActionTemplates = {
     'Explorar marketing de influência setorial',
     'Otimizar marketing de vídeo (YouTube, Reels, TikTok)',
     'Personalizar experiência do usuário no site',
-    'Utilizar LinkedIn estrategicamente para leads B2B'
+    'Utilizar LinkedIn estrategicamente para leads B2B',
+    'Investir em marketing de eventos online',
+    'Desenvolver estratégia de PR digital',
+    'Criar conteúdo interativo (quizzes, calculadoras)',
+    'Aproveitar potencial do WhatsApp Business',
+    'Fazer testes A/B consistentes em landing pages',
+    'Monitorar reputação online (brand monitoring)',
+    'Desenvolver estratégia de podcast',
+    'Utilizar ferramentas de análise de dados',
+    'Criar campanhas de e-mail para clientes inativos',
+    'Investir em CRO (Conversion Rate Optimization)'
   ],
   gestao: [
     'Revisar Missão, Visão e Valores da empresa',
@@ -82,7 +102,17 @@ const comprehensiveActionTemplates = {
     'Desenvolver fluxo de aprovação de propostas claro',
     'Definir SLAs para processos internos e externos',
     'Realizar auditorias internas de processos',
-    'Simplificar processo de cotação e orçamento'
+    'Simplificar processo de cotação e orçamento',
+    'Implementar sistema de feedback interno contínuo',
+    'Otimizar gestão do tempo da equipe',
+    'Realizar reuniões de alinhamento regulares',
+    'Utilizar metodologias de gestão de projetos',
+    'Revisar estrutura organizacional',
+    'Implementar sistema de gestão do conhecimento',
+    'Criar cultura de melhoria contínua',
+    'Estabelecer processo de tomada de decisão',
+    'Implementar gestão por resultados',
+    'Desenvolver planejamento estratégico anual'
   ],
   financeiro: [
     'Fazer planejamento financeiro detalhado',
@@ -104,7 +134,17 @@ const comprehensiveActionTemplates = {
     'Automatizar conciliação bancária',
     'Criar relatórios financeiros gerenciais',
     'Estabelecer orçamento por centro de custo',
-    'Implementar análise de ROI por projeto'
+    'Implementar análise de ROI por projeto',
+    'Desenvolver modelo de precificação dinâmica',
+    'Criar sistema de cobrança eficiente',
+    'Implementar controle de despesas rigoroso',
+    'Estabelecer política de crédito clara',
+    'Monitorar indicadores financeiros diariamente',
+    'Criar projeções financeiras realistas',
+    'Implementar gestão de risco financeiro',
+    'Estabelecer metas financeiras por período',
+    'Criar dashboard financeiro executivo',
+    'Implementar auditoria financeira interna'
   ],
   rh: [
     'Contratar talentos alinhados à cultura da empresa',
@@ -126,7 +166,17 @@ const comprehensiveActionTemplates = {
     'Criar programa de integração (onboarding)',
     'Estabelecer política de remuneração competitiva',
     'Desenvolver programa de sucessão',
-    'Implementar avaliação de desempenho 360°'
+    'Implementar avaliação de desempenho 360°',
+    'Criar programa de mentoria interna',
+    'Estabelecer código de conduta empresarial',
+    'Implementar gestão de talentos',
+    'Criar política de desenvolvimento pessoal',
+    'Estabelecer programa de benefícios atrativo',
+    'Implementar gestão por competências',
+    'Criar cultura de feedback contínuo',
+    'Estabelecer programa de retenção de talentos',
+    'Implementar sistema de gestão de performance',
+    'Criar programa de capacitação contínua'
   ],
   operacional: [
     'Mapear e otimizar processos internos',
@@ -148,7 +198,17 @@ const comprehensiveActionTemplates = {
     'Implementar controle de qualidade total',
     'Criar sistema de manutenção preventiva',
     'Estabelecer controle de produtividade',
-    'Implementar melhorias de layout operacional'
+    'Implementar melhorias de layout operacional',
+    'Criar sistema de gestão de inventário',
+    'Implementar lean manufacturing/operações',
+    'Estabelecer métricas de eficiência operacional',
+    'Criar plano de contingência operacional',
+    'Implementar gestão visual (5S)',
+    'Estabelecer padrões de qualidade',
+    'Criar sistema de monitoramento de processos',
+    'Implementar melhoria contínua (Kaizen)',
+    'Estabelecer controle de prazos de entrega',
+    'Criar sistema de rastreabilidade'
   ],
   tecnologia: [
     'Implementar infraestrutura de TI robusta',
@@ -170,7 +230,17 @@ const comprehensiveActionTemplates = {
     'Implementar chatbots e automação de atendimento',
     'Estabelecer política de LGPD e proteção de dados',
     'Criar aplicativo mobile para clientes',
-    'Implementar sistema de assinatura eletrônica'
+    'Implementar sistema de assinatura eletrônica',
+    'Desenvolver API para integrações',
+    'Implementar sistema de análise de dados',
+    'Criar plataforma de self-service',
+    'Estabelecer governança de dados',
+    'Implementar sistema de versionamento',
+    'Criar documentação técnica completa',
+    'Estabelecer testes automatizados',
+    'Implementar monitoramento de sistemas',
+    'Criar disaster recovery plan',
+    'Estabelecer arquitetura escalável'
   ],
   cultura: [
     'Definir missão, visão e valores atualizados',
@@ -192,7 +262,17 @@ const comprehensiveActionTemplates = {
     'Fomentar responsabilidade social corporativa (RSC)',
     'Promover sustentabilidade nas operações',
     'Encorajar pensamento "fora da caixa"',
-    'Comunicar regularmente visão de futuro da empresa'
+    'Comunicar regularmente visão de futuro da empresa',
+    'Criar cultura de inovação',
+    'Estabelecer valores organizacionais claros',
+    'Implementar comunicação interna eficaz',
+    'Criar senso de pertencimento',
+    'Estabelecer cultura colaborativa',
+    'Implementar gestão de mudanças',
+    'Criar ambiente de confiança',
+    'Estabelecer cultura de resultados',
+    'Implementar diversidade e inclusão',
+    'Criar tradições empresariais'
   ],
   relacionamento: [
     'Fortalecer relacionamento com fornecedores chave',
@@ -214,7 +294,17 @@ const comprehensiveActionTemplates = {
     'Criar parcerias acadêmicas',
     'Estabelecer relacionamento com mídia especializada',
     'Desenvolver programa de parceiros tecnológicos',
-    'Criar relacionamento com órgãos reguladores'
+    'Criar relacionamento com órgãos reguladores',
+    'Estabelecer network de fornecedores estratégicos',
+    'Criar parcerias com concorrentes (coopetição)',
+    'Desenvolver relacionamento com startups',
+    'Estabelecer parcerias internacionais',
+    'Criar ecosystem de parceiros',
+    'Desenvolver relacionamento com universidades',
+    'Estabelecer parcerias com ONGs',
+    'Criar network de mentores e advisors',
+    'Desenvolver relacionamento com governo',
+    'Estabelecer parcerias com aceleradoras'
   ],
   produto: [
     'Inovar continuamente no produto/serviço',
@@ -236,7 +326,17 @@ const comprehensiveActionTemplates = {
     'Integrar produto com outras ferramentas/sistemas',
     'Desenvolver tutoriais em vídeo e guias de uso',
     'Realizar análises de mercado para novas oportunidades',
-    'Conduzir análises de concorrência de produto'
+    'Conduzir análises de concorrência de produto',
+    'Implementar analytics de produto',
+    'Criar programa de beta testers',
+    'Estabelecer métricas de sucesso do produto',
+    'Implementar design thinking',
+    'Criar user personas detalhadas',
+    'Estabelecer processo de ideação',
+    'Implementar prototipagem rápida',
+    'Criar backlog de funcionalidades',
+    'Estabelecer critérios de aceitação',
+    'Implementar testes de performance'
   ],
   "sucesso-cliente": [
     'Mapear jornada do cliente pós-venda',
@@ -258,7 +358,17 @@ const comprehensiveActionTemplates = {
     'Oferecer consultorias personalizadas',
     'Antecipar necessidades futuras dos clientes',
     'Desenvolver plano de recuperação para insatisfeitos',
-    'Implementar programa de upsell e cross-sell ético'
+    'Implementar programa de upsell e cross-sell ético',
+    'Criar health score para clientes',
+    'Estabelecer métricas de sucesso do cliente',
+    'Implementar early warning system',
+    'Criar programa de advocacy',
+    'Estabelecer touchpoints regulares',
+    'Implementar customer journey mapping',
+    'Criar programa de educação do cliente',
+    'Estabelecer SLA de atendimento',
+    'Implementar voice of customer program',
+    'Criar centro de excelência em customer success'
   ]
 };
 
@@ -442,98 +552,96 @@ const generateAITip = (action: string, category: string): string => {
 
 export const generateIntelligentActions = ({ 
   results, 
-  companyName, 
-  maxActions = 200 
+  companyName 
 }: GenerateActionsParams): ActionItem[] => {
   const actions: ActionItem[] = [];
   const usedActions = new Set<string>();
   let actionCounter = 1;
 
-  // Usar todas as categorias disponíveis, priorizando por pontuação
+  // Todas as categorias disponíveis
   const allCategories = ['comercial', 'marketing', 'gestao', 'financeiro', 'rh', 'operacional', 'tecnologia', 'cultura', 'relacionamento', 'produto', 'sucesso-cliente'];
   
-  // Para cada categoria, adicionar ações
-  allCategories.forEach(categoria => {
-    const categoryKey = categoria as keyof typeof comprehensiveActionTemplates;
-    const availableTemplates = comprehensiveActionTemplates[categoryKey] || [];
-    
-    // Determinar prioridade baseada nos resultados do diagnóstico
-    let priority: 'alta' | 'media' | 'baixa' = 'media';
-    let nivel: 'critico' | 'atencao' | 'bom' = 'atencao';
-    
-    // Mapear categorias para resultados do diagnóstico
-    const categoryMapping: {[key: string]: string} = {
-      'comercial': 'resultados',
-      'marketing': 'resultados', 
-      'gestao': 'sistemaGestao',
-      'financeiro': 'sistemaGestao',
-      'rh': 'pessoas',
-      'operacional': 'processos',
-      'tecnologia': 'processos',
-      'cultura': 'pessoas',
-      'relacionamento': 'resultados',
-      'produto': 'processos',
-      'sucesso-cliente': 'pessoas'
-    };
-    
-    const diagnosticArea = categoryMapping[categoria];
-    if (diagnosticArea && results[diagnosticArea]) {
-      const score = results[diagnosticArea].percentage || 50;
-      if (score <= 40) {
-        priority = 'alta';
-        nivel = 'critico';
-      } else if (score <= 70) {
-        priority = 'media';
-        nivel = 'atencao';
-      } else {
-        priority = 'baixa';
-        nivel = 'bom';
+  // Determinar o número máximo de ações por categoria
+  const maxActionsPerCategory = Math.max(...Object.values(comprehensiveActionTemplates).map(templates => templates.length));
+  
+  // Intercalar ações por categoria
+  for (let i = 0; i < maxActionsPerCategory; i++) {
+    for (const categoria of allCategories) {
+      const categoryKey = categoria as keyof typeof comprehensiveActionTemplates;
+      const availableTemplates = comprehensiveActionTemplates[categoryKey] || [];
+      
+      // Se esta categoria ainda tem ações disponíveis neste índice
+      if (i < availableTemplates.length) {
+        const template = availableTemplates[i];
+        
+        // Verificar se a ação já foi usada
+        if (usedActions.has(template)) {
+          continue; // Pular esta ação se já existe
+        }
+        
+        usedActions.add(template);
+        
+        // Determinar prioridade baseada nos resultados do diagnóstico
+        let priority: 'alta' | 'media' | 'baixa' = 'media';
+        
+        // Mapear categorias para resultados do diagnóstico
+        const categoryMapping: {[key: string]: string} = {
+          'comercial': 'resultados',
+          'marketing': 'resultados', 
+          'gestao': 'sistemaGestao',
+          'financeiro': 'sistemaGestao',
+          'rh': 'pessoas',
+          'operacional': 'processos',
+          'tecnologia': 'processos',
+          'cultura': 'pessoas',
+          'relacionamento': 'resultados',
+          'produto': 'processos',
+          'sucesso-cliente': 'pessoas'
+        };
+        
+        const diagnosticArea = categoryMapping[categoria];
+        if (diagnosticArea && results[diagnosticArea]) {
+          const score = results[diagnosticArea].pontuacao || 5;
+          if (score <= 3) {
+            priority = 'alta';
+          } else if (score <= 6) {
+            priority = 'media';
+          } else {
+            priority = 'baixa';
+          }
+        }
+
+        const today = new Date();
+        const dueDate = new Date(today);
+        dueDate.setDate(today.getDate() + (actionCounter * 3)); // 3 dias entre ações
+
+        const action: ActionItem = {
+          id: `action_${actionCounter}`,
+          acao: template,
+          categoria: categoryKey as any,
+          prioridade: priority,
+          prazo: getTimeframeByPriority(priority),
+          responsavel: 'A definir',
+          recursos: getResourcesByCategory(categoryKey),
+          metricas: getMetricsByCategory(categoryKey),
+          beneficios: getBenefitsByCategory(categoryKey),
+          dataVencimento: dueDate,
+          concluida: false,
+          detalhesImplementacao: `Ação estratégica focada em ${categoria} para acelerar o crescimento da empresa ${companyName}.`,
+          dicaIA: generateAITip(template, categoryKey),
+          status: getStatusByPriority(priority),
+          semana: Math.ceil(actionCounter / 7),
+          comoFazer: generateSteps(template, categoryKey),
+          completedSteps: []
+        };
+
+        actions.push(action);
+        actionCounter++;
       }
     }
+  }
 
-    // Adicionar ações desta categoria
-    availableTemplates.forEach((template, index) => {
-      if (actionCounter > maxActions) return;
-      
-      const actionName = template;
-      
-      // Verificar se a ação já foi usada
-      if (usedActions.has(actionName)) {
-        return; // Pular esta ação se já existe
-      }
-      
-      usedActions.add(actionName);
-      
-      const today = new Date();
-      const dueDate = new Date(today);
-      dueDate.setDate(today.getDate() + (actionCounter * 3)); // 3 dias entre ações
-
-      const action: ActionItem = {
-        id: `action_${actionCounter}`,
-        acao: actionName,
-        categoria: categoryKey as any,
-        prioridade: priority,
-        prazo: getTimeframeByPriority(priority),
-        responsavel: 'A definir',
-        recursos: getResourcesByCategory(categoryKey),
-        metricas: getMetricsByCategory(categoryKey),
-        beneficios: getBenefitsByCategory(categoryKey),
-        dataVencimento: dueDate,
-        concluida: false,
-        detalhesImplementacao: `Ação estratégica focada em ${categoria} para acelerar o crescimento da empresa ${companyName}.`,
-        dicaIA: generateAITip(template, categoryKey),
-        status: getStatusByPriority(priority),
-        semana: Math.ceil(actionCounter / 7),
-        comoFazer: generateSteps(template, categoryKey),
-        completedSteps: []
-      };
-
-      actions.push(action);
-      actionCounter++;
-    });
-  });
-
-  console.log(`Generated ${actions.length} unique actions across ${allCategories.length} categories`);
+  console.log(`Generated ${actions.length} unique actions across ${allCategories.length} categories (intercalated)`);
   
-  return actions.slice(0, maxActions);
+  return actions;
 };

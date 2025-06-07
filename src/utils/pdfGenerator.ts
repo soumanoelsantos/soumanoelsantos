@@ -1,4 +1,3 @@
-
 import html2pdf from 'html2pdf.js';
 import { getDefaultPdfOptionsConfig } from './pdf/pdfOptions';
 import { getPUVPdfOptionsConfig, getPUVPdfStyles } from './pdf/puvStyles';
@@ -85,7 +84,6 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
           logging: true, 
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#ffffff',
           windowWidth: 1200,
           windowHeight: 1600,
           scrollX: 0,
