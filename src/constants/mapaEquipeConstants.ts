@@ -1,38 +1,30 @@
 
-import { 
-  NivelMaturidade, 
-  EstiloLideranca, 
-  PerfilComportamental,
-  Potencial
-} from "@/types/mapaEquipe";
-
-// Options for dropdowns
-export const niveisMaturidadeOptions: NivelMaturidade[] = [
-  "M1 (Bebê)",
-  "M2 (Criança)",
-  "M3 (Adolescente)",
-  "M4 (Adulto)"
+export const niveisMaturidadeOptions = [
+  "Iniciante",
+  "Intermediário", 
+  "Avançado",
+  "Especialista"
 ];
 
-export const estilosLiderancaOptions: EstiloLideranca[] = [
-  "E1 (Direção)",
-  "E2 (Treinamento)",
-  "E3 (Apoio)",
-  "E4 (Delegação)"
+export const estilosLiderancaOptions = [
+  "Democrático",
+  "Autocrático",
+  "Transformacional",
+  "Situacional",
+  "Coaching"
 ];
 
-export const perfisComportamentaisOptions: PerfilComportamental[] = [
-  "Executor",
-  "Comunicador",
-  "Analista",
-  "Planejador"
+export const perfisComportamentaisOptions = [
+  "Analítico",
+  "Expressivo", 
+  "Condutor",
+  "Amigável",
+  "Versátil"
 ];
 
-export const potenciaisOptions: Potencial[] = [
-  "Sócio",
-  "Diretor",
-  "Gestor",
-  "Supervisor/Coordenador",
-  "Extraordinário",
-  "Stand by"
+export const potenciaisOptions = [
+  "Alto potencial",
+  "Potencial médio",
+  "Desenvolvimento necessário",
+  "Reposicionamento"
 ];
