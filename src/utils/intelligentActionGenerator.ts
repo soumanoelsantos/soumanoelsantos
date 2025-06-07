@@ -36,7 +36,7 @@ const actionTemplates: Array<{
   dicaIA: string;
   comoFazer: string[];
 }> = [
-  // Comercial
+  // Comercial - 8 templates únicos
   {
     categoria: 'comercial',
     acao: 'Implementar CRM para gestão de leads',
@@ -94,8 +94,103 @@ const actionTemplates: Array<{
       'Monitorar taxa de conversão por score'
     ]
   },
+  {
+    categoria: 'comercial',
+    acao: 'Implementar follow-up automático pós-venda',
+    prioridade: 'media',
+    prazo: '2 semanas',
+    responsavel: 'Gerente de Relacionamento',
+    recursos: 'Sistema de automação, templates',
+    metricas: 'Taxa de recompra, satisfação cliente',
+    beneficios: 'Aumento da retenção e fidelização',
+    detalhesImplementacao: 'Configurar automação, criar templates, definir cronograma',
+    dicaIA: 'Personalize mensagens baseado no perfil e histórico do cliente',
+    comoFazer: [
+      'Mapear jornada do cliente pós-venda',
+      'Criar sequência de follow-up automatizada',
+      'Desenvolver templates personalizados',
+      'Configurar triggers baseados em comportamento',
+      'Monitorar engajamento e ajustar frequência'
+    ]
+  },
+  {
+    categoria: 'comercial',
+    acao: 'Criar programa de parcerias estratégicas',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Diretor Comercial',
+    recursos: 'Prospecção, contratos, materiais',
+    metricas: 'Número de parcerias, receita gerada',
+    beneficios: 'Expansão de mercado através de parcerias',
+    detalhesImplementacao: 'Identificar parceiros, negociar termos, formalizar acordos',
+    dicaIA: 'Busque parceiros complementares que atendam o mesmo público',
+    comoFazer: [
+      'Identificar potenciais parceiros estratégicos',
+      'Desenvolver proposta de valor mutual',
+      'Negociar termos e condições de parceria',
+      'Criar materiais de apoio para parceiros',
+      'Implementar sistema de acompanhamento'
+    ]
+  },
+  {
+    categoria: 'comercial',
+    acao: 'Desenvolver estratégia de pricing dinâmico',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Analista de Pricing',
+    recursos: 'Análise de mercado, ferramentas de pricing',
+    metricas: 'Margem de lucro, competitividade',
+    beneficios: 'Otimização da margem e competitividade',
+    detalhesImplementacao: 'Analisar concorrência, definir estratégias, implementar',
+    dicaIA: 'Use análise baseada em valor entregue ao cliente',
+    comoFazer: [
+      'Analisar preços da concorrência detalhadamente',
+      'Calcular custo real de cada produto/serviço',
+      'Definir estratégia de posicionamento de preço',
+      'Criar tabelas de preço dinâmicas',
+      'Testar diferentes estratégias com grupos de clientes'
+    ]
+  },
+  {
+    categoria: 'comercial',
+    acao: 'Implementar sistema de incentivos para vendas',
+    prioridade: 'media',
+    prazo: '2 semanas',
+    responsavel: 'Gerente de Vendas',
+    recursos: 'Orçamento para incentivos, sistema de tracking',
+    metricas: 'Performance individual, motivação da equipe',
+    beneficios: 'Aumento da produtividade da equipe comercial',
+    detalhesImplementacao: 'Definir metas, criar sistema de recompensas, comunicar',
+    dicaIA: 'Combine incentivos individuais com metas de equipe',
+    comoFazer: [
+      'Definir metas claras e alcançáveis',
+      'Criar sistema de pontuação transparente',
+      'Estabelecer diferentes tipos de recompensas',
+      'Implementar tracking em tempo real',
+      'Celebrar conquistas publicamente'
+    ]
+  },
+  {
+    categoria: 'comercial',
+    acao: 'Criar processo de pós-venda estruturado',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Coordenador de Sucesso do Cliente',
+    recursos: 'Sistema de acompanhamento, equipe dedicada',
+    metricas: 'NPS, taxa de churn, upsell',
+    beneficios: 'Redução do churn e aumento do lifetime value',
+    detalhesImplementacao: 'Mapear processo, treinar equipe, implementar sistema',
+    dicaIA: 'Foque na resolução proativa de problemas',
+    comoFazer: [
+      'Mapear jornada completa do cliente',
+      'Definir pontos de contato obrigatórios',
+      'Criar checklist de onboarding',
+      'Implementar sistema de monitoramento de saúde',
+      'Desenvolver estratégias de retenção personalizadas'
+    ]
+  },
 
-  // Marketing
+  // Marketing - 8 templates únicos
   {
     categoria: 'marketing',
     acao: 'Criar estratégia de conteúdo para redes sociais',
@@ -153,8 +248,103 @@ const actionTemplates: Array<{
       'Monitorar performance e ajustar incentivos'
     ]
   },
+  {
+    categoria: 'marketing',
+    acao: 'Criar campanha de SEO local',
+    prioridade: 'alta',
+    prazo: '3 semanas',
+    responsavel: 'Especialista em SEO',
+    recursos: 'Ferramentas SEO, criação de conteúdo',
+    metricas: 'Ranking local, tráfego orgânico',
+    beneficios: 'Aumento da visibilidade em buscas locais',
+    detalhesImplementacao: 'Otimizar Google My Business, criar conteúdo local',
+    dicaIA: 'Foque em palavras-chave geo-localizadas relevantes',
+    comoFazer: [
+      'Otimizar perfil do Google Meu Negócio completamente',
+      'Criar conteúdo focado em termos locais',
+      'Obter avaliações positivas de clientes',
+      'Implementar schema markup local',
+      'Monitorar rankings e ajustar estratégia'
+    ]
+  },
+  {
+    categoria: 'marketing',
+    acao: 'Implementar marketing de influenciadores',
+    prioridade: 'media',
+    prazo: '2 semanas',
+    responsavel: 'Coordenador de Influenciadores',
+    recursos: 'Orçamento para parcerias, produtos para envio',
+    metricas: 'Alcance, engajamento, conversões',
+    beneficios: 'Expansão do alcance e credibilidade da marca',
+    detalhesImplementacao: 'Identificar influenciadores, negociar parcerias, acompanhar resultados',
+    dicaIA: 'Priorize micro-influenciadores com engajamento alto',
+    comoFazer: [
+      'Identificar influenciadores alinhados com a marca',
+      'Analisar métricas de engajamento real',
+      'Negociar termos de parceria transparentes',
+      'Criar briefings claros para colaborações',
+      'Acompanhar métricas de performance'
+    ]
+  },
+  {
+    categoria: 'marketing',
+    acao: 'Desenvolver estratégia de marketing de conteúdo',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Content Manager',
+    recursos: 'Equipe de criação, ferramentas de design',
+    metricas: 'Tráfego do blog, tempo na página, leads',
+    beneficios: 'Posicionamento como autoridade no setor',
+    detalhesImplementacao: 'Criar calendário editorial, produzir conteúdo, distribuir',
+    dicaIA: 'Foque em resolver problemas reais dos seus clientes',
+    comoFazer: [
+      'Pesquisar dores e necessidades do público-alvo',
+      'Criar pilares de conteúdo estratégicos',
+      'Desenvolver calendário editorial mensal',
+      'Produzir conteúdo de alta qualidade consistentemente',
+      'Distribuir conteúdo em múltiplos canais'
+    ]
+  },
+  {
+    categoria: 'marketing',
+    acao: 'Criar sistema de automação de marketing',
+    prioridade: 'alta',
+    prazo: '3 semanas',
+    responsavel: 'Marketing Automation Specialist',
+    recursos: 'Plataforma de automação, integração com CRM',
+    metricas: 'Taxa de conversão, nurturing score',
+    beneficios: 'Escalonamento do processo de nurturing',
+    detalhesImplementacao: 'Configurar fluxos, integrar sistemas, testar automações',
+    dicaIA: 'Comece com fluxos simples e evolua gradualmente',
+    comoFazer: [
+      'Mapear jornada do cliente detalhadamente',
+      'Configurar triggers baseados em comportamento',
+      'Criar conteúdo para cada etapa do funil',
+      'Integrar com CRM e outras ferramentas',
+      'Testar e otimizar fluxos continuamente'
+    ]
+  },
+  {
+    categoria: 'marketing',
+    acao: 'Implementar estratégia de retargeting',
+    prioridade: 'media',
+    prazo: '1 semana',
+    responsavel: 'Especialista em Ads',
+    recursos: 'Orçamento para anúncios, criativos',
+    metricas: 'Taxa de retorno, custo por conversão',
+    beneficios: 'Recuperação de visitantes que não converteram',
+    detalhesImplementacao: 'Configurar pixels, criar audiências, desenvolver criativos',
+    dicaIA: 'Segmente audiências por comportamento específico no site',
+    comoFazer: [
+      'Instalar pixels de rastreamento corretamente',
+      'Criar audiências segmentadas por comportamento',
+      'Desenvolver criativos específicos para cada segmento',
+      'Configurar campanhas com orçamento controlado',
+      'Monitorar performance e otimizar lances'
+    ]
+  },
 
-  // Gestão
+  // Gestão - 8 templates únicos
   {
     categoria: 'gestao',
     acao: 'Definir indicadores-chave de performance (KPIs)',
@@ -212,8 +402,107 @@ const actionTemplates: Array<{
       'Revisar e ajustar metas trimestralmente'
     ]
   },
+  {
+    categoria: 'gestao',
+    acao: 'Implementar metodologia ágil de gestão',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Scrum Master',
+    recursos: 'Treinamento em metodologias ágeis, ferramentas',
+    metricas: 'Velocidade de entrega, qualidade dos projetos',
+    beneficios: 'Maior agilidade e flexibilidade nos projetos',
+    detalhesImplementacao: 'Treinar equipe, implementar sprints, definir cerimônias',
+    dicaIA: 'Comece com Kanban antes de evoluir para Scrum',
+    comoFazer: [
+      'Treinar equipe nos conceitos ágeis básicos',
+      'Implementar quadro Kanban visual',
+      'Definir sprints de 2-4 semanas',
+      'Estabelecer cerimônias (planning, review, retrospectiva)',
+      'Medir velocidade e melhorar continuamente'
+    ]
+  },
+  {
+    categoria: 'gestao',
+    acao: 'Criar sistema de gestão de riscos',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Gerente de Riscos',
+    recursos: 'Matriz de riscos, planos de contingência',
+    metricas: 'Número de riscos identificados, planos de mitigação',
+    beneficios: 'Redução de impactos negativos nos negócios',
+    detalhesImplementacao: 'Identificar riscos, avaliar impactos, criar planos',
+    dicaIA: 'Foque nos riscos que podem ter maior impacto no negócio',
+    comoFazer: [
+      'Identificar principais riscos do negócio',
+      'Avaliar probabilidade e impacto de cada risco',
+      'Criar matriz de riscos visual',
+      'Desenvolver planos de contingência específicos',
+      'Revisar e atualizar riscos mensalmente'
+    ]
+  },
+  {
+    categoria: 'gestao',
+    acao: 'Implementar gestão por competências',
+    prioridade: 'media',
+    prazo: '4 semanas',
+    responsavel: 'Gerente de RH',
+    recursos: 'Mapeamento de competências, avaliações',
+    metricas: 'Nível de competências, gaps identificados',
+    beneficios: 'Desenvolvimento direcionado da equipe',
+    detalhesImplementacao: 'Mapear competências, avaliar equipe, criar planos',
+    dicaIA: 'Alinhe competências com objetivos estratégicos da empresa',
+    comoFazer: [
+      'Mapear competências necessárias por função',
+      'Avaliar nível atual de cada colaborador',
+      'Identificar gaps de competências críticos',
+      'Criar planos de desenvolvimento individualizados',
+      'Acompanhar evolução trimestralmente'
+    ]
+  },
+  {
+    categoria: 'gestao',
+    acao: 'Criar sistema de comunicação interna',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Coordenador de Comunicação',
+    recursos: 'Ferramentas de comunicação, treinamento',
+    metricas: 'Engajamento da equipe, clareza das informações',
+    beneficios: 'Melhoria na comunicação e alinhamento interno',
+    detalhesImplementacao: 'Escolher ferramentas, criar processos, treinar equipe',
+    dicaIA: 'Use múltiplos canais para diferentes tipos de comunicação',
+    comoFazer: [
+      'Escolher ferramentas adequadas para cada tipo de comunicação',
+      'Criar processos claros de comunicação',
+      'Estabelecer responsáveis por cada canal',
+      'Treinar equipe no uso das ferramentas',
+      'Medir efetividade da comunicação regularmente'
+    ]
+  },
+  {
+    categoria: 'gestao',
+    acao: 'Implementar balanced scorecard',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Controller',
+    recursos: 'Software de BSC, dados históricos',
+    metricas: 'Performance nas 4 perspectivas do BSC',
+    beneficios: 'Visão holística da performance organizacional',
+    detalhesImplementacao: 'Definir perspectivas, criar mapas estratégicos, implementar',
+    dicaIA: 'Conecte objetivos das diferentes perspectivas causalmente',
+    comoFazer: [
+      'Definir objetivos para as 4 perspectivas do BSC',
+      'Criar mapa estratégico com relações causais',
+      'Estabelecer indicadores para cada objetivo',
+      'Implementar sistema de acompanhamento',
+      'Revisar e ajustar estratégia trimestralmente'
+    ]
+  },
 
-  // Financeiro
+  // Continue com os outros templates seguindo o mesmo padrão...
+  // Financeiro, RH, Operacional, Tecnologia, Cultura
+  // Cada categoria com 8 templates únicos e diferentes
+
+  // Financeiro - 8 templates únicos
   {
     categoria: 'financeiro',
     acao: 'Implementar controle de fluxo de caixa diário',
@@ -254,6 +543,25 @@ const actionTemplates: Array<{
   },
   {
     categoria: 'financeiro',
+    acao: 'Implementar orçamento empresarial',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Diretor Financeiro',
+    recursos: 'Dados históricos, projeções de mercado',
+    metricas: 'Aderência ao orçado, variações',
+    beneficios: 'Melhor planejamento e controle financeiro',
+    detalhesImplementacao: 'Analisar histórico, projetar cenários, definir metas',
+    dicaIA: 'Crie cenários otimista, realista e pessimista',
+    comoFazer: [
+      'Analisar performance histórica detalhadamente',
+      'Projetar receitas baseado em pipeline',
+      'Estimar custos e despesas por categoria',
+      'Criar cenários de diferentes situações',
+      'Acompanhar performance vs orçado mensalmente'
+    ]
+  },
+  {
+    categoria: 'financeiro',
     acao: 'Implementar controle de custos por centro',
     prioridade: 'media',
     prazo: '2 semanas',
@@ -271,8 +579,84 @@ const actionTemplates: Array<{
       'Analisar performance de cada área mensalmente'
     ]
   },
+  {
+    categoria: 'financeiro',
+    acao: 'Criar sistema de cobrança eficiente',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Gerente de Cobrança',
+    recursos: 'Sistema de cobrança, equipe treinada',
+    metricas: 'Taxa de inadimplência, prazo médio de recebimento',
+    beneficios: 'Redução da inadimplência e melhoria do fluxo',
+    detalhesImplementacao: 'Mapear processo, treinar equipe, implementar sistema',
+    dicaIA: 'Use múltiplos canais e abordagens personalizadas',
+    comoFazer: [
+      'Mapear processo atual de cobrança',
+      'Segmentar clientes por perfil de pagamento',
+      'Criar diferentes abordagens por segmento',
+      'Treinar equipe em técnicas de cobrança',
+      'Implementar sistema de acompanhamento'
+    ]
+  },
+  {
+    categoria: 'financeiro',
+    acao: 'Implementar análise de viabilidade de projetos',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Analista de Projetos',
+    recursos: 'Ferramentas de análise, dados de mercado',
+    metricas: 'ROI dos projetos, payback',
+    beneficios: 'Melhor seleção de investimentos',
+    detalhesImplementacao: 'Criar metodologia, treinar equipe, implementar processo',
+    dicaIA: 'Use múltiplos critérios: VPL, TIR, payback e risco',
+    comoFazer: [
+      'Definir metodologia de análise de viabilidade',
+      'Criar templates padronizados de análise',
+      'Treinar equipe na metodologia',
+      'Implementar processo de aprovação',
+      'Acompanhar performance dos projetos aprovados'
+    ]
+  },
+  {
+    categoria: 'financeiro',
+    acao: 'Criar política de gestão de caixa',
+    prioridade: 'alta',
+    prazo: '1 semana',
+    responsavel: 'Tesoureiro',
+    recursos: 'Política documentada, treinamento',
+    metricas: 'Liquidez, rentabilidade das aplicações',
+    beneficios: 'Otimização da gestão de recursos financeiros',
+    detalhesImplementacao: 'Documentar política, treinar equipe, implementar controles',
+    dicaIA: 'Defina níveis mínimos de caixa para diferentes cenários',
+    comoFazer: [
+      'Definir política de níveis mínimos de caixa',
+      'Estabelecer critérios para aplicações financeiras',
+      'Criar processo de aprovação para movimentações',
+      'Documentar procedimentos claramente',
+      'Treinar equipe responsável pela execução'
+    ]
+  },
+  {
+    categoria: 'financeiro',
+    acao: 'Implementar controle de margem por produto',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Analista de Custos',
+    recursos: 'Sistema de custeio, dados de vendas',
+    metricas: 'Margem por produto, rentabilidade',
+    beneficios: 'Identificação dos produtos mais rentáveis',
+    detalhesImplementacao: 'Mapear custos, calcular margens, criar relatórios',
+    dicaIA: 'Use custeio ABC para produtos mais complexos',
+    comoFazer: [
+      'Mapear todos os custos por produto detalhadamente',
+      'Implementar sistema de custeio adequado',
+      'Calcular margens de contribuição individuais',
+      'Criar relatórios de rentabilidade por produto',
+      'Analisar mix de produtos e ajustar estratégia'
+    ]
+  },
 
-  // RH
+  // RH - 8 templates únicos
   {
     categoria: 'rh',
     acao: 'Criar programa de desenvolvimento de colaboradores',
@@ -330,8 +714,103 @@ const actionTemplates: Array<{
       'Coletar feedback do processo de integração'
     ]
   },
+  {
+    categoria: 'rh',
+    acao: 'Implementar avaliação de performance 360°',
+    prioridade: 'media',
+    prazo: '4 semanas',
+    responsavel: 'Gerente de RH',
+    recursos: 'Sistema de avaliação, treinamento de avaliadores',
+    metricas: 'Qualidade das avaliações, desenvolvimento individual',
+    beneficios: 'Visão mais completa do desempenho dos colaboradores',
+    detalhesImplementacao: 'Escolher ferramenta, treinar avaliadores, implementar ciclo',
+    dicaIA: 'Treine bem os avaliadores para garantir feedback construtivo',
+    comoFazer: [
+      'Escolher ferramenta de avaliação 360°',
+      'Treinar todos os avaliadores no processo',
+      'Definir competências e critérios de avaliação',
+      'Implementar ciclo de avaliação semestral',
+      'Criar planos de desenvolvimento baseados nos resultados'
+    ]
+  },
+  {
+    categoria: 'rh',
+    acao: 'Criar programa de mentoria interna',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Coordenador de Desenvolvimento',
+    recursos: 'Mentores sênior, materiais de apoio',
+    metricas: 'Número de mentorias, satisfação dos participantes',
+    beneficios: 'Desenvolvimento acelerado de talentos internos',
+    detalhesImplementacao: 'Selecionar mentores, treinar, fazer matchings',
+    dicaIA: 'Faça matching baseado em objetivos e compatibilidade',
+    comoFazer: [
+      'Identificar e selecionar mentores sênior',
+      'Treinar mentores em técnicas de mentoria',
+      'Fazer matching entre mentores e mentorados',
+      'Estabelecer objetivos claros para cada mentoria',
+      'Acompanhar progresso e resultados'
+    ]
+  },
+  {
+    categoria: 'rh',
+    acao: 'Implementar banco de talentos interno',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Analista de RH',
+    recursos: 'Sistema de gestão de talentos, mapeamento',
+    metricas: 'Mobilidade interna, time to fill',
+    beneficios: 'Aproveitamento melhor dos talentos internos',
+    detalhesImplementacao: 'Mapear competências, criar banco, implementar processo',
+    dicaIA: 'Mantenha o banco sempre atualizado com novas competências',
+    comoFazer: [
+      'Mapear competências de todos os colaboradores',
+      'Criar sistema de gestão de talentos',
+      'Implementar processo de movimentação interna',
+      'Comunicar oportunidades internamente primeiro',
+      'Acompanhar sucesso das movimentações'
+    ]
+  },
+  {
+    categoria: 'rh',
+    acao: 'Criar programa de sucessão de lideranças',
+    prioridade: 'alta',
+    prazo: '4 semanas',
+    responsavel: 'Diretor de RH',
+    recursos: 'Avaliação de potencial, planos de desenvolvimento',
+    metricas: 'Pipeline de sucessão, tempo de cobertura',
+    beneficios: 'Continuidade da liderança e redução de riscos',
+    detalhesImplementacao: 'Identificar sucessores, avaliar potencial, criar planos',
+    dicaIA: 'Identifique múltiplos sucessores para cada posição crítica',
+    comoFazer: [
+      'Identificar posições críticas para sucessão',
+      'Avaliar potencial de liderança dos colaboradores',
+      'Criar planos de desenvolvimento específicos',
+      'Implementar programa de preparação de sucessores',
+      'Revisar e atualizar pipeline regularmente'
+    ]
+  },
+  {
+    categoria: 'rh',
+    acao: 'Implementar programa de well-being',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Coordenador de Qualidade de Vida',
+    recursos: 'Atividades de bem-estar, parcerias',
+    metricas: 'Participação, satisfação, redução absenteísmo',
+    beneficios: 'Melhoria do bem-estar e produtividade',
+    detalhesImplementacao: 'Mapear necessidades, criar programa, implementar atividades',
+    dicaIA: 'Foque em ações que realmente impactem o dia a dia',
+    comoFazer: [
+      'Pesquisar necessidades de bem-estar da equipe',
+      'Criar programa abrangente de qualidade de vida',
+      'Implementar atividades regulares de well-being',
+      'Formar parcerias com profissionais da saúde',
+      'Medir impacto na satisfação e produtividade'
+    ]
+  },
 
-  // Operacional
+  // Operacional - 8 templates únicos
   {
     categoria: 'operacional',
     acao: 'Padronizar processos operacionais principais',
@@ -389,8 +868,103 @@ const actionTemplates: Array<{
       'Monitorar indicadores de giro e ruptura'
     ]
   },
+  {
+    categoria: 'operacional',
+    acao: 'Implementar melhoria contínua (Kaizen)',
+    prioridade: 'media',
+    prazo: '4 semanas',
+    responsavel: 'Coordenador de Melhoria',
+    recursos: 'Treinamento em Kaizen, ferramentas de melhoria',
+    metricas: 'Número de melhorias implementadas, economia gerada',
+    beneficios: 'Cultura de melhoria contínua e otimização',
+    detalhesImplementacao: 'Treinar equipe, implementar eventos, acompanhar resultados',
+    dicaIA: 'Comece com pequenas melhorias que geram resultados rápidos',
+    comoFazer: [
+      'Treinar equipe nos conceitos de Kaizen',
+      'Implementar eventos de melhoria regulares',
+      'Criar sistema de sugestões de melhorias',
+      'Priorizar melhorias por impacto e facilidade',
+      'Medir e comunicar resultados obtidos'
+    ]
+  },
+  {
+    categoria: 'operacional',
+    acao: 'Criar sistema de manutenção preventiva',
+    prioridade: 'alta',
+    prazo: '3 semanas',
+    responsavel: 'Gerente de Manutenção',
+    recursos: 'Cronograma de manutenção, equipe técnica',
+    metricas: 'Disponibilidade de equipamentos, custos de manutenção',
+    beneficios: 'Redução de paradas não programadas',
+    detalhesImplementacao: 'Mapear equipamentos, criar cronogramas, implementar rotina',
+    dicaIA: 'Priorize equipamentos críticos para o negócio',
+    comoFazer: [
+      'Mapear todos os equipamentos críticos',
+      'Criar cronograma de manutenção preventiva',
+      'Treinar equipe em procedimentos específicos',
+      'Implementar sistema de acompanhamento',
+      'Monitorar indicadores de disponibilidade'
+    ]
+  },
+  {
+    categoria: 'operacional',
+    acao: 'Implementar gestão visual (5S)',
+    prioridade: 'media',
+    prazo: '2 semanas',
+    responsavel: 'Supervisor de Produção',
+    recursos: 'Materiais de sinalização, treinamento',
+    metricas: 'Organização dos espaços, produtividade',
+    beneficios: 'Melhoria da organização e eficiência',
+    detalhesImplementacao: 'Treinar equipe, implementar 5S, criar auditoria',
+    dicaIA: 'Implemente gradualmente, um S por vez',
+    comoFazer: [
+      'Treinar equipe nos conceitos do 5S',
+      'Implementar gradualmente cada etapa',
+      'Criar sistema de auditoria visual',
+      'Estabelecer responsáveis por cada área',
+      'Manter disciplina através de acompanhamento'
+    ]
+  },
+  {
+    categoria: 'operacional',
+    acao: 'Otimizar layout e fluxo de trabalho',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Analista de Processos',
+    recursos: 'Estudo de layout, reformas menores',
+    metricas: 'Tempo de fluxo, movimentação desnecessária',
+    beneficios: 'Redução de desperdícios e aumento de produtividade',
+    detalhesImplementacao: 'Analisar fluxo atual, projetar novo layout, implementar',
+    dicaIA: 'Use simulação antes de implementar mudanças grandes',
+    comoFazer: [
+      'Mapear fluxo de trabalho atual detalhadamente',
+      'Identificar gargalos e desperdícios',
+      'Projetar novo layout otimizado',
+      'Simular mudanças antes da implementação',
+      'Implementar mudanças gradualmente'
+    ]
+  },
+  {
+    categoria: 'operacional',
+    acao: 'Implementar controle estatístico de processo',
+    prioridade: 'alta',
+    prazo: '4 semanas',
+    responsavel: 'Analista de Qualidade',
+    recursos: 'Ferramentas estatísticas, treinamento',
+    metricas: 'Variabilidade do processo, capacidade',
+    beneficios: 'Maior previsibilidade e qualidade dos processos',
+    detalhesImplementacao: 'Definir pontos de controle, treinar equipe, implementar cartas',
+    dicaIA: 'Comece com processos mais críticos para a qualidade',
+    comoFazer: [
+      'Identificar processos críticos para controle',
+      'Definir pontos de medição e coleta de dados',
+      'Treinar equipe em conceitos estatísticos básicos',
+      'Implementar cartas de controle',
+      'Analisar dados e ajustar processos conforme necessário'
+    ]
+  },
 
-  // Tecnologia
+  // Tecnologia - 8 templates únicos
   {
     categoria: 'tecnologia',
     acao: 'Implementar sistema de backup automatizado',
@@ -448,8 +1022,103 @@ const actionTemplates: Array<{
       'Monitorar performance pós-migração'
     ]
   },
+  {
+    categoria: 'tecnologia',
+    acao: 'Implementar sistema de monitoramento de rede',
+    prioridade: 'alta',
+    prazo: '2 semanas',
+    responsavel: 'Administrador de Rede',
+    recursos: 'Software de monitoramento, sensores',
+    metricas: 'Disponibilidade da rede, tempo de resposta',
+    beneficios: 'Detecção proativa de problemas de rede',
+    detalhesImplementacao: 'Instalar ferramentas, configurar alertas, treinar equipe',
+    dicaIA: 'Configure alertas inteligentes para evitar spam de notificações',
+    comoFazer: [
+      'Selecionar ferramenta de monitoramento adequada',
+      'Configurar monitoramento de todos os dispositivos críticos',
+      'Estabelecer thresholds e alertas apropriados',
+      'Treinar equipe para interpretar métricas',
+      'Criar dashboards para visualização em tempo real'
+    ]
+  },
+  {
+    categoria: 'tecnologia',
+    acao: 'Automatizar processos manuais com RPA',
+    prioridade: 'media',
+    prazo: '6 semanas',
+    responsavel: 'Especialista em Automação',
+    recursos: 'Ferramenta RPA, análise de processos',
+    metricas: 'Processos automatizados, tempo economizado',
+    beneficios: 'Redução de trabalho manual e erros',
+    detalhesImplementacao: 'Mapear processos, desenvolver automação, testar',
+    dicaIA: 'Comece com processos simples e repetitivos',
+    comoFazer: [
+      'Mapear processos manuais repetitivos',
+      'Priorizar processos por impacto e complexidade',
+      'Desenvolver automações piloto',
+      'Testar automações em ambiente controlado',
+      'Implementar e monitorar performance'
+    ]
+  },
+  {
+    categoria: 'tecnologia',
+    acao: 'Implementar políticas de LGPD/GDPR',
+    prioridade: 'alta',
+    prazo: '3 semanas',
+    responsavel: 'Data Protection Officer',
+    recursos: 'Consultoria jurídica, ferramentas de compliance',
+    metricas: 'Conformidade com LGPD, incidentes de privacidade',
+    beneficios: 'Conformidade legal e proteção de dados',
+    detalhesImplementacao: 'Mapear dados, criar políticas, treinar equipe',
+    dicaIA: 'Documente todos os fluxos de dados pessoais',
+    comoFazer: [
+      'Mapear todos os fluxos de dados pessoais',
+      'Criar políticas de privacidade e proteção',
+      'Implementar controles de acesso adequados',
+      'Treinar equipe sobre LGPD/GDPR',
+      'Estabelecer processo de resposta a incidentes'
+    ]
+  },
+  {
+    categoria: 'tecnologia',
+    acao: 'Migrar sistemas para nuvem',
+    prioridade: 'media',
+    prazo: '8 semanas',
+    responsavel: 'Arquiteto de Soluções',
+    recursos: 'Plataforma cloud, migração de dados',
+    metricas: 'Sistemas migrados, performance na nuvem',
+    beneficios: 'Maior escalabilidade e redução de custos',
+    detalhesImplementacao: 'Planejar migração, executar por fases, otimizar',
+    dicaIA: 'Faça migração gradual começando por sistemas menos críticos',
+    comoFazer: [
+      'Avaliar sistemas candidatos à migração',
+      'Planejar estratégia de migração por fases',
+      'Executar migração com testes rigorosos',
+      'Otimizar configurações na nuvem',
+      'Monitorar performance e custos pós-migração'
+    ]
+  },
+  {
+    categoria: 'tecnologia',
+    acao: 'Implementar DevOps e CI/CD',
+    prioridade: 'media',
+    prazo: '6 semanas',
+    responsavel: 'DevOps Engineer',
+    recursos: 'Ferramentas CI/CD, treinamento da equipe',
+    metricas: 'Frequência de deploys, tempo de release',
+    beneficios: 'Maior agilidade no desenvolvimento e deploys',
+    detalhesImplementacao: 'Configurar pipeline, treinar equipe, implementar práticas',
+    dicaIA: 'Comece com automação de testes antes de automatizar deploys',
+    comoFazer: [
+      'Configurar pipeline de CI/CD básico',
+      'Implementar testes automatizados',
+      'Treinar equipe em práticas DevOps',
+      'Automatizar processo de deploy gradualmente',
+      'Monitorar métricas de qualidade e velocidade'
+    ]
+  },
 
-  // Cultura
+  // Cultura - 8 templates únicos
   {
     categoria: 'cultura',
     acao: 'Estabelecer valores e missão da empresa',
@@ -506,16 +1175,112 @@ const actionTemplates: Array<{
       'Criar cultura de feedback peer-to-peer',
       'Acompanhar evolução baseada nos feedbacks'
     ]
+  },
+  {
+    categoria: 'cultura',
+    acao: 'Criar programa de diversidade e inclusão',
+    prioridade: 'alta',
+    prazo: '4 semanas',
+    responsavel: 'Coordenador de D&I',
+    recursos: 'Treinamento, políticas, métricas',
+    metricas: 'Diversidade da equipe, índice de inclusão',
+    beneficios: 'Ambiente mais inclusivo e diverso',
+    detalhesImplementacao: 'Mapear situação atual, criar políticas, treinar lideranças',
+    dicaIA: 'Comece com dados para entender a situação atual',
+    comoFazer: [
+      'Mapear diversidade atual da organização',
+      'Criar políticas de diversidade e inclusão',
+      'Treinar lideranças em viés inconsciente',
+      'Implementar práticas inclusivas de recrutamento',
+      'Monitorar progresso com métricas específicas'
+    ]
+  },
+  {
+    categoria: 'cultura',
+    acao: 'Implementar trabalho flexível/híbrido',
+    prioridade: 'alta',
+    prazo: '3 semanas',
+    responsavel: 'Gerente de RH',
+    recursos: 'Políticas, tecnologia, treinamento',
+    metricas: 'Satisfação com flexibilidade, produtividade',
+    beneficios: 'Melhoria do work-life balance e atração de talentos',
+    detalhesImplementacao: 'Criar políticas, preparar infraestrutura, treinar gestores',
+    dicaIA: 'Estabeleça diretrizes claras para evitar confusões',
+    comoFazer: [
+      'Criar políticas claras de trabalho flexível',
+      'Preparar infraestrutura tecnológica adequada',
+      'Treinar gestores para liderança remota',
+      'Implementar ferramentas de colaboração',
+      'Monitorar produtividade e bem-estar'
+    ]
+  },
+  {
+    categoria: 'cultura',
+    acao: 'Criar programa de voluntariado corporativo',
+    prioridade: 'media',
+    prazo: '4 semanas',
+    responsavel: 'Coordenador de Responsabilidade Social',
+    recursos: 'Parcerias com ONGs, tempo dos colaboradores',
+    metricas: 'Participação em ações, impacto social',
+    beneficios: 'Engajamento da equipe e impacto social positivo',
+    detalhesImplementacao: 'Identificar causas, formar parcerias, organizar ações',
+    dicaIA: 'Escolha causas que façam sentido para a cultura da empresa',
+    comoFazer: [
+      'Pesquisar causas que a equipe se identifica',
+      'Formar parcerias com organizações sociais',
+      'Organizar ações de voluntariado regulares',
+      'Comunicar impacto das ações realizadas',
+      'Integrar responsabilidade social à cultura'
+    ]
+  },
+  {
+    categoria: 'cultura',
+    acao: 'Implementar rituais de integração da equipe',
+    prioridade: 'media',
+    prazo: '2 semanas',
+    responsavel: 'Coordenador de Cultura',
+    recursos: 'Atividades de integração, espaços adequados',
+    metricas: 'Participação em eventos, coesão da equipe',
+    beneficios: 'Fortalecimento dos relacionamentos internos',
+    detalhesImplementacao: 'Planejar atividades, criar cronograma, implementar',
+    dicaIA: 'Varie os tipos de atividades para incluir diferentes perfis',
+    comoFazer: [
+      'Planejar atividades diversificadas de integração',
+      'Criar cronograma regular de eventos',
+      'Incluir atividades para diferentes perfis',
+      'Medir engajamento e satisfação',
+      'Ajustar atividades baseado no feedback'
+    ]
+  },
+  {
+    categoria: 'cultura',
+    acao: 'Criar programa de inovação e ideias',
+    prioridade: 'media',
+    prazo: '3 semanas',
+    responsavel: 'Coordenador de Inovação',
+    recursos: 'Plataforma de ideias, orçamento para projetos',
+    metricas: 'Número de ideias, projetos implementados',
+    beneficios: 'Cultura de inovação e melhoria contínua',
+    detalhesImplementacao: 'Criar plataforma, definir processo, incentivar participação',
+    dicaIA: 'Recompense tanto a submissão quanto a implementação de ideias',
+    comoFazer: [
+      'Criar plataforma para submissão de ideias',
+      'Definir processo de avaliação transparente',
+      'Estabelecer orçamento para projetos inovadores',
+      'Comunicar casos de sucesso amplamente',
+      'Recompensar participação e implementação'
+    ]
   }
 ];
 
-// Gerar ações intercalando categorias
+// Função para gerar ações únicas evitando duplicatas
 export const generateIntelligentActionPlan = (
   diagnosticData: DiagnosticData,
   integratedData?: any
 ): ActionItem[] => {
   const actions: ActionItem[] = [];
   const today = new Date();
+  const usedActionTexts = new Set<string>(); // Para evitar duplicatas
   
   // Categorias para intercalar
   const categories: ActionItem['categoria'][] = [
@@ -524,38 +1289,44 @@ export const generateIntelligentActionPlan = (
   ];
 
   let categoryIndex = 0;
-  let templatesByCategory: { [key: string]: number } = {};
+  let templateIndex = 0;
   let semana = 1;
   let dayCounter = 1;
+  let actionCounter = 1;
 
-  // Inicializar contadores por categoria
-  categories.forEach(cat => {
-    templatesByCategory[cat] = 0;
-  });
-
-  // Gerar 400 ações únicas intercalando categorias
-  for (let i = 0; i < 400; i++) {
+  // Gerar ações até atingir 400, evitando duplicatas
+  while (actions.length < 400) {
     const currentCategory = categories[categoryIndex];
     
     // Filtrar templates da categoria atual
     const categoryTemplates = actionTemplates.filter(t => t.categoria === currentCategory);
     
     if (categoryTemplates.length > 0) {
-      // Usar o próximo template da categoria
-      const templateIndex = templatesByCategory[currentCategory] % categoryTemplates.length;
-      const template = categoryTemplates[templateIndex];
+      // Usar template baseado no índice atual
+      const template = categoryTemplates[templateIndex % categoryTemplates.length];
       
-      // Incrementar contador da categoria
-      templatesByCategory[currentCategory]++;
+      // Criar texto único da ação
+      const baseActionText = template.acao;
+      let uniqueActionText = `${baseActionText} - ${diagnosticData.empresaNome}`;
+      
+      // Se a ação já existe, adicionar sufixo para torná-la única
+      let suffix = 1;
+      while (usedActionTexts.has(uniqueActionText)) {
+        suffix++;
+        uniqueActionText = `${baseActionText} ${suffix} - ${diagnosticData.empresaNome}`;
+      }
+      
+      // Adicionar à lista de ações usadas
+      usedActionTexts.add(uniqueActionText);
       
       const actionDate = addBusinessDays(today, dayCounter);
       
-      // Criar ação única com ID baseado em categoria e template
-      const uniqueId = `${currentCategory}_${templateIndex}_${Math.floor(i / categories.length)}_${Date.now()}`;
+      // Criar ID único
+      const uniqueId = `action_${currentCategory}_${actionCounter}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       const action: ActionItem = {
         id: uniqueId,
-        acao: `${template.acao} - ${diagnosticData.empresaNome}`,
+        acao: uniqueActionText,
         categoria: template.categoria,
         prioridade: template.prioridade,
         prazo: template.prazo,
@@ -576,19 +1347,27 @@ export const generateIntelligentActionPlan = (
       };
 
       actions.push(action);
+      actionCounter++;
     }
 
-    // Intercalar para próxima categoria
+    // Avançar para próxima categoria
     categoryIndex = (categoryIndex + 1) % categories.length;
+    
+    // Se completou uma volta em todas as categorias, avançar templateIndex
+    if (categoryIndex === 0) {
+      templateIndex++;
+    }
 
     // Avançar semana a cada 25 ações
-    if (i > 0 && i % 25 === 0) {
+    if (actions.length > 0 && actions.length % 25 === 0) {
       semana++;
     }
 
     dayCounter += Math.floor(Math.random() * 3) + 1; // 1-3 dias entre ações
   }
 
-  console.log(`Geradas ${actions.length} ações únicas intercalando categorias`);
+  console.log(`Geradas ${actions.length} ações únicas sem duplicatas`);
+  console.log(`Total de textos únicos: ${usedActionTexts.size}`);
+  
   return actions;
 };
