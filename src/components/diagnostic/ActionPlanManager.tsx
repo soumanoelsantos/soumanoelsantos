@@ -400,7 +400,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     ));
   };
 
-  const updateActionStatus = (acaoId: string, newStatus: ActionItem['status']) => {
+  const updateActionStatus = (acaoId: string, newStatus: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado') => {
     setAcoes(prev => prev.map(acao => 
       acao.id === acaoId ? { 
         ...acao, 
@@ -456,6 +456,19 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   };
 
   const addSuggestedAction = (suggestion: string) => {
+    // Filter out actions that already exist to prevent duplicates
+    const existingActions = acoes.map(acao => acao.acao.toLowerCase());
+    const suggestionLower = suggestion.toLowerCase();
+    
+    if (existingActions.includes(suggestionLower)) {
+      toast({
+        title: "Ação já existe",
+        description: "Esta ação já está presente no seu plano.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newAction: ActionItem = {
       id: Date.now().toString(),
       acao: suggestion,
@@ -1024,7 +1037,13 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {sugestedActions.map((suggestion, index) => (
+              {sugestedActions
+                .filter(suggestion => {
+                  // Filter out suggestions that already exist in the action plan
+                  const existingActions = acoes.map(acao => acao.acao.toLowerCase());
+                  return !existingActions.includes(suggestion.toLowerCase());
+                })
+                .map((suggestion, index) => (
                 <Button
                   key={index}
                   variant="outline"
@@ -1128,7 +1147,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
                                 <div className="flex gap-2 items-center">
                                   <Select
                                     value={acao.status}
-                                    onValueChange={(value: ActionItem['status']) => updateActionStatus(acao.id, value)}
+                                    onValueChange={(value: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado') => updateActionStatus(acao.id, value)}
                                   >
                                     <SelectTrigger className="w-32 h-8">
                                       <SelectValue />
