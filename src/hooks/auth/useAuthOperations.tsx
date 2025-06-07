@@ -1,3 +1,4 @@
+
 import { useToast } from '@/hooks/use-toast';
 import { authService } from '@/services/auth';
 
@@ -34,7 +35,7 @@ export const useAuthOperations = (
         throw new Error(errorMessage);
       }
 
-      // Store redirect path in localStorage - default to /membros if none specified
+      // Store redirect path in localStorage - always default to /membros
       const finalRedirectPath = redirectPath || '/membros';
       handleRedirectPath(finalRedirectPath);
 
