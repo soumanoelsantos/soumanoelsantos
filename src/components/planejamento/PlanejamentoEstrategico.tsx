@@ -45,18 +45,18 @@ const PlanejamentoEstrategico = () => {
 
         <DiagnosticoResultados 
           resultados={dados.ferramentasGeradas.diagnostico}
-          empresaNome={dados.empresaNome}
+          respostas={dados.respostas}
+          onContinuar={() => {}}
         />
 
         <FerramentasResultados 
-          ferramentas={dados.ferramentasGeradas}
-          empresaNome={dados.empresaNome}
+          dados={dados}
         />
 
         <PlanoAcaoGerado 
-          planoAcao={dados.planoAcao}
-          progresso={dados.progresso}
+          dados={dados}
           onUpdateProgresso={handleUpdateProgresso}
+          onVoltar={voltarParaFormulario}
         />
       </div>
     );
