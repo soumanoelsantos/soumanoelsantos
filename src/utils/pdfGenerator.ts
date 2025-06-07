@@ -15,7 +15,10 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
   try {
     console.log('Starting PDF generation...');
     console.log('Element:', element);
-    console.log('Element content:', element.innerHTML);
+    console.log('Element content preview:', element.innerHTML.substring(0, 500));
+    
+    // Clone the element to avoid modifying the original
+    const clonedElement = element.cloneNode(true) as HTMLElement;
     
     // Default options
     let options = getDefaultPdfOptionsConfig();
@@ -25,7 +28,7 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       // Add PUV specific styles
       const styleElement = document.createElement('style');
       styleElement.textContent = getPUVPdfStyles();
-      element.appendChild(styleElement);
+      clonedElement.appendChild(styleElement);
       
       // Use PUV specific options if available
       options = getPUVPdfOptionsConfig();
@@ -40,7 +43,7 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       // Add mapa-equipe specific styles
       const styleElement = document.createElement('style');
       styleElement.textContent = getMapaEquipeStyles();
-      element.appendChild(styleElement);
+      clonedElement.appendChild(styleElement);
       
       // Use mapa-equipe specific options if available
       options = getMapaEquipePdfOptionsConfig();
@@ -55,7 +58,7 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       // Add SWOT specific styles
       const styleElement = document.createElement('style');
       styleElement.textContent = getSwotPdfStyles();
-      element.appendChild(styleElement);
+      clonedElement.appendChild(styleElement);
       
       // Use SWOT specific options if available
       options = getSwotPdfOptionsConfig();
@@ -64,29 +67,39 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       if (fileName) {
         options.filename = fileName;
       }
-      
-      // Add link redirection function to the PDF for CTA button
-      const scriptElement = document.createElement('script');
-      scriptElement.textContent = `
-        document.addEventListener('click', function(e) {
-          if (e.target && e.target.closest('a[href="https://soumanoelsantos.com.br"]')) {
-            window.open('https://soumanoelsantos.com.br', '_blank');
-          }
-        });
-      `;
-      element.appendChild(scriptElement);
     }
-    // Check if it's a diagnostic PDF (action plan) - this is our case
+    // Check if it's a diagnostic PDF (action plan)
     else if (element.classList.contains('pdf-export') || element.querySelector('.action-plan-content') || fileName?.includes('plano_acao')) {
       console.log('Detected action plan PDF generation');
       
       // Add diagnostic specific styles
       const styleElement = document.createElement('style');
       styleElement.textContent = getDiagnosticPdfStyles();
-      element.appendChild(styleElement);
+      clonedElement.appendChild(styleElement);
       
-      // Use diagnostic specific options
-      options = getDiagnosticPdfOptionsConfig();
+      // Use diagnostic specific options with better configuration
+      options = {
+        ...getDiagnosticPdfOptionsConfig(),
+        html2canvas: { 
+          scale: 1.5,
+          logging: true, 
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          windowWidth: 1200,
+          windowHeight: 1600,
+          scrollX: 0,
+          scrollY: 0,
+          width: 1200,
+          height: null
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        }
+      };
       
       // Override filename if provided
       if (fileName) {
@@ -103,41 +116,48 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
     }
 
     console.log('PDF options:', options);
+    console.log('Element to be converted has content length:', clonedElement.innerHTML.length);
+    
+    // Temporarily add the cloned element to the DOM for html2pdf processing
+    clonedElement.style.position = 'absolute';
+    clonedElement.style.left = '-9999px';
+    clonedElement.style.top = '0';
+    clonedElement.style.width = '210mm';
+    clonedElement.style.backgroundColor = 'white';
+    clonedElement.style.color = 'black';
+    clonedElement.style.fontFamily = 'Arial, sans-serif';
+    clonedElement.style.fontSize = '12px';
+    clonedElement.style.lineHeight = '1.4';
+    clonedElement.style.padding = '20px';
+    clonedElement.style.boxSizing = 'border-box';
+    
+    document.body.appendChild(clonedElement);
+
     console.log('Starting html2pdf conversion...');
 
     // Generate PDF
     return html2pdf()
-      .from(element)
+      .from(clonedElement)
       .set(options)
       .save()
       .then(() => {
         console.log('PDF generated successfully');
         
-        // Remove any temporary style elements after a delay
-        setTimeout(() => {
-          const styleElements = element.querySelectorAll('style');
-          styleElements.forEach(el => {
-            if (el.textContent?.includes('puv-preview') || 
-                el.textContent?.includes('mapa-equipe-preview') ||
-                el.textContent?.includes('swot-pdf-container') ||
-                el.textContent?.includes('pdf-export')) {
-              el.remove();
-            }
-          });
-          
-          // Remove any temporary script elements
-          const scriptElements = element.querySelectorAll('script');
-          scriptElements.forEach(el => {
-            if (el.textContent?.includes('soumanoelsantos.com.br')) {
-              el.remove();
-            }
-          });
-        }, 1000);
+        // Remove the cloned element after generation
+        if (clonedElement.parentNode) {
+          clonedElement.parentNode.removeChild(clonedElement);
+        }
         
         return true;
       })
       .catch((error: any) => {
         console.error('Error during PDF generation:', error);
+        
+        // Remove the cloned element in case of error
+        if (clonedElement.parentNode) {
+          clonedElement.parentNode.removeChild(clonedElement);
+        }
+        
         return false;
       });
     

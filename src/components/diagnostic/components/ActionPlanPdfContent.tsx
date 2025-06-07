@@ -17,14 +17,17 @@ const ActionPlanPdfContent = ({ companyName, actions }: ActionPlanPdfContentProp
   }, {} as Record<string, ActionItem[]>);
 
   const categoryNames = {
-    comercial: 'Comercial',
-    marketing: 'Marketing',
-    gestao: 'Gestão',
+    comercial: 'Comercial e Vendas',
+    marketing: 'Marketing Digital',
+    gestao: 'Gestão Estratégica',
     financeiro: 'Financeiro',
     rh: 'Recursos Humanos',
     operacional: 'Operacional',
-    tecnologia: 'Tecnologia',
-    cultura: 'Cultura Organizacional'
+    tecnologia: 'Tecnologia e Inovação',
+    cultura: 'Cultura Organizacional',
+    relacionamento: 'Relacionamento e Networking',
+    produto: 'Produto e Desenvolvimento',
+    "sucesso-cliente": 'Sucesso do Cliente'
   };
 
   const priorityColors = {
@@ -46,143 +49,160 @@ const ActionPlanPdfContent = ({ companyName, actions }: ActionPlanPdfContentProp
       color: 'black', 
       padding: '20px', 
       fontFamily: 'Arial, sans-serif',
-      fontSize: '12px',
-      lineHeight: '1.4',
-      maxWidth: '800px',
-      margin: '0 auto'
+      fontSize: '11px',
+      lineHeight: '1.3',
+      maxWidth: 'none',
+      margin: '0'
     }}>
       {/* Header */}
       <div style={{ 
         textAlign: 'center', 
-        marginBottom: '30px', 
+        marginBottom: '25px', 
         borderBottom: '2px solid #ccc', 
-        paddingBottom: '20px' 
+        paddingBottom: '15px' 
       }}>
         <h1 style={{ 
-          fontSize: '24px', 
+          fontSize: '22px', 
           fontWeight: 'bold', 
           color: 'black', 
-          marginBottom: '10px',
-          margin: '0 0 10px 0'
+          marginBottom: '8px',
+          margin: '0 0 8px 0'
         }}>
-          Plano de Aceleração Empresarial
+          Plano de Aceleração Empresarial Completo
         </h1>
         <h2 style={{ 
-          fontSize: '18px', 
+          fontSize: '16px', 
           color: '#333', 
-          marginBottom: '15px',
-          margin: '0 0 15px 0'
+          marginBottom: '12px',
+          margin: '0 0 12px 0'
         }}>{companyName}</h2>
-        <div style={{ fontSize: '11px', color: '#666' }}>
-          <p style={{ margin: '5px 0' }}>Total de ações: {actions.length}</p>
-          <p style={{ margin: '5px 0' }}>Data de geração: {new Date().toLocaleDateString('pt-BR')}</p>
+        <div style={{ fontSize: '10px', color: '#666' }}>
+          <p style={{ margin: '3px 0' }}>Total de ações estratégicas: {actions.length}</p>
+          <p style={{ margin: '3px 0' }}>Data de geração: {new Date().toLocaleDateString('pt-BR')}</p>
+          <p style={{ margin: '3px 0' }}>Plano desenvolvido para acelerar o crescimento e competitividade</p>
         </div>
       </div>
 
       {/* Statistics Summary */}
-      <div style={{ marginBottom: '30px' }}>
+      <div style={{ marginBottom: '25px' }}>
         <h3 style={{ 
-          fontSize: '16px', 
+          fontSize: '14px', 
           fontWeight: 'bold', 
           color: 'black', 
-          marginBottom: '15px',
-          margin: '0 0 15px 0'
+          marginBottom: '12px',
+          margin: '0 0 12px 0'
         }}>Resumo Executivo</h3>
         
         <div style={{ 
           display: 'flex', 
-          gap: '15px', 
-          marginBottom: '15px',
+          gap: '12px', 
+          marginBottom: '12px',
           flexWrap: 'wrap'
         }}>
           <div style={{ 
             border: '1px solid #ccc', 
-            padding: '10px', 
+            padding: '8px', 
             borderRadius: '5px',
-            minWidth: '150px'
+            minWidth: '120px'
           }}>
-            <p style={{ fontWeight: 'bold', color: 'black', margin: '0 0 5px 0' }}>Total de Ações</p>
-            <p style={{ fontSize: '20px', fontWeight: 'bold', color: 'black', margin: '0' }}>{actions.length}</p>
+            <p style={{ fontWeight: 'bold', color: 'black', margin: '0 0 3px 0', fontSize: '10px' }}>Total de Ações</p>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', color: 'black', margin: '0' }}>{actions.length}</p>
           </div>
           <div style={{ 
             border: '1px solid #ccc', 
-            padding: '10px', 
+            padding: '8px', 
             borderRadius: '5px',
-            minWidth: '150px'
+            minWidth: '120px'
           }}>
-            <p style={{ fontWeight: 'bold', color: 'black', margin: '0 0 5px 0' }}>Categorias</p>
-            <p style={{ fontSize: '20px', fontWeight: 'bold', color: 'black', margin: '0' }}>{Object.keys(groupedActions).length}</p>
+            <p style={{ fontWeight: 'bold', color: 'black', margin: '0 0 3px 0', fontSize: '10px' }}>Categorias</p>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', color: 'black', margin: '0' }}>{Object.keys(groupedActions).length}</p>
+          </div>
+          <div style={{ 
+            border: '1px solid #ccc', 
+            padding: '8px', 
+            borderRadius: '5px',
+            minWidth: '120px'
+          }}>
+            <p style={{ fontWeight: 'bold', color: 'black', margin: '0 0 3px 0', fontSize: '10px' }}>Prioridade Alta</p>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', color: '#ef4444', margin: '0' }}>
+              {actions.filter(a => a.prioridade === 'alta').length}
+            </p>
           </div>
         </div>
         
-        <div style={{ marginBottom: '15px' }}>
+        <div style={{ marginBottom: '12px' }}>
           <h4 style={{ 
             fontWeight: 'bold', 
             color: 'black', 
-            marginBottom: '10px',
-            fontSize: '14px',
-            margin: '0 0 10px 0'
+            marginBottom: '8px',
+            fontSize: '12px',
+            margin: '0 0 8px 0'
           }}>Distribuição por Categoria</h4>
-          {Object.entries(groupedActions).map(([categoria, categoryActions]) => (
-            <div key={categoria} style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              padding: '5px 0', 
-              borderBottom: '1px solid #eee'
-            }}>
-              <span style={{ color: 'black' }}>{categoryNames[categoria as keyof typeof categoryNames]}</span>
-              <span style={{ fontWeight: 'bold', color: 'black' }}>{categoryActions.length} ações</span>
-            </div>
-          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3px' }}>
+            {Object.entries(groupedActions).map(([categoria, categoryActions]) => (
+              <div key={categoria} style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                padding: '3px 0', 
+                borderBottom: '1px solid #eee',
+                fontSize: '10px'
+              }}>
+                <span style={{ color: 'black' }}>{categoryNames[categoria as keyof typeof categoryNames]}</span>
+                <span style={{ fontWeight: 'bold', color: 'black' }}>{categoryActions.length}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Actions by Category */}
+      {/* Actions by Category - TODAS AS AÇÕES */}
       {Object.entries(groupedActions).map(([categoria, categoryActions]) => (
-        <div key={categoria} style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
+        <div key={categoria} style={{ marginBottom: '20px', pageBreakInside: 'avoid' }}>
           <h3 style={{ 
-            fontSize: '18px', 
+            fontSize: '16px', 
             fontWeight: 'bold', 
             color: 'black', 
-            marginBottom: '15px',
+            marginBottom: '12px',
             borderBottom: '1px solid #ccc',
-            paddingBottom: '5px',
-            margin: '0 0 15px 0'
+            paddingBottom: '4px',
+            margin: '0 0 12px 0'
           }}>
-            {categoryNames[categoria as keyof typeof categoryNames]}
+            {categoryNames[categoria as keyof typeof categoryNames]} ({categoryActions.length} ações)
           </h3>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            {categoryActions.slice(0, 20).map((action, index) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {/* REMOVER A LIMITAÇÃO - MOSTRAR TODAS AS AÇÕES */}
+            {categoryActions.map((action, index) => (
               <div key={action.id} style={{ 
-                border: '1px solid #ccc', 
-                borderRadius: '5px', 
-                padding: '15px', 
+                border: '1px solid #ddd', 
+                borderRadius: '4px', 
+                padding: '10px', 
                 backgroundColor: 'white',
-                pageBreakInside: 'avoid'
+                pageBreakInside: 'avoid',
+                marginBottom: '6px'
               }}>
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
                   alignItems: 'flex-start', 
-                  marginBottom: '10px',
+                  marginBottom: '6px',
                   flexWrap: 'wrap'
                 }}>
                   <h4 style={{ 
                     fontWeight: 'bold', 
                     color: 'black', 
-                    fontSize: '13px',
+                    fontSize: '11px',
                     flex: '1',
-                    marginRight: '10px',
-                    margin: '0 10px 0 0'
+                    marginRight: '8px',
+                    margin: '0 8px 0 0'
                   }}>
                     {index + 1}. {action.acao}
                   </h4>
-                  <div style={{ display: 'flex', gap: '5px' }}>
+                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                     <span style={{ 
-                      padding: '3px 8px', 
+                      padding: '2px 6px', 
                       borderRadius: '3px', 
-                      fontSize: '10px', 
+                      fontSize: '9px', 
                       color: 'white', 
                       fontWeight: 'bold',
                       backgroundColor: priorityColors[action.prioridade]
@@ -195,10 +215,10 @@ const ActionPlanPdfContent = ({ companyName, actions }: ActionPlanPdfContentProp
                 <div style={{ 
                   display: 'grid', 
                   gridTemplateColumns: '1fr 1fr', 
-                  gap: '10px', 
-                  fontSize: '11px', 
+                  gap: '8px', 
+                  fontSize: '10px', 
                   color: 'black', 
-                  marginBottom: '10px'
+                  marginBottom: '6px'
                 }}>
                   <div>
                     <strong style={{ color: 'black' }}>Responsável:</strong> {action.responsavel}
@@ -210,34 +230,39 @@ const ActionPlanPdfContent = ({ companyName, actions }: ActionPlanPdfContentProp
                     <strong style={{ color: 'black' }}>Status:</strong> {statusNames[action.status]}
                   </div>
                   <div>
-                    <strong style={{ color: 'black' }}>Recursos:</strong> {action.recursos}
+                    <strong style={{ color: 'black' }}>Semana:</strong> {action.semana}
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '10px' }}>
-                  <strong style={{ color: 'black', fontSize: '11px' }}>Benefícios:</strong>
-                  <p style={{ fontSize: '11px', color: 'black', margin: '3px 0 0 0' }}>{action.beneficios}</p>
+                <div style={{ marginBottom: '6px' }}>
+                  <strong style={{ color: 'black', fontSize: '10px' }}>Recursos Necessários:</strong>
+                  <p style={{ fontSize: '9px', color: 'black', margin: '2px 0 0 0' }}>{action.recursos}</p>
                 </div>
 
-                <div style={{ marginBottom: '10px' }}>
-                  <strong style={{ color: 'black', fontSize: '11px' }}>Métricas:</strong>
-                  <p style={{ fontSize: '11px', color: 'black', margin: '3px 0 0 0' }}>{action.metricas}</p>
+                <div style={{ marginBottom: '6px' }}>
+                  <strong style={{ color: 'black', fontSize: '10px' }}>Benefícios Esperados:</strong>
+                  <p style={{ fontSize: '9px', color: 'black', margin: '2px 0 0 0' }}>{action.beneficios}</p>
+                </div>
+
+                <div style={{ marginBottom: '6px' }}>
+                  <strong style={{ color: 'black', fontSize: '10px' }}>Métricas de Sucesso:</strong>
+                  <p style={{ fontSize: '9px', color: 'black', margin: '2px 0 0 0' }}>{action.metricas}</p>
                 </div>
 
                 {action.comoFazer && action.comoFazer.length > 0 && (
-                  <div style={{ marginBottom: '10px' }}>
-                    <strong style={{ color: 'black', fontSize: '11px' }}>Como fazer na prática:</strong>
+                  <div style={{ marginBottom: '6px' }}>
+                    <strong style={{ color: 'black', fontSize: '10px' }}>Passos para Implementação:</strong>
                     <ol style={{ 
                       listStyleType: 'decimal', 
-                      paddingLeft: '20px', 
-                      fontSize: '11px', 
+                      paddingLeft: '15px', 
+                      fontSize: '9px', 
                       color: 'black', 
-                      margin: '5px 0 0 0'
+                      margin: '3px 0 0 0'
                     }}>
                       {action.comoFazer.map((step, stepIndex) => (
                         <li key={stepIndex} style={{ 
                           color: 'black', 
-                          marginBottom: '3px'
+                          marginBottom: '2px'
                         }}>{step}</li>
                       ))}
                     </ol>
@@ -246,29 +271,17 @@ const ActionPlanPdfContent = ({ companyName, actions }: ActionPlanPdfContentProp
 
                 {action.dicaIA && (
                   <div style={{ 
-                    backgroundColor: '#e3f2fd', 
-                    padding: '8px', 
+                    backgroundColor: '#f0f9ff', 
+                    padding: '6px', 
                     borderRadius: '3px',
-                    border: '1px solid #bbdefb'
+                    border: '1px solid #bfdbfe'
                   }}>
-                    <strong style={{ color: 'black', fontSize: '11px' }}>💡 Dica da IA:</strong>
-                    <p style={{ fontSize: '11px', color: 'black', margin: '3px 0 0 0' }}>{action.dicaIA}</p>
+                    <strong style={{ color: 'black', fontSize: '10px' }}>💡 Dica Estratégica:</strong>
+                    <p style={{ fontSize: '9px', color: 'black', margin: '2px 0 0 0' }}>{action.dicaIA}</p>
                   </div>
                 )}
               </div>
             ))}
-            
-            {categoryActions.length > 20 && (
-              <div style={{ 
-                textAlign: 'center', 
-                padding: '15px', 
-                borderTop: '1px solid #ccc'
-              }}>
-                <p style={{ fontSize: '12px', color: '#666', margin: '0' }}>
-                  E mais {categoryActions.length - 20} ações nesta categoria...
-                </p>
-              </div>
-            )}
           </div>
         </div>
       ))}
@@ -276,15 +289,18 @@ const ActionPlanPdfContent = ({ companyName, actions }: ActionPlanPdfContentProp
       {/* Footer */}
       <div style={{ 
         textAlign: 'center', 
-        marginTop: '40px', 
-        paddingTop: '20px', 
+        marginTop: '30px', 
+        paddingTop: '15px', 
         borderTop: '1px solid #ccc'
       }}>
-        <p style={{ fontSize: '12px', color: '#666', margin: '0 0 5px 0' }}>
-          Plano gerado em {new Date().toLocaleDateString('pt-BR')} - {companyName}
+        <p style={{ fontSize: '11px', color: '#666', margin: '0 0 4px 0' }}>
+          Plano de Aceleração Empresarial gerado em {new Date().toLocaleDateString('pt-BR')}
         </p>
-        <p style={{ fontSize: '10px', color: '#999', margin: '0' }}>
-          Este plano foi criado especificamente para acelerar o crescimento da sua empresa
+        <p style={{ fontSize: '10px', color: '#666', margin: '0 0 4px 0' }}>
+          {companyName} - {actions.length} ações estratégicas para acelerar o crescimento
+        </p>
+        <p style={{ fontSize: '9px', color: '#999', margin: '0' }}>
+          Este plano foi desenvolvido especificamente para impulsionar a competitividade e o crescimento sustentável
         </p>
       </div>
     </div>
