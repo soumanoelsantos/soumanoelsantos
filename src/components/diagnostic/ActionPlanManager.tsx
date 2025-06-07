@@ -27,7 +27,9 @@ import {
   Timer,
   CheckSquare,
   FileText,
-  Wrench
+  Wrench,
+  Filter,
+  X
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -66,6 +68,12 @@ interface DiagnosticData {
   problemasOperacionais: string;
   maioresDificuldades: string;
   objetivos6Meses: string;
+}
+
+interface StepProgress {
+  [actionId: string]: {
+    [stepIndex: number]: boolean;
+  };
 }
 
 interface ActionPlanManagerProps {
@@ -319,13 +327,13 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   companyName,
   diagnosticData 
 }) => {
-  // Ensure all actions have proper default values
-  const [acoes, setAcoes] = useState<ActionItem[]>(
-    initialActions.map(action => ({
+  // Ensure all actions have proper default values and distribute across weekdays
+  const [acoes, setAcoes] = useState<ActionItem[]>(() => {
+    const acoesComDefaults = initialActions.map(action => ({
       ...action,
-      status: action.status || 'pendente',
+      status: action.status || 'pendente' as const,
       categoria: action.categoria || 'gestao',
-      prioridade: action.prioridade || 'media',
+      prioridade: action.prioridade || 'media' as const,
       responsavel: action.responsavel || '',
       recursos: action.recursos || '',
       metricas: action.metricas || '',
@@ -334,12 +342,16 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       dicaIA: action.dicaIA || 'Nova ação adicionada. Defina marcos específicos e acompanhe o progresso semanalmente.',
       semana: action.semana || 1,
       dataVencimento: action.dataVencimento ? new Date(action.dataVencimento) : new Date()
-    }))
-  );
+    }));
+    
+    return distribuirAcoesNasSemanas(acoesComDefaults);
+  });
   
   const [editingAction, setEditingAction] = useState<ActionItem | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [filtroCategoria, setFiltroCategoria] = useState<string>('todas');
+  const [stepProgress, setStepProgress] = useState<StepProgress>({});
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -373,12 +385,75 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Calcular estatísticas
-  const acoesCompletas = acoes.filter(acao => acao.concluida || acao.status === 'realizado').length;
-  const acoesAtrasadas = acoes.filter(acao => acao.status === 'atrasado').length;
-  const acoesEmAndamento = acoes.filter(acao => acao.status === 'em_andamento').length;
-  const acoesPendentes = acoes.filter(acao => acao.status === 'pendente').length;
-  const progresso = (acoesCompletas / acoes.length) * 100;
+  // Função para distribuir ações de segunda a sexta evitando datas duplicadas
+  const distribuirAcoesNasSemanas = (acoes: ActionItem[]) => {
+    const dataInicio = new Date();
+    // Encontrar a próxima segunda-feira
+    const proximaSegunda = new Date(dataInicio);
+    const diasParaSegunda = (1 - dataInicio.getDay() + 7) % 7;
+    proximaSegunda.setDate(dataInicio.getDate() + diasParaSegunda);
+    
+    const datasUsadas = new Set<string>();
+    
+    return acoes.map((acao, index) => {
+      let dataAtual = new Date(proximaSegunda);
+      let diasAdicionais = 0;
+      
+      // Procurar próxima data disponível (segunda a sexta)
+      do {
+        dataAtual = new Date(proximaSegunda);
+        dataAtual.setDate(proximaSegunda.getDate() + diasAdicionais);
+        
+        // Se for fim de semana, pular para segunda
+        if (dataAtual.getDay() === 0) { // Domingo
+          diasAdicionais += 1;
+          continue;
+        }
+        if (dataAtual.getDay() === 6) { // Sábado
+          diasAdicionais += 2;
+          continue;
+        }
+        
+        const dataString = dataAtual.toISOString().split('T')[0];
+        
+        if (!datasUsadas.has(dataString)) {
+          datasUsadas.add(dataString);
+          break;
+        }
+        
+        diasAdicionais++;
+      } while (true);
+      
+      return {
+        ...acao,
+        dataVencimento: dataAtual,
+        semana: Math.ceil((diasAdicionais + 1) / 5)
+      };
+    });
+  };
+
+  // Filtrar ações por categoria
+  const acoesFiltradas = filtroCategoria === 'todas' 
+    ? acoes 
+    : acoes.filter(acao => acao.categoria === filtroCategoria);
+
+  // Calcular estatísticas baseadas nas ações filtradas
+  const acoesCompletas = acoesFiltradas.filter(acao => acao.concluida || acao.status === 'realizado').length;
+  const acoesAtrasadas = acoesFiltradas.filter(acao => acao.status === 'atrasado').length;
+  const acoesEmAndamento = acoesFiltradas.filter(acao => acao.status === 'em_andamento').length;
+  const acoesPendentes = acoesFiltradas.filter(acao => acao.status === 'pendente').length;
+  const progresso = acoesFiltradas.length > 0 ? (acoesCompletas / acoesFiltradas.length) * 100 : 0;
+
+  // Função para alternar step progress
+  const toggleStepProgress = (actionId: string, stepIndex: number) => {
+    setStepProgress(prev => ({
+      ...prev,
+      [actionId]: {
+        ...prev[actionId],
+        [stepIndex]: !prev[actionId]?.[stepIndex]
+      }
+    }));
+  };
 
   // Função para gerar dicas práticas específicas baseadas na ação
   const generatePracticalTips = (acao: ActionItem) => {
@@ -724,7 +799,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     return status.replace('_', ' ');
   };
 
-  // AI Tips Dialog Component
+  // AI Tips Dialog Component with step-by-step checklist
   const AITipsDialog = ({ acao }: { acao: ActionItem }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [pergunta, setPergunta] = useState("");
@@ -747,6 +822,11 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       setCarregando(false);
     };
 
+    const getStepsCompletedCount = () => {
+      const completedSteps = stepProgress[acao.id] || {};
+      return Object.values(completedSteps).filter(Boolean).length;
+    };
+
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
@@ -757,6 +837,11 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           >
             <Brain className="h-4 w-4" />
             Como Fazer na Prática
+            {getStepsCompletedCount() > 0 && (
+              <Badge variant="secondary" className="ml-1">
+                {getStepsCompletedCount()}/{dicas.passoAPasso.length}
+              </Badge>
+            )}
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
@@ -787,12 +872,12 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
               </div>
               <div className="text-center">
                 <CheckCircle2 className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                <p className="text-sm font-semibold text-blue-900">Passos</p>
-                <p className="text-blue-700 font-medium">{dicas.passoAPasso.length} etapas</p>
+                <p className="text-sm font-semibold text-blue-900">Progresso</p>
+                <p className="text-blue-700 font-medium">{getStepsCompletedCount()}/{dicas.passoAPasso.length} passos</p>
               </div>
             </div>
 
-            {/* Passo a passo detalhado */}
+            {/* Passo a passo detalhado com checkboxes */}
             <div>
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                 <CheckSquare className="h-6 w-6 text-green-600" />
@@ -801,12 +886,37 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
               <div className="space-y-3">
                 {dicas.passoAPasso.map((passo, index) => (
                   <div key={index} className="flex items-start gap-4 p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors">
+                    <Checkbox
+                      checked={stepProgress[acao.id]?.[index] || false}
+                      onCheckedChange={() => toggleStepProgress(acao.id, index)}
+                      className="mt-1"
+                    />
                     <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white text-sm rounded-full flex items-center justify-center font-bold">
                       {index + 1}
                     </div>
-                    <p className="text-sm text-green-800 font-medium leading-relaxed">{passo}</p>
+                    <p className={`text-sm text-green-800 font-medium leading-relaxed ${
+                      stepProgress[acao.id]?.[index] ? 'line-through opacity-70' : ''
+                    }`}>
+                      {passo}
+                    </p>
                   </div>
                 ))}
+              </div>
+              
+              {/* Progress bar for steps */}
+              <div className="mt-4 p-3 bg-green-100 rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-green-800">
+                    Progresso dos Passos
+                  </span>
+                  <span className="text-sm text-green-600">
+                    {getStepsCompletedCount()}/{dicas.passoAPasso.length}
+                  </span>
+                </div>
+                <Progress 
+                  value={(getStepsCompletedCount() / dicas.passoAPasso.length) * 100} 
+                  className="h-2"
+                />
               </div>
             </div>
 
@@ -1104,8 +1214,8 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
             </div>
             <Progress value={progresso} className="mb-4" />
             <div className="flex justify-between text-sm text-gray-600">
-              <span>{acoesCompletas} de {acoes.length} ações concluídas</span>
-              <span>{acoes.length - acoesCompletas} restantes</span>
+              <span>{acoesCompletas} de {acoesFiltradas.length} ações concluídas</span>
+              <span>{acoesFiltradas.length - acoesCompletas} restantes</span>
             </div>
           </CardContent>
         </Card>
@@ -1116,8 +1226,44 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
         )}
       </div>
 
-      {/* Controles - não aparecem no PDF */}
-      <div className="flex justify-end items-center print:hidden">
+      {/* Controles e Filtros - não aparecem no PDF */}
+      <div className="flex justify-between items-center print:hidden">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-gray-600" />
+            <Label htmlFor="filtro-categoria" className="text-sm font-medium">
+              Filtrar por categoria:
+            </Label>
+          </div>
+          <Select value={filtroCategoria} onValueChange={setFiltroCategoria}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas as categorias</SelectItem>
+              <SelectItem value="comercial">Comercial</SelectItem>
+              <SelectItem value="gestao">Gestão</SelectItem>
+              <SelectItem value="rh">RH/Pessoas</SelectItem>
+              <SelectItem value="marketing">Marketing</SelectItem>
+              <SelectItem value="financeiro">Financeiro</SelectItem>
+              <SelectItem value="operacional">Operacional</SelectItem>
+              <SelectItem value="tecnologia">Tecnologia</SelectItem>
+              <SelectItem value="cultura">Cultura</SelectItem>
+            </SelectContent>
+          </Select>
+          {filtroCategoria !== 'todas' && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setFiltroCategoria('todas')}
+              className="flex items-center gap-1"
+            >
+              <X className="h-3 w-3" />
+              Limpar filtro
+            </Button>
+          )}
+        </div>
+
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -1147,7 +1293,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
                 ref={provided.innerRef}
                 className="space-y-4"
               >
-                {acoes.map((acao, index) => (
+                {acoesFiltradas.map((acao, index) => (
                   <Draggable key={acao.id} draggableId={acao.id} index={index}>
                     {(provided, snapshot) => (
                       <Card
