@@ -100,7 +100,6 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
   const [editingAction, setEditingAction] = useState<ActionItem | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'timeline' | 'kanban'>('timeline');
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -291,6 +290,135 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     return status.replace('_', ' ');
   };
 
+  // AI Tips Dialog Component
+  const AITipsDialog = ({ acao }: { acao: ActionItem }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [pergunta, setPergunta] = useState("");
+    const [respostaAi, setRespostaAi] = useState("");
+    const [carregando, setCarregando] = useState(false);
+
+    const obterDicasDetalhadas = () => {
+      return {
+        passoAPasso: [
+          "1. Analise a situação atual da sua empresa nesta área",
+          "2. Defina objetivos específicos e mensuráveis",
+          "3. Identifique recursos necessários (pessoas, tempo, orçamento)",
+          "4. Crie um cronograma detalhado de implementação",
+          "5. Estabeleça marcos de acompanhamento",
+          "6. Monitore resultados e faça ajustes conforme necessário"
+        ],
+        ferramentas: ["Planilhas de controle", "Software de gestão", "Indicadores de performance"],
+        prazoRecomendado: "30-60 dias",
+        dificuldade: "Média"
+      };
+    };
+
+    const simularRespostaAi = async (pergunta: string) => {
+      setCarregando(true);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const respostasSimuladas = [
+        `Para implementar "${acao.acao.toLowerCase()}", recomendo começar com um diagnóstico da situação atual. Isso ajudará a identificar as principais lacunas e prioridades.`,
+        `Uma abordagem eficaz seria dividir esta ação em etapas menores e mais gerenciáveis. Comece implementando uma versão piloto.`,
+        `É importante envolver toda a equipe neste processo. Considere realizar workshops de treinamento e criar um sistema de acompanhamento regular.`
+      ];
+      
+      setRespostaAi(respostasSimuladas[Math.floor(Math.random() * respostasSimuladas.length)]);
+      setCarregando(false);
+    };
+
+    const dicas = obterDicasDetalhadas();
+
+    return (
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+          >
+            <Brain className="h-4 w-4" />
+            Dicas IA
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-purple-600" />
+              Como Implementar: {acao.acao}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* Passo a passo */}
+            <div>
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                Passo a Passo para Implementação
+              </h3>
+              <div className="space-y-2">
+                {dicas.passoAPasso.map((passo, index) => (
+                  <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-shrink-0 w-6 h-6 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-semibold">
+                      {index + 1}
+                    </div>
+                    <p className="text-sm text-gray-700">{passo}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Perguntar para a IA */}
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-3">Ainda tem dúvidas? Pergunte para a IA</h3>
+              
+              <div className="space-y-3">
+                <Textarea
+                  placeholder="Digite sua pergunta específica sobre como implementar esta ação..."
+                  value={pergunta}
+                  onChange={(e) => setPergunta(e.target.value)}
+                  className="min-h-[80px]"
+                />
+                
+                <Button 
+                  onClick={() => simularRespostaAi(pergunta)}
+                  disabled={carregando || !pergunta.trim()}
+                  className="flex items-center gap-2"
+                >
+                  {carregando ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Analisando...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="h-4 w-4" />
+                      Perguntar para IA
+                    </>
+                  )}
+                </Button>
+
+                {respostaAi && (
+                  <Card className="bg-blue-50 border-blue-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <Brain className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-semibold text-blue-900 mb-2">Resposta da IA:</h4>
+                          <p className="text-blue-800 text-sm leading-relaxed">{respostaAi}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   const ActionForm = ({ 
     action, 
     onSave, 
@@ -379,7 +507,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg">
                 <SelectItem value="pendente">Pendente</SelectItem>
                 <SelectItem value="em_andamento">Em Andamento</SelectItem>
                 <SelectItem value="realizado">Realizado</SelectItem>
@@ -531,19 +659,9 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       {/* Controles - não aparecem no PDF */}
       <div className="flex justify-between items-center print:hidden">
         <div className="flex gap-2">
-          <Button 
-            variant={viewMode === 'timeline' ? 'default' : 'outline'}
-            onClick={() => setViewMode('timeline')}
-          >
+          <Button className="flex items-center gap-2">
             <Calendar className="mr-2 h-4 w-4" />
             Timeline
-          </Button>
-          <Button 
-            variant={viewMode === 'kanban' ? 'default' : 'outline'}
-            onClick={() => setViewMode('kanban')}
-          >
-            <Target className="mr-2 h-4 w-4" />
-            Kanban
           </Button>
         </div>
         
@@ -566,213 +684,154 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
         </Dialog>
       </div>
 
-      {/* Lista de Ações - não aparecem no PDF */}
+      {/* Lista de Ações Timeline - não aparecem no PDF */}
       <div className="print:hidden">
-        {viewMode === 'timeline' ? (
-          <DragDropContext onDragEnd={reordenarAcoes}>
-            <Droppable droppableId="acoes">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="space-y-4"
-                >
-                  {acoes.map((acao, index) => (
-                    <Draggable key={acao.id} draggableId={acao.id} index={index}>
-                      {(provided, snapshot) => (
-                        <Card
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`${
-                            snapshot.isDragging ? 'shadow-lg scale-105' : ''
-                          } ${getCorStatus(acao.status)}`}
-                        >
-                          <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                              <div className="flex-shrink-0">
-                                <Checkbox
-                                  checked={acao.concluida}
-                                  onCheckedChange={() => toggleAcaoConcluida(acao.id)}
-                                  className="mt-1"
-                                />
-                              </div>
-                              
-                              <div className="flex-1">
-                                <div className="flex items-start justify-between mb-3">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                        Semana {acao.semana}
-                                      </span>
-                                      <Badge variant="outline" className={getCorStatus(acao.status)}>
-                                        {getIconeStatus(acao.status)}
-                                        <span className="ml-1 capitalize">{formatStatusDisplay(acao.status)}</span>
-                                      </Badge>
-                                    </div>
-                                    <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
-                                      {acao.acao}
-                                    </h4>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <div 
-                                      className={`w-3 h-3 rounded-full ${getCorPrioridade(acao.prioridade)}`}
-                                      title={`Prioridade ${acao.prioridade}`}
-                                    />
-                                    <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
-                                      {getIconeCategoria(acao.categoria)}
-                                      <span className="ml-1 capitalize">{acao.categoria}</span>
+        <DragDropContext onDragEnd={reordenarAcoes}>
+          <Droppable droppableId="acoes">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="space-y-4"
+              >
+                {acoes.map((acao, index) => (
+                  <Draggable key={acao.id} draggableId={acao.id} index={index}>
+                    {(provided, snapshot) => (
+                      <Card
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className={`${
+                          snapshot.isDragging ? 'shadow-lg scale-105' : ''
+                        } ${getCorStatus(acao.status)}`}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0">
+                              <Checkbox
+                                checked={acao.concluida}
+                                onCheckedChange={() => toggleAcaoConcluida(acao.id)}
+                                className="mt-1"
+                              />
+                            </div>
+                            
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                      Semana {acao.semana}
+                                    </span>
+                                    <Badge variant="outline" className={getCorStatus(acao.status)}>
+                                      {getIconeStatus(acao.status)}
+                                      <span className="ml-1 capitalize">{formatStatusDisplay(acao.status)}</span>
                                     </Badge>
                                   </div>
+                                  <h4 className={`font-medium text-lg ${acao.concluida ? 'line-through text-gray-500' : ''}`}>
+                                    {acao.acao}
+                                  </h4>
                                 </div>
-
-                                {/* Dica da IA - sempre visível */}
-                                <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                                  <div className="flex items-start gap-2">
-                                    <Brain className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                                    <div>
-                                      <p className="text-sm font-medium text-purple-800 mb-1">Dica da IA:</p>
-                                      <p className="text-sm text-purple-700">{acao.dicaIA}</p>
-                                    </div>
-                                  </div>
+                                <div className="flex items-center gap-2">
+                                  <div 
+                                    className={`w-3 h-3 rounded-full ${getCorPrioridade(acao.prioridade)}`}
+                                    title={`Prioridade ${acao.prioridade}`}
+                                  />
+                                  <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
+                                    {getIconeCategoria(acao.categoria)}
+                                    <span className="ml-1 capitalize">{acao.categoria}</span>
+                                  </Badge>
                                 </div>
-                                
-                                {acao.beneficios && (
-                                  <div className="mb-3 p-3 bg-blue-50 rounded-lg">
-                                    <p className="text-sm"><strong>Benefícios:</strong> {acao.beneficios}</p>
-                                  </div>
-                                )}
+                              </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+                              {/* Dica da IA - sempre visível */}
+                              <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                <div className="flex items-start gap-2">
+                                  <Brain className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
                                   <div>
-                                    <p className="text-gray-600"><strong>Data:</strong> {formatDate(acao.dataVencimento)}</p>
-                                    {acao.responsavel && (
-                                      <p className="text-gray-600"><strong>Responsável:</strong> {acao.responsavel}</p>
-                                    )}
-                                  </div>
-                                  <div>
-                                    {acao.recursos && (
-                                      <p className="text-gray-600"><strong>Recursos:</strong> {acao.recursos}</p>
-                                    )}
-                                    {acao.metricas && (
-                                      <p className="text-gray-600"><strong>Métricas:</strong> {acao.metricas}</p>
-                                    )}
+                                    <p className="text-sm font-medium text-purple-800 mb-1">Dica da IA:</p>
+                                    <p className="text-sm text-purple-700">{acao.dicaIA}</p>
                                   </div>
                                 </div>
+                              </div>
+                              
+                              {acao.beneficios && (
+                                <div className="mb-3 p-3 bg-blue-50 rounded-lg">
+                                  <p className="text-sm"><strong>Benefícios:</strong> {acao.beneficios}</p>
+                                </div>
+                              )}
 
-                                <div className="flex justify-between items-center">
-                                  <div className="flex gap-2">
-                                    <Select
-                                      value={acao.status}
-                                      onValueChange={(value: ActionItem['status']) => updateActionStatus(acao.id, value)}
-                                    >
-                                      <SelectTrigger className="w-32 h-8">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="pendente">Pendente</SelectItem>
-                                        <SelectItem value="em_andamento">Em Andamento</SelectItem>
-                                        <SelectItem value="realizado">Realizado</SelectItem>
-                                        <SelectItem value="atrasado">Atrasado</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+                                <div>
+                                  <p className="text-gray-600"><strong>Data:</strong> {formatDate(acao.dataVencimento)}</p>
+                                  {acao.responsavel && (
+                                    <p className="text-gray-600"><strong>Responsável:</strong> {acao.responsavel}</p>
+                                  )}
+                                </div>
+                                <div>
+                                  {acao.recursos && (
+                                    <p className="text-gray-600"><strong>Recursos:</strong> {acao.recursos}</p>
+                                  )}
+                                  {acao.metricas && (
+                                    <p className="text-gray-600"><strong>Métricas:</strong> {acao.metricas}</p>
+                                  )}
+                                </div>
+                              </div>
 
-                                  <div className="flex justify-end gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        setEditingAction(acao);
-                                        setIsEditDialogOpen(true);
-                                      }}
-                                    >
-                                      <Edit className="mr-1 h-3 w-3" />
-                                      Editar
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => deleteAction(acao.id)}
-                                      className="text-red-600 hover:bg-red-50"
-                                    >
-                                      <Trash2 className="mr-1 h-3 w-3" />
-                                      Excluir
-                                    </Button>
-                                  </div>
+                              <div className="flex justify-between items-center">
+                                <div className="flex gap-2 items-center">
+                                  <Select
+                                    value={acao.status}
+                                    onValueChange={(value: ActionItem['status']) => updateActionStatus(acao.id, value)}
+                                  >
+                                    <SelectTrigger className="w-32 h-8">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                                      <SelectItem value="pendente">Pendente</SelectItem>
+                                      <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                                      <SelectItem value="realizado">Realizado</SelectItem>
+                                      <SelectItem value="atrasado">Atrasado</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+
+                                  <AITipsDialog acao={acao} />
+                                </div>
+
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setEditingAction(acao);
+                                      setIsEditDialogOpen(true);
+                                    }}
+                                  >
+                                    <Edit className="mr-1 h-3 w-3" />
+                                    Editar
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => deleteAction(acao.id)}
+                                    className="text-red-600 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="mr-1 h-3 w-3" />
+                                    Excluir
+                                  </Button>
                                 </div>
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        ) : (
-          // Kanban View
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {(['pendente', 'em_andamento', 'atrasado', 'realizado'] as const).map(status => (
-              <Card key={status} className="h-fit">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    {getIconeStatus(status)}
-                    <span className="capitalize">{formatStatusDisplay(status)}</span>
-                    <Badge variant="secondary" className="ml-auto">
-                      {acoes.filter(a => a.status === status).length}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {acoes.filter(acao => acao.status === status).map(acao => (
-                    <Card key={acao.id} className="p-3 hover:shadow-md transition-shadow">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className={getCorCategoria(acao.categoria)}>
-                            {acao.categoria}
-                          </Badge>
-                          <div 
-                            className={`w-2 h-2 rounded-full ${getCorPrioridade(acao.prioridade)}`}
-                            title={`Prioridade ${acao.prioridade}`}
-                          />
-                        </div>
-                        <p className="text-sm font-medium">{acao.acao}</p>
-                        <p className="text-xs text-gray-500">
-                          Semana {acao.semana} • {formatDate(acao.dataVencimento)}
-                        </p>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setEditingAction(acao);
-                              setIsEditDialogOpen(true);
-                            }}
-                            className="h-6 px-2 text-xs"
-                          >
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => deleteAction(acao.id)}
-                            className="h-6 px-2 text-xs text-red-600 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
 
       {/* Dialog de Edição */}
