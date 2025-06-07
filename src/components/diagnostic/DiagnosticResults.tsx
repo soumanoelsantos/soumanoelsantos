@@ -30,8 +30,23 @@ const DiagnosticResults = ({ results, answersData, pdfRef }: DiagnosticResultsPr
 
   // Convert actionPlan to ActionItem[] - actionPlan should already be ActionItem[]
   const convertedActionPlan: ActionItem[] = Array.isArray(actionPlan) 
-    ? actionPlan 
+    ? actionPlan.filter((item): item is ActionItem => 
+        typeof item === 'object' && 
+        item !== null && 
+        'id' in item && 
+        'acao' in item
+      )
     : [];
+
+  const handleUpdatePlan = (updatedPlan: ActionItem[]) => {
+    // This would typically update the plan in the diagnostic context
+    console.log('Plan updated:', updatedPlan);
+  };
+
+  const handleBackToResults = () => {
+    // This would typically navigate back to results view
+    console.log('Back to results');
+  };
 
   return (
     <div ref={pdfRef} className="mt-10 space-y-8 pdf-container">
@@ -49,7 +64,13 @@ const DiagnosticResults = ({ results, answersData, pdfRef }: DiagnosticResultsPr
       {/* Display action plan if available */}
       {convertedActionPlan.length > 0 && (
         <div className="pdf-action-plan">
-          <ActionPlanManager actionPlan={convertedActionPlan} />
+          <ActionPlanManager 
+            actionPlan={convertedActionPlan}
+            companyName="Empresa"
+            diagnosticData={answersData}
+            onBack={handleBackToResults}
+            onUpdatePlan={handleUpdatePlan}
+          />
         </div>
       )}
       
