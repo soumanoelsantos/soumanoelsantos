@@ -131,9 +131,6 @@ const ProblemSolutionsDisplay: React.FC<ProblemSolutionsDisplayProps> = ({ diagn
           <CardTitle className="text-2xl text-center text-blue-900">
             Análise dos Problemas Identificados - {diagnosticData.empresaNome}
           </CardTitle>
-          <p className="text-center text-blue-700">
-            Com base nas suas respostas, nossa IA identificou soluções práticas para cada problema:
-          </p>
         </CardHeader>
       </Card>
 

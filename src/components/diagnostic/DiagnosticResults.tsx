@@ -7,6 +7,7 @@ import BackToMemberAreaButton from './BackToMemberAreaButton';
 import { AnswersDataType } from '@/types/diagnostic';
 import { useDiagnostic } from '@/hooks/useDiagnostic';
 import AnswersDisplay from './AnswersDisplay';
+import ActionPlanManager from './ActionPlanManager';
 
 interface DiagnosticResultsProps {
   results: {
@@ -20,7 +21,7 @@ interface DiagnosticResultsProps {
 }
 
 const DiagnosticResults = ({ results, answersData, pdfRef }: DiagnosticResultsProps) => {
-  const { resetDiagnostic } = useDiagnostic();
+  const { resetDiagnostic, actionPlan } = useDiagnostic();
 
   const handleReset = () => {
     resetDiagnostic();
@@ -36,6 +37,13 @@ const DiagnosticResults = ({ results, answersData, pdfRef }: DiagnosticResultsPr
       {answersData && Object.keys(answersData).length > 0 && (
         <div className="pdf-answers">
           <AnswersDisplay answersData={answersData} />
+        </div>
+      )}
+
+      {/* Display action plan if available */}
+      {actionPlan && Object.keys(actionPlan).length > 0 && (
+        <div className="pdf-action-plan">
+          <ActionPlanManager actionPlan={actionPlan} />
         </div>
       )}
       

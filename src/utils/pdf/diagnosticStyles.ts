@@ -34,13 +34,31 @@ export const getDiagnosticPdfStyles = (): string => {
       color: #ef4444 !important;
     }
     
-    /* Action plan section */
-    .pdf-export .space-y-6 > div {
-      margin-bottom: 10px !important;
-    }
-    .pdf-export .space-y-6 h3 {
+    /* Action plan section styles */
+    .pdf-export .action-plan-section h3 {
       font-size: 14px !important;
       margin-bottom: 5px !important;
+      color: #000000 !important;
+    }
+    .pdf-export .action-plan-section h4 {
+      font-size: 12px !important;
+      margin-bottom: 3px !important;
+      color: #000000 !important;
+    }
+    .pdf-export .action-plan-section .space-y-6 > div {
+      margin-bottom: 10px !important;
+    }
+    .pdf-export .action-plan-section ul li {
+      color: #000000 !important;
+      font-size: 10px !important;
+      margin-bottom: 2px !important;
+    }
+    .pdf-export .action-plan-section .badge {
+      font-size: 9px !important;
+      padding: 2px 4px !important;
+    }
+    .pdf-export .action-plan-section .text-sm {
+      font-size: 10px !important;
     }
   `;
 };
