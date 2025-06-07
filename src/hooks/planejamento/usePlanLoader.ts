@@ -45,9 +45,15 @@ export const usePlanLoader = (userId: string | null) => {
     loadExistingPlan();
   }, [userId, toast]);
 
+  // Função para atualizar dados sem recarregar
+  const updateDados = (novosDados: PlanejamentoEstrategicoData) => {
+    console.log('Atualizando dados localmente:', novosDados);
+    setDados(novosDados);
+  };
+
   return {
     dados,
-    setDados,
+    setDados: updateDados,
     etapa,
     setEtapa,
     isLoading

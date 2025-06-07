@@ -29,14 +29,24 @@ export const usePlanejamentoEstrategico = () => {
   } = usePlanManager(userId);
 
   const processarRespostas = async (respostas: RespostaPlanejamento[], resultados: DiagnosticoResultados) => {
+    console.log('usePlanejamentoEstrategico: Iniciando processamento...');
+    
     await processarRespostasInterno(respostas, resultados, (dadosCompletos) => {
+      console.log('usePlanejamentoEstrategico: Dados recebidos do processor:', dadosCompletos);
+      
+      // Atualizar estado local
       setDados(dadosCompletos);
+      
+      // Mudar para etapa de resultado
+      console.log('usePlanejamentoEstrategico: Mudando para etapa resultado');
       setEtapa('resultado');
     });
   };
 
   const handleUpdateProgresso = async (novoProgresso: number) => {
-    await updateProgressoInterno(dados, novoProgresso, setDados);
+    if (dados) {
+      await updateProgressoInterno(dados, novoProgresso, setDados);
+    }
   };
 
   const voltarParaFormulario = async () => {

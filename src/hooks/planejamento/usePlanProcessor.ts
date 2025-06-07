@@ -28,20 +28,22 @@ export const usePlanProcessor = (userId: string | null) => {
       return;
     }
 
+    console.log('Iniciando processamento das respostas...');
     setGerandoPlano(true);
     
     try {
-      // Simular processamento
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
+      // Primeiro, criar os dados básicos antes de processar
       const empresaNome = respostas.find(r => r.perguntaId === 'empresa_nome')?.resposta as string || 'Empresa';
       
       // Gerar SWOT baseado nas respostas
+      console.log('Gerando análise SWOT...');
       const swot = gerarSwotAPartirRespostas(respostas);
       
-      // Gerar apenas plano de ação estratégico (sem ações comerciais)
+      // Gerar plano de ação estratégico
+      console.log('Gerando plano de ação...');
       const planoAcao = gerarPlanoAcao(resultados);
       
+      // Criar os dados completos
       const dadosCompletos: PlanejamentoEstrategicoData = {
         empresaNome,
         respostas,
@@ -57,19 +59,27 @@ export const usePlanProcessor = (userId: string | null) => {
         status: 'em_andamento'
       };
       
-      // Salvar no Supabase
+      console.log('Dados completos preparados:', dadosCompletos);
+      console.log('Salvando no Supabase...');
+      
+      // Salvar no Supabase ANTES de chamar onSuccess
       const salvou = await savePlanejamentoEstrategicoToSupabase(userId, dadosCompletos);
       
       if (salvou) {
-        onSuccess(dadosCompletos);
+        console.log('Dados salvos com sucesso, chamando onSuccess...');
         
         // Limpar localStorage antigo se existir
         localStorage.removeItem('planejamento_estrategico_dados');
+        
+        // Chamar onSuccess para atualizar o estado da UI
+        onSuccess(dadosCompletos);
         
         toast({
           title: "Plano gerado com sucesso!",
           description: `Foram criadas ${planoAcao.length} ações estratégicas para os próximos 6 meses.`,
         });
+        
+        console.log('Processamento concluído com sucesso');
       } else {
         throw new Error('Falha ao salvar no Supabase');
       }
@@ -80,6 +90,8 @@ export const usePlanProcessor = (userId: string | null) => {
         description: "Ocorreu um erro. Tente novamente.",
         variant: "destructive"
       });
+      
+      // Não resetar o estado em caso de erro para evitar voltar ao formulário
     } finally {
       setGerandoPlano(false);
     }
