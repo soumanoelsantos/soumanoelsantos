@@ -320,7 +320,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
           "9. Teste com 20 prospects e meça taxa de conversão",
           "10. Ajuste processo baseado nos resultados e escale"
         ],
-        ferramentas: ["Planilha de controle", "WhatsApp Business", "Canva", "Loom para vídeos"],
+        ferramentas: ["Planilha de controle", "WhatsApp Business", "Canva", "Loom para vídeos explicativos"],
         prazoRecomendado: "4-6 semanas",
         dificuldade: "Média-Alta",
         custoEstimado: "R$ 100-300/mês"
