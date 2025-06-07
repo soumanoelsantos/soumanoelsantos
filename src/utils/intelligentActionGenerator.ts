@@ -68,7 +68,17 @@ export const generateIntelligentActionPlan = (
       "Implementar sistema de gestão de pipeline avançado",
       "Criar programa de vendas por indicação",
       "Desenvolver estratégia de vendas corporativas",
-      "Implementar sistema de análise de churn"
+      "Implementar sistema de análise de churn",
+      "Criar programa de vendas consultivas especializadas",
+      "Desenvolver estratégia de vendas multi-canal",
+      "Implementar sistema de análise de margem por produto",
+      "Criar programa de desenvolvimento de novos mercados",
+      "Desenvolver estratégia de vendas por região",
+      "Implementar sistema de gestão de conta-chave",
+      "Criar programa de vendas por telefone estruturado",
+      "Desenvolver estratégia de vendas digitais",
+      "Implementar sistema de análise de ROI comercial",
+      "Criar programa de vendas em eventos e feiras"
     ],
     marketing: [
       "Criar identidade visual profissional e consistente da marca",
@@ -108,7 +118,17 @@ export const generateIntelligentActionPlan = (
       "Desenvolver programa de podcasting corporativo",
       "Implementar estratégia de marketing experiencial",
       "Criar programa de marketing de guerrilha",
-      "Desenvolver estratégia de marketing de conteúdo interativo"
+      "Desenvolver estratégia de marketing de conteúdo interativo",
+      "Implementar programa de marketing mobile",
+      "Criar estratégia de marketing por geolocalização",
+      "Desenvolver programa de marketing de eventos virtuais",
+      "Implementar estratégia de marketing de retenção",
+      "Criar programa de marketing de advocacy",
+      "Desenvolver estratégia de marketing de nicho",
+      "Implementar programa de marketing comportamental",
+      "Criar estratégia de marketing de temporada",
+      "Desenvolver programa de marketing internacional",
+      "Implementar estratégia de marketing sustentável"
     ],
     gestao: [
       "Criar organograma detalhado com hierarquias bem definidas",
@@ -148,7 +168,17 @@ export const generateIntelligentActionPlan = (
       "Implementar sistema de gestão de processos digitais",
       "Criar programa de inovação aberta",
       "Desenvolver sistema de gestão de ecossistema",
-      "Implementar programa de gestão de mudança cultural"
+      "Implementar programa de gestão de mudança cultural",
+      "Criar sistema de gestão de parceiros estratégicos",
+      "Desenvolver programa de gestão de portfólio",
+      "Implementar sistema de gestão de capacidades",
+      "Criar programa de gestão de valor",
+      "Desenvolver sistema de gestão de operações",
+      "Implementar programa de gestão de recursos",
+      "Criar sistema de gestão de informações estratégicas",
+      "Desenvolver programa de gestão de relacionamentos",
+      "Implementar sistema de gestão de resultados",
+      "Criar programa de gestão de excelência operacional"
     ],
     financeiro: [
       "Implementar controle rigoroso de fluxo de caixa diário",
@@ -188,7 +218,17 @@ export const generateIntelligentActionPlan = (
       "Desenvolver programa de redução de custos",
       "Criar sistema de análise de rentabilidade",
       "Implementar política de gestão de caixa",
-      "Desenvolver sistema de análise de valor"
+      "Desenvolver sistema de análise de valor",
+      "Criar programa de gestão de ativos",
+      "Implementar sistema de análise de liquidez",
+      "Desenvolver política de endividamento",
+      "Criar sistema de gestão de passivos",
+      "Implementar programa de análise de mercado financeiro",
+      "Desenvolver sistema de gestão de carteira",
+      "Criar política de diversificação de investimentos",
+      "Implementar sistema de análise de performance financeira",
+      "Desenvolver programa de gestão de derivativos",
+      "Criar sistema de análise de volatilidade"
     ],
     rh: [
       "Criar descrições detalhadas de cargos e competências",
@@ -228,7 +268,17 @@ export const generateIntelligentActionPlan = (
       "Criar sistema de gestão de feedback 360",
       "Implementar programa de mobilidade interna",
       "Desenvolver política de reconhecimento e recompensas",
-      "Criar sistema de gestão de pessoas analytics"
+      "Criar sistema de gestão de pessoas analytics",
+      "Implementar programa de desenvolvimento de soft skills",
+      "Desenvolver política de work-life balance",
+      "Criar sistema de gestão de turnover",
+      "Implementar programa de desenvolvimento comportamental",
+      "Desenvolver política de gestão de gerações",
+      "Criar sistema de gestão de motivação",
+      "Implementar programa de liderança feminina",
+      "Desenvolver política de inclusão digital",
+      "Criar sistema de gestão de burnout",
+      "Implementar programa de desenvolvimento sustentável"
     ],
     operacional: [
       "Mapear detalhadamente todos os processos críticos",
@@ -268,7 +318,17 @@ export const generateIntelligentActionPlan = (
       "Implementar sistema de gestão de documentos",
       "Criar política de gestão de mudanças operacionais",
       "Desenvolver sistema de gestão de indicadores operacionais",
-      "Implementar programa de automação industrial"
+      "Implementar programa de automação industrial",
+      "Criar sistema de gestão de workflows",
+      "Desenvolver programa de otimização de recursos",
+      "Implementar sistema de gestão de produção",
+      "Criar política de gestão de ciclo de vida",
+      "Desenvolver sistema de gestão de eficiência",
+      "Implementar programa de gestão de desperdícios",
+      "Criar sistema de gestão de processos digitais",
+      "Desenvolver política de gestão sustentável",
+      "Implementar sistema de gestão de operações integradas",
+      "Criar programa de excelência operacional"
     ],
     tecnologia: [
       "Avaliar e modernizar completamente infraestrutura de TI",
@@ -308,7 +368,17 @@ export const generateIntelligentActionPlan = (
       "Implementar sistema de monitoramento de rede",
       "Criar plataforma de e-learning",
       "Desenvolver sistema de gestão de dispositivos",
-      "Implementar solução de disaster recovery"
+      "Implementar solução de disaster recovery",
+      "Criar sistema de gestão de identidade digital",
+      "Desenvolver plataforma de comunicação unificada",
+      "Implementar sistema de análise de dados avançada",
+      "Criar solução de virtualização",
+      "Desenvolver sistema de gestão de conteúdo",
+      "Implementar plataforma de desenvolvimento ágil",
+      "Criar sistema de gestão de configuração",
+      "Desenvolver solução de monitoramento empresarial",
+      "Implementar sistema de gestão de mudanças de TI",
+      "Criar plataforma de inovação tecnológica"
     ],
     cultura: [
       "Definir claramente missão, visão e valores empresariais",
@@ -348,7 +418,17 @@ export const generateIntelligentActionPlan = (
       "Criar sistema de gestão de talentos culturais",
       "Implementar programa de transformação cultural",
       "Desenvolver política de inclusão social",
-      "Criar sistema de gestão de mudança comportamental"
+      "Criar sistema de gestão de mudança comportamental",
+      "Implementar programa de liderança inspiradora",
+      "Desenvolver política de empoderamento",
+      "Criar sistema de gestão de propósito organizacional",
+      "Implementar programa de desenvolvimento humano",
+      "Desenvolver política de felicidade no trabalho",
+      "Criar sistema de gestão de energia organizacional",
+      "Implementar programa de conexão emocional",
+      "Desenvolver política de autenticidade corporativa",
+      "Criar sistema de gestão de experiência do colaborador",
+      "Implementar programa de cultura de alto desempenho"
     ]
   };
 
@@ -501,26 +581,25 @@ export const generateIntelligentActionPlan = (
     return passosGenericos[categoria] || passosGenericos.gestao;
   };
 
-  // Gerar 300 ações intercalando categorias (aproximadamente 37-38 ações por categoria)
-  const totalAcoesPorCategoria = 38; // 38 ações por categoria = 304 ações totais
-  
-  for (let round = 0; round < totalAcoesPorCategoria; round++) {
-    for (let catIndex = 0; catIndex < categorias.length; catIndex++) {
-      if (actions.length >= 300) break; // Limite de 300 ações
-      
-      const categoria = categorias[catIndex];
-      const templates = actionTemplates[categoria];
-      const acaoIndex = round % templates.length;
+  // Gerar ações sem limite - vamos usar todas as ações disponíveis em todas as categorias
+  for (let catIndex = 0; catIndex < categorias.length; catIndex++) {
+    const categoria = categorias[catIndex];
+    const templates = actionTemplates[categoria];
+    
+    for (let acaoIndex = 0; acaoIndex < templates.length; acaoIndex++) {
       const acaoTemplate = templates[acaoIndex];
-
-      // Definir prioridade baseada no round
+      
+      // Calcular prioridade baseada na posição
       let prioridade: ActionItem['prioridade'] = 'media';
-      if (round < 10) prioridade = 'alta';
-      else if (round >= 30) prioridade = 'baixa';
+      if (acaoIndex < 15) prioridade = 'alta';
+      else if (acaoIndex >= 35) prioridade = 'baixa';
 
-      // Calcular data de vencimento e semanas (sem limite de 6 meses)
+      // Calcular semanas de forma mais distribuída
+      const totalActionsSoFar = (catIndex * templates.length) + acaoIndex;
+      const semanas = Math.floor(totalActionsSoFar / 20) + 1; // Distribuir em mais semanas
+      
+      // Calcular data de vencimento
       const dataVencimento = new Date();
-      const semanas = Math.floor((round * categorias.length + catIndex) / 8) + 1; // Mais espaçado
       dataVencimento.setDate(dataVencimento.getDate() + (semanas * 7));
 
       const action: ActionItem = {
@@ -528,7 +607,7 @@ export const generateIntelligentActionPlan = (
         acao: acaoTemplate,
         categoria,
         prioridade,
-        prazo: `${Math.min(semanas, 8)} semana${semanas > 1 ? 's' : ''}`,
+        prazo: `${semanas} semana${semanas > 1 ? 's' : ''}`,
         responsavel: categoria === 'gestao' ? 'Diretor Geral' : 
                     categoria === 'comercial' ? 'Gestor Comercial' :
                     categoria === 'marketing' ? 'Gestor de Marketing' :
@@ -568,7 +647,6 @@ export const generateIntelligentActionPlan = (
 
       actions.push(action);
     }
-    if (actions.length >= 300) break; // Limite de 300 ações
   }
 
   // Personalizar algumas ações baseadas nos dados do diagnóstico
@@ -606,6 +684,6 @@ export const generateIntelligentActionPlan = (
     ];
   }
 
-  console.log(`Geradas ${actions.length} ações intercaladas para o programa de aceleração empresarial`);
+  console.log(`Geradas ${actions.length} ações para o programa de aceleração empresarial`);
   return actions;
 };
