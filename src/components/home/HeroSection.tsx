@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar, TrendingUp } from "lucide-react";
@@ -77,7 +78,7 @@ const HeroSection = () => {
             <div className="relative">
               <div className="bg-gradient-to-br from-dark-primary/20 to-transparent rounded-3xl p-8 backdrop-blur-sm border border-dark-primary/30">
                 <img
-                  src="/lovable-uploads/e1debcb2-0d7b-4cbc-acde-70bc7dc129fd.png"
+                  src="/lovable-uploads/eb5d00d0-30c2-4f06-889a-f8ac87746709.png"
                   alt="Mentor Manoel Santos - Aceleração Empresarial"
                   className="w-full h-[500px] object-contain object-center rounded-2xl"
                 />
