@@ -24,14 +24,10 @@ const HeroSection = () => {
           {/* Content Side */}
           <div className="lg:w-1/2 space-y-6 text-center lg:text-left">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white">
-              Transforme sua <span className="text-dark-primary">Equipe Comercial</span> em um Time de Alta Performance
+              Conquiste até <span className="text-dark-primary">3 anos de lucros</span> e resultados em até <span className="text-dark-primary">6 meses</span>
             </h1>
             
             <div className="space-y-4">
-              <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
-                <strong className="text-dark-primary">Conquiste até 3 anos de lucros e resultados em até 6 meses</strong>
-              </p>
-              
               <div>
                 <p className="text-lg sm:text-xl text-gray-300 mb-3">
                   <strong>Domine as etapas do crescimento da sua empresa:</strong>
