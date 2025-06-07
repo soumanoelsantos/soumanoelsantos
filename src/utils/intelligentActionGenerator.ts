@@ -86,7 +86,22 @@ export const generateIntelligentActionPlan = (
       "Criar estratégia detalhada de segmentação de clientes por valor",
       "Implementar metodologia de vendas consultivas com certificação",
       "Desenvolver programa estratégico de parcerias comerciais win-win",
-      "Criar sistema eficiente de gestão de propostas comerciais automatizado"
+      "Criar sistema eficiente de gestão de propostas comerciais automatizado",
+      "Implementar novo funil de prospecção via LinkedIn Sales Navigator",
+      "Desenvolver abordagem de vendas por telefone com scripts personalizados",
+      "Criar funil de prospecção via e-mail marketing segmentado",
+      "Implementar estratégia de prospecção ativa via cold calling estruturado",
+      "Desenvolver materiais de apresentação comercial impactantes e visuais",
+      "Criar kit de vendas digital com case studies e depoimentos",
+      "Implementar ferramenta de apresentação interativa para vendas",
+      "Desenvolver proposta comercial padronizada e personalizável",
+      "Criar sistema de demonstrações de produto remotas e presenciais",
+      "Implementar ferramenta de configuração e cotação online",
+      "Desenvolver programa de capacitação comercial com role play",
+      "Criar sistema de gamificação para motivar equipe de vendas",
+      "Implementar integração CRM com WhatsApp Business API",
+      "Desenvolver chatbot comercial para qualificação inicial de leads",
+      "Criar landing pages específicas para cada persona de cliente"
     ],
     marketing: [
       "Desenvolver identidade visual profissional e manual de marca completo",
