@@ -1,301 +1,233 @@
 
 /**
  * Diagnostic-specific PDF styling
- * Contains styles for diagnostic reports in PDF exports
+ * Contains styles for diagnostic action plan PDF exports
  */
 
 export const getDiagnosticPdfStyles = (): string => {
   return `
-    /* Print styles */
-    @media print, .pdf-export {
-      .print\\:hidden { display: none !important; }
-      .print\\:bg-white { background-color: white !important; }
-      .print\\:text-black { color: black !important; }
-      
-      /* Ensure content is visible */
-      * {
-        -webkit-print-color-adjust: exact !important;
-        color-adjust: exact !important;
-      }
-    }
-
-    /* Base PDF styles */
+    /* Base styles for diagnostic PDF export */
     .pdf-export {
-      background: white !important;
-      color: black !important;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-      line-height: 1.4 !important;
+      color: #000000 !important;
+      background-color: #ffffff !important;
+      font-family: Arial, sans-serif !important;
       font-size: 12px !important;
+      line-height: 1.4 !important;
+      padding: 20px !important;
+      margin: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
     }
-
-    .pdf-export * {
-      background: transparent !important;
-      box-shadow: none !important;
+    
+    /* All text elements */
+    .pdf-export *,
+    .pdf-export h1,
+    .pdf-export h2,
+    .pdf-export h3,
+    .pdf-export h4,
+    .pdf-export p,
+    .pdf-export div,
+    .pdf-export span,
+    .pdf-export li,
+    .pdf-export td,
+    .pdf-export th {
+      color: #000000 !important;
+      font-family: Arial, sans-serif !important;
     }
-
+    
+    /* Headers */
     .pdf-export h1 {
       font-size: 24px !important;
       font-weight: bold !important;
-      color: #000000 !important;
-      margin-bottom: 16px !important;
+      margin: 0 0 15px 0 !important;
+      text-align: center !important;
     }
-
+    
     .pdf-export h2 {
-      font-size: 20px !important;
+      font-size: 18px !important;
       font-weight: bold !important;
-      color: #000000 !important;
-      margin-bottom: 12px !important;
+      margin: 20px 0 10px 0 !important;
     }
-
+    
     .pdf-export h3 {
       font-size: 16px !important;
       font-weight: bold !important;
-      color: #000000 !important;
-      margin-bottom: 8px !important;
+      margin: 15px 0 8px 0 !important;
     }
-
+    
     .pdf-export h4 {
       font-size: 14px !important;
       font-weight: bold !important;
-      color: #000000 !important;
-      margin-bottom: 6px !important;
+      margin: 10px 0 5px 0 !important;
     }
-
-    .pdf-export h5 {
-      font-size: 12px !important;
-      font-weight: bold !important;
-      color: #000000 !important;
-      margin-bottom: 4px !important;
-    }
-
+    
+    /* Paragraphs and text */
     .pdf-export p {
-      font-size: 11px !important;
-      color: #000000 !important;
-      margin-bottom: 4px !important;
-    }
-
-    /* Answer section styles */
-    .pdf-export .answers-section ul li {
-      color: #000000 !important;
-      font-size: 11px !important;
-      margin-bottom: 3px !important;
-    }
-    .pdf-export .answers-section .question-text {
-      font-weight: 600 !important;
-      color: #000000 !important;
-    }
-    .pdf-export .answers-section h3 {
-      font-size: 14px !important;
-      margin-bottom: 5px !important;
-    }
-    .pdf-export .answers-section h2 {
-      font-size: 16px !important;
-      margin-bottom: 10px !important;
-    }
-    .pdf-export .answers-section .answer-satisfactory {
-      color: #22c55e !important;
-    }
-    .pdf-export .answers-section .answer-unsatisfactory {
-      color: #eab308 !important;
-    }
-    .pdf-export .answers-section .answer-nonexistent {
-      color: #ef4444 !important;
-    }
-    
-    /* Action plan section styles */
-    .pdf-export .action-plan-section {
-      background: white !important;
-      color: black !important;
-    }
-    
-    .pdf-export .action-plan-section h3 {
-      font-size: 14px !important;
-      margin-bottom: 5px !important;
-      color: #000000 !important;
-    }
-    .pdf-export .action-plan-section h4 {
+      margin: 5px 0 !important;
       font-size: 12px !important;
-      margin-bottom: 3px !important;
-      color: #000000 !important;
     }
-    .pdf-export .action-plan-section h5 {
-      font-size: 11px !important;
-      margin-bottom: 2px !important;
-      color: #000000 !important;
+    
+    /* Spacing */
+    .pdf-export .space-y-8 > * {
+      margin-top: 15px !important;
+      margin-bottom: 15px !important;
     }
-    .pdf-export .action-plan-section .space-y-6 > div {
-      margin-bottom: 10px !important;
+    
+    /* Lists */
+    .pdf-export ul,
+    .pdf-export ol {
+      padding-left: 20px !important;
+      margin: 10px 0 !important;
     }
-    .pdf-export .action-plan-section ul li {
-      color: #000000 !important;
-      font-size: 10px !important;
-      margin-bottom: 2px !important;
+    
+    .pdf-export li {
+      margin-bottom: 5px !important;
+      font-size: 12px !important;
     }
-    .pdf-export .action-plan-section .badge {
-      font-size: 9px !important;
-      padding: 2px 4px !important;
+    
+    /* Tables */
+    .pdf-export table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      margin: 10px 0 !important;
+    }
+    
+    .pdf-export th,
+    .pdf-export td {
       border: 1px solid #ccc !important;
-      border-radius: 4px !important;
-      background: #f5f5f5 !important;
-      color: #000000 !important;
-    }
-    .pdf-export .action-plan-section .text-sm {
-      font-size: 10px !important;
-    }
-    .pdf-export .action-plan-section .text-xs {
-      font-size: 8px !important;
-    }
-    
-    /* Card styles for PDF */
-    .pdf-export .bg-gradient-to-r {
-      background: white !important;
-      color: black !important;
-    }
-    
-    /* Progress bar styles */
-    .pdf-export .bg-gray-200 {
-      background-color: #e5e7eb !important;
-    }
-    .pdf-export .bg-gradient-to-r.from-blue-500.to-purple-600 {
-      background-color: #3b82f6 !important;
-    }
-    
-    /* Action item styles */
-    .pdf-export .border-l-4 {
-      border-left-width: 4px !important;
-    }
-    .pdf-export .border-l-green-500 {
-      border-left-color: #10b981 !important;
-    }
-    .pdf-export .border-l-blue-500 {
-      border-left-color: #3b82f6 !important;
-    }
-    .pdf-export .bg-green-50 {
-      background-color: #f0fdf4 !important;
-    }
-    .pdf-export .bg-blue-50 {
-      background-color: #eff6ff !important;
-    }
-    
-    /* Border and spacing styles */
-    .pdf-export .border {
-      border: 1px solid #d1d5db !important;
-    }
-    
-    .pdf-export .rounded-lg {
-      border-radius: 8px !important;
-    }
-    
-    .pdf-export .p-4 {
-      padding: 16px !important;
-    }
-    
-    .pdf-export .p-2 {
       padding: 8px !important;
+      text-align: left !important;
+      font-size: 11px !important;
     }
     
-    .pdf-export .mb-3 {
-      margin-bottom: 12px !important;
+    .pdf-export th {
+      background-color: #f5f5f5 !important;
+      font-weight: bold !important;
     }
     
-    .pdf-export .mb-4 {
-      margin-bottom: 16px !important;
+    /* Cards and containers */
+    .pdf-export .card {
+      border: 1px solid #ccc !important;
+      border-radius: 5px !important;
+      margin: 10px 0 !important;
+      padding: 15px !important;
+      background-color: #ffffff !important;
     }
     
-    .pdf-export .mb-6 {
-      margin-bottom: 24px !important;
-    }
-    
-    .pdf-export .space-y-6 > *:not(:first-child) {
-      margin-top: 24px !important;
-    }
-    
-    .pdf-export .space-y-4 > *:not(:first-child) {
-      margin-top: 16px !important;
-    }
-    
+    /* Grid layouts */
     .pdf-export .grid {
       display: block !important;
     }
     
-    .pdf-export .grid > * {
+    .pdf-export .flex {
       display: block !important;
-      margin-bottom: 8px !important;
     }
     
-    /* Hide interactive elements in PDF */
-    .pdf-export button,
+    /* Specific diagnostic elements */
+    .pdf-export .action-item {
+      border: 1px solid #ddd !important;
+      border-radius: 5px !important;
+      padding: 15px !important;
+      margin: 10px 0 !important;
+      background-color: #ffffff !important;
+      page-break-inside: avoid !important;
+    }
+    
+    .pdf-export .priority-badge {
+      padding: 3px 8px !important;
+      border-radius: 3px !important;
+      font-size: 10px !important;
+      font-weight: bold !important;
+      color: #ffffff !important;
+    }
+    
+    .pdf-export .priority-alta {
+      background-color: #ef4444 !important;
+    }
+    
+    .pdf-export .priority-media {
+      background-color: #f59e0b !important;
+    }
+    
+    .pdf-export .priority-baixa {
+      background-color: #10b981 !important;
+    }
+    
+    /* Statistics section */
+    .pdf-export .stats-container {
+      border: 1px solid #ccc !important;
+      padding: 15px !important;
+      margin: 15px 0 !important;
+      background-color: #f9f9f9 !important;
+    }
+    
+    .pdf-export .stat-item {
+      display: inline-block !important;
+      margin: 5px 15px 5px 0 !important;
+      padding: 10px !important;
+      border: 1px solid #ddd !important;
+      border-radius: 3px !important;
+      background-color: #ffffff !important;
+    }
+    
+    /* Footer */
+    .pdf-export .footer {
+      margin-top: 30px !important;
+      padding-top: 20px !important;
+      border-top: 1px solid #ccc !important;
+      text-align: center !important;
+      font-size: 10px !important;
+      color: #666666 !important;
+    }
+    
+    /* Page breaks */
+    .pdf-export .page-break {
+      page-break-before: always !important;
+    }
+    
+    .pdf-export .avoid-break {
+      page-break-inside: avoid !important;
+    }
+    
+    /* Hide elements not needed in PDF */
     .pdf-export .print\\:hidden,
-    .pdf-export input[type="checkbox"] {
+    .pdf-export button,
+    .pdf-export .btn,
+    .pdf-export .cursor-pointer {
       display: none !important;
     }
     
-    /* Text visibility */
-    .pdf-export .text-center {
-      text-align: center !important;
-    }
-    
-    .pdf-export .font-bold {
-      font-weight: bold !important;
-    }
-    
-    .pdf-export .font-semibold {
-      font-weight: 600 !important;
-    }
-    
-    .pdf-export .font-medium {
-      font-weight: 500 !important;
-    }
-    
-    /* List styles */
-    .pdf-export .list-decimal {
-      list-style-type: decimal !important;
-      padding-left: 20px !important;
-    }
-    
-    .pdf-export .list-inside {
-      list-style-position: inside !important;
-    }
-    
-    .pdf-export ol, .pdf-export ul {
-      margin-bottom: 8px !important;
-    }
-    
-    .pdf-export li {
-      margin-bottom: 4px !important;
-      color: #000000 !important;
-    }
-    
-    /* Specific content visibility */
-    .pdf-export strong {
-      font-weight: bold !important;
-      color: #000000 !important;
-    }
-    
-    .pdf-export .text-2xl {
-      font-size: 20px !important;
-      font-weight: bold !important;
-      color: #000000 !important;
-    }
-    
-    .pdf-export .text-xl {
-      font-size: 18px !important;
-      color: #000000 !important;
-    }
-    
-    .pdf-export .text-lg {
-      font-size: 16px !important;
-      color: #000000 !important;
-    }
-    
-    .pdf-export .text-sm {
-      font-size: 11px !important;
-      color: #000000 !important;
-    }
-    
-    .pdf-export .text-xs {
-      font-size: 10px !important;
-      color: #000000 !important;
+    /* Force visibility for important content */
+    .pdf-export .pdf-content,
+    .pdf-export .action-plan-content,
+    .pdf-export .diagnostic-content {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
   `;
+};
+
+export const getDiagnosticPdfOptionsConfig = () => {
+  return {
+    margin: [10, 10, 10, 10],
+    filename: 'plano-aceleracao-empresarial.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { 
+      scale: 2,
+      logging: true, 
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      windowWidth: 1200,
+      windowHeight: 800
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'portrait',
+      compress: true
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
 };

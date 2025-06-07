@@ -4,6 +4,7 @@ import { getDefaultPdfOptionsConfig } from './pdf/pdfOptions';
 import { getPUVPdfOptionsConfig, getPUVPdfStyles } from './pdf/puvStyles';
 import { getMapaEquipePdfOptionsConfig, getMapaEquipeStyles } from './pdf/mapaEquipeStyles';
 import { getSwotPdfOptionsConfig, getSwotPdfStyles } from './pdf/swotStyles';
+import { getDiagnosticPdfOptionsConfig, getDiagnosticPdfStyles } from './pdf/diagnosticStyles';
 
 /**
  * Generates a PDF from a given HTML element
@@ -15,7 +16,7 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
     // Default options
     let options = getDefaultPdfOptionsConfig();
     
-    // Check if the element has PUV specific class
+    // Check if the element has specific class patterns and apply appropriate styles
     if (element.classList.contains('puv-preview')) {
       // Add PUV specific styles
       const styleElement = document.createElement('style');
@@ -71,6 +72,21 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       `;
       element.appendChild(scriptElement);
     }
+    // Check if it's a diagnostic PDF (action plan)
+    else if (element.classList.contains('pdf-export') || element.querySelector('.action-plan-content')) {
+      // Add diagnostic specific styles
+      const styleElement = document.createElement('style');
+      styleElement.textContent = getDiagnosticPdfStyles();
+      element.appendChild(styleElement);
+      
+      // Use diagnostic specific options
+      options = getDiagnosticPdfOptionsConfig();
+      
+      // Override filename if provided
+      if (fileName) {
+        options.filename = fileName;
+      }
+    }
     else {
       // Override filename if provided
       if (fileName) {
@@ -87,7 +103,8 @@ export const generatePDF = (element: HTMLElement, fileName?: string) => {
       styleElements.forEach(el => {
         if (el.textContent?.includes('puv-preview') || 
             el.textContent?.includes('mapa-equipe-preview') ||
-            el.textContent?.includes('swot-pdf-container')) {
+            el.textContent?.includes('swot-pdf-container') ||
+            el.textContent?.includes('pdf-export')) {
           el.remove();
         }
       });
