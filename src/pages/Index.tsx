@@ -5,8 +5,6 @@ import ProblemsSection from "@/components/home/ProblemsSection";
 import SolutionSection from "@/components/home/SolutionSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import AboutMentorSection from "@/components/home/AboutMentorSection";
-import GuaranteeSection from "@/components/home/GuaranteeSection";
-import CTAFinalSection from "@/components/home/CTAFinalSection";
 import Footer from "@/components/home/Footer";
 
 const Index = () => {
@@ -17,8 +15,6 @@ const Index = () => {
       <SolutionSection />
       <TestimonialsSection />
       <AboutMentorSection />
-      <GuaranteeSection />
-      <CTAFinalSection />
       <Footer />
     </div>
   );
