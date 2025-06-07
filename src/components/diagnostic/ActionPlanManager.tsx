@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { 
   DndContext, 
@@ -57,8 +56,28 @@ const ActionPlanManager = ({
 }: ActionPlanManagerProps) => {
   const { toast } = useToast();
   const pdfRef = useRef<HTMLDivElement>(null);
-  const [actions, setActions] = useState<ActionItem[]>(actionPlan);
-  const [filteredActions, setFilteredActions] = useState<ActionItem[]>(actionPlan);
+  
+  // Ensure all action items have the required structure
+  const normalizedActionPlan = actionPlan.map(action => ({
+    ...action,
+    comoFazer: action.comoFazer || ['Definir plano de implementação', 'Executar plano', 'Monitorar resultados'],
+    completedSteps: action.completedSteps || [],
+    categoria: action.categoria || 'gestao',
+    prioridade: action.prioridade || 'media',
+    status: action.status || 'pendente',
+    responsavel: action.responsavel || 'A definir',
+    prazo: action.prazo || '1 semana',
+    metricas: action.metricas || 'A definir',
+    beneficios: action.beneficios || 'A definir',
+    detalhesImplementacao: action.detalhesImplementacao || '',
+    dicaIA: action.dicaIA || 'Implemente esta ação seguindo as melhores práticas.',
+    semana: action.semana || 1,
+    dataVencimento: action.dataVencimento ? new Date(action.dataVencimento) : new Date(),
+    concluida: action.concluida || false
+  }));
+
+  const [actions, setActions] = useState<ActionItem[]>(normalizedActionPlan);
+  const [filteredActions, setFilteredActions] = useState<ActionItem[]>(normalizedActionPlan);
   const [filterCategory, setFilterCategory] = useState<string>('todas');
   const [filterStatus, setFilterStatus] = useState<string>('todos');
   const [searchTerm, setSearchTerm] = useState('');
@@ -116,17 +135,31 @@ const ActionPlanManager = ({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = actions.findIndex(item => item.id === active.id);
-      const newIndex = actions.findIndex(item => item.id === over.id);
+      const oldIndex = filteredActions.findIndex(item => item.id === active.id);
+      const newIndex = filteredActions.findIndex(item => item.id === over.id);
       
-      const reorderedActions = arrayMove(actions, oldIndex, newIndex);
-      setActions(reorderedActions);
-      onUpdatePlan(reorderedActions);
-      
-      toast({
-        title: "Ordem atualizada",
-        description: "A ordem das ações foi atualizada com sucesso.",
-      });
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reorderedActions = arrayMove(filteredActions, oldIndex, newIndex);
+        setFilteredActions(reorderedActions);
+        
+        // Update the main actions array to maintain the new order
+        const updatedActions = [...actions];
+        const activeItem = actions.find(item => item.id === active.id);
+        const overItem = actions.find(item => item.id === over.id);
+        
+        if (activeItem && overItem) {
+          const activeIndex = actions.findIndex(item => item.id === active.id);
+          const overIndex = actions.findIndex(item => item.id === over.id);
+          const newActions = arrayMove(actions, activeIndex, overIndex);
+          setActions(newActions);
+          onUpdatePlan(newActions);
+        }
+        
+        toast({
+          title: "Ordem atualizada",
+          description: "A ordem das ações foi atualizada com sucesso.",
+        });
+      }
     }
   };
 
@@ -228,7 +261,8 @@ const ActionPlanManager = ({
   const handleStepComplete = (id: string, stepIndex: number, completed: boolean) => {
     const updatedActions = actions.map(action => {
       if (action.id === id) {
-        const completedSteps = action.completedSteps || new Array(action.comoFazer.length).fill(false);
+        const comoFazer = action.comoFazer || [];
+        const completedSteps = action.completedSteps || new Array(comoFazer.length).fill(false);
         completedSteps[stepIndex] = completed;
         
         // Se todos os passos estão completos, marcar como realizado
@@ -687,7 +721,7 @@ const ActionPlanManager = ({
                 <div className="mb-3">
                   <h5 className="font-medium text-sm">Como Fazer na Prática:</h5>
                   <ul className="list-decimal list-inside text-xs space-y-1 mt-1">
-                    {action.comoFazer.map((step, stepIndex) => (
+                    {(action.comoFazer || []).map((step, stepIndex) => (
                       <li key={stepIndex} className="text-gray-700">{step}</li>
                     ))}
                   </ul>
