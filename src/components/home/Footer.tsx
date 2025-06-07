@@ -20,7 +20,7 @@ const Footer = () => {
               Termos de Uso
             </a>
             <span className="hidden md:block">|</span>
-            <span>CNPJ: 25.048.157/0001-18</span>
+            <span>CNPJ: 55.104.628/0001-29</span>
           </div>
           
           <div className="text-center text-sm text-gray-500 mb-4">
