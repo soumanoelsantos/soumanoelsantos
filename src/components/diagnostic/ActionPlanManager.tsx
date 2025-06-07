@@ -151,14 +151,16 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     if (acaoLower.includes('crm') || acaoLower.includes('cliente')) {
       return {
         passoAPasso: [
-          "1. Faça uma lista de todos os clientes atuais em uma planilha",
-          "2. Categorize os clientes por: Ativo, Inativo, Prospect",
-          "3. Defina campos obrigatórios: Nome, Email, Telefone, Último contato",
-          "4. Escolha uma ferramenta: HubSpot (gratuito), Pipedrive ou RD Station",
+          "1. Faça uma lista de todos os clientes atuais em uma planilha Excel",
+          "2. Categorize os clientes por: Ativo, Inativo, Prospect, VIP",
+          "3. Defina campos obrigatórios: Nome, Email, Telefone, Último contato, Status",
+          "4. Escolha uma ferramenta gratuita: HubSpot CRM ou Pipedrive (teste grátis)",
           "5. Importe os dados da planilha para a ferramenta escolhida",
           "6. Configure automações básicas: email de boas-vindas e follow-up",
           "7. Treine a equipe por 2 horas sobre como usar o sistema",
-          "8. Defina quem será responsável por manter os dados atualizados"
+          "8. Defina responsável por manter os dados atualizados diariamente",
+          "9. Crie relatórios semanais de acompanhamento",
+          "10. Revise e ajuste o processo mensalmente"
         ],
         ferramentas: ["HubSpot CRM (gratuito)", "Planilha Google Sheets", "Pipedrive", "RD Station"],
         prazoRecomendado: "2-3 semanas",
@@ -170,120 +172,147 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     if (acaoLower.includes('fluxo de caixa') || acaoLower.includes('financeiro')) {
       return {
         passoAPasso: [
-          "1. Abra uma planilha e crie colunas: Data, Descrição, Entrada, Saída, Saldo",
-          "2. Liste todas as contas bancárias da empresa",
-          "3. Registre o saldo atual de cada conta",
-          "4. Anote todas as receitas dos últimos 30 dias",
-          "5. Anote todas as despesas dos últimos 30 dias",
-          "6. Calcule o saldo diário para identificar padrões",
-          "7. Projete entradas e saídas para os próximos 90 dias",
-          "8. Configure alertas para quando o saldo ficar baixo",
-          "9. Faça reunião semanal de 30min para revisar os números"
+          "1. Abra uma planilha Excel/Google e crie colunas: Data, Descrição, Entrada, Saída, Saldo",
+          "2. Liste todas as contas bancárias da empresa (corrente, poupança, investimentos)",
+          "3. Registre o saldo atual de cada conta na planilha",
+          "4. Anote TODAS as receitas dos últimos 30 dias (vendas, recebimentos, etc.)",
+          "5. Anote TODAS as despesas dos últimos 30 dias (fornecedores, salários, impostos)",
+          "6. Calcule o saldo diário acumulado para identificar padrões",
+          "7. Projete entradas e saídas confirmadas para os próximos 90 dias",
+          "8. Configure alertas quando o saldo ficar abaixo de R$ X (defina o valor)",
+          "9. Faça reunião semanal de 30min para revisar os números",
+          "10. Crie reserva de emergência equivalente a 3 meses de despesas"
         ],
-        ferramentas: ["Planilha Excel/Google", "Conta Azul", "Omie", "Granito"],
+        ferramentas: ["Planilha Excel/Google", "Conta Azul", "Omie", "Granito", "ContaAzul"],
         prazoRecomendado: "1-2 semanas",
         dificuldade: "Fácil",
-        custoEstimado: "R$ 0-50/mês"
+        custoEstimado: "R$ 0-100/mês"
       };
     }
     
     if (acaoLower.includes('site') || acaoLower.includes('website')) {
       return {
         passoAPasso: [
-          "1. Defina 3-5 páginas essenciais: Home, Sobre, Serviços, Contato",
-          "2. Escreva o texto de cada página em um documento",
-          "3. Colete 10-15 fotos de qualidade da empresa/produtos",
-          "4. Escolha uma plataforma: WordPress.com, Wix ou Hostinger",
+          "1. Defina 5 páginas essenciais: Home, Sobre, Serviços/Produtos, Portfólio, Contato",
+          "2. Escreva o texto de cada página em um documento Word primeiro",
+          "3. Colete 15-20 fotos de qualidade da empresa/produtos/equipe",
+          "4. Escolha uma plataforma: WordPress.com, Wix ou Hostinger Website Builder",
           "5. Selecione um template profissional relacionado ao seu segmento",
           "6. Substitua textos e imagens do template pelo seu conteúdo",
-          "7. Configure formulário de contato com WhatsApp",
-          "8. Teste o site em celular e computador",
-          "9. Registre um domínio (.com.br) e conecte ao site"
+          "7. Configure formulário de contato integrado com WhatsApp",
+          "8. Teste o site em celular, tablet e computador",
+          "9. Registre um domínio .com.br e conecte ao site",
+          "10. Configure Google Analytics para acompanhar visitantes"
         ],
-        ferramentas: ["WordPress.com", "Wix", "Hostinger", "Canva para imagens"],
+        ferramentas: ["WordPress.com", "Wix", "Hostinger", "Canva para imagens", "Unsplash para fotos"],
         prazoRecomendado: "2-4 semanas",
         dificuldade: "Média",
-        custoEstimado: "R$ 30-100/mês"
+        custoEstimado: "R$ 50-150/mês"
       };
     }
     
     if (acaoLower.includes('redes sociais') || acaoLower.includes('instagram') || acaoLower.includes('marketing')) {
       return {
         passoAPasso: [
-          "1. Crie perfil comercial no Instagram e Facebook",
-          "2. Configure foto do perfil com logo da empresa",
-          "3. Escreva bio clara: o que faz + cidade + contato",
-          "4. Planeje 30 posts para o primeiro mês",
-          "5. Use rule 80/20: 80% conteúdo útil, 20% vendas",
-          "6. Tire 50 fotos variadas dos produtos/serviços",
-          "7. Poste 3-5x por semana nos melhores horários",
-          "8. Responda comentários e DMs em até 2 horas",
-          "9. Use hashtags locais: #suacidade #seusegmento"
+          "1. Crie perfil comercial no Instagram, Facebook e LinkedIn",
+          "2. Configure foto do perfil com logo da empresa (tamanho 400x400px)",
+          "3. Escreva bio clara: O que faz + Cidade + Link do site + Contato",
+          "4. Planeje 30 posts para o primeiro mês (mix de conteúdo educativo e vendas)",
+          "5. Use regra 80/20: 80% conteúdo útil/educativo, 20% vendas diretas",
+          "6. Tire 50 fotos variadas: produtos, bastidores, equipe, clientes satisfeitos",
+          "7. Poste 4-5x por semana nos melhores horários (18h-21h geralmente)",
+          "8. Responda TODOS os comentários e DMs em até 2 horas",
+          "9. Use hashtags locais: #suacidade #seusegmento #palavraschave",
+          "10. Analise métricas semanalmente e ajuste estratégia conforme resultados"
         ],
-        ferramentas: ["Canva", "Later ou Buffer", "Instagram Creator Studio", "Unsplash"],
+        ferramentas: ["Canva Pro", "Later ou Buffer", "Instagram Creator Studio", "Hootsuite"],
         prazoRecomendado: "3-4 semanas",
         dificuldade: "Fácil",
-        custoEstimado: "R$ 0-80/mês"
+        custoEstimado: "R$ 50-200/mês"
       };
     }
     
-    if (acaoLower.includes('processo') || acaoLower.includes('procedimento')) {
+    if (acaoLower.includes('funil') || acaoLower.includes('vendas') || acaoLower.includes('prospecção')) {
       return {
         passoAPasso: [
-          "1. Escolha um processo específico para documentar primeiro",
-          "2. Acompanhe a execução do processo 3 vezes",
-          "3. Anote cada passo em detalhes",
-          "4. Identifique pontos onde há dúvidas ou erros",
-          "5. Crie um documento com: Objetivo, Responsável, Passos, Tempo",
-          "6. Teste o documento com outra pessoa executando",
-          "7. Ajuste o documento baseado no teste",
-          "8. Treine toda equipe no novo processo",
-          "9. Revise o processo mensalmente"
+          "1. Mapeie sua jornada atual de vendas da prospecção ao fechamento",
+          "2. Identifique onde os clientes 'se perdem' no processo atual",
+          "3. Defina seu cliente ideal (persona): idade, renda, problemas, onde encontrar",
+          "4. Crie 3 canais de prospecção: redes sociais, indicações, networking",
+          "5. Desenvolva script padronizado para primeiro contato (WhatsApp/telefone)",
+          "6. Crie apresentação de 10 slides: problema + solução + benefícios + preço",
+          "7. Estabeleça follow-up automático: 1º dia, 3º dia, 7º dia, 15º dia",
+          "8. Treine equipe no novo processo com role-play de 2 horas",
+          "9. Teste com 20 prospects e meça taxa de conversão",
+          "10. Ajuste processo baseado nos resultados e escale"
         ],
-        ferramentas: ["Google Docs", "Notion", "Flowchart maker", "Loom para vídeos"],
+        ferramentas: ["Planilha de controle", "WhatsApp Business", "Canva", "Loom para vídeos"],
+        prazoRecomendado: "4-6 semanas",
+        dificuldade: "Média-Alta",
+        custoEstimado: "R$ 100-300/mês"
+      };
+    }
+    
+    if (acaoLower.includes('processo') || acaoLower.includes('procedimento') || acaoLower.includes('organização')) {
+      return {
+        passoAPasso: [
+          "1. Escolha UM processo específico para documentar primeiro (ex: atendimento ao cliente)",
+          "2. Acompanhe a execução do processo 3 vezes com pessoas diferentes",
+          "3. Anote cada passo em detalhes: o que, como, quando, quem, onde",
+          "4. Identifique pontos onde há dúvidas, erros ou retrabalho",
+          "5. Crie documento com: Objetivo, Responsável, Passos numerados, Tempo estimado",
+          "6. Teste o documento com outra pessoa executando sem sua ajuda",
+          "7. Ajuste o documento baseado nas dificuldades encontradas no teste",
+          "8. Treine TODA a equipe no novo processo (1 hora de treinamento)",
+          "9. Monitore execução por 2 semanas e colete feedback",
+          "10. Revise e aprimore o processo mensalmente"
+        ],
+        ferramentas: ["Google Docs", "Notion", "Lucidchart", "Loom para vídeos explicativos"],
         prazoRecomendado: "2-3 semanas por processo",
         dificuldade: "Média",
-        custoEstimado: "R$ 0-30/mês"
+        custoEstimado: "R$ 0-50/mês"
       };
     }
     
     if (acaoLower.includes('equipe') || acaoLower.includes('funcionário') || acaoLower.includes('rh')) {
       return {
         passoAPasso: [
-          "1. Liste todos os funcionários e suas funções atuais",
-          "2. Identifique gaps de competência em cada função",
-          "3. Converse individualmente com cada pessoa (30min)",
-          "4. Pergunte: satisfação, dificuldades, sugestões",
-          "5. Crie plano de desenvolvimento personalizado",
-          "6. Estabeleça metas trimestrais para cada pessoa",
-          "7. Agende reuniões mensais de feedback",
-          "8. Implemente reconhecimento: funcionário do mês",
-          "9. Documente políticas básicas: horário, benefícios, comportamento"
+          "1. Liste todos os funcionários e suas funções atuais em planilha",
+          "2. Identifique gaps de competência: o que cada um sabe vs. o que deveria saber",
+          "3. Agende conversa individual de 30min com cada pessoa",
+          "4. Perguntas-chave: satisfação (1-10), principais dificuldades, sugestões de melhoria",
+          "5. Crie plano de desenvolvimento personalizado para cada funcionário",
+          "6. Estabeleça 3 metas trimestrais específicas para cada pessoa",
+          "7. Implemente reuniões mensais de feedback (30min por pessoa)",
+          "8. Crie sistema de reconhecimento: funcionário do mês, elogios públicos",
+          "9. Documente políticas básicas: horário, benefícios, código de conduta",
+          "10. Faça pesquisa de clima trimestral e aja sobre os resultados"
         ],
-        ferramentas: ["Planilha de avaliação", "Google Forms", "Calendário", "WhatsApp Business"],
+        ferramentas: ["Planilha de avaliação", "Google Forms", "Calendário Google", "WhatsApp Business"],
         prazoRecomendado: "4-6 semanas",
         dificuldade: "Média-Alta",
-        custoEstimado: "R$ 0-100/mês"
+        custoEstimado: "R$ 0-200/mês"
       };
     }
     
     // Dica genérica para ações não específicas
     return {
       passoAPasso: [
-        "1. Analise a situação atual desta área na sua empresa",
-        "2. Defina exatamente o que você quer alcançar",
-        "3. Quebre o objetivo em 3-5 etapas menores",
-        "4. Identifique recursos necessários: tempo, dinheiro, pessoas",
-        "5. Crie um cronograma realista com prazos",
-        "6. Execute a primeira etapa e teste o resultado",
-        "7. Ajuste o plano baseado no que aprendeu",
-        "8. Continue executando etapa por etapa",
-        "9. Monitore progresso semanalmente"
+        "1. Analise a situação atual desta área na sua empresa (faça diagnóstico honest)",
+        "2. Defina exatamente o que você quer alcançar (meta específica e mensurável)",
+        "3. Quebre o objetivo em 5-7 etapas menores e executáveis",
+        "4. Identifique recursos necessários: tempo (horas/semana), dinheiro, pessoas",
+        "5. Crie cronograma realista com prazos para cada etapa",
+        "6. Execute APENAS a primeira etapa e teste o resultado antes de continuar",
+        "7. Meça resultados da primeira etapa e documente lições aprendidas",
+        "8. Ajuste o plano das próximas etapas baseado no que aprendeu",
+        "9. Continue executando etapa por etapa, sempre testando e ajustando",
+        "10. Faça revisão semanal do progresso e ajustes necessários"
       ],
-      ferramentas: ["Planilha de controle", "Google Calendar", "Bloco de notas"],
+      ferramentas: ["Planilha de controle", "Google Calendar", "Bloco de anotações", "Timer/cronômetro"],
       prazoRecomendado: "3-8 semanas",
       dificuldade: "Média",
-      custoEstimado: "A definir"
+      custoEstimado: "A definir baseado na ação específica"
     };
   };
 
@@ -458,7 +487,7 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
     return status.replace('_', ' ');
   };
 
-  // AI Tips Dialog Component - Melhorado com dicas práticas
+  // AI Tips Dialog Component - Melhorado com dicas práticas detalhadas
   const AITipsDialog = ({ acao }: { acao: ActionItem }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [pergunta, setPergunta] = useState("");
@@ -472,9 +501,9 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       const respostasEspecificas = [
-        `Para "${acao.acao.toLowerCase()}", baseado na sua pergunta "${pergunta}", recomendo: Comece fazendo um levantamento da situação atual, defina metas específicas mensuráveis e crie um cronograma detalhado. É importante ter alguém responsável pelo acompanhamento semanal dos resultados.`,
-        `Sobre "${pergunta}" relacionado a "${acao.acao.toLowerCase()}": A chave é começar pequeno e testar. Implemente uma versão piloto primeiro, colete feedback real dos envolvidos e ajuste antes de expandir. Isso reduz riscos e aumenta as chances de sucesso.`,
-        `Para sua dúvida sobre "${pergunta}": Sugiro dividir esta implementação em fases. Primeira fase: preparação e planejamento (1 semana). Segunda fase: execução piloto (2 semanas). Terceira fase: avaliação e ajustes (1 semana). Quarta fase: expansão completa.`
+        `Para implementar "${acao.acao}", baseado na sua pergunta "${pergunta}": Comece fazendo um levantamento detalhado da situação atual, defina metas específicas e mensuráveis (números claros), e crie um cronograma semanal. É essencial ter alguém específico responsável pelo acompanhamento diário dos resultados.`,
+        `Sobre "${pergunta}" relacionado a "${acao.acao}": A estratégia mais eficaz é começar pequeno com um teste piloto. Implemente apenas com 20% da operação primeiro, colete feedback real dos envolvidos durante 2 semanas, documente o que funcionou e o que não funcionou, ajuste o processo e só depois expanda para 100%.`,
+        `Para sua dúvida "${pergunta}": Sugiro dividir esta implementação em 4 fases específicas. Fase 1: Preparação e planejamento (1 semana). Fase 2: Execução piloto com grupo pequeno (2 semanas). Fase 3: Avaliação dos resultados e ajustes (1 semana). Fase 4: Expansão completa e treinamento geral. Cada fase deve ter métricas claras de sucesso.`
       ];
       
       setRespostaAi(respostasEspecificas[Math.floor(Math.random() * respostasEspecificas.length)]);
@@ -490,50 +519,55 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
             className="flex items-center gap-2 bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
           >
             <Brain className="h-4 w-4" />
-            Dicas IA
+            Como Fazer na Prática
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Wrench className="h-5 w-5 text-purple-600" />
-              Como Implementar: {acao.acao}
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Wrench className="h-6 w-6 text-purple-600" />
+              Guia Prático: {acao.acao}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6">
             {/* Informações práticas */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <div className="text-center">
                 <Clock className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                <p className="text-sm font-medium text-blue-900">Prazo Recomendado</p>
-                <p className="text-blue-700">{dicas.prazoRecomendado}</p>
+                <p className="text-sm font-semibold text-blue-900">Prazo</p>
+                <p className="text-blue-700 font-medium">{dicas.prazoRecomendado}</p>
               </div>
               <div className="text-center">
                 <Target className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                <p className="text-sm font-medium text-blue-900">Dificuldade</p>
-                <p className="text-blue-700">{dicas.dificuldade}</p>
+                <p className="text-sm font-semibold text-blue-900">Dificuldade</p>
+                <p className="text-blue-700 font-medium">{dicas.dificuldade}</p>
               </div>
               <div className="text-center">
                 <TrendingUp className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                <p className="text-sm font-medium text-blue-900">Custo Estimado</p>
-                <p className="text-blue-700">{dicas.custoEstimado}</p>
+                <p className="text-sm font-semibold text-blue-900">Investimento</p>
+                <p className="text-blue-700 font-medium">{dicas.custoEstimado}</p>
+              </div>
+              <div className="text-center">
+                <CheckCircle2 className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                <p className="text-sm font-semibold text-blue-900">Passos</p>
+                <p className="text-blue-700 font-medium">{dicas.passoAPasso.length} etapas</p>
               </div>
             </div>
 
             {/* Passo a passo detalhado */}
             <div>
-              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <CheckSquare className="h-5 w-5 text-green-500" />
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <CheckSquare className="h-6 w-6 text-green-600" />
                 Passo a Passo Detalhado
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {dicas.passoAPasso.map((passo, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex-shrink-0 w-7 h-7 bg-green-600 text-white text-sm rounded-full flex items-center justify-center font-semibold">
+                  <div key={index} className="flex items-start gap-4 p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white text-sm rounded-full flex items-center justify-center font-bold">
                       {index + 1}
                     </div>
-                    <p className="text-sm text-green-800 font-medium">{passo}</p>
+                    <p className="text-sm text-green-800 font-medium leading-relaxed">{passo}</p>
                   </div>
                 ))}
               </div>
@@ -541,43 +575,43 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
 
             {/* Ferramentas recomendadas */}
             <div>
-              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <Wrench className="h-5 w-5 text-orange-500" />
-                Ferramentas Recomendadas
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Wrench className="h-6 w-6 text-orange-600" />
+                Ferramentas e Recursos
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {dicas.ferramentas.map((ferramenta, index) => (
-                  <Badge key={index} variant="outline" className="bg-orange-50 text-orange-800 border-orange-200">
-                    {ferramenta}
-                  </Badge>
+                  <div key={index} className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                    <p className="text-orange-800 font-medium text-sm">{ferramenta}</p>
+                  </div>
                 ))}
               </div>
             </div>
 
             {/* Perguntar para a IA */}
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <Brain className="h-5 w-5 text-purple-500" />
-                Tem dúvidas específicas? Pergunte para a IA
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Brain className="h-6 w-6 text-purple-600" />
+                Precisa de Ajuda Específica?
               </h3>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Textarea
-                  placeholder="Ex: Como posso começar sem muito investimento? Que erros devo evitar? Como medir se está funcionando?"
+                  placeholder="Ex: Como posso começar sem muito investimento? Que erros devo evitar? Como medir se está funcionando? Quanto tempo leva para ver resultados?"
                   value={pergunta}
                   onChange={(e) => setPergunta(e.target.value)}
-                  className="min-h-[80px]"
+                  className="min-h-[100px] text-base"
                 />
                 
                 <Button 
                   onClick={() => simularRespostaAi(pergunta)}
                   disabled={carregando || !pergunta.trim()}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
                 >
                   {carregando ? (
                     <>
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                      Analisando...
+                      Analisando sua pergunta...
                     </>
                   ) : (
                     <>
@@ -589,12 +623,12 @@ const ActionPlanManager: React.FC<ActionPlanManagerProps> = ({
 
                 {respostaAi && (
                   <Card className="bg-purple-50 border-purple-200">
-                    <CardContent className="p-4">
+                    <CardContent className="p-5">
                       <div className="flex items-start gap-3">
-                        <Brain className="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                        <Brain className="h-6 w-6 text-purple-600 flex-shrink-0 mt-1" />
                         <div>
-                          <h4 className="font-semibold text-purple-900 mb-2">Resposta da IA:</h4>
-                          <p className="text-purple-800 text-sm leading-relaxed">{respostaAi}</p>
+                          <h4 className="font-bold text-purple-900 mb-3 text-lg">💡 Resposta Personalizada da IA:</h4>
+                          <p className="text-purple-800 leading-relaxed">{respostaAi}</p>
                         </div>
                       </div>
                     </CardContent>
