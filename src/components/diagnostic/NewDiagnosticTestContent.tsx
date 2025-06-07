@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useIntegratedData } from '@/hooks/useIntegratedData';
-import { generateIntelligentActions } from '@/utils/intelligentActionGenerator';
+import { generateIntelligentActions } from '@/utils/actionGeneration';
 import SimpleDiagnosticForm from './SimpleDiagnosticForm';
 import ActionPlanManager from './ActionPlanManager';
 import { Loader2 } from 'lucide-react';
