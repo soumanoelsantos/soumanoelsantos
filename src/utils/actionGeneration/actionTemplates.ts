@@ -18,6 +18,42 @@ export const comprehensiveActionTemplates = {
     'Criar programa de relacionamento pós-venda: newsletter mensal, webinar trimestral exclusivo e grupo VIP no WhatsApp',
     'Desenvolver sistema de pricing dinâmico: criar 3 pacotes (básico/premium/enterprise) com diferencial claro e estratégia de ancoragem'
   ],
+
+  'pre-venda': [
+    'Implementar processo de nutrição de leads: criar sequência de 7 emails educativos, envio automático a cada 3 dias e meta de 30% de abertura',
+    'Desenvolver webinar de educação semanal: escolher tema relevante, criar apresentação de 45 minutos, oferta no final e meta de 100 participantes',
+    'Criar conteúdo de prova social: coletar 20 depoimentos em vídeo, cases de sucesso detalhados e publicar 2 por semana nas redes sociais',
+    'Implementar sistema de lead magnet: criar e-book gratuito de 15 páginas, landing page otimizada e meta de 200 downloads/mês',
+    'Desenvolver processo de qualificação de interesse: ligação em 24h para novos leads, questionário de 5 perguntas e agenda para demonstração',
+    'Criar campanha de retargeting para interessados: anúncios no Facebook/Google para visitantes do site, budget R$ 30/dia e CPC máximo R$ 2',
+    'Implementar chat online no site: instalar chat (Tawk.to ou Zendesk), treinamento da equipe e resposta em até 2 minutos',
+    'Desenvolver calculadora de ROI: ferramenta online que mostra economia/ganho do cliente, integrar com formulário e gerar leads qualificados',
+    'Criar programa de demonstração gratuita: agendar demos de 30 minutos, checklist de preparação e follow-up em 24h',
+    'Implementar sistema de pontuação de leads: definir critérios (empresa, cargo, orçamento), automatizar scoring e priorizar hot leads',
+    'Desenvolver conteúdo educativo segmentado: criar materiais específicos por persona, distribuir via email e medir engajamento',
+    'Criar processo de remarketing por email: sequência para leads frios, reativar interesse e oferecer consultoria gratuita',
+    'Implementar sistema de agendamento online: Calendly integrado ao site, disponibilidade clara e confirmação automática',
+    'Desenvolver quiz interativo: "Qual o potencial de crescimento da sua empresa?", gerar leads e segmentar por resultado',
+    'Criar campanha de urgência limitada: ofertas por tempo limitado, contador regressivo e follow-up para quem não converteu'
+  ],
+
+  'encantamento-cliente': [
+    'Implementar programa de onboarding VIP: welcome kit físico, vídeo personalizado do CEO, cronograma dos primeiros 30 dias',
+    'Criar sistema de check-in proativo: ligação em 7, 15 e 30 dias, identificar dificuldades e oferecer suporte adicional',
+    'Desenvolver programa de benefícios exclusivos: desconto em produtos complementares, acesso antecipado a novidades e eventos VIP',
+    'Implementar sistema de feedback contínuo: pesquisa NPS trimestral, entrevista anual de satisfação e implementação de melhorias',
+    'Criar programa de educação contínua: webinars mensais exclusivos, biblioteca de conteúdo premium e certificações gratuitas',
+    'Desenvolver sistema de surpresas planejadas: brinde no aniversário da empresa, cartão de Natal personalizado e upgrades gratuitos',
+    'Implementar atendimento multicanal: WhatsApp exclusivo, email prioritário, chat no site e telefone com fila preferencial',
+    'Criar programa de co-criação: envolver clientes no desenvolvimento de produtos, beta testing e reconhecimento público',
+    'Desenvolver sistema de acompanhamento de resultados: relatório mensal de performance, dashboard personalizado e reunião de review',
+    'Implementar programa de indicações premiadas: recompensa por indicação, reconhecimento público e benefícios progressivos',
+    'Criar experiências personalizadas: atendimento por account manager, soluções customizadas e comunicação individualizada',
+    'Desenvolver programa de eventos exclusivos: workshop trimestral, networking entre clientes e acesso a especialistas',
+    'Implementar sistema de antecipação de necessidades: análise preditiva, oferta proativa de soluções e consultoria estratégica',
+    'Criar programa de fidelização progressiva: benefícios crescentes por tempo de relacionamento, status VIP e privilégios especiais',
+    'Desenvolver sistema de recuperação de relacionamento: identificar clientes em risco, ação proativa e plano de reconquista'
+  ],
   
   marketing: [
     'Desenvolver estratégia de marketing digital multicanal: definir persona, criar calendário editorial para Instagram (3 posts/semana), YouTube (1 vídeo/semana), email marketing (sequência de 7 emails) e Google Ads com budget mínimo de R$ 30/dia',
