@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useToast } from '@/hooks/use-toast';
@@ -10,24 +9,36 @@ export const useActionPlanManager = (
 ) => {
   const { toast } = useToast();
 
-  // Ensure all action items have the required structure
-  const normalizedActionPlan = initialActionPlan.map(action => ({
-    ...action,
-    comoFazer: action.comoFazer || ['Definir plano de implementação', 'Executar plano', 'Monitorar resultados'],
-    completedSteps: action.completedSteps || [],
-    categoria: action.categoria || 'gestao',
-    prioridade: action.prioridade || 'media',
-    status: action.status || 'pendente',
-    responsavel: action.responsavel || 'A definir',
-    prazo: action.prazo || '1 semana',
-    metricas: action.metricas || 'A definir',
-    beneficios: action.beneficios || 'A definir',
-    detalhesImplementacao: action.detalhesImplementacao || '',
-    dicaIA: action.dicaIA || 'Implemente esta ação seguindo as melhores práticas.',
-    semana: action.semana || 1,
-    dataVencimento: action.dataVencimento ? new Date(action.dataVencimento) : new Date(),
-    concluida: action.concluida || false
-  }));
+  // Ensure all action items have the required structure and normalize legacy categories
+  const normalizedActionPlan = initialActionPlan.map(action => {
+    let normalizedCategory = action.categoria;
+    
+    // Consolidate legacy categories
+    if (action.categoria === 'pre_venda') {
+      normalizedCategory = 'pre-venda';
+    }
+    if (action.categoria === 'encantamento_cliente') {
+      normalizedCategory = 'encantamento-cliente';
+    }
+    
+    return {
+      ...action,
+      categoria: normalizedCategory,
+      comoFazer: action.comoFazer || ['Definir plano de implementação', 'Executar plano', 'Monitorar resultados'],
+      completedSteps: action.completedSteps || [],
+      prioridade: action.prioridade || 'media',
+      status: action.status || 'pendente',
+      responsavel: action.responsavel || 'A definir',
+      prazo: action.prazo || '1 semana',
+      metricas: action.metricas || 'A definir',
+      beneficios: action.beneficios || 'A definir',
+      detalhesImplementacao: action.detalhesImplementacao || '',
+      dicaIA: action.dicaIA || 'Implemente esta ação seguindo as melhores práticas.',
+      semana: action.semana || 1,
+      dataVencimento: action.dataVencimento ? new Date(action.dataVencimento) : new Date(),
+      concluida: action.concluida || false
+    };
+  });
 
   const [actions, setActions] = useState<ActionItem[]>(normalizedActionPlan);
   const [filteredActions, setFilteredActions] = useState<ActionItem[]>(normalizedActionPlan);
@@ -41,7 +52,12 @@ export const useActionPlanManager = (
     let filtered = actions;
 
     if (filterCategory !== 'todas') {
-      filtered = filtered.filter(action => action.categoria === filterCategory);
+      filtered = filtered.filter(action => {
+        // Handle both new and legacy category formats
+        return action.categoria === filterCategory || 
+               (filterCategory === 'pre-venda' && action.categoria === 'pre_venda') ||
+               (filterCategory === 'encantamento-cliente' && action.categoria === 'encantamento_cliente');
+      });
     }
 
     if (filterStatus !== 'todos') {

@@ -16,7 +16,7 @@ export interface GenerateActionsParams {
   maxActions?: number;
 }
 
-export type ActionCategory = 'comercial' | 'marketing' | 'pre-venda' | 'pre_venda' | 'encantamento-cliente' | 'encantamento_cliente' | 'gestao' | 'financeiro' | 'rh' | 'operacional' | 'tecnologia' | 'cultura' | 'relacionamento' | 'produto' | 'sucesso-cliente';
+export type ActionCategory = 'comercial' | 'marketing' | 'pre-venda' | 'encantamento-cliente' | 'gestao' | 'financeiro' | 'rh' | 'operacional' | 'tecnologia' | 'cultura' | 'relacionamento' | 'produto' | 'sucesso-cliente';
 
 export type Priority = 'alta' | 'media' | 'baixa';
 export type Status = 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';

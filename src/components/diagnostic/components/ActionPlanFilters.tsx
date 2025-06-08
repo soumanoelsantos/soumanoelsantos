@@ -50,9 +50,7 @@ const ActionPlanFilters = ({
               <SelectItem value="comercial" className="bg-white hover:bg-gray-50">Comercial</SelectItem>
               <SelectItem value="marketing" className="bg-white hover:bg-gray-50">Marketing</SelectItem>
               <SelectItem value="pre-venda" className="bg-white hover:bg-gray-50">Pré-venda</SelectItem>
-              <SelectItem value="pre_venda" className="bg-white hover:bg-gray-50">Pré-venda (Alt)</SelectItem>
               <SelectItem value="encantamento-cliente" className="bg-white hover:bg-gray-50">Encantamento Cliente</SelectItem>
-              <SelectItem value="encantamento_cliente" className="bg-white hover:bg-gray-50">Encantamento Cliente (Alt)</SelectItem>
               <SelectItem value="gestao" className="bg-white hover:bg-gray-50">Gestão</SelectItem>
               <SelectItem value="financeiro" className="bg-white hover:bg-gray-50">Financeiro</SelectItem>
               <SelectItem value="rh" className="bg-white hover:bg-gray-50">RH</SelectItem>
