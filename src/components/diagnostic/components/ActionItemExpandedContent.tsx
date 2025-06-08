@@ -10,7 +10,21 @@ interface ActionItemExpandedContentProps {
 }
 
 const generateStepsForAction = (actionText: string, category: string): string[] => {
-  // Generate AI-like steps based on action and category
+  // Check if it's an OKR implementation action
+  if (actionText.toLowerCase().includes('okr') || actionText.toLowerCase().includes('objetivos e resultados')) {
+    return [
+      'Definir 3 objetivos estratégicos trimestrais claros e mensuráveis (ex: "Aumentar receita", "Melhorar satisfação do cliente", "Otimizar processos")',
+      'Para cada objetivo, criar 3-4 Key Results específicos com números (ex: "Aumentar receita em 25%", "Atingir NPS de 8.5", "Reduzir tempo de processo em 30%")',
+      'Instalar ferramenta gratuita de acompanhamento (Google Sheets, Notion ou Weekdone) e criar dashboard visual com progresso semanal',
+      'Agendar reuniões semanais de 30min às segundas-feiras para revisar progresso, identificar bloqueios e ajustar estratégias',
+      'Implementar check-ins individuais quinzenais de 15min com cada responsável por KR para acompanhamento e suporte',
+      'Criar ritual de review mensal: analisar resultados, celebrar conquistas, identificar lições aprendidas e planejar próximo ciclo',
+      'Estabelecer sistema de transparência: compartilhar progresso dos OKRs com toda equipe via dashboard visível ou reunião all-hands',
+      'Documentar processo, templates e lições aprendidas para replicar metodologia nos próximos trimestres'
+    ];
+  }
+
+  // Generate AI-like steps based on action and category for other actions
   const baseSteps: { [key: string]: string[] } = {
     'comercial': [
       'Mapear o processo atual de vendas e identificar gargalos',
