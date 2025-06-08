@@ -146,7 +146,7 @@ const ActionItemExpandedContent = ({ action, onStepComplete }: ActionItemExpande
         <div className="flex items-start gap-2">
           <Lightbulb className="h-4 w-4 text-blue-600 mt-0.5" />
           <div>
-            <h5 className="font-medium text-blue-900 mb-1">Dica da IA</h5>
+            <h5 className="font-medium text-blue-900 mb-1">Dica</h5>
             <p className="text-sm text-blue-800">{action.dicaIA}</p>
           </div>
         </div>
