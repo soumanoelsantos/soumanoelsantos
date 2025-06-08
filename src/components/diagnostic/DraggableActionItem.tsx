@@ -18,7 +18,16 @@ import {
   ChevronDown,
   ChevronUp,
   Lightbulb,
-  ListChecks
+  ListChecks,
+  Building,
+  Users,
+  DollarSign,
+  Settings,
+  Cpu,
+  Heart,
+  Handshake,
+  Package,
+  UserCheck
 } from 'lucide-react';
 import { ActionItem } from './NewDiagnosticTestContent';
 
@@ -79,7 +88,50 @@ const DraggableActionItem = ({
     switch (category) {
       case 'comercial': return <TrendingUp className="h-4 w-4" />;
       case 'marketing': return <Target className="h-4 w-4" />;
+      case 'gestao': return <Settings className="h-4 w-4" />;
+      case 'financeiro': return <DollarSign className="h-4 w-4" />;
+      case 'rh': return <Users className="h-4 w-4" />;
+      case 'operacional': return <Building className="h-4 w-4" />;
+      case 'tecnologia': return <Cpu className="h-4 w-4" />;
+      case 'cultura': return <Heart className="h-4 w-4" />;
+      case 'relacionamento': return <Handshake className="h-4 w-4" />;
+      case 'produto': return <Package className="h-4 w-4" />;
+      case 'sucesso-cliente': return <UserCheck className="h-4 w-4" />;
       default: return <Target className="h-4 w-4" />;
+    }
+  };
+
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'comercial': return 'Comercial';
+      case 'marketing': return 'Marketing';
+      case 'gestao': return 'Gestão';
+      case 'financeiro': return 'Financeiro';
+      case 'rh': return 'Recursos Humanos';
+      case 'operacional': return 'Operacional';
+      case 'tecnologia': return 'Tecnologia';
+      case 'cultura': return 'Cultura';
+      case 'relacionamento': return 'Relacionamento';
+      case 'produto': return 'Produto';
+      case 'sucesso-cliente': return 'Sucesso do Cliente';
+      default: return 'Geral';
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'comercial': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'marketing': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'gestao': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'financeiro': return 'bg-green-100 text-green-800 border-green-200';
+      case 'rh': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'operacional': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'tecnologia': return 'bg-cyan-100 text-cyan-800 border-cyan-200';
+      case 'cultura': return 'bg-pink-100 text-pink-800 border-pink-200';
+      case 'relacionamento': return 'bg-teal-100 text-teal-800 border-teal-200';
+      case 'produto': return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'sucesso-cliente': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -87,8 +139,14 @@ const DraggableActionItem = ({
     return new Intl.DateTimeFormat('pt-BR').format(new Date(date));
   };
 
-  const handleStatusChange = (newStatus: ActionItem['status']) => {
-    onStatusChange(action.id, newStatus);
+  const handleCheckboxChange = (checked: boolean) => {
+    if (checked) {
+      // Marcar como realizado
+      onStatusChange(action.id, 'realizado');
+    } else {
+      // Desmarcar e voltar para pendente
+      onStatusChange(action.id, 'pendente');
+    }
   };
 
   const handleStepToggle = (stepIndex: number, completed: boolean) => {
@@ -99,11 +157,14 @@ const DraggableActionItem = ({
   const totalSteps = action.comoFazer?.length || 0;
   const progressPercentage = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
+  // Determinar se está concluída baseado no status
+  const isCompleted = action.status === 'realizado';
+
   return (
     <Card 
       ref={setNodeRef} 
       style={style} 
-      className={`transition-all ${action.concluida ? 'bg-green-50 border-green-200' : 'bg-white'} hover:shadow-md`}
+      className={`transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-white'} hover:shadow-md`}
     >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
@@ -116,8 +177,8 @@ const DraggableActionItem = ({
           </div>
           
           <Checkbox
-            checked={action.concluida}
-            onCheckedChange={(checked) => handleStatusChange(checked ? 'realizado' : 'pendente')}
+            checked={isCompleted}
+            onCheckedChange={handleCheckboxChange}
             className="mt-1"
           />
           
@@ -125,15 +186,20 @@ const DraggableActionItem = ({
             {/* Header */}
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h4 className={`font-medium text-gray-900 ${action.concluida ? 'line-through text-gray-500' : ''}`}>
+                <h4 className={`font-medium text-gray-900 ${isCompleted ? 'line-through text-gray-500' : ''}`}>
                   {action.acao}
                 </h4>
-                <div className="flex items-center gap-2 mt-2">
-                  {getCategoryIcon(action.categoria)}
-                  <Badge className={getPriorityColor(action.prioridade)}>
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  <Badge variant="custom" className={getCategoryColor(action.categoria)}>
+                    <div className="flex items-center gap-1">
+                      {getCategoryIcon(action.categoria)}
+                      <span>{getCategoryLabel(action.categoria)}</span>
+                    </div>
+                  </Badge>
+                  <Badge variant="custom" className={getPriorityColor(action.prioridade)}>
                     {action.prioridade.charAt(0).toUpperCase() + action.prioridade.slice(1)}
                   </Badge>
-                  <Badge className={getStatusColor(action.status)}>
+                  <Badge variant="custom" className={getStatusColor(action.status)}>
                     {action.status.replace('_', ' ')}
                   </Badge>
                 </div>
@@ -260,7 +326,7 @@ const DraggableActionItem = ({
             )}
           </div>
           
-          {action.concluida && (
+          {isCompleted && (
             <CheckCircle2 className="h-5 w-5 text-green-600 mt-1" />
           )}
         </div>
