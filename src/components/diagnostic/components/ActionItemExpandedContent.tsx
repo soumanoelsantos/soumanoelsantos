@@ -9,7 +9,106 @@ interface ActionItemExpandedContentProps {
   onStepComplete: (actionId: string, stepIndex: number, completed: boolean) => void;
 }
 
+const generateStepsForAction = (actionText: string, category: string): string[] => {
+  // Generate AI-like steps based on action and category
+  const baseSteps: { [key: string]: string[] } = {
+    'comercial': [
+      'Mapear o processo atual de vendas e identificar gargalos',
+      'Definir métricas e KPIs para acompanhamento',
+      'Treinar a equipe nas novas práticas comerciais',
+      'Implementar ferramentas de CRM ou otimizar as existentes',
+      'Monitorar resultados e ajustar estratégias conforme necessário'
+    ],
+    'marketing': [
+      'Analisar o público-alvo e definir personas',
+      'Criar estratégia de conteúdo e canais de comunicação',
+      'Desenvolver materiais de marketing alinhados com a marca',
+      'Implementar campanhas e monitorar métricas de engagement',
+      'Otimizar estratégias com base nos resultados obtidos'
+    ],
+    'gestao': [
+      'Documentar processos atuais e identificar melhorias',
+      'Definir responsabilidades e fluxos de trabalho claros',
+      'Implementar ferramentas de gestão e controle',
+      'Treinar equipe nos novos procedimentos',
+      'Estabelecer rotina de monitoramento e feedback'
+    ],
+    'financeiro': [
+      'Organizar e categorizar todas as movimentações financeiras',
+      'Implementar controles de fluxo de caixa e orçamento',
+      'Definir indicadores financeiros para acompanhamento',
+      'Criar relatórios gerenciais periódicos',
+      'Estabelecer metas financeiras e planos de contingência'
+    ],
+    'rh': [
+      'Mapear competências atuais da equipe',
+      'Definir perfis e descrições de cargos',
+      'Criar plano de desenvolvimento e treinamento',
+      'Implementar processos de avaliação de desempenho',
+      'Estabelecer políticas de retenção e motivação'
+    ],
+    'operacional': [
+      'Mapear todos os processos operacionais críticos',
+      'Identificar gargalos e oportunidades de melhoria',
+      'Padronizar procedimentos operacionais',
+      'Implementar controles de qualidade',
+      'Monitorar indicadores de eficiência operacional'
+    ],
+    'tecnologia': [
+      'Avaliar infraestrutura tecnológica atual',
+      'Definir necessidades e prioridades tecnológicas',
+      'Implementar soluções tecnológicas adequadas',
+      'Treinar equipe no uso das novas ferramentas',
+      'Estabelecer rotinas de manutenção e atualização'
+    ],
+    'cultura': [
+      'Definir valores e princípios organizacionais',
+      'Comunicar a cultura desejada para toda a equipe',
+      'Implementar práticas que reforcem a cultura',
+      'Criar rituais e tradições que fortaleçam o ambiente',
+      'Monitorar clima organizacional e fazer ajustes'
+    ],
+    'relacionamento': [
+      'Mapear todos os pontos de contato com clientes',
+      'Definir padrões de atendimento e comunicação',
+      'Implementar ferramentas de relacionamento',
+      'Treinar equipe em técnicas de relacionamento',
+      'Monitorar satisfação e feedback dos clientes'
+    ],
+    'produto': [
+      'Analisar produtos/serviços atuais e mercado',
+      'Identificar oportunidades de melhoria ou inovação',
+      'Desenvolver protótipos ou versões melhoradas',
+      'Testar com grupo seleto de clientes',
+      'Lançar e monitorar performance no mercado'
+    ],
+    'sucesso-cliente': [
+      'Mapear jornada completa do cliente',
+      'Identificar pontos de atrito e oportunidades',
+      'Implementar processos de onboarding e suporte',
+      'Criar métricas de sucesso do cliente',
+      'Estabelecer programa de acompanhamento pós-venda'
+    ]
+  };
+
+  const categorySteps = baseSteps[category] || baseSteps['gestao'];
+  
+  // Customize steps based on the specific action
+  return categorySteps.map(step => {
+    if (actionText.toLowerCase().includes('implementar')) {
+      return step.replace('Implementar', 'Implementar e configurar');
+    }
+    if (actionText.toLowerCase().includes('melhorar')) {
+      return step.replace('Definir', 'Redefinir e melhorar');
+    }
+    return step;
+  });
+};
+
 const ActionItemExpandedContent = ({ action, onStepComplete }: ActionItemExpandedContentProps) => {
+  // Generate steps if they don't exist or regenerate for better AI-like content
+  const steps = action.comoFazer || generateStepsForAction(action.acao, action.categoria);
+  
   const handleStepToggle = (stepIndex: number, completed: boolean) => {
     onStepComplete(action.id, stepIndex, completed);
   };
@@ -46,7 +145,7 @@ const ActionItemExpandedContent = ({ action, onStepComplete }: ActionItemExpande
           <h5 className="font-medium text-gray-900">Como Fazer na Prática</h5>
         </div>
         <div className="space-y-2">
-          {action.comoFazer?.map((step, stepIndex) => (
+          {steps.map((step, stepIndex) => (
             <div key={stepIndex} className="flex items-start gap-2">
               <Checkbox
                 checked={action.completedSteps?.[stepIndex] || false}
@@ -54,7 +153,7 @@ const ActionItemExpandedContent = ({ action, onStepComplete }: ActionItemExpande
                 className="mt-0.5"
               />
               <span className={`text-sm ${action.completedSteps?.[stepIndex] ? 'line-through text-gray-500' : 'text-gray-700'}`}>
-                {step}
+                <strong>{stepIndex + 1}.</strong> {step}
               </span>
             </div>
           ))}

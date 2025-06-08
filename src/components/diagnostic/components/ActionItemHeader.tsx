@@ -14,6 +14,18 @@ interface ActionItemHeaderProps {
 }
 
 const ActionItemHeader = ({ action, isCompleted, onEdit, onDelete }: ActionItemHeaderProps) => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Tem certeza que deseja excluir esta ação?')) {
+      onDelete(action.id);
+    }
+  };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit(action);
+  };
+
   return (
     <div className="flex items-start justify-between">
       <div className="flex-1">
@@ -37,10 +49,10 @@ const ActionItemHeader = ({ action, isCompleted, onEdit, onDelete }: ActionItemH
       </div>
       
       <div className="flex items-center gap-2 ml-4">
-        <Button variant="ghost" size="sm" onClick={() => onEdit(action)}>
+        <Button variant="ghost" size="sm" onClick={handleEdit}>
           <Edit className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="sm" onClick={() => onDelete(action.id)}>
+        <Button variant="ghost" size="sm" onClick={handleDelete} className="text-red-600 hover:text-red-700">
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>

@@ -119,7 +119,7 @@ export const useActionPlanManager = (
 
   const handleStatusChange = (id: string, status: ActionItem['status']) => {
     const updatedActions = actions.map(action => 
-      action.id === id ? { ...action, status } : action
+      action.id === id ? { ...action, status, concluida: status === 'realizado' } : action
     );
     setActions(updatedActions);
     onUpdatePlan(updatedActions);
@@ -132,9 +132,9 @@ export const useActionPlanManager = (
         const completedSteps = action.completedSteps || new Array(comoFazer.length).fill(false);
         completedSteps[stepIndex] = completed;
         
-        // Se todos os passos estão completos, marcar como realizado
-        const allCompleted = completedSteps.every(step => step);
-        const newStatus = allCompleted ? 'realizado' : action.status;
+        // Only mark as completed if ALL steps are completed
+        const allCompleted = completedSteps.every(step => step === true) && completedSteps.length > 0;
+        const newStatus = allCompleted ? 'realizado' : (completed ? 'em_andamento' : 'pendente');
         
         return { 
           ...action, 
@@ -176,7 +176,7 @@ export const useActionPlanManager = (
       dicaIA: newAction.dicaIA || 'Implemente esta ação seguindo as melhores práticas.',
       status: newAction.status as ActionItem['status'] || 'pendente',
       semana: newAction.semana || 1,
-      comoFazer: newAction.comoFazer || ['Definir plano de implementação', 'Executar plano', 'Monitorar resultados'],
+      comoFazer: newAction.comoFazer || [],
       completedSteps: []
     };
 

@@ -51,10 +51,18 @@ const DraggableActionItem = ({
   };
 
   const handleCheckboxChange = (checked: boolean) => {
-    if (checked) {
-      onStatusChange(action.id, 'realizado');
-    } else {
-      onStatusChange(action.id, 'pendente');
+    // Only allow manual completion/incompletion via checkbox if no steps are defined
+    // or if all steps are completed
+    const hasSteps = action.comoFazer && action.comoFazer.length > 0;
+    const allStepsCompleted = action.completedSteps?.every(step => step === true) && 
+                             action.completedSteps?.length === action.comoFazer?.length;
+    
+    if (!hasSteps || allStepsCompleted) {
+      if (checked) {
+        onStatusChange(action.id, 'realizado');
+      } else {
+        onStatusChange(action.id, 'pendente');
+      }
     }
   };
 
@@ -62,6 +70,12 @@ const DraggableActionItem = ({
   const totalSteps = action.comoFazer?.length || 0;
   const progressPercentage = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
   const isCompleted = action.status === 'realizado';
+  
+  // Determine if checkbox should be disabled
+  const hasSteps = totalSteps > 0;
+  const allStepsCompleted = action.completedSteps?.every(step => step === true) && 
+                           action.completedSteps?.length === totalSteps;
+  const checkboxDisabled = hasSteps && !allStepsCompleted && !isCompleted;
 
   return (
     <Card 
@@ -82,7 +96,9 @@ const DraggableActionItem = ({
           <Checkbox
             checked={isCompleted}
             onCheckedChange={handleCheckboxChange}
+            disabled={checkboxDisabled}
             className="mt-1"
+            title={checkboxDisabled ? "Complete todos os passos primeiro" : "Marcar como concluída"}
           />
           
           <div className="flex-1 space-y-3">
