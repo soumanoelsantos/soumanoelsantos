@@ -133,13 +133,15 @@ export const useActionPlanManager = (
         completedSteps[stepIndex] = completed;
         
         // Only mark as completed if ALL steps are completed
-        const allCompleted = completedSteps.every(step => step === true) && completedSteps.length > 0;
+        const allCompleted = completedSteps.every(step => step === true) && 
+                           completedSteps.length > 0 && 
+                           completedSteps.length === comoFazer.length;
         
         // Properly type the status values
         let newStatus: ActionItem['status'];
         if (allCompleted) {
           newStatus = 'realizado';
-        } else if (completed || completedSteps.some(step => step === true)) {
+        } else if (completedSteps.some(step => step === true)) {
           newStatus = 'em_andamento';
         } else {
           newStatus = 'pendente';
