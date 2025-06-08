@@ -10,7 +10,9 @@ import {
   Heart, 
   Handshake, 
   Package, 
-  UserCheck 
+  UserCheck,
+  Megaphone,
+  Star
 } from 'lucide-react';
 
 export const getPriorityColor = (priority: string) => {
@@ -36,6 +38,10 @@ export const getCategoryIcon = (category: string) => {
   switch (category) {
     case 'comercial': return <TrendingUp className="h-4 w-4" />;
     case 'marketing': return <Target className="h-4 w-4" />;
+    case 'pre-venda':
+    case 'pre_venda': return <Megaphone className="h-4 w-4" />;
+    case 'encantamento-cliente':
+    case 'encantamento_cliente': return <Star className="h-4 w-4" />;
     case 'gestao': return <Settings className="h-4 w-4" />;
     case 'financeiro': return <DollarSign className="h-4 w-4" />;
     case 'rh': return <Users className="h-4 w-4" />;
@@ -53,6 +59,10 @@ export const getCategoryLabel = (category: string) => {
   switch (category) {
     case 'comercial': return 'Comercial';
     case 'marketing': return 'Marketing';
+    case 'pre-venda':
+    case 'pre_venda': return 'Pré-venda';
+    case 'encantamento-cliente':
+    case 'encantamento_cliente': return 'Encantamento do Cliente';
     case 'gestao': return 'Gestão';
     case 'financeiro': return 'Financeiro';
     case 'rh': return 'Recursos Humanos';
@@ -70,6 +80,10 @@ export const getCategoryColor = (category: string) => {
   switch (category) {
     case 'comercial': return 'bg-blue-100 text-blue-800 border-blue-200';
     case 'marketing': return 'bg-purple-100 text-purple-800 border-purple-200';
+    case 'pre-venda':
+    case 'pre_venda': return 'bg-violet-100 text-violet-800 border-violet-200';
+    case 'encantamento-cliente':
+    case 'encantamento_cliente': return 'bg-rose-100 text-rose-800 border-rose-200';
     case 'gestao': return 'bg-gray-100 text-gray-800 border-gray-200';
     case 'financeiro': return 'bg-green-100 text-green-800 border-green-200';
     case 'rh': return 'bg-orange-100 text-orange-800 border-orange-200';

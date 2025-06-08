@@ -34,100 +34,118 @@ const generateStepsForAction = (actionText: string, category: string): string[] 
       'Definir meta semanal de ligações/contatos e acompanhar diariamente via planilha compartilhada'
     ],
     'pre-venda': [
-      'Criar lista de 20 perguntas que os clientes fazem antes de comprar e transformar em conteúdo educativo',
-      'Gravar 5 vídeos de 3 minutos respondendo dúvidas frequentes e postar no YouTube e Instagram',
-      'Desenvolver e-book de 10 páginas com "Guia prático para [resolver problema do cliente]" usando Canva',
-      'Configurar landing page no WordPress ou Wix para capturar emails em troca do material gratuito',
-      'Criar sequência de 5 emails automáticos enviados a cada 2 dias para nutrir os leads capturados'
+      'Criar lista de 20 perguntas frequentes dos clientes e transformar em 5 posts educativos para Instagram/LinkedIn',
+      'Gravar 3 vídeos de 2 minutos no celular respondendo dúvidas principais e postar no YouTube/Instagram',
+      'Fazer e-book simples de 8 páginas no Canva com "Guia prático para [resolver problema específico do seu cliente]"',
+      'Criar página no site ou Instagram para capturar emails em troca do material gratuito',
+      'Configurar sequência de 3 emails automáticos (Mailchimp gratuito) enviados nos dias 1, 3 e 7 após captação'
+    ],
+    'pre_venda': [
+      'Criar lista de 20 perguntas frequentes dos clientes e transformar em 5 posts educativos para Instagram/LinkedIn',
+      'Gravar 3 vídeos de 2 minutos no celular respondendo dúvidas principais e postar no YouTube/Instagram',
+      'Fazer e-book simples de 8 páginas no Canva com "Guia prático para [resolver problema específico do seu cliente]"',
+      'Criar página no site ou Instagram para capturar emails em troca do material gratuito',
+      'Configurar sequência de 3 emails automáticos (Mailchimp gratuito) enviados nos dias 1, 3 e 7 após captação'
     ],
     'encantamento-cliente': [
-      'Criar welcome kit: caixa personalizada com brinde, carta de boas-vindas e cronograma dos primeiros 30 dias',
-      'Agendar ligação de check-in nos dias 7, 15 e 30 após a compra para verificar satisfação',
-      'Desenvolver grupo VIP no WhatsApp para clientes com conteúdo exclusivo e suporte prioritário',
-      'Implementar sistema de aniversário: agendar no calendário e enviar cartão/brinde na data da empresa do cliente',
-      'Criar pesquisa NPS trimestral via Google Forms e ligar para todos os detratores em 48h'
+      'Montar kit de boas-vindas: caixa personalizada com brinde, carta manuscrita e cronograma dos primeiros 15 dias',
+      'Agendar 3 ligações obrigatórias: dia 3 (como está?), dia 15 (precisa de algo?) e dia 30 (satisfação de 0 a 10)',
+      'Criar grupo VIP no WhatsApp só para clientes com dicas exclusivas e atendimento prioritário em até 2 horas',
+      'Cadastrar aniversário de todos os clientes e enviar cartão personalizado + desconto especial na data',
+      'Fazer pesquisa NPS a cada 3 meses via Google Forms e ligar pessoalmente para quem der nota abaixo de 8'
+    ],
+    'encantamento_cliente': [
+      'Montar kit de boas-vindas: caixa personalizada com brinde, carta manuscrita e cronograma dos primeiros 15 dias',
+      'Agendar 3 ligações obrigatórias: dia 3 (como está?), dia 15 (precisa de algo?) e dia 30 (satisfação de 0 a 10)',
+      'Criar grupo VIP no WhatsApp só para clientes com dicas exclusivas e atendimento prioritário em até 2 horas',
+      'Cadastrar aniversário de todos os clientes e enviar cartão personalizado + desconto especial na data',
+      'Fazer pesquisa NPS a cada 3 meses via Google Forms e ligar pessoalmente para quem der nota abaixo de 8'
     ],
     'marketing': [
-      'Definir persona ideal: criar documento de 1 página com idade, problemas, onde está online e como tomar decisão',
-      'Criar calendário editorial no Google Sheets: planejar 30 posts com data, hora, rede social e call-to-action',
-      'Produzir 10 posts educativos usando Canva: 5 carrosséis informativos e 5 imagens com dicas práticas',
-      'Configurar Google Ads com budget de R$ 10/dia: escolher 5 palavras-chave e criar anúncio simples',
-      'Monitorar resultados semanalmente: anotar alcance, cliques, leads gerados e custo por lead'
+      'Definir cliente ideal em 1 página: idade, renda, problemas principais, onde passa tempo online e como decide comprar',
+      'Criar calendário no Google Sheets: 20 posts planejados com data, rede social, tipo de conteúdo e call-to-action',
+      'Produzir 5 posts no Canva: 3 carrosséis educativos e 2 imagens com dicas práticas do seu segmento',
+      'Configurar anúncio no Instagram: budget R$ 5/dia, público similar aos seus clientes atuais, objetivo conversões',
+      'Acompanhar resultados toda sexta: anotar alcance, cliques, mensagens recebidas e calcular custo por lead'
     ],
     'gestao': [
-      'Mapear 5 processos principais da empresa: anotar passo a passo como cada atividade é feita hoje',
-      'Criar planilha de KPIs com 8 indicadores: receita, custos, clientes novos, satisfação, produtividade',
-      'Agendar reunião semanal de 1 hora toda segunda às 9h: revisar números da semana e definir prioridades',
-      'Implementar sistema de responsabilidades: cada meta tem 1 responsável e prazo específico de entrega',
-      'Criar relatório mensal de 2 páginas: resumir principais resultados e definir 3 focos para o próximo mês'
+      'Mapear 3 processos principais: anotar passo a passo em documento Word como cada atividade crítica é feita hoje',
+      'Criar planilha de indicadores com 6 números: receita mensal, custos, novos clientes, satisfação, produtividade da equipe',
+      'Agendar reunião semanal fixa toda segunda às 9h por 45 minutos: revisar números e definir 3 prioridades da semana',
+      'Definir responsável único para cada meta: escrever nome da pessoa e data limite para cada objetivo',
+      'Fazer relatório mensal de 1 página: principais resultados, o que funcionou, o que não funcionou e focos do próximo mês'
     ],
     'financeiro': [
-      'Abrir conta empresarial separada da pessoal e transferir todas as movimentações para ela',
-      'Criar planilha de fluxo de caixa no Excel: anotar toda entrada e saída diariamente por 30 dias',
-      'Calcular custo real de cada produto/serviço: somar material, mão de obra, impostos e margem desejada',
-      'Definir reserva de emergência: separar valor equivalente a 3 meses de custos fixos em conta poupança',
-      'Instalar app de controle financeiro (GuiaBolso ou Organizze) e categorizar todos os gastos'
+      'Separar conta pessoal da empresarial: abrir conta PJ no banco e transferir todas movimentações da empresa',
+      'Anotar TODAS as entradas e saídas por 30 dias em planilha Excel: data, descrição, valor, categoria',
+      'Calcular preço real de cada produto: somar material + mão de obra + impostos + 30% de lucro mínimo',
+      'Guardar dinheiro para emergência: separar valor de 2 meses de gastos fixos numa conta poupança',
+      'Instalar app Mobills ou GuiaBolso no celular e categorizar todos os gastos da empresa por 30 dias'
     ],
     'rh': [
-      'Criar descrição de cargo de 1 página para cada função: responsabilidades, requisitos e salário',
-      'Implementar entrevista estruturada: preparar 10 perguntas padrão e avaliar candidatos com nota de 1 a 5',
-      'Desenvolver programa de integração de 7 dias: checklist com apresentação, treinamentos e acompanhamento',
-      'Agendar reunião individual mensal de 30 minutos com cada funcionário para feedback e desenvolvimento',
-      'Criar política de benefícios clara: definir vale alimentação, plano de saúde e outros benefícios oferecidos'
+      'Escrever descrição de cada cargo em 1 página: o que faz, requisitos mínimos, salário e a quem reporta',
+      'Criar entrevista padrão: preparar 8 perguntas iguais para todos candidatos e dar nota de 1 a 5 para cada resposta',
+      'Fazer checklist de primeiro dia: apresentar empresa, dar acesso aos sistemas, explicar regras e acompanhar por 1 semana',
+      'Agendar conversa individual de 30 minutos com cada funcionário todo mês: perguntar dificuldades e dar feedback',
+      'Definir benefícios claros: valor do vale alimentação, plano de saúde (se oferece) e outros benefícios por escrito'
     ],
     'operacional': [
-      'Cronometrar tempo de execução de 5 atividades principais: medir quanto tempo leva cada processo',
-      'Criar checklist de qualidade com 10 itens: verificar se produto/serviço atende padrão antes da entrega',
-      'Implementar controle de estoque semanal: contar produtos toda sexta e anotar em planilha',
-      'Definir fornecedor backup para 3 itens críticos: ter alternativa caso fornecedor principal falhe',
-      'Organizar espaço físico usando método 5S: separar, organizar, limpar, padronizar e manter disciplina'
+      'Cronometrar quanto tempo leva cada atividade principal: medir 3 vezes e anotar tempo médio de execução',
+      'Criar checklist de qualidade com 8 itens obrigatórios: verificar antes de entregar produto/serviço ao cliente',
+      'Contar estoque toda sexta-feira: anotar quantidade de cada item em planilha e definir ponto mínimo para comprar',
+      'Ter fornecedor reserva para 3 itens mais importantes: pesquisar e deixar contato de backup caso o principal falhe',
+      'Organizar espaço físico: separar itens por categoria, etiquetar prateleiras, limpar e manter organização'
     ],
     'tecnologia': [
-      'Contratar internet de backup: ter segunda conexão para garantir funcionamento em caso de falha',
-      'Implementar backup automático na nuvem: Google Drive ou Dropbox para salvar arquivos importantes',
-      'Instalar antivírus em todos os computadores e fazer atualização mensal do sistema',
-      'Criar sistema de senhas seguras: usar gerenciador como LastPass e alterar senhas principais',
-      'Configurar email profissional: criar contas @suaempresa.com.br para toda a equipe'
+      'Contratar internet backup: ter segunda conexão (4G ou cabo) para não parar quando internet principal cair',
+      'Configurar backup automático: usar Google Drive ou Dropbox para salvar arquivos importantes todo dia',
+      'Instalar antivírus pago em todos computadores e atualizar sistema operacional todo mês',
+      'Trocar senhas principais: usar combinação com números, letras e símbolos, anotar em local seguro',
+      'Criar email profissional: fazer @suaempresa.com.br para você e equipe usando Google Workspace'
     ],
     'cultura': [
-      'Escrever missão da empresa em 1 frase: definir qual o propósito e comunicar para toda equipe',
-      'Criar 5 valores da empresa: listar comportamentos esperados e dar exemplos práticos do dia a dia',
-      'Implementar reconhecimento semanal: destacar 1 funcionário que demonstrou os valores na prática',
-      'Organizar coffee break mensal de 1 hora: momento para equipe se conhecer melhor e fortalecer relacionamento',
-      'Fazer pesquisa de clima anônima trimestral: 5 perguntas sobre satisfação e implementar melhorias'
+      'Escrever propósito da empresa em 1 frase simples: "Existe para fazer o quê?" e comunicar para toda equipe',
+      'Definir 4 valores principais: comportamentos que vocês esperam na prática, com exemplos do dia a dia',
+      'Escolher 1 funcionário por semana para destacar: reconhecer publicamente quem demonstrou os valores',
+      'Fazer café da manhã mensal de 1 hora: momento para equipe conversar, se conhecer melhor e dar sugestões',
+      'Perguntar satisfação da equipe a cada 3 meses: 3 perguntas anônimas no Google Forms e implementar melhorias'
     ],
     'relacionamento': [
-      'Criar base de dados com informações pessoais dos principais clientes: aniversário, preferências, família',
-      'Agendar contato trimestral com top 20 clientes: ligação de 15 minutos para saber como estão',
-      'Participar de 2 eventos do setor por mês: networking para conhecer potenciais parceiros e clientes',
-      'Criar programa de indicações: oferecer desconto para quem indicar novo cliente',
-      'Implementar follow-up pós-venda: ligar em 7 e 30 dias para verificar satisfação'
+      'Anotar informações pessoais dos 20 principais clientes: aniversário, preferências, família, hobbies',
+      'Ligar para top 10 clientes a cada 3 meses: conversa de 10 minutos só para saber como estão (sem vender nada)',
+      'Participar de 1 evento do setor por mês: networking para conhecer pessoas e possíveis parceiros',
+      'Criar programa "indique e ganhe": oferecer desconto de 10% para quem trouxer cliente novo',
+      'Fazer follow-up pós-venda: ligar em 1 semana e 1 mês após entrega para ver se está tudo bem'
     ],
     'produto': [
-      'Entrevistar 10 clientes atuais: perguntar o que pode melhorar no produto/serviço',
-      'Pesquisar 5 concorrentes principais: analisar preços, características e diferenciais',
-      'Criar protótipo simples da melhoria: testar nova versão com 5 clientes antes de lançar',
-      'Definir precificação baseada em valor: calcular benefício que gera para cliente e precificar baseado nisso',
-      'Monitorar satisfação mensalmente: usar escala de 1 a 10 e investigar notas abaixo de 8'
+      'Conversar com 5 clientes atuais: perguntar "o que pode melhorar no nosso produto/serviço?" e anotar tudo',
+      'Pesquisar 3 concorrentes principais: comparar preços, qualidade, atendimento e anotar diferenças',
+      'Testar melhoria pequena com 3 clientes: implementar mudança simples e ver reação antes de lançar para todos',
+      'Calcular preço baseado no valor que entrega: "quanto o cliente economiza/ganha usando seu produto?"',
+      'Perguntar nota de 0 a 10 para satisfação todo mês: investigar quem deu nota menor que 8'
     ],
     'sucesso-cliente': [
-      'Mapear jornada completa do cliente: desde primeiro contato até renovação, identificar pontos de melhoria',
-      'Criar manual de onboarding: passo a passo para cliente ter sucesso nos primeiros 30 dias',
-      'Implementar sistema de health score: 5 indicadores para identificar clientes em risco de cancelar',
-      'Agendar reunião de review trimestral: apresentar resultados alcançados e planejar próximos passos',
-      'Criar programa de expansão: identificar oportunidades de vender mais para clientes satisfeitos'
+      'Mapear jornada completa: desde primeiro contato até renovação, identificar onde cliente pode ter dificuldade',
+      'Criar manual simples de "primeiros passos": passo a passo para cliente ter sucesso nos primeiros 15 dias',
+      'Criar score de saúde do cliente: 4 indicadores para identificar quem pode cancelar (uso, satisfação, pagamento, contato)',
+      'Agendar reunião trimestral: apresentar resultados que cliente conquistou usando seu produto/serviço',
+      'Identificar oportunidades de vender mais: mapear quais clientes satisfeitos podem comprar produtos adicionais'
     ]
   };
 
-  const categorySteps = baseSteps[category] || baseSteps['gestao'];
+  // Try different category formats
+  let categorySteps = baseSteps[category] || 
+                     baseSteps[category.replace('-', '_')] || 
+                     baseSteps[category.replace('_', '-')] || 
+                     baseSteps['gestao'];
   
   // Customize steps based on the specific action
   return categorySteps.map(step => {
     if (actionText.toLowerCase().includes('implementar')) {
-      return step.replace('Criar', 'Implementar e criar');
+      return step.replace('Criar', 'Implementar e criar').replace('Definir', 'Implementar e definir');
     }
     if (actionText.toLowerCase().includes('melhorar')) {
-      return step.replace('Definir', 'Melhorar e redefinir');
+      return step.replace('Criar', 'Melhorar e criar').replace('Definir', 'Melhorar e redefinir');
     }
     return step;
   });
