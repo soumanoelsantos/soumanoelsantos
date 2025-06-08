@@ -13,123 +13,138 @@ const generateStepsForAction = (actionText: string, category: string): string[] 
   // Check if it's an OKR implementation action
   if (actionText.toLowerCase().includes('okr') || actionText.toLowerCase().includes('objetivos e resultados')) {
     return [
-      'Baixar planilha de OKR do Google (buscar "OKR template Google Sheets") ou criar em Excel com 4 colunas: Objetivo, Key Result, Meta, Status',
-      'Reunir sócios/diretores por 2 horas para definir 3 objetivos claros: "O que queremos alcançar nos próximos 3 meses?" (ex: Aumentar receita, Melhorar operação, Expandir mercado)',
-      'Para cada objetivo, definir 3-4 Key Results mensuráveis: transformar cada objetivo em números específicos (ex: "Aumentar receita" vira "Aumentar receita de R$ 50k para R$ 65k")',
-      'Dividir cada Key Result entre os responsáveis: nomear 1 pessoa como dono de cada KR e definir prazo semanal de entrega',
-      'Agendar reunião semanal fixa de 30 minutos toda segunda-feira às 9h para revisar progresso: cada responsável apresenta % de conclusão e principais bloqueios',
-      'Criar dashboard visual simples: usar Google Sheets ou Notion para mostrar progresso em % e cores (verde: no prazo, amarelo: atenção, vermelho: atrasado)',
-      'Implementar check-in individual de 15 minutos com cada responsável toda quinta-feira: revisar dificuldades e oferecer suporte',
-      'Fazer review mensal de 1 hora no último sábado do mês: analisar o que funcionou, ajustar metas e celebrar conquistas com a equipe'
+      'SEMANA 1: Baixar modelo OKR: Acesse drive.google.com/templates, procure "OKR", baixe planilha ou crie no Excel com colunas: Objetivo, Key Result, Meta Numérica, Responsável, Data Limite, Status (%)',
+      'SEMANA 1: Reunião de definição de objetivos: Agende 3 horas com sócios/diretores, faça pergunta: "Quais 3 resultados mais importantes queremos em 90 dias?" Anote todas as respostas e vote nos 3 principais',
+      'SEMANA 2: Transformar objetivos em números: Para cada objetivo, crie 3-4 metas específicas. Ex: "Aumentar vendas" vira "Vender R$ 150.000 em 90 dias" (seja específico com valor e prazo)',
+      'SEMANA 2: Nomear responsáveis: Cada meta precisa de 1 pessoa responsável. Chame cada um individualmente, explique a meta, pergunte se aceita e defina entrega semanal específica',
+      'SEMANA 3: Primeira reunião de acompanhamento: Toda segunda às 9h por 30 min. Cada responsável fala: % concluído, principal dificuldade, o que precisa de ajuda. Anote tudo.',
+      'SEMANA 3: Criar dashboard visual: Use Google Sheets ou Notion. Faça gráfico de barras mostrando % de cada meta. Verde (no prazo), amarelo (atenção), vermelho (atrasado)',
+      'SEMANA 4: Check-ins individuais: Toda quinta, 15 min com cada responsável. Pergunte: "Qual sua principal dificuldade?" e "Como posso ajudar?" Ofereça soluções práticas',
+      'MÊS 3: Review e celebração: Último sábado do trimestre, 2h com equipe. Apresente resultados, analise o que funcionou/não funcionou, celebre conquistas e defina próximo trimestre'
     ];
   }
 
-  // Generate specific, actionable steps based on action and category
+  // Generate specific, actionable steps based on category
   const baseSteps: { [key: string]: string[] } = {
     'comercial': [
-      'Instalar CRM gratuito (HubSpot ou Pipedrive) e configurar 5 estágios: Lead, Qualificado, Proposta, Negociação, Fechado',
-      'Criar planilha com dados dos últimos 50 clientes: nome, telefone, email, valor da venda, tempo para fechar',
-      'Escrever script de 3 perguntas para qualificar leads: "Qual seu orçamento?", "Quem toma a decisão?" e "Qual a urgência?"',
-      'Treinar equipe por 2 horas usando role-play: simular 10 situações de venda e praticar objeções mais comuns',
-      'Definir meta semanal de ligações/contatos e acompanhar diariamente via planilha compartilhada'
+      'SEMANA 1: Instalar CRM gratuito - Acesse hubspot.com/pt/pricing, crie conta gratuita, configure 5 estágios: "Novo Lead → Qualificado → Proposta → Negociação → Fechado". Importe planilha atual de clientes',
+      'SEMANA 1: Criar base de dados atual - Abra Excel, liste últimos 50 clientes: Nome | Telefone | Email | Valor Venda | Tempo para Fechar | Fonte. Use essa base para análises',
+      'SEMANA 2: Criar script de qualificação - Escreva 3 perguntas obrigatórias: "Qual orçamento disponível?", "Quem decide a compra?" e "Qual urgência para resolver?". Treine com role-play',
+      'SEMANA 2: Treinamento prático de vendas - 2 horas com equipe, simule 10 situações: cliente sem dinheiro, cliente indeciso, cliente com pressa. Pratique objeções reais do seu negócio',
+      'SEMANA 3: Definir e acompanhar metas - Meta semanal: X ligações, Y reuniões agendadas. Crie planilha compartilhada no Google Sheets, atualize diariamente, revise sexta-feira 17h',
+      'SEMANA 4: Implementar follow-up sistemático - Configure lembretes no celular: ligar em 2 dias, 1 semana, 2 semanas, 1 mês. Use templates de WhatsApp com ofertas específicas'
     ],
     'pre-venda': [
-      'Criar lista de 20 perguntas frequentes dos clientes e transformar em 5 posts educativos para Instagram/LinkedIn',
-      'Gravar 3 vídeos de 2 minutos no celular respondendo dúvidas principais e postar no YouTube/Instagram',
-      'Fazer e-book simples de 8 páginas no Canva com "Guia prático para [resolver problema específico do seu cliente]"',
-      'Criar página no site ou Instagram para capturar emails em troca do material gratuito',
-      'Configurar sequência de 3 emails automáticos (Mailchimp gratuito) enviados nos dias 1, 3 e 7 após captação'
+      'SEMANA 1: Criar conteúdo educativo - Liste 20 perguntas frequentes dos clientes. Transforme em 5 posts educativos para Instagram/LinkedIn usando Canva. Poste 1 por dia útil',
+      'SEMANA 1: Gravar vídeos explicativos - Use celular, grave 3 vídeos de 90 segundos respondendo principais dúvidas. Poste no Instagram Stories, YouTube e WhatsApp Business',
+      'SEMANA 2: Criar material gratuito (lead magnet) - Faça e-book de 8 páginas no Canva: "Guia prático para [resolver problema do cliente]". Include checklist, exemplos e erros comuns',
+      'SEMANA 2: Página de captura de leads - Use Linktree ou crie página simples. Título: "Baixe grátis", descrição do benefício, formulário (nome + email + telefone), botão "Baixar agora"',
+      'SEMANA 3: Automação de email marketing - Cadastre no Mailchimp (grátis até 2000 contatos). Crie sequência: Email 1 (link do material), Email 3 (dica extra), Email 7 (oferta especial)',
+      'SEMANA 4: Monitorar e otimizar - Acompanhe: quantos baixaram material, quantos abriram emails, quantos viraram clientes. Meta: 20 leads/semana, 30% abre emails, 5% vira cliente'
     ],
     'pre_venda': [
-      'Criar lista de 20 perguntas frequentes dos clientes e transformar em 5 posts educativos para Instagram/LinkedIn',
-      'Gravar 3 vídeos de 2 minutos no celular respondendo dúvidas principais e postar no YouTube/Instagram',
-      'Fazer e-book simples de 8 páginas no Canva com "Guia prático para [resolver problema específico do seu cliente]"',
-      'Criar página no site ou Instagram para capturar emails em troca do material gratuito',
-      'Configurar sequência de 3 emails automáticos (Mailchimp gratuito) enviados nos dias 1, 3 e 7 após captação'
+      'SEMANA 1: Criar conteúdo educativo - Liste 20 perguntas frequentes dos clientes. Transforme em 5 posts educativos para Instagram/LinkedIn usando Canva. Poste 1 por dia útil',
+      'SEMANA 1: Gravar vídeos explicativos - Use celular, grave 3 vídeos de 90 segundos respondendo principais dúvidas. Poste no Instagram Stories, YouTube e WhatsApp Business',
+      'SEMANA 2: Criar material gratuito (lead magnet) - Faça e-book de 8 páginas no Canva: "Guia prático para [resolver problema do cliente]". Include checklist, exemplos e erros comuns',
+      'SEMANA 2: Página de captura de leads - Use Linktree ou crie página simples. Título: "Baixe grátis", descrição do benefício, formulário (nome + email + telefone), botão "Baixar agora"',
+      'SEMANA 3: Automação de email marketing - Cadastre no Mailchimp (grátis até 2000 contatos). Crie sequência: Email 1 (link do material), Email 3 (dica extra), Email 7 (oferta especial)',
+      'SEMANA 4: Monitorar e otimizar - Acompanhe: quantos baixaram material, quantos abriram emails, quantos viraram clientes. Meta: 20 leads/semana, 30% abre emails, 5% vira cliente'
     ],
     'encantamento-cliente': [
-      'Montar kit de boas-vindas: caixa personalizada com brinde, carta manuscrita e cronograma dos primeiros 15 dias',
-      'Agendar 3 ligações obrigatórias: dia 3 (como está?), dia 15 (precisa de algo?) e dia 30 (satisfação de 0 a 10)',
-      'Criar grupo VIP no WhatsApp só para clientes com dicas exclusivas e atendimento prioritário em até 2 horas',
-      'Cadastrar aniversário de todos os clientes e enviar cartão personalizado + desconto especial na data',
-      'Fazer pesquisa NPS a cada 3 meses via Google Forms e ligar pessoalmente para quem der nota abaixo de 8'
+      'SEMANA 1: Criar kit de boas-vindas - Monte caixa com: carta manuscrita do CEO, brinde da empresa, cronograma dos próximos 30 dias, contatos importantes. Custo máximo R$ 50 por kit',
+      'SEMANA 1: Agendar ligações obrigatórias - Configure lembretes: Dia 3 (como está se adaptando?), Dia 15 (precisa de algo?), Dia 30 (nota de 0-10 para satisfação). Use agenda do celular',
+      'SEMANA 2: Criar grupo VIP WhatsApp - Nome: "Clientes VIP [Nome da Empresa]". Envie dicas exclusivas 2x/semana, responda em até 2h, compartilhe novidades antes de todos',
+      'SEMANA 2: Mapear aniversários e datas - Planilha Excel: Nome | Aniversário | Data de Início | Preferências. Configure lembretes no celular para enviar cartão + desconto especial',
+      'SEMANA 3: Pesquisa NPS trimestral - Google Forms com pergunta: "Recomendaria nossa empresa? (0-10)". Envie por email/WhatsApp. Ligue pessoalmente para quem der nota abaixo de 8',
+      'SEMANA 4: Programa surpresas - Todo mês: escolha 1 cliente para surpresa (upgrade grátis, desconto especial, produto novo). Anuncie no grupo VIP para outros verem'
     ],
     'encantamento_cliente': [
-      'Montar kit de boas-vindas: caixa personalizada com brinde, carta manuscrita e cronograma dos primeiros 15 dias',
-      'Agendar 3 ligações obrigatórias: dia 3 (como está?), dia 15 (precisa de algo?) e dia 30 (satisfação de 0 a 10)',
-      'Criar grupo VIP no WhatsApp só para clientes com dicas exclusivas e atendimento prioritário em até 2 horas',
-      'Cadastrar aniversário de todos os clientes e enviar cartão personalizado + desconto especial na data',
-      'Fazer pesquisa NPS a cada 3 meses via Google Forms e ligar pessoalmente para quem der nota abaixo de 8'
+      'SEMANA 1: Criar kit de boas-vindas - Monte caixa com: carta manuscrita do CEO, brinde da empresa, cronograma dos próximos 30 dias, contatos importantes. Custo máximo R$ 50 por kit',
+      'SEMANA 1: Agendar ligações obrigatórias - Configure lembretes: Dia 3 (como está se adaptando?), Dia 15 (precisa de algo?), Dia 30 (nota de 0-10 para satisfação). Use agenda do celular',
+      'SEMANA 2: Criar grupo VIP WhatsApp - Nome: "Clientes VIP [Nome da Empresa]". Envie dicas exclusivas 2x/semana, responda em até 2h, compartilhe novidades antes de todos',
+      'SEMANA 2: Mapear aniversários e datas - Planilha Excel: Nome | Aniversário | Data de Início | Preferências. Configure lembretes no celular para enviar cartão + desconto especial',
+      'SEMANA 3: Pesquisa NPS trimestral - Google Forms com pergunta: "Recomendaria nossa empresa? (0-10)". Envie por email/WhatsApp. Ligue pessoalmente para quem der nota abaixo de 8',
+      'SEMANA 4: Programa surpresas - Todo mês: escolha 1 cliente para surpresa (upgrade grátis, desconto especial, produto novo). Anuncie no grupo VIP para outros verem'
     ],
     'marketing': [
-      'Definir cliente ideal em 1 página: idade, renda, problemas principais, onde passa tempo online e como decide comprar',
-      'Criar calendário no Google Sheets: 20 posts planejados com data, rede social, tipo de conteúdo e call-to-action',
-      'Produzir 5 posts no Canva: 3 carrosséis educativos e 2 imagens com dicas práticas do seu segmento',
-      'Configurar anúncio no Instagram: budget R$ 5/dia, público similar aos seus clientes atuais, objetivo conversões',
-      'Acompanhar resultados toda sexta: anotar alcance, cliques, mensagens recebidas e calcular custo por lead'
+      'SEMANA 1: Definir persona ideal - Preencha formulário: Idade, renda, problemas principais, onde passa tempo online, como pesquisa antes de comprar. Base essa persona em seus 10 melhores clientes',
+      'SEMANA 1: Criar calendário editorial - Planilha Google: 30 dias de conteúdo. Coluna: Data | Rede Social | Tipo Post | Texto | Imagem | Call-to-Action. Produza tudo de uma vez',
+      'SEMANA 2: Produzir conteúdo no Canva - 10 posts: 5 carrosséis educativos (dicas do seu setor), 3 antes/depois de clientes, 2 bastidores da empresa. Use templates prontos',
+      'SEMANA 2: Configurar anúncio Instagram - Budget R$ 10/dia, público: mulheres/homens 25-45 anos na sua cidade + interesses relacionados ao seu produto. Objetivo: "Tráfego"',
+      'SEMANA 3: Acompanhar resultados - Planilha semanal: Post | Alcance | Curtidas | Comentários | Cliques | Leads | Custo por Lead. Meta: custo máximo R$ 15 por lead qualificado',
+      'SEMANA 4: Otimizar baseado em dados - Posts com mais engajamento = produzir mais similar. Anúncios com menor custo = aumentar budget. Horários com mais alcance = postar sempre'
     ],
     'gestao': [
-      'Mapear 3 processos principais: anotar passo a passo em documento Word como cada atividade crítica é feita hoje',
-      'Criar planilha de indicadores com 6 números: receita mensal, custos, novos clientes, satisfação, produtividade da equipe',
-      'Agendar reunião semanal fixa toda segunda às 9h por 45 minutos: revisar números e definir 3 prioridades da semana',
-      'Definir responsável único para cada meta: escrever nome da pessoa e data limite para cada objetivo',
-      'Fazer relatório mensal de 1 página: principais resultados, o que funcionou, o que não funcionou e focos do próximo mês'
+      'SEMANA 1: Mapear processos críticos - Documento Word: Passo-a-passo de como faz atendimento ao cliente, entrega do produto, cobrança. Cronometre tempo de cada etapa',
+      'SEMANA 1: Definir 6 indicadores principais - Planilha Excel: Receita mensal, custos totais, novos clientes, satisfação (NPS), produtividade equipe (vendas/pessoa), lucro líquido',
+      'SEMANA 2: Implementar reunião semanal - Toda segunda 9h, 45 minutos. Pauta fixa: resultados da semana, 3 problemas principais, 3 prioridades para próxima semana. Ata por email',
+      'SEMANA 2: Definir responsáveis únicos - Cada meta/projeto tem 1 responsável. Planilha: Meta | Responsável | Data Limite | Status. Reunião individual semanal de 15 min com cada',
+      'SEMANA 3: Criar relatório mensal - Template 1 página: Principais números, o que funcionou, o que não funcionou, 3 focos do próximo mês. Envie para toda equipe',
+      'SEMANA 4: Implementar sistema de metas - Meta mensal para cada área: vendas (R$ X), produção (Y unidades), qualidade (Z% satisfação). Acompanhe semanalmente'
     ],
     'financeiro': [
-      'Separar conta pessoal da empresarial: abrir conta PJ no banco e transferir todas movimentações da empresa',
-      'Anotar TODAS as entradas e saídas por 30 dias em planilha Excel: data, descrição, valor, categoria',
-      'Calcular preço real de cada produto: somar material + mão de obra + impostos + 30% de lucro mínimo',
-      'Guardar dinheiro para emergência: separar valor de 2 meses de gastos fixos numa conta poupança',
-      'Instalar app Mobills ou GuiaBolso no celular e categorizar todos os gastos da empresa por 30 dias'
+      'SEMANA 1: Separar conta PJ da pessoal - Abra conta empresarial (Nubank PJ, Inter, C6). Transfira todas movimentações da empresa. Nunca mais misture pessoal com empresarial',
+      'SEMANA 1: Controlar entrada/saída 30 dias - Excel: Data | Descrição | Valor | Categoria (venda, material, salário, etc). Anote TUDO, até cafezinho. Meta: saber para onde vai cada R$ 1',
+      'SEMANA 2: Calcular preço real produtos - Planilha: Produto | Material | Mão de obra | Impostos | Outros custos | Total + 30% lucro mínimo = Preço de venda. Ajuste se necessário',
+      'SEMANA 2: Criar reserva emergência - Meta: valor de 3 meses de gastos fixos. Separe conta poupança exclusiva. Deposite 10% do lucro mensal até atingir. Só use em emergência real',
+      'SEMANA 3: App controle financeiro - Baixe Mobills ou GuiaBolso. Conecte conta empresa. Categorize todos gastos por 30 dias: vendas, marketing, pessoal, operacional, outros',
+      'SEMANA 4: Relatório financeiro mensal - Template: receita, custos, lucro líquido, fluxo de caixa próximos 60 dias, principais gastos. Revise última sexta de cada mês'
     ],
     'rh': [
-      'Escrever descrição de cada cargo em 1 página: o que faz, requisitos mínimos, salário e a quem reporta',
-      'Criar entrevista padrão: preparar 8 perguntas iguais para todos candidatos e dar nota de 1 a 5 para cada resposta',
-      'Fazer checklist de primeiro dia: apresentar empresa, dar acesso aos sistemas, explicar regras e acompanhar por 1 semana',
-      'Agendar conversa individual de 30 minutos com cada funcionário todo mês: perguntar dificuldades e dar feedback',
-      'Definir benefícios claros: valor do vale alimentação, plano de saúde (se oferece) e outros benefícios por escrito'
+      'SEMANA 1: Criar descrição de cargos - Documento por função: o que faz diariamente, requisitos mínimos, salário, a quem reporta, principais responsabilidades. Base para contratações',
+      'SEMANA 1: Padronizar entrevistas - 8 perguntas iguais para todos: experiência, motivação, expectativa salarial, disponibilidade, exemplo situação difícil. Nota 1-5 cada resposta',
+      'SEMANA 2: Checklist primeiro dia - Apresentar empresa (história, valores), dar acesso sistemas, explicar regras básicas, apresentar equipe, definir buddy por 1 semana',
+      'SEMANA 2: Conversa individual mensal - 30 min com cada funcionário: como está se sentindo, principais dificuldades, sugestões melhoria, feedback sobre performance. Anote tudo',
+      'SEMANA 3: Definir benefícios claros - Documento: valor vale alimentação/refeição, plano saúde (se oferece), outros benefícios. Entregue para todos assinarem ciência',
+      'SEMANA 4: Pesquisa satisfação equipe - Google Forms anônimo: nota 0-10 satisfação geral, o que mais gosta, o que mudaria, se recomendaria empresa. Implemente melhorias'
     ],
     'operacional': [
-      'Cronometrar quanto tempo leva cada atividade principal: medir 3 vezes e anotar tempo médio de execução',
-      'Criar checklist de qualidade com 8 itens obrigatórios: verificar antes de entregar produto/serviço ao cliente',
-      'Contar estoque toda sexta-feira: anotar quantidade de cada item em planilha e definir ponto mínimo para comprar',
-      'Ter fornecedor reserva para 3 itens mais importantes: pesquisar e deixar contato de backup caso o principal falhe',
-      'Organizar espaço físico: separar itens por categoria, etiquetar prateleiras, limpar e manter organização'
+      'SEMANA 1: Cronometrar atividades principais - Cronometre 3 vezes cada processo crítico: atendimento, produção, entrega. Anote tempo médio. Meta: reduzir 20% tempo sem perder qualidade',
+      'SEMANA 1: Criar checklist qualidade - Lista 8 itens obrigatórios antes entregar produto/serviço ao cliente. Plastifique e cole na área de trabalho. Verificação 100% obrigatória',
+      'SEMANA 2: Controle estoque semanal - Toda sexta 17h: conte quantidade cada item importante. Planilha: Item | Quantidade | Ponto Mínimo | Fornecedor. Compre quando atingir mínimo',
+      'SEMANA 2: Fornecedores backup - Para 3 itens mais críticos: pesquise e tenha contato de fornecedor reserva. Negocie preços. Teste qualidade comprando pequena quantidade',
+      'SEMANA 3: Organizar espaço físico - Método 5S: separar por categoria, etiquetar prateleiras/gavetas, limpar semanalmente, manter organização. Foto "antes e depois" para motivar',
+      'SEMANA 4: Medir produtividade - Acompanhe: unidades produzidas/dia, tempo médio por unidade, % defeitos, % retrabalho. Meta: aumentar 15% produtividade em 2 meses'
     ],
     'tecnologia': [
-      'Contratar internet backup: ter segunda conexão (4G ou cabo) para não parar quando internet principal cair',
-      'Configurar backup automático: usar Google Drive ou Dropbox para salvar arquivos importantes todo dia',
-      'Instalar antivírus pago em todos computadores e atualizar sistema operacional todo mês',
-      'Trocar senhas principais: usar combinação com números, letras e símbolos, anotar em local seguro',
-      'Criar email profissional: fazer @suaempresa.com.br para você e equipe usando Google Workspace'
+      'SEMANA 1: Internet backup - Contrate plano 4G corporativo (Vivo, Claro, Tim). Configure roteador que aceita chip. Teste velocidade. Use quando internet principal cair',
+      'SEMANA 1: Backup automático arquivos - Configure Google Drive ou Dropbox: sincronização automática pastas importantes. Teste restauração. Verifique diariamente se está funcionando',
+      'SEMANA 2: Antivírus e atualizações - Instale Kaspersky ou Norton em todos PCs. Configure atualização automática. Atualize Windows/Office mensalmente. Agenda lembrete 1ª segunda do mês',
+      'SEMANA 2: Senhas seguras - Use gerenciador (Bitwarden grátis). Troque senhas principais: 12+ caracteres, números, símbolos. Ative autenticação 2 fatores Gmail, banco, sistemas importantes',
+      'SEMANA 3: Email profissional - Google Workspace R$ 20/usuário/mês: crie email @suaempresa.com. Configure em todos celulares/computadores. Use apenas para trabalho',
+      'SEMANA 4: Sistema gestão básico - Teste grátis: Omie, Bling ou Tiny. Configure produtos, clientes, vendas. Treine equipe 2 horas. Use por 30 dias antes decidir qual comprar'
     ],
     'cultura': [
-      'Escrever propósito da empresa em 1 frase simples: "Existe para fazer o quê?" e comunicar para toda equipe',
-      'Definir 4 valores principais: comportamentos que vocês esperam na prática, com exemplos do dia a dia',
-      'Escolher 1 funcionário por semana para destacar: reconhecer publicamente quem demonstrou os valores',
-      'Fazer café da manhã mensal de 1 hora: momento para equipe conversar, se conhecer melhor e dar sugestões',
-      'Perguntar satisfação da equipe a cada 3 meses: 3 perguntas anônimas no Google Forms e implementar melhorias'
+      'SEMANA 1: Definir propósito empresa - Reunião 2h com sócios/chefes: responda "Por que nossa empresa existe? Que problema resolvemos?" Escreva 1 frase simples. Comunique para todos',
+      'SEMANA 1: Escolher 4 valores principais - Liste comportamentos que vocês esperam: "Ser honesto", "Entregar no prazo", "Tratar bem cliente". Dê exemplo prático de cada valor',
+      'SEMANA 2: Reconhecimento semanal - Toda sexta escolha 1 funcionário que demonstrou os valores. Anuncie para equipe: "João foi honesto ao avisar erro e corrigir rapidamente"',
+      'SEMANA 2: Café da manhã mensal - 1ª sexta do mês, 1 hora antes expediente. Conversa informal: como está empresa, sugestões, novidades pessoais. Crie proximidade com equipe',
+      'SEMANA 3: Pesquisa cultura trimestral - 3 perguntas anônimas Google Forms: "Empresa vive os valores?" "Se sente parte da equipe?" "Recomendaria como local trabalho?" Implemente mudanças',
+      'SEMANA 4: Rituais integração - Novo funcionário: apresente valores primeiro dia, conte história empresa, apresente para todos. Despedida: agradeça contribuição publicamente'
     ],
     'relacionamento': [
-      'Anotar informações pessoais dos 20 principais clientes: aniversário, preferências, família, hobbies',
-      'Ligar para top 10 clientes a cada 3 meses: conversa de 10 minutos só para saber como estão (sem vender nada)',
-      'Participar de 1 evento do setor por mês: networking para conhecer pessoas e possíveis parceiros',
-      'Criar programa "indique e ganhe": oferecer desconto de 10% para quem trouxer cliente novo',
-      'Fazer follow-up pós-venda: ligar em 1 semana e 1 mês após entrega para ver se está tudo bem'
+      'SEMANA 1: Mapear informações pessoais - Planilha top 20 clientes: nome, aniversário, time futebol, hobbies, família, preferências. Use em conversas para criar proximidade',
+      'SEMANA 1: Ligações trimestrais - Agende celular: ligar para 10 melhores clientes só para saber como estão. 10 min máximo. NÃO venda nada. Apenas: "Como vai? Como posso ajudar?"',
+      'SEMANA 2: Evento networking mensal - Procure eventos do setor na sua cidade. Cadastre Sympla, Eventbrite. Meta: 1 evento/mês, conhecer 5 pessoas novas, trocar cartão/contato',
+      'SEMANA 2: Programa "indique e ganhe" - Ofereça 10% desconto para quem trouxer cliente novo. Crie material gráfico explicando. Envie WhatsApp para todos clientes atuais',
+      'SEMANA 3: Follow-up pós-venda - Configure lembrete: ligar 1 semana e 1 mês após entrega. Perguntas: "Está tudo bem? Alguma dificuldade? Precisam de mais alguma coisa?"',
+      'SEMANA 4: Criar "arquivo de relacionamento" - Pasta no Google Drive: anotações sobre cada contato importante, histórico conversas, oportunidades futuras. Revise mensalmente'
     ],
     'produto': [
-      'Conversar com 5 clientes atuais: perguntar "o que pode melhorar no nosso produto/serviço?" e anotar tudo',
-      'Pesquisar 3 concorrentes principais: comparar preços, qualidade, atendimento e anotar diferenças',
-      'Testar melhoria pequena com 3 clientes: implementar mudança simples e ver reação antes de lançar para todos',
-      'Calcular preço baseado no valor que entrega: "quanto o cliente economiza/ganha usando seu produto?"',
-      'Perguntar nota de 0 a 10 para satisfação todo mês: investigar quem deu nota menor que 8'
+      'SEMANA 1: Entrevista com 5 clientes atuais - Ligue/visite e pergunte: "O que pode melhorar no nosso produto?" "O que mais gosta?" "O que adicionaria?" Anote todas sugestões',
+      'SEMANA 1: Análise 3 concorrentes - Pesquise: preços, qualidade, atendimento, diferenciais. Tabela comparativa: "Eles fazem X que nós não fazemos". Identifique oportunidades',
+      'SEMANA 2: Teste melhoria pequena - Escolha 1 sugestão dos clientes, implemente rapidamente, teste com 3 clientes. Se aprovarem, lance para todos. Se rejeitarem, ajuste',
+      'SEMANA 2: Precificar por valor entregue - Calcule: "Cliente economiza/ganha quanto usando nosso produto?" Se economiza R$ 1000, pode cobrar R$ 300. Base preço no valor',
+      'SEMANA 3: Pesquisa satisfação mensal - WhatsApp ou email: "Nota 0-10 para nosso produto". Investigue quem dá nota menor que 8: "O que precisamos melhorar?"',
+      'SEMANA 4: Roadmap melhorias - Lista priorizada: melhorias por impacto vs esforço. Alto impacto + baixo esforço = fazer primeiro. Comunique cronograma para clientes'
     ],
     'sucesso-cliente': [
-      'Mapear jornada completa: desde primeiro contato até renovação, identificar onde cliente pode ter dificuldade',
-      'Criar manual simples de "primeiros passos": passo a passo para cliente ter sucesso nos primeiros 15 dias',
-      'Criar score de saúde do cliente: 4 indicadores para identificar quem pode cancelar (uso, satisfação, pagamento, contato)',
-      'Agendar reunião trimestral: apresentar resultados que cliente conquistou usando seu produto/serviço',
-      'Identificar oportunidades de vender mais: mapear quais clientes satisfeitos podem comprar produtos adicionais'
+      'SEMANA 1: Mapear jornada completa - Fluxograma: primeiro contato → compra → implementação → uso → renovação. Identifique onde cliente pode ter dificuldade/desistir',
+      'SEMANA 1: Manual "primeiros passos" - Guia 1 página: passo-a-passo para cliente ter sucesso primeiros 15 dias. Use linguagem simples, com prints de tela se necessário',
+      'SEMANA 2: Score saúde cliente - 4 indicadores: usa produto regularmente? Paga em dia? Responde contatos? Reclama pouco? Score 0-10. Abaixo de 7 = risco cancelamento',
+      'SEMANA 2: Reunião trimestral resultados - Apresente para cliente: "Você economizou X, aumentou Y, melhorou Z usando nosso produto". Use dados reais, gráficos simples',
+      'SEMANA 3: Identificar oportunidades venda - Planilha: clientes satisfeitos que podem comprar produtos adicionais/upgrade. Aborde com proposta específica baseada no uso atual',
+      'SEMANA 4: Programa prevenção churn - Cliente score baixo: ligação imediata, entenda problema, ofereça solução, acompanhe de perto. Meta: reduzir cancelamentos 50%'
     ]
   };
 
@@ -142,10 +157,10 @@ const generateStepsForAction = (actionText: string, category: string): string[] 
   // Customize steps based on the specific action
   return categorySteps.map(step => {
     if (actionText.toLowerCase().includes('implementar')) {
-      return step.replace('Criar', 'Implementar e criar').replace('Definir', 'Implementar e definir');
+      return step.replace('SEMANA', 'IMPLEMENTAÇÃO SEMANA');
     }
     if (actionText.toLowerCase().includes('melhorar')) {
-      return step.replace('Criar', 'Melhorar e criar').replace('Definir', 'Melhorar e redefinir');
+      return step.replace('SEMANA', 'MELHORIA SEMANA');
     }
     return step;
   });
@@ -190,17 +205,17 @@ const ActionItemExpandedContent = ({ action, onStepComplete }: ActionItemExpande
           <ListChecks className="h-4 w-4 text-gray-700" />
           <h5 className="font-medium text-gray-900">Como Fazer na Prática</h5>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {steps.map((step, stepIndex) => (
-            <div key={stepIndex} className="flex items-start gap-2">
+            <div key={stepIndex} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
               <Checkbox
                 checked={action.completedSteps?.[stepIndex] || false}
                 onCheckedChange={(checked) => handleStepToggle(stepIndex, !!checked)}
-                className="mt-0.5"
+                className="mt-1"
               />
-              <span className={`text-sm ${action.completedSteps?.[stepIndex] ? 'line-through text-gray-500' : 'text-gray-700'}`}>
-                <strong>{stepIndex + 1}.</strong> {step}
-              </span>
+              <div className={`text-sm flex-1 ${action.completedSteps?.[stepIndex] ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                <span className="font-semibold text-blue-600">{stepIndex + 1}.</span> {step}
+              </div>
             </div>
           ))}
         </div>

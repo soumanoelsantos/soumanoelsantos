@@ -21,8 +21,24 @@ export const generateIntelligentActions = ({
   const usedActions = new Set<string>();
   let actionCounter = 1;
 
-  // Todas as categorias disponíveis
-  const allCategories: ActionCategory[] = ['comercial', 'marketing', 'gestao', 'financeiro', 'rh', 'operacional', 'tecnologia', 'cultura', 'relacionamento', 'produto', 'sucesso-cliente'];
+  // Todas as categorias disponíveis incluindo as novas
+  const allCategories: ActionCategory[] = [
+    'comercial', 
+    'marketing', 
+    'pre-venda', 
+    'pre_venda',
+    'encantamento-cliente',
+    'encantamento_cliente',
+    'gestao', 
+    'financeiro', 
+    'rh', 
+    'operacional', 
+    'tecnologia', 
+    'cultura', 
+    'relacionamento', 
+    'produto', 
+    'sucesso-cliente'
+  ];
   
   // Determinar o número máximo de ações por categoria
   const maxActionsPerCategory = Math.max(...Object.values(comprehensiveActionTemplates).map(templates => templates.length));
@@ -50,7 +66,11 @@ export const generateIntelligentActions = ({
         // Mapear categorias para resultados do diagnóstico
         const categoryMapping: {[key: string]: string} = {
           'comercial': 'resultados',
-          'marketing': 'resultados', 
+          'marketing': 'resultados',
+          'pre-venda': 'resultados',
+          'pre_venda': 'resultados',
+          'encantamento-cliente': 'pessoas',
+          'encantamento_cliente': 'pessoas',
           'gestao': 'sistemaGestao',
           'financeiro': 'sistemaGestao',
           'rh': 'pessoas',
