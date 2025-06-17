@@ -2,7 +2,6 @@
 import React from 'react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardOrder } from '@/hooks/useDashboardOrder';
-import BasicMetricsSection from './sections/BasicMetricsSection';
 import TicketsValuesSection from './sections/TicketsValuesSection';
 import GoalsProjectionsSection from './sections/GoalsProjectionsSection';
 import GapsSection from './sections/GapsSection';
@@ -21,8 +20,6 @@ const DashboardMetrics = () => {
 
   return (
     <div className="space-y-8">
-      <BasicMetricsSection config={config} orderedItems={orderedItems} />
-      
       <TicketsValuesSection config={config} orderedItems={orderedItems} />
       
       <GoalsProjectionsSection config={config} orderedItems={orderedItems} />
