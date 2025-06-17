@@ -26,7 +26,7 @@ export const allMetricsCards = [
   {
     key: 'showTicketFaturamento',
     title: 'Ticket Faturamento',
-    value: 'R$ 8.500',
+    value: 'R$ 8.500,00',
     description: 'Ticket médio de faturamento',
     icon: Receipt,
     trend: '+10%',
@@ -35,7 +35,7 @@ export const allMetricsCards = [
   {
     key: 'showTicketReceita',
     title: 'Ticket Receita',
-    value: 'R$ 2.850',
+    value: 'R$ 2.850,00',
     description: 'Ticket médio de receita',
     icon: Receipt,
     trend: '+7%',
@@ -46,7 +46,7 @@ export const allMetricsCards = [
   {
     key: 'showFaltaFaturamento',
     title: 'Falta de Faturamento',
-    value: 'R$ 65.000',
+    value: 'R$ 65.000,00',
     description: 'Valor para atingir meta',
     icon: TrendingDown,
     trend: '-5%',
@@ -55,7 +55,7 @@ export const allMetricsCards = [
   {
     key: 'showFaltaReceita',
     title: 'Falta de Receita',
-    value: 'R$ 22.000',
+    value: 'R$ 22.000,00',
     description: 'Valor para atingir meta',
     icon: TrendingDown,
     trend: '-3%',
@@ -77,7 +77,7 @@ export const allMetricsCards = [
   {
     key: 'showDiariaReceita',
     title: 'Diária de Receita',
-    value: 'R$ 1.950',
+    value: 'R$ 1.950,00',
     description: 'Receita média diária',
     icon: DollarSign,
     trend: '+8%',
@@ -88,7 +88,7 @@ export const allMetricsCards = [
   {
     key: 'showSuperMetaFaturamento',
     title: 'Super Meta Faturamento',
-    value: 'R$ 350.000',
+    value: 'R$ 350.000,00',
     description: 'Meta estendida de faturamento',
     icon: Target,
     trend: '+20%',
@@ -97,7 +97,7 @@ export const allMetricsCards = [
   {
     key: 'showSuperMetaReceita',
     title: 'Super Meta Receita',
-    value: 'R$ 105.000',
+    value: 'R$ 105.000,00',
     description: 'Meta estendida de receita',
     icon: Target,
     trend: '+18%',
@@ -108,7 +108,7 @@ export const allMetricsCards = [
   {
     key: 'showHiperMetaFaturamento',
     title: 'Hiper Meta Faturamento',
-    value: 'R$ 500.000',
+    value: 'R$ 500.000,00',
     description: 'Meta máxima de faturamento',
     icon: TrendingUp,
     trend: '+35%',
@@ -117,7 +117,7 @@ export const allMetricsCards = [
   {
     key: 'showHiperMetaReceita',
     title: 'Hiper Meta Receita',
-    value: 'R$ 150.000',
+    value: 'R$ 150.000,00',
     description: 'Meta máxima de receita',
     icon: TrendingUp,
     trend: '+30%',
@@ -137,7 +137,7 @@ export const allMetricsCards = [
   {
     key: 'showFaltaReceitaSuper',
     title: 'Falta Receita (Super)',
-    value: 'R$ 45.000',
+    value: 'R$ 45.000,00',
     description: 'Para atingir super meta',
     icon: TrendingDown,
     trend: '-8%',
@@ -146,7 +146,7 @@ export const allMetricsCards = [
   {
     key: 'showFaltaReceitaHiper',
     title: 'Falta Receita (Hiper)',
-    value: 'R$ 90.000',
+    value: 'R$ 90.000,00',
     description: 'Para atingir hiper meta',
     icon: TrendingDown,
     trend: '-15%',
@@ -157,7 +157,7 @@ export const allMetricsCards = [
   {
     key: 'showMetaFaturamento',
     title: 'Meta Faturamento',
-    value: 'R$ 200.000',
+    value: 'R$ 200.000,00',
     description: 'Meta mensal de faturamento',
     icon: Target,
     trend: '0%',
@@ -166,7 +166,7 @@ export const allMetricsCards = [
   {
     key: 'showMetaReceita',
     title: 'Meta Receita',
-    value: 'R$ 60.000',
+    value: 'R$ 60.000,00',
     description: 'Meta mensal de receita',
     icon: Target,
     trend: '0%',
@@ -177,7 +177,7 @@ export const allMetricsCards = [
   {
     key: 'showFaturamento',
     title: 'Faturamento',
-    value: 'R$ 135.000',
+    value: 'R$ 135.000,00',
     description: 'Faturamento atual',
     icon: DollarSign,
     trend: '+15%',
@@ -186,7 +186,7 @@ export const allMetricsCards = [
   {
     key: 'showReceita',
     title: 'Receita',
-    value: 'R$ 38.000',
+    value: 'R$ 38.000,00',
     description: 'Receita atual',
     icon: DollarSign,
     trend: '+12%',
