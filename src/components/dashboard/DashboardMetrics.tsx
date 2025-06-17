@@ -28,9 +28,9 @@ const DashboardMetrics = () => {
 
   return (
     <div className="space-y-6">
-      {/* Seção de metas mensais - renderizada primeiro */}
+      {/* Seção de metas mensais - usando o mesmo grid dos cards */}
       {config.showMonthlyGoals && goalItems.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
           {goalItems.map((key, index) => {
             console.log(`Rendering goal for key: ${key}`);
             const components = <ItemRenderer itemKey={key} config={config} />;
