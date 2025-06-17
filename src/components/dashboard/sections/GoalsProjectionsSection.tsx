@@ -10,18 +10,30 @@ interface GoalsProjectionsSectionProps {
 
 const GoalsProjectionsSection: React.FC<GoalsProjectionsSectionProps> = ({ config, orderedItems }) => {
   const goalsMetrics = [
-    'showMetaFaturamento', 'showMetaReceita', 'showSuperMetaFaturamento', 
-    'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita'
+    'showSuperMetaFaturamento', 'showSuperMetaReceita', 
+    'showHiperMetaFaturamento', 'showHiperMetaReceita'
   ];
 
   const goalsItems = orderedItems.filter(key => goalsMetrics.includes(key));
 
-  // Também incluir as metas mensais se habilitadas
+  // Incluir as metas mensais se habilitadas, mas excluir as métricas regulares duplicadas
   const monthlyGoalItems = orderedItems.filter(key => 
     ['conversionRate', 'revenueGoal', 'salesGoal'].includes(key)
   );
 
-  if (goalsItems.length === 0 && monthlyGoalItems.length === 0) return null;
+  // Filtrar métricas regulares que são duplicadas das metas mensais
+  const filteredGoalsItems = goalsItems.filter(key => {
+    // Se as metas mensais estão habilitadas, não mostrar as métricas regulares duplicadas
+    if (config.showMonthlyGoals) {
+      // Excluir showMetaFaturamento e showMetaReceita se as metas mensais estão ativas
+      if (key === 'showMetaFaturamento' || key === 'showMetaReceita') {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (filteredGoalsItems.length === 0 && monthlyGoalItems.length === 0) return null;
 
   return (
     <div className="space-y-4">
@@ -37,7 +49,7 @@ const GoalsProjectionsSection: React.FC<GoalsProjectionsSectionProps> = ({ confi
             </React.Fragment>
           );
         })}
-        {goalsItems.map((key, index) => {
+        {filteredGoalsItems.map((key, index) => {
           const components = <ItemRenderer itemKey={key} config={config} />;
           if (!components) return null;
           
