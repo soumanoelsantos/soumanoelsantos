@@ -31,7 +31,15 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
       const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
-      setGoals(data || []);
+      
+      // Type assertion para garantir que os tipos estão corretos
+      const typedGoals = (data || []).map(goal => ({
+        ...goal,
+        goal_type: goal.goal_type as 'meta' | 'supermeta',
+        target_type: goal.target_type as 'quantity' | 'financial'
+      })) as MonthlyGoal[];
+      
+      setGoals(typedGoals);
     } catch (error: any) {
       toast({
         variant: "destructive",
