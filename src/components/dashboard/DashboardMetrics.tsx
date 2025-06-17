@@ -15,7 +15,7 @@ const DashboardMetrics = () => {
 
   const orderedItems = getOrderedItems();
   
-  console.log('DashboardMetrics - Config:', config);
+  console.log('DashboardMetrics - Rendering with config:', config);
   console.log('DashboardMetrics - Ordered items:', orderedItems);
 
   return (

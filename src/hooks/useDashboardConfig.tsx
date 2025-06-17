@@ -17,17 +17,18 @@ export const useDashboardConfig = () => {
     
     try {
       setIsLoading(true);
-      console.log('Loading config for user:', userId);
+      console.log('useDashboardConfig - Loading config for user:', userId);
       const loadedConfig = await loadDashboardConfig(userId);
       
       if (loadedConfig) {
-        console.log('Config loaded successfully:', loadedConfig);
+        console.log('useDashboardConfig - Config loaded successfully:', loadedConfig);
         setConfig(loadedConfig);
       } else {
-        console.log('No config found, using defaults');
+        console.log('useDashboardConfig - No config found, using defaults');
+        setConfig(defaultConfig);
       }
     } catch (error) {
-      console.error('Erro ao carregar configurações do dashboard:', error);
+      console.error('useDashboardConfig - Erro ao carregar configurações do dashboard:', error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar configurações",
@@ -50,19 +51,21 @@ export const useDashboardConfig = () => {
 
     try {
       setIsLoading(true);
-      console.log('Saving config:', newConfig);
+      console.log('useDashboardConfig - Saving config:', newConfig);
       await saveDashboardConfig(newConfig, userId);
       
+      console.log('useDashboardConfig - Setting new config in state:', newConfig);
       setConfig(newConfig);
+      
       toast({
         title: "Configurações salvas!",
         description: "Suas configurações do dashboard foram salvas com sucesso."
       });
       
-      console.log('Configuration saved successfully');
+      console.log('useDashboardConfig - Configuration saved and state updated successfully');
       return true;
     } catch (error: any) {
-      console.error('Erro ao salvar configurações do dashboard:', error);
+      console.error('useDashboardConfig - Erro ao salvar configurações do dashboard:', error);
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
@@ -75,8 +78,13 @@ export const useDashboardConfig = () => {
   };
 
   useEffect(() => {
+    console.log('useDashboardConfig - useEffect triggered, userId:', userId);
     loadConfig();
   }, [userId]);
+
+  useEffect(() => {
+    console.log('useDashboardConfig - Config state changed:', config);
+  }, [config]);
 
   return {
     config,

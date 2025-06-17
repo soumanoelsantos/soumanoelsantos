@@ -26,13 +26,19 @@ const DashboardConfig = () => {
   }, [isAuthenticated, navigate]);
 
   const handleConfigChange = (key: string, value: boolean | string | string[]) => {
-    setConfig(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    console.log('DashboardConfig - Changing config:', key, '=', value);
+    setConfig(prev => {
+      const newConfig = {
+        ...prev,
+        [key]: value
+      };
+      console.log('DashboardConfig - New config state:', newConfig);
+      return newConfig;
+    });
   };
 
   const handleReorderMetrics = (newOrder: string[]) => {
+    console.log('DashboardConfig - Reordering metrics:', newOrder);
     setConfig(prev => ({
       ...prev,
       metricsOrder: newOrder
@@ -40,9 +46,13 @@ const DashboardConfig = () => {
   };
 
   const handleSave = async () => {
+    console.log('DashboardConfig - Saving config:', config);
     const success = await saveConfig(config);
     if (success) {
+      console.log('DashboardConfig - Save successful, navigating to dashboard');
       navigate('/dashboard');
+    } else {
+      console.log('DashboardConfig - Save failed');
     }
   };
 

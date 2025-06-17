@@ -4,7 +4,7 @@ import { DashboardConfig } from '@/types/dashboardConfig';
 import { mapDatabaseToConfig, mapConfigToDatabase } from '@/utils/dashboardConfigMapper';
 
 export const loadDashboardConfig = async (userId: string): Promise<DashboardConfig | null> => {
-  console.log('Loading config for user:', userId);
+  console.log('dashboardConfigService - Loading config for user:', userId);
   
   const { data, error } = await supabase
     .from('dashboard_configs')
@@ -13,24 +13,27 @@ export const loadDashboardConfig = async (userId: string): Promise<DashboardConf
     .maybeSingle();
 
   if (error) {
-    console.error('Error loading config:', error);
+    console.error('dashboardConfigService - Error loading config:', error);
     throw error;
   }
 
   if (data) {
-    console.log('Config loaded:', data);
-    return mapDatabaseToConfig(data);
+    console.log('dashboardConfigService - Raw data from database:', data);
+    const mappedConfig = mapDatabaseToConfig(data);
+    console.log('dashboardConfigService - Mapped config:', mappedConfig);
+    return mappedConfig;
   }
 
-  console.log('No config found, using defaults');
+  console.log('dashboardConfigService - No config found, returning null');
   return null;
 };
 
 export const saveDashboardConfig = async (config: DashboardConfig, userId: string): Promise<void> => {
-  console.log('Saving config for user:', userId, config);
+  console.log('dashboardConfigService - Saving config for user:', userId);
+  console.log('dashboardConfigService - Config to save:', config);
   
   const configData = mapConfigToDatabase(config, userId);
-  console.log('Config data to save:', configData);
+  console.log('dashboardConfigService - Config data to save:', configData);
 
   // Check if config already exists
   const { data: existingConfig, error: fetchError } = await supabase
@@ -40,32 +43,32 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
     .maybeSingle();
 
   if (fetchError) {
-    console.error('Error checking existing config:', fetchError);
+    console.error('dashboardConfigService - Error checking existing config:', fetchError);
     throw fetchError;
   }
 
   let result;
   if (existingConfig) {
     // Update existing config
-    console.log('Updating existing config for user:', userId);
+    console.log('dashboardConfigService - Updating existing config for user:', userId);
     result = await supabase
       .from('dashboard_configs')
       .update(configData)
       .eq('user_id', userId);
   } else {
     // Insert new config
-    console.log('Creating new config for user:', userId);
+    console.log('dashboardConfigService - Creating new config for user:', userId);
     result = await supabase
       .from('dashboard_configs')
       .insert(configData);
   }
 
-  console.log('Save result:', result);
+  console.log('dashboardConfigService - Save result:', result);
 
   if (result.error) {
-    console.error('Save error:', result.error);
+    console.error('dashboardConfigService - Save error:', result.error);
     throw result.error;
   }
 
-  console.log('Configuration saved successfully');
+  console.log('dashboardConfigService - Configuration saved successfully');
 };
