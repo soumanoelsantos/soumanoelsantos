@@ -1,12 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { useIntegratedData } from '@/hooks/useIntegratedData';
+import { useAuth } from '@/hooks/useAuth';
+import { ArrowRight, CheckCircle2, AlertCircle, TrendingUp, Target, Clock, Users, Building, DollarSign, Settings, Cpu, Heart, Package, Handshake, UserCheck, Megaphone, Star } from 'lucide-react';
+import { saveDiagnosticDataToSupabase } from '@/utils/storage';
 import { generateIntelligentActions } from '@/utils/actionGeneration';
-import SimpleDiagnosticForm from './SimpleDiagnosticForm';
-import ActionPlanManager from './ActionPlanManager';
-import { Loader2 } from 'lucide-react';
+import type { ActionCategory, Priority, Status } from '@/utils/actionGeneration/types';
 
 interface DiagnosticData {
   empresaNome: string;
@@ -27,8 +28,8 @@ interface DiagnosticData {
 export interface ActionItem {
   id: string;
   acao: string;
-  categoria: 'comercial' | 'marketing' | 'gestao' | 'financeiro' | 'rh' | 'operacional' | 'tecnologia' | 'cultura';
-  prioridade: 'alta' | 'media' | 'baixa';
+  categoria: ActionCategory;
+  prioridade: Priority;
   prazo: string;
   responsavel: string;
   recursos: string;
@@ -38,10 +39,10 @@ export interface ActionItem {
   concluida: boolean;
   detalhesImplementacao: string;
   dicaIA: string;
-  status: 'pendente' | 'em_andamento' | 'realizado' | 'atrasado';
+  status: Status;
   semana: number;
   comoFazer: string[];
-  completedSteps?: boolean[];
+  completedSteps: boolean[];
 }
 
 const NewDiagnosticTestContent = () => {

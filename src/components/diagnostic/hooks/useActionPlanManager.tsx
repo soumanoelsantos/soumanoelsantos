@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useToast } from '@/hooks/use-toast';
 import { ActionItem } from '../NewDiagnosticTestContent';
+import type { ActionCategory } from '@/utils/actionGeneration/types';
 
 export const useActionPlanManager = (
   initialActionPlan: ActionItem[],
@@ -23,7 +25,7 @@ export const useActionPlanManager = (
     
     return {
       ...action,
-      categoria: normalizedCategory,
+      categoria: normalizedCategory as ActionCategory,
       comoFazer: action.comoFazer || ['Definir plano de implementação', 'Executar plano', 'Monitorar resultados'],
       completedSteps: action.completedSteps || [],
       prioridade: action.prioridade || 'media',
@@ -190,7 +192,7 @@ export const useActionPlanManager = (
     const actionToAdd: ActionItem = {
       id: `action_${Date.now()}`,
       acao: newAction.acao || '',
-      categoria: newAction.categoria as ActionItem['categoria'] || 'gestao',
+      categoria: newAction.categoria as ActionCategory || 'gestao',
       prioridade: newAction.prioridade as ActionItem['prioridade'] || 'media',
       prazo: newAction.prazo || '1 semana',
       responsavel: newAction.responsavel || 'A definir',
@@ -239,3 +241,4 @@ export const useActionPlanManager = (
     handleAddAction
   };
 };
+
