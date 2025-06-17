@@ -27,6 +27,22 @@ export const useDashboardOrder = (config: DashboardConfig) => {
 
     let orderedItems: string[] = [];
 
+    // Primeiro, adicionar metas mensais se habilitadas (prioridade máxima)
+    if (config.showMonthlyGoals) {
+      if (config.showMetaFaturamento) {
+        orderedItems.push('revenueGoal');
+      }
+      if (config.showMetaReceita) {
+        orderedItems.push('salesGoal');
+      }
+      if (config.showConversion) {
+        orderedItems.push('conversionRate');
+      }
+    }
+
+    // Depois, adicionar métricas de cards
+    let cardMetrics: string[] = [];
+    
     // Se há uma ordem definida, usar ela como base
     if (config.metricsOrder && config.metricsOrder.length > 0) {
       console.log('Using custom metrics order:', config.metricsOrder);
@@ -34,34 +50,27 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       // Adicionar itens na ordem especificada (apenas os que estão habilitados)
       config.metricsOrder.forEach(key => {
         if (enabledMetrics.includes(key)) {
-          orderedItems.push(key);
+          cardMetrics.push(key);
         }
       });
 
       // Adicionar métricas habilitadas que não estão na ordem especificada
       enabledMetrics.forEach(key => {
-        if (!orderedItems.includes(key)) {
-          orderedItems.push(key);
+        if (!cardMetrics.includes(key)) {
+          cardMetrics.push(key);
         }
       });
     } else {
       // Se não há ordem definida, usar todas as métricas habilitadas
-      orderedItems = [...enabledMetrics];
+      cardMetrics = [...enabledMetrics];
     }
 
-    // Adicionar gráficos se habilitados
+    // Adicionar as métricas de cards à lista ordenada
+    orderedItems.push(...cardMetrics);
+
+    // Por último, adicionar gráficos se habilitados
     if (config.showCharts) {
       orderedItems.push('salesChart', 'growthChart');
-    }
-
-    // Adicionar metas mensais se habilitadas
-    if (config.showMonthlyGoals) {
-      if (config.showConversion) {
-        orderedItems.push('conversionRate');
-      }
-      if (config.showRevenue) {
-        orderedItems.push('revenueGoal', 'salesGoal');
-      }
     }
 
     console.log('Final ordered items:', orderedItems);
