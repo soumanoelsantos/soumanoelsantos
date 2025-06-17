@@ -19,6 +19,7 @@ import MapaEquipe from "@/pages/MapaEquipe";
 import CrmPage from "@/pages/CrmPage";
 import Dashboard from "@/pages/Dashboard";
 import DashboardConfig from "@/pages/DashboardConfig";
+import GoalsManagement from "@/pages/GoalsManagement";
 import DiagnosticoLanding from "@/pages/DiagnosticoLanding";
 import DevAI from "@/pages/DevAI";
 
@@ -46,6 +47,7 @@ function App() {
               <Route path="/crm" element={<CrmPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/dashboard/configurar" element={<DashboardConfig />} />
+              <Route path="/dashboard/metas" element={<GoalsManagement />} />
               <Route path="/diagnostico" element={<DiagnosticoLanding />} />
               <Route path="/dev-ai" element={<DevAI />} />
             </Routes>

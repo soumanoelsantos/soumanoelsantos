@@ -9,6 +9,9 @@ import GeneralConfigCard from '@/components/dashboard/config/GeneralConfigCard';
 import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import DraggablePreview from '@/components/dashboard/DraggablePreview';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Target } from 'lucide-react';
 
 const DashboardConfig = () => {
   const { isAuthenticated } = useAuth();
@@ -66,6 +69,27 @@ const DashboardConfig = () => {
             config={config} 
             onConfigChange={handleConfigChange} 
           />
+
+          {/* Novo card para gerenciamento de metas */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Metas Empresariais
+              </CardTitle>
+              <CardDescription>
+                Configure produtos e defina metas mensais para acompanhar o desempenho
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => navigate('/dashboard/metas')} 
+                className="w-full"
+              >
+                Gerenciar Metas e Produtos
+              </Button>
+            </CardContent>
+          </Card>
 
           <DraggablePreview 
             config={config}

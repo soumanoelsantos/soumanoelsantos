@@ -573,6 +573,56 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_goals: {
+        Row: {
+          created_at: string
+          current_value: number
+          goal_type: string
+          id: string
+          month: number
+          product_id: string | null
+          target_type: string
+          target_value: number
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          current_value?: number
+          goal_type: string
+          id?: string
+          month: number
+          product_id?: string | null
+          target_type: string
+          target_value: number
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          current_value?: number
+          goal_type?: string
+          id?: string
+          month?: number
+          product_id?: string | null
+          target_type?: string
+          target_value?: number
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_goals_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       planejamento_estrategico: {
         Row: {
           acoes_comerciais: Json | null
@@ -616,6 +666,33 @@ export type Database = {
           progresso?: number
           respostas?: Json
           status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
           updated_at?: string
           user_id?: string
         }
