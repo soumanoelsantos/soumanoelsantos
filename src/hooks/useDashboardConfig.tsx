@@ -17,10 +17,14 @@ export const useDashboardConfig = () => {
     
     try {
       setIsLoading(true);
+      console.log('Loading config for user:', userId);
       const loadedConfig = await loadDashboardConfig(userId);
       
       if (loadedConfig) {
+        console.log('Config loaded successfully:', loadedConfig);
         setConfig(loadedConfig);
+      } else {
+        console.log('No config found, using defaults');
       }
     } catch (error) {
       console.error('Erro ao carregar configurações do dashboard:', error);
@@ -46,6 +50,7 @@ export const useDashboardConfig = () => {
 
     try {
       setIsLoading(true);
+      console.log('Saving config:', newConfig);
       await saveDashboardConfig(newConfig, userId);
       
       setConfig(newConfig);
@@ -54,6 +59,7 @@ export const useDashboardConfig = () => {
         description: "Suas configurações do dashboard foram salvas com sucesso."
       });
       
+      console.log('Configuration saved successfully');
       return true;
     } catch (error: any) {
       console.error('Erro ao salvar configurações do dashboard:', error);

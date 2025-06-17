@@ -24,12 +24,12 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
   }
 
   return {
-    showSales: data.show_sales,
-    showLeads: data.show_leads,
-    showConversion: data.show_conversion,
-    showTeam: data.show_team,
-    showRevenue: data.show_revenue,
-    showTicketMedio: data.show_ticket_medio,
+    showSales: data.show_sales ?? defaultConfig.showSales,
+    showLeads: data.show_leads ?? defaultConfig.showLeads,
+    showConversion: data.show_conversion ?? defaultConfig.showConversion,
+    showTeam: data.show_team ?? defaultConfig.showTeam,
+    showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
+    showTicketMedio: data.show_ticket_medio ?? defaultConfig.showTicketMedio,
     // Novas configurações com safe access
     showTicketFaturamento: data.show_ticket_faturamento ?? false,
     showTicketReceita: data.show_ticket_receita ?? false,
@@ -52,8 +52,8 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showCashCollect: data.show_cash_collect ?? false,
     
     companyName: data.company_name || '',
-    showMonthlyGoals: data.show_monthly_goals,
-    showCharts: data.show_charts,
+    showMonthlyGoals: data.show_monthly_goals ?? defaultConfig.showMonthlyGoals,
+    showCharts: data.show_charts ?? defaultConfig.showCharts,
     metricsOrder: metricsOrder,
     
     // Novas configurações para metas específicas

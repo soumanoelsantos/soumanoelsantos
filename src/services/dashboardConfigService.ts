@@ -33,21 +33,28 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
   console.log('Config data to save:', configData);
 
   // Check if config already exists
-  const { data: existingConfig } = await supabase
+  const { data: existingConfig, error: fetchError } = await supabase
     .from('dashboard_configs')
     .select('id')
     .eq('user_id', userId)
     .maybeSingle();
 
+  if (fetchError) {
+    console.error('Error checking existing config:', fetchError);
+    throw fetchError;
+  }
+
   let result;
   if (existingConfig) {
     // Update existing config
+    console.log('Updating existing config for user:', userId);
     result = await supabase
       .from('dashboard_configs')
       .update(configData)
       .eq('user_id', userId);
   } else {
     // Insert new config
+    console.log('Creating new config for user:', userId);
     result = await supabase
       .from('dashboard_configs')
       .insert(configData);
@@ -59,4 +66,6 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
     console.error('Save error:', result.error);
     throw result.error;
   }
+
+  console.log('Configuration saved successfully');
 };

@@ -102,6 +102,7 @@ export type Database = {
           created_at: string
           id: string
           metrics_order: Json | null
+          selected_goal_ids: Json | null
           show_calls_diarias: boolean | null
           show_cash_collect: boolean | null
           show_charts: boolean | null
@@ -123,6 +124,7 @@ export type Database = {
           show_receita: boolean | null
           show_revenue: boolean | null
           show_sales: boolean | null
+          show_specific_goals: boolean | null
           show_super_meta_faturamento: boolean | null
           show_super_meta_receita: boolean | null
           show_team: boolean | null
@@ -137,6 +139,7 @@ export type Database = {
           created_at?: string
           id?: string
           metrics_order?: Json | null
+          selected_goal_ids?: Json | null
           show_calls_diarias?: boolean | null
           show_cash_collect?: boolean | null
           show_charts?: boolean | null
@@ -158,6 +161,7 @@ export type Database = {
           show_receita?: boolean | null
           show_revenue?: boolean | null
           show_sales?: boolean | null
+          show_specific_goals?: boolean | null
           show_super_meta_faturamento?: boolean | null
           show_super_meta_receita?: boolean | null
           show_team?: boolean | null
@@ -172,6 +176,7 @@ export type Database = {
           created_at?: string
           id?: string
           metrics_order?: Json | null
+          selected_goal_ids?: Json | null
           show_calls_diarias?: boolean | null
           show_cash_collect?: boolean | null
           show_charts?: boolean | null
@@ -193,6 +198,7 @@ export type Database = {
           show_receita?: boolean | null
           show_revenue?: boolean | null
           show_sales?: boolean | null
+          show_specific_goals?: boolean | null
           show_super_meta_faturamento?: boolean | null
           show_super_meta_receita?: boolean | null
           show_team?: boolean | null
