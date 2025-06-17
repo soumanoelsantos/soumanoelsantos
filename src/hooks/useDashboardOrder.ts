@@ -12,8 +12,9 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showFaltaReceita', 'showConversao', 'showDiariaReceita',
       'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
       'showHiperMetaReceita', 'showCallsDiarias', 'showFaltaReceitaSuper',
-      'showFaltaReceitaHiper', 'showMetaFaturamento', 'showMetaReceita',
-      'showFaturamento', 'showReceita', 'showQuantidadeVendas', 'showCashCollect'
+      'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+      'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
+      'showQuantidadeVendas', 'showCashCollect'
     ];
 
     // Filtrar apenas as métricas que estão habilitadas

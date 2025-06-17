@@ -20,6 +20,8 @@ export const defaultConfig: DashboardConfig = {
   showCallsDiarias: false,
   showFaltaReceitaSuper: false,
   showFaltaReceitaHiper: false,
+  showFaltaFaturamentoSuper: false,
+  showFaltaFaturamentoHiper: false,
   showMetaFaturamento: false,
   showMetaReceita: false,
   showFaturamento: false,

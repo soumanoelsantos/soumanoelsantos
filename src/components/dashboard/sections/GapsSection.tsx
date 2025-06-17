@@ -10,7 +10,8 @@ interface GapsSectionProps {
 
 const GapsSection: React.FC<GapsSectionProps> = ({ config, orderedItems }) => {
   const gapsMetrics = [
-    'showFaltaFaturamento', 'showFaltaReceita', 'showFaltaReceitaSuper', 'showFaltaReceitaHiper'
+    'showFaltaFaturamento', 'showFaltaReceita', 'showFaltaReceitaSuper', 
+    'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper'
   ];
 
   const gapsItems = orderedItems.filter(key => gapsMetrics.includes(key));

@@ -61,6 +61,24 @@ export const allMetricsCards = [
     trend: '-3%',
     color: 'text-red-400'
   },
+  {
+    key: 'showFaltaFaturamentoSuper',
+    title: 'Falta Faturamento (Super)',
+    value: 'R$ 85.000,00',
+    description: 'Para atingir super meta',
+    icon: TrendingDown,
+    trend: '-12%',
+    color: 'text-orange-600'
+  },
+  {
+    key: 'showFaltaFaturamentoHiper',
+    title: 'Falta Faturamento (Hiper)',
+    value: 'R$ 130.000,00',
+    description: 'Para atingir hiper meta',
+    icon: TrendingDown,
+    trend: '-20%',
+    color: 'text-red-600'
+  },
   
   // Conversão
   {

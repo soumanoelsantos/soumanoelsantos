@@ -47,6 +47,8 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
       metrics: [
         { key: 'showFaltaFaturamento', label: 'Falta de Faturamento' },
         { key: 'showFaltaReceita', label: 'Falta de Receita' },
+        { key: 'showFaltaFaturamentoSuper', label: 'Falta Faturamento (Super)' },
+        { key: 'showFaltaFaturamentoHiper', label: 'Falta Faturamento (Hiper)' },
         { key: 'showFaltaReceitaSuper', label: 'Falta Receita (Super)' },
         { key: 'showFaltaReceitaHiper', label: 'Falta Receita (Hiper)' }
       ]

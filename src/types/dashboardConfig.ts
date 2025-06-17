@@ -18,6 +18,8 @@ export interface DashboardConfig {
   showCallsDiarias: boolean;
   showFaltaReceitaSuper: boolean;
   showFaltaReceitaHiper: boolean;
+  showFaltaFaturamentoSuper: boolean;
+  showFaltaFaturamentoHiper: boolean;
   showMetaFaturamento: boolean;
   showMetaReceita: boolean;
   showFaturamento: boolean;
