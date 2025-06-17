@@ -2,12 +2,10 @@
 import { DashboardConfig } from '@/types/dashboardConfig';
 
 export const defaultConfig: DashboardConfig = {
-  showSales: true,
   showLeads: true,
   showConversion: true,
   showTeam: false,
   showRevenue: true,
-  showTicketMedio: true,
   // Novas configurações
   showTicketFaturamento: false,
   showTicketReceita: false,
@@ -32,7 +30,7 @@ export const defaultConfig: DashboardConfig = {
   companyName: '',
   showMonthlyGoals: true,
   showCharts: true,
-  metricsOrder: ['showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam'],
+  metricsOrder: ['showLeads', 'showConversion', 'showRevenue', 'showTeam'],
   
   // Novas configurações para metas específicas
   showSpecificGoals: false,

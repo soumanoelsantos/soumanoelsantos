@@ -1,11 +1,9 @@
 
 export interface DashboardConfig {
-  showSales: boolean;
   showLeads: boolean;
   showConversion: boolean;
   showTeam: boolean;
   showRevenue: boolean;
-  showTicketMedio: boolean;
   // Novas opções
   showTicketFaturamento: boolean;
   showTicketReceita: boolean;

@@ -2,25 +2,7 @@
 import { TrendingUp, Users, Target, DollarSign, Award, TrendingDown, Receipt } from 'lucide-react';
 
 export const allMetricsCards = [
-  // Métricas básicas
-  {
-    key: 'showSales',
-    title: 'Total de Vendas',
-    value: 'R$ 30.000,00',
-    description: 'Total do período',
-    icon: DollarSign,
-    trend: '+12%',
-    color: 'text-green-600'
-  },
-  {
-    key: 'showSales',
-    title: 'Número de Vendas',
-    value: '7',
-    description: 'Total de vendas',
-    icon: Target,
-    trend: '+5%',
-    color: 'text-blue-600'
-  },
+  // Métricas básicas (removidos Total de Vendas, Número de Vendas e Ticket Médio)
   {
     key: 'showLeads',
     title: 'Leads Gerados',
@@ -29,15 +11,6 @@ export const allMetricsCards = [
     icon: Users,
     trend: '+8%',
     color: 'text-purple-600'
-  },
-  {
-    key: 'showTicketMedio',
-    title: 'Ticket Médio',
-    value: 'R$ 5.420',
-    description: 'Valor médio por venda',
-    icon: TrendingUp,
-    trend: '+15%',
-    color: 'text-orange-600'
   },
   {
     key: 'showTeam',
@@ -49,7 +22,7 @@ export const allMetricsCards = [
     color: 'text-indigo-600'
   },
   
-  // Novas métricas - Tickets
+  // Tickets
   {
     key: 'showTicketFaturamento',
     title: 'Ticket Faturamento',

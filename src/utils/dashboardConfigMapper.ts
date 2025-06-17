@@ -24,12 +24,10 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
   }
 
   return {
-    showSales: data.show_sales ?? defaultConfig.showSales,
     showLeads: data.show_leads ?? defaultConfig.showLeads,
     showConversion: data.show_conversion ?? defaultConfig.showConversion,
     showTeam: data.show_team ?? defaultConfig.showTeam,
     showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
-    showTicketMedio: data.show_ticket_medio ?? defaultConfig.showTicketMedio,
     // Novas configurações com safe access
     showTicketFaturamento: data.show_ticket_faturamento ?? false,
     showTicketReceita: data.show_ticket_receita ?? false,
@@ -66,12 +64,10 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
   return {
     user_id: userId,
     company_name: config.companyName,
-    show_sales: config.showSales,
     show_leads: config.showLeads,
     show_conversion: config.showConversion,
     show_team: config.showTeam,
     show_revenue: config.showRevenue,
-    show_ticket_medio: config.showTicketMedio,
     // Novas configurações
     show_ticket_faturamento: config.showTicketFaturamento,
     show_ticket_receita: config.showTicketReceita,

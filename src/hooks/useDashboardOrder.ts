@@ -5,9 +5,9 @@ export const useDashboardOrder = (config: DashboardConfig) => {
   const getOrderedItems = () => {
     console.log('Getting ordered items with config:', config);
     
-    // Lista de todas as chaves de métricas possíveis
+    // Lista de todas as chaves de métricas possíveis (removidas showSales, showTicketMedio)
     const allMetricKeys = [
-      'showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam',
+      'showLeads', 'showConversion', 'showRevenue', 'showTeam',
       'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
       'showFaltaReceita', 'showConversao', 'showDiariaReceita',
       'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',

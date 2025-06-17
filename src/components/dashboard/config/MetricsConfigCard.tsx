@@ -15,11 +15,9 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     {
       title: 'Métricas Básicas',
       metrics: [
-        { key: 'showSales', label: 'Total de Vendas' },
         { key: 'showLeads', label: 'Leads Gerados' },
         { key: 'showConversion', label: 'Taxa de Conversão' },
         { key: 'showRevenue', label: 'Receita' },
-        { key: 'showTicketMedio', label: 'Ticket Médio' },
         { key: 'showTeam', label: 'Performance da Equipe' }
       ]
     },

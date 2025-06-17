@@ -10,7 +10,7 @@ interface BasicMetricsSectionProps {
 
 const BasicMetricsSection: React.FC<BasicMetricsSectionProps> = ({ config, orderedItems }) => {
   const basicMetrics = [
-    'showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam'
+    'showLeads', 'showConversion', 'showRevenue', 'showTeam'
   ];
 
   const basicItems = orderedItems.filter(key => basicMetrics.includes(key));

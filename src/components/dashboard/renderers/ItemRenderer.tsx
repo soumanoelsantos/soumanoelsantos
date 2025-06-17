@@ -15,9 +15,9 @@ interface ItemRendererProps {
 export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) => {
   console.log('ItemRenderer - Processing key:', itemKey, 'Config value:', config[itemKey as keyof DashboardConfig]);
   
-  // Lista de todas as chaves de métricas que devem ser renderizadas como cards
+  // Lista de todas as chaves de métricas que devem ser renderizadas como cards (removidas showSales, showTicketMedio)
   const metricKeys = [
-    'showSales', 'showLeads', 'showTicketMedio', 'showTeam',
+    'showLeads', 'showTeam',
     'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
     'showFaltaReceita', 'showConversao', 'showDiariaReceita',
     'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
