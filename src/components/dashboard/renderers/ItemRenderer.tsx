@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
-import { allMetricsCards } from '../data/metricsDefinitions';
+import { allMetricsCards } from '../data/metrics';
 import { SalesChart, GrowthChart } from '../charts/ChartComponents';
 import { ConversionRateCard, RevenueGoalCard, SalesGoalCard } from '../goals/GoalComponents';
 import SpecificGoalsCards from '../goals/SpecificGoalsCards';
