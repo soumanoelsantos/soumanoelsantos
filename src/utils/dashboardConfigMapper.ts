@@ -3,15 +3,22 @@ import { DashboardConfig } from '@/types/dashboardConfig';
 import { defaultConfig } from '@/config/dashboardDefaults';
 
 export const mapDatabaseToConfig = (data: any): DashboardConfig => {
-  console.log('dashboardConfigMapper - Raw database data:', data);
+  console.log('🔵 dashboardConfigMapper - Mapping database data to config:', data);
   
   // Safely parse metrics_order with type checking
   let metricsOrder = defaultConfig.metricsOrder;
   if (data.metrics_order) {
     if (Array.isArray(data.metrics_order)) {
       metricsOrder = data.metrics_order as string[];
-    } else {
-      console.warn('metrics_order is not an array, using default');
+    } else if (typeof data.metrics_order === 'string') {
+      try {
+        const parsed = JSON.parse(data.metrics_order);
+        if (Array.isArray(parsed)) {
+          metricsOrder = parsed;
+        }
+      } catch (e) {
+        console.warn('🟡 Failed to parse metrics_order, using default');
+      }
     }
   }
 
@@ -20,8 +27,15 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
   if (data.selected_goal_ids) {
     if (Array.isArray(data.selected_goal_ids)) {
       selectedGoalIds = data.selected_goal_ids as string[];
-    } else {
-      console.warn('selected_goal_ids is not an array, using default');
+    } else if (typeof data.selected_goal_ids === 'string') {
+      try {
+        const parsed = JSON.parse(data.selected_goal_ids);
+        if (Array.isArray(parsed)) {
+          selectedGoalIds = parsed;
+        }
+      } catch (e) {
+        console.warn('🟡 Failed to parse selected_goal_ids, using default');
+      }
     }
   }
 
@@ -30,7 +44,6 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showConversion: data.show_conversion ?? defaultConfig.showConversion,
     showTeam: data.show_team ?? defaultConfig.showTeam,
     showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
-    // Novas configurações com safe access
     showTicketFaturamento: data.show_ticket_faturamento ?? defaultConfig.showTicketFaturamento,
     showTicketReceita: data.show_ticket_receita ?? defaultConfig.showTicketReceita,
     showFaltaFaturamento: data.show_falta_faturamento ?? defaultConfig.showFaltaFaturamento,
@@ -58,17 +71,16 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showCharts: data.show_charts ?? defaultConfig.showCharts,
     metricsOrder: metricsOrder,
     
-    // Novas configurações para metas específicas
     showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
     selectedGoalIds: selectedGoalIds
   };
 
-  console.log('dashboardConfigMapper - Mapped config:', mappedConfig);
+  console.log('🟢 dashboardConfigMapper - Final mapped config:', mappedConfig);
   return mappedConfig;
 };
 
 export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => {
-  console.log('dashboardConfigMapper - Mapping config to database:', config);
+  console.log('🔵 dashboardConfigMapper - Mapping config to database format:', config);
   
   const databaseData = {
     user_id: userId,
@@ -77,7 +89,6 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_conversion: config.showConversion,
     show_team: config.showTeam,
     show_revenue: config.showRevenue,
-    // Novas configurações
     show_ticket_faturamento: config.showTicketFaturamento,
     show_ticket_receita: config.showTicketReceita,
     show_falta_faturamento: config.showFaltaFaturamento,
@@ -104,11 +115,10 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_charts: config.showCharts,
     metrics_order: config.metricsOrder,
     
-    // Novas configurações para metas específicas
     show_specific_goals: config.showSpecificGoals,
     selected_goal_ids: config.selectedGoalIds
   };
 
-  console.log('dashboardConfigMapper - Database data:', databaseData);
+  console.log('🟢 dashboardConfigMapper - Final database data:', databaseData);
   return databaseData;
 };

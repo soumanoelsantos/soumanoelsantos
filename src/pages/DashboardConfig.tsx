@@ -26,33 +26,32 @@ const DashboardConfig = () => {
   }, [isAuthenticated, navigate]);
 
   const handleConfigChange = (key: string, value: boolean | string | string[]) => {
-    console.log('DashboardConfig - Changing config:', key, '=', value);
-    setConfig(prev => {
-      const newConfig = {
-        ...prev,
-        [key]: value
-      };
-      console.log('DashboardConfig - New config state:', newConfig);
-      return newConfig;
-    });
+    console.log('🔵 DashboardConfig - Changing config:', key, '=', value);
+    const newConfig = {
+      ...config,
+      [key]: value
+    };
+    console.log('🔵 DashboardConfig - New config state:', newConfig);
+    setConfig(newConfig);
   };
 
   const handleReorderMetrics = (newOrder: string[]) => {
-    console.log('DashboardConfig - Reordering metrics:', newOrder);
-    setConfig(prev => ({
-      ...prev,
+    console.log('🔵 DashboardConfig - Reordering metrics:', newOrder);
+    const newConfig = {
+      ...config,
       metricsOrder: newOrder
-    }));
+    };
+    setConfig(newConfig);
   };
 
   const handleSave = async () => {
-    console.log('DashboardConfig - Saving config:', config);
+    console.log('🔵 DashboardConfig - Attempting to save config:', config);
     const success = await saveConfig(config);
     if (success) {
-      console.log('DashboardConfig - Save successful, navigating to dashboard');
+      console.log('🟢 DashboardConfig - Save successful, navigating to dashboard');
       navigate('/dashboard');
     } else {
-      console.log('DashboardConfig - Save failed');
+      console.log('🔴 DashboardConfig - Save failed');
     }
   };
 

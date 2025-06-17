@@ -14,31 +14,30 @@ export const useDashboardConfig = () => {
 
   const loadConfig = async () => {
     if (!userId) {
-      console.log('useDashboardConfig - No userId, using default config');
+      console.log('🟡 useDashboardConfig - No userId, using default config');
       setConfig(defaultConfig);
       return;
     }
     
     try {
       setIsLoading(true);
-      console.log('useDashboardConfig - Loading config for user:', userId);
+      console.log('🔵 useDashboardConfig - Loading config for user:', userId);
       const loadedConfig = await loadDashboardConfig(userId);
       
       if (loadedConfig) {
-        console.log('useDashboardConfig - Config loaded successfully:', loadedConfig);
+        console.log('🟢 useDashboardConfig - Config loaded successfully:', loadedConfig);
         setConfig(loadedConfig);
       } else {
-        console.log('useDashboardConfig - No config found, using defaults');
+        console.log('🟡 useDashboardConfig - No config found, using defaults');
         setConfig(defaultConfig);
       }
     } catch (error) {
-      console.error('useDashboardConfig - Erro ao carregar configurações do dashboard:', error);
+      console.error('🔴 useDashboardConfig - Erro ao carregar configurações do dashboard:', error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar configurações",
         description: "Não foi possível carregar suas configurações salvas."
       });
-      // Use default config on error
       setConfig(defaultConfig);
     } finally {
       setIsLoading(false);
@@ -57,30 +56,23 @@ export const useDashboardConfig = () => {
 
     try {
       setIsLoading(true);
-      console.log('useDashboardConfig - Saving config:', newConfig);
+      console.log('🔵 useDashboardConfig - Saving config:', newConfig);
       
-      // First update the local state immediately
-      setConfig(newConfig);
-      
-      // Then save to database
+      // Save to database first
       await saveDashboardConfig(newConfig, userId);
+      
+      // Update local state only after successful save
+      setConfig(newConfig);
       
       toast({
         title: "Configurações salvas!",
         description: "Suas configurações do dashboard foram salvas com sucesso."
       });
       
-      console.log('useDashboardConfig - Configuration saved successfully');
-      
-      // Reload config from database to ensure consistency
-      await loadConfig();
-      
+      console.log('🟢 useDashboardConfig - Configuration saved and state updated successfully');
       return true;
     } catch (error: any) {
-      console.error('useDashboardConfig - Erro ao salvar configurações do dashboard:', error);
-      
-      // Revert local state on error
-      await loadConfig();
+      console.error('🔴 useDashboardConfig - Erro ao salvar configurações do dashboard:', error);
       
       toast({
         variant: "destructive",
@@ -95,13 +87,13 @@ export const useDashboardConfig = () => {
 
   // Load config when userId changes
   useEffect(() => {
-    console.log('useDashboardConfig - useEffect triggered, userId:', userId);
+    console.log('🔵 useDashboardConfig - useEffect triggered, userId:', userId);
     loadConfig();
   }, [userId]);
 
   // Debug config changes
   useEffect(() => {
-    console.log('useDashboardConfig - Config state changed:', config);
+    console.log('🔵 useDashboardConfig - Config state changed:', config);
   }, [config]);
 
   return {

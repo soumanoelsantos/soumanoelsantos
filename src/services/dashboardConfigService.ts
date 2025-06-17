@@ -4,7 +4,7 @@ import { DashboardConfig } from '@/types/dashboardConfig';
 import { mapDatabaseToConfig, mapConfigToDatabase } from '@/utils/dashboardConfigMapper';
 
 export const loadDashboardConfig = async (userId: string): Promise<DashboardConfig | null> => {
-  console.log('dashboardConfigService - Loading config for user:', userId);
+  console.log('🔵 dashboardConfigService - Loading config for user:', userId);
   
   try {
     const { data, error } = await supabase
@@ -14,75 +14,51 @@ export const loadDashboardConfig = async (userId: string): Promise<DashboardConf
       .maybeSingle();
 
     if (error) {
-      console.error('dashboardConfigService - Error loading config:', error);
+      console.error('🔴 dashboardConfigService - Error loading config:', error);
       throw error;
     }
 
     if (data) {
-      console.log('dashboardConfigService - Raw data from database:', data);
+      console.log('🟢 dashboardConfigService - Raw data from database:', data);
       const mappedConfig = mapDatabaseToConfig(data);
-      console.log('dashboardConfigService - Mapped config:', mappedConfig);
+      console.log('🟢 dashboardConfigService - Mapped config:', mappedConfig);
       return mappedConfig;
     }
 
-    console.log('dashboardConfigService - No config found, returning null');
+    console.log('🟡 dashboardConfigService - No config found, returning null');
     return null;
   } catch (error) {
-    console.error('dashboardConfigService - Unexpected error:', error);
+    console.error('🔴 dashboardConfigService - Unexpected error:', error);
     throw error;
   }
 };
 
 export const saveDashboardConfig = async (config: DashboardConfig, userId: string): Promise<void> => {
-  console.log('dashboardConfigService - Saving config for user:', userId);
-  console.log('dashboardConfigService - Config to save:', config);
+  console.log('🔵 dashboardConfigService - Starting save for user:', userId);
+  console.log('🔵 dashboardConfigService - Config to save:', config);
   
   try {
     const configData = mapConfigToDatabase(config, userId);
-    console.log('dashboardConfigService - Config data to save:', configData);
+    console.log('🔵 dashboardConfigService - Mapped data for database:', configData);
 
-    // Check if config already exists
-    const { data: existingConfig, error: fetchError } = await supabase
+    // Use upsert to insert or update in one operation
+    const { data, error } = await supabase
       .from('dashboard_configs')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+      .upsert(configData, {
+        onConflict: 'user_id',
+        ignoreDuplicates: false
+      })
+      .select()
+      .single();
 
-    if (fetchError) {
-      console.error('dashboardConfigService - Error checking existing config:', fetchError);
-      throw fetchError;
+    if (error) {
+      console.error('🔴 dashboardConfigService - Upsert error:', error);
+      throw error;
     }
 
-    let result;
-    if (existingConfig) {
-      // Update existing config
-      console.log('dashboardConfigService - Updating existing config for user:', userId);
-      result = await supabase
-        .from('dashboard_configs')
-        .update(configData)
-        .eq('user_id', userId)
-        .select()
-        .single();
-    } else {
-      // Insert new config
-      console.log('dashboardConfigService - Creating new config for user:', userId);
-      result = await supabase
-        .from('dashboard_configs')
-        .insert(configData)
-        .select()
-        .single();
-    }
-
-    console.log('dashboardConfigService - Save result:', result);
-
-    if (result.error) {
-      console.error('dashboardConfigService - Save error:', result.error);
-      throw result.error;
-    }
-
-    console.log('dashboardConfigService - Configuration saved successfully');
+    console.log('🟢 dashboardConfigService - Configuration saved successfully:', data);
   } catch (error) {
-    console.error('dashboardConfigService - Unexpected error during save:', error);
+    console.error('🔴 dashboardConfigService - Unexpected error during save:', error);
     throw error;
   }
 };
