@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowRight, CheckCircle2, AlertCircle, TrendingUp, Target, Clock, Users, Building, DollarSign, Settings, Cpu, Heart, Package, Handshake, UserCheck, Megaphone, Star } from 'lucide-react';
-import { saveDiagnosticDataToSupabase } from '@/utils/storage';
+import { useIntegratedData } from '@/hooks/useIntegratedData';
+import { ArrowRight, CheckCircle2, AlertCircle, TrendingUp, Target, Clock, Users, Building, DollarSign, Settings, Cpu, Heart, Package, Handshake, UserCheck, Megaphone, Star, Loader2 } from 'lucide-react';
+import { saveDiagnosticToSupabase } from '@/utils/storage';
 import { generateIntelligentActions } from '@/utils/actionGeneration';
 import type { ActionCategory, Priority, Status } from '@/utils/actionGeneration/types';
+import SimpleDiagnosticForm from './SimpleDiagnosticForm';
+import ActionPlanManager from './ActionPlanManager';
 
 interface DiagnosticData {
   empresaNome: string;

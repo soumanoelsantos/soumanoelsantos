@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useToast } from '@/hooks/use-toast';
@@ -13,19 +12,19 @@ export const useActionPlanManager = (
 
   // Ensure all action items have the required structure and normalize legacy categories
   const normalizedActionPlan = initialActionPlan.map(action => {
-    let normalizedCategory = action.categoria;
+    let normalizedCategory: ActionCategory = action.categoria;
     
-    // Consolidate legacy categories
-    if (action.categoria === 'pre_venda') {
+    // Consolidate legacy categories using string comparison
+    if ((action.categoria as string) === 'pre_venda') {
       normalizedCategory = 'pre-venda';
     }
-    if (action.categoria === 'encantamento_cliente') {
+    if ((action.categoria as string) === 'encantamento_cliente') {
       normalizedCategory = 'encantamento-cliente';
     }
     
     return {
       ...action,
-      categoria: normalizedCategory as ActionCategory,
+      categoria: normalizedCategory,
       comoFazer: action.comoFazer || ['Definir plano de implementação', 'Executar plano', 'Monitorar resultados'],
       completedSteps: action.completedSteps || [],
       prioridade: action.prioridade || 'media',
@@ -55,10 +54,10 @@ export const useActionPlanManager = (
 
     if (filterCategory !== 'todas') {
       filtered = filtered.filter(action => {
-        // Handle both new and legacy category formats
+        // Handle both new and legacy category formats using string comparison
         return action.categoria === filterCategory || 
-               (filterCategory === 'pre-venda' && action.categoria === 'pre_venda') ||
-               (filterCategory === 'encantamento-cliente' && action.categoria === 'encantamento_cliente');
+               (filterCategory === 'pre-venda' && (action.categoria as string) === 'pre_venda') ||
+               (filterCategory === 'encantamento-cliente' && (action.categoria as string) === 'encantamento_cliente');
       });
     }
 
@@ -241,4 +240,3 @@ export const useActionPlanManager = (
     handleAddAction
   };
 };
-
