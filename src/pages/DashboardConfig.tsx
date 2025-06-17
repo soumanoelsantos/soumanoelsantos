@@ -27,11 +27,16 @@ const DashboardConfig = () => {
 
   const handleConfigChange = (key: string, value: boolean | string | string[]) => {
     console.log('🔵 DashboardConfig - Changing config:', key, '=', value);
+    
+    // Create new config with the updated value
     const newConfig = {
       ...config,
       [key]: value
     };
+    
     console.log('🔵 DashboardConfig - New config state:', newConfig);
+    
+    // Update local state immediately
     setConfig(newConfig);
   };
 
