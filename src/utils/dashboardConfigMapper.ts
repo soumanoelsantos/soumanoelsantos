@@ -3,6 +3,8 @@ import { DashboardConfig } from '@/types/dashboardConfig';
 import { defaultConfig } from '@/config/dashboardDefaults';
 
 export const mapDatabaseToConfig = (data: any): DashboardConfig => {
+  console.log('dashboardConfigMapper - Raw database data:', data);
+  
   // Safely parse metrics_order with type checking
   let metricsOrder = defaultConfig.metricsOrder;
   if (data.metrics_order) {
@@ -23,47 +25,52 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     }
   }
 
-  return {
+  const mappedConfig = {
     showLeads: data.show_leads ?? defaultConfig.showLeads,
     showConversion: data.show_conversion ?? defaultConfig.showConversion,
     showTeam: data.show_team ?? defaultConfig.showTeam,
     showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
     // Novas configurações com safe access
-    showTicketFaturamento: data.show_ticket_faturamento ?? false,
-    showTicketReceita: data.show_ticket_receita ?? false,
-    showFaltaFaturamento: data.show_falta_faturamento ?? false,
-    showFaltaReceita: data.show_falta_receita ?? false,
-    showConversao: data.show_conversao ?? false,
-    showDiariaReceita: data.show_diaria_receita ?? false,
-    showSuperMetaFaturamento: data.show_super_meta_faturamento ?? false,
-    showSuperMetaReceita: data.show_super_meta_receita ?? false,
-    showHiperMetaFaturamento: data.show_hiper_meta_faturamento ?? false,
-    showHiperMetaReceita: data.show_hiper_meta_receita ?? false,
-    showCallsDiarias: data.show_calls_diarias ?? false,
-    showFaltaReceitaSuper: data.show_falta_receita_super ?? false,
-    showFaltaReceitaHiper: data.show_falta_receita_hiper ?? false,
-    showFaltaFaturamentoSuper: data.show_falta_faturamento_super ?? false,
-    showFaltaFaturamentoHiper: data.show_falta_faturamento_hiper ?? false,
-    showMetaFaturamento: data.show_meta_faturamento ?? false,
-    showMetaReceita: data.show_meta_receita ?? false,
-    showFaturamento: data.show_faturamento ?? false,
-    showReceita: data.show_receita ?? false,
-    showQuantidadeVendas: data.show_quantidade_vendas ?? false,
-    showCashCollect: data.show_cash_collect ?? false,
+    showTicketFaturamento: data.show_ticket_faturamento ?? defaultConfig.showTicketFaturamento,
+    showTicketReceita: data.show_ticket_receita ?? defaultConfig.showTicketReceita,
+    showFaltaFaturamento: data.show_falta_faturamento ?? defaultConfig.showFaltaFaturamento,
+    showFaltaReceita: data.show_falta_receita ?? defaultConfig.showFaltaReceita,
+    showConversao: data.show_conversao ?? defaultConfig.showConversao,
+    showDiariaReceita: data.show_diaria_receita ?? defaultConfig.showDiariaReceita,
+    showSuperMetaFaturamento: data.show_super_meta_faturamento ?? defaultConfig.showSuperMetaFaturamento,
+    showSuperMetaReceita: data.show_super_meta_receita ?? defaultConfig.showSuperMetaReceita,
+    showHiperMetaFaturamento: data.show_hiper_meta_faturamento ?? defaultConfig.showHiperMetaFaturamento,
+    showHiperMetaReceita: data.show_hiper_meta_receita ?? defaultConfig.showHiperMetaReceita,
+    showCallsDiarias: data.show_calls_diarias ?? defaultConfig.showCallsDiarias,
+    showFaltaReceitaSuper: data.show_falta_receita_super ?? defaultConfig.showFaltaReceitaSuper,
+    showFaltaReceitaHiper: data.show_falta_receita_hiper ?? defaultConfig.showFaltaReceitaHiper,
+    showFaltaFaturamentoSuper: data.show_falta_faturamento_super ?? defaultConfig.showFaltaFaturamentoSuper,
+    showFaltaFaturamentoHiper: data.show_falta_faturamento_hiper ?? defaultConfig.showFaltaFaturamentoHiper,
+    showMetaFaturamento: data.show_meta_faturamento ?? defaultConfig.showMetaFaturamento,
+    showMetaReceita: data.show_meta_receita ?? defaultConfig.showMetaReceita,
+    showFaturamento: data.show_faturamento ?? defaultConfig.showFaturamento,
+    showReceita: data.show_receita ?? defaultConfig.showReceita,
+    showQuantidadeVendas: data.show_quantidade_vendas ?? defaultConfig.showQuantidadeVendas,
+    showCashCollect: data.show_cash_collect ?? defaultConfig.showCashCollect,
     
-    companyName: data.company_name || '',
+    companyName: data.company_name || defaultConfig.companyName,
     showMonthlyGoals: data.show_monthly_goals ?? defaultConfig.showMonthlyGoals,
     showCharts: data.show_charts ?? defaultConfig.showCharts,
     metricsOrder: metricsOrder,
     
     // Novas configurações para metas específicas
-    showSpecificGoals: data.show_specific_goals ?? false,
+    showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
     selectedGoalIds: selectedGoalIds
   };
+
+  console.log('dashboardConfigMapper - Mapped config:', mappedConfig);
+  return mappedConfig;
 };
 
 export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => {
-  return {
+  console.log('dashboardConfigMapper - Mapping config to database:', config);
+  
+  const databaseData = {
     user_id: userId,
     company_name: config.companyName,
     show_leads: config.showLeads,
@@ -101,4 +108,7 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_specific_goals: config.showSpecificGoals,
     selected_goal_ids: config.selectedGoalIds
   };
+
+  console.log('dashboardConfigMapper - Database data:', databaseData);
+  return databaseData;
 };
