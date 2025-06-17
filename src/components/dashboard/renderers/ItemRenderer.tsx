@@ -5,6 +5,7 @@ import { DashboardConfig } from '@/hooks/useDashboardConfig';
 import { allMetricsCards } from '../data/metricsDefinitions';
 import { SalesChart, GrowthChart } from '../charts/ChartComponents';
 import { ConversionRateCard, RevenueGoalCard, SalesGoalCard } from '../goals/GoalComponents';
+import SpecificGoalsCards from '../goals/SpecificGoalsCards';
 
 interface ItemRendererProps {
   itemKey: string;
@@ -60,6 +61,12 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
         </>
       );
     }
+  }
+
+  // Metas específicas
+  if (itemKey === 'specificGoals' && config.showSpecificGoals) {
+    console.log('Rendering specific goals cards');
+    return <SpecificGoalsCards config={config} />;
   }
 
   // Gráfico de vendas por mês

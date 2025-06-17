@@ -40,6 +40,11 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       }
     }
 
+    // Adicionar metas específicas se habilitadas
+    if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
+      orderedItems.push('specificGoals');
+    }
+
     // Depois, adicionar métricas de cards
     let cardMetrics: string[] = [];
     

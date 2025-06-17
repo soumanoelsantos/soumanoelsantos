@@ -13,6 +13,16 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     }
   }
 
+  // Safely parse selected_goal_ids with type checking
+  let selectedGoalIds = defaultConfig.selectedGoalIds;
+  if (data.selected_goal_ids) {
+    if (Array.isArray(data.selected_goal_ids)) {
+      selectedGoalIds = data.selected_goal_ids as string[];
+    } else {
+      console.warn('selected_goal_ids is not an array, using default');
+    }
+  }
+
   return {
     showSales: data.show_sales,
     showLeads: data.show_leads,
@@ -44,7 +54,11 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     companyName: data.company_name || '',
     showMonthlyGoals: data.show_monthly_goals,
     showCharts: data.show_charts,
-    metricsOrder: metricsOrder
+    metricsOrder: metricsOrder,
+    
+    // Novas configurações para metas específicas
+    showSpecificGoals: data.show_specific_goals ?? false,
+    selectedGoalIds: selectedGoalIds
   };
 };
 
@@ -81,6 +95,10 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     
     show_monthly_goals: config.showMonthlyGoals,
     show_charts: config.showCharts,
-    metrics_order: config.metricsOrder
+    metrics_order: config.metricsOrder,
+    
+    // Novas configurações para metas específicas
+    show_specific_goals: config.showSpecificGoals,
+    selected_goal_ids: config.selectedGoalIds
   };
 };

@@ -31,4 +31,8 @@ export interface DashboardConfig {
   showMonthlyGoals: boolean;
   showCharts: boolean;
   metricsOrder: string[];
+  
+  // Novas opções para metas específicas
+  showSpecificGoals: boolean;
+  selectedGoalIds: string[];
 }

@@ -8,7 +8,7 @@ export const defaultConfig: DashboardConfig = {
   showTeam: false,
   showRevenue: true,
   showTicketMedio: true,
-  // Novas opções - padrão false
+  // Novas configurações
   showTicketFaturamento: false,
   showTicketReceita: false,
   showFaltaFaturamento: false,
@@ -32,5 +32,9 @@ export const defaultConfig: DashboardConfig = {
   companyName: '',
   showMonthlyGoals: true,
   showCharts: true,
-  metricsOrder: ['showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam']
+  metricsOrder: ['showSales', 'showLeads', 'showConversion', 'showRevenue', 'showTicketMedio', 'showTeam'],
+  
+  // Novas configurações para metas específicas
+  showSpecificGoals: false,
+  selectedGoalIds: [],
 };

@@ -8,6 +8,7 @@ import ConfigHeader from '@/components/dashboard/config/ConfigHeader';
 import GeneralConfigCard from '@/components/dashboard/config/GeneralConfigCard';
 import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
+import SpecificGoalsConfigCard from '@/components/dashboard/config/SpecificGoalsConfigCard';
 import DraggablePreview from '@/components/dashboard/DraggablePreview';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,7 @@ const DashboardConfig = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleConfigChange = (key: string, value: boolean | string) => {
+  const handleConfigChange = (key: string, value: boolean | string | string[]) => {
     setConfig(prev => ({
       ...prev,
       [key]: value
@@ -70,7 +71,12 @@ const DashboardConfig = () => {
             onConfigChange={handleConfigChange} 
           />
 
-          {/* Novo card para gerenciamento de metas */}
+          <SpecificGoalsConfigCard 
+            config={config} 
+            onConfigChange={handleConfigChange} 
+          />
+
+          {/* Card para gerenciamento de metas */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
