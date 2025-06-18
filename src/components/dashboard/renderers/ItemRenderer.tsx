@@ -67,18 +67,14 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     );
   }
 
-  // Metas específicas - verificar se está habilitado
+  // Metas específicas - renderizar cada meta como um card individual
   if (itemKey === 'specificGoals') {
     if (!config.showSpecificGoals) {
       console.log('Specific goals is disabled, not rendering');
       return null;
     }
     console.log('Rendering specific goals cards');
-    return (
-      <div className="col-span-full">
-        <SpecificGoalsCards config={config} />
-      </div>
-    );
+    return <SpecificGoalsCards config={config} />;
   }
 
   // Gráfico de vendas por mês - verificar se está habilitado
