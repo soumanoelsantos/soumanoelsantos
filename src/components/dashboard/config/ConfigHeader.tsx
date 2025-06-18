@@ -1,15 +1,16 @@
 
 import React from 'react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 interface ConfigHeaderProps {
   onSave: () => void;
   isLoading: boolean;
+  hasUnsavedChanges?: boolean;
 }
 
-const ConfigHeader: React.FC<ConfigHeaderProps> = ({ onSave, isLoading }) => {
+const ConfigHeader: React.FC<ConfigHeaderProps> = ({ onSave, isLoading, hasUnsavedChanges }) => {
   const navigate = useNavigate();
 
   return (
@@ -28,7 +29,15 @@ const ConfigHeader: React.FC<ConfigHeaderProps> = ({ onSave, isLoading }) => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-gray-800">Configurar Dashboard</h1>
-              <p className="text-gray-600">Personalize seu dashboard empresarial</p>
+              <p className="text-gray-600">
+                Personalize seu dashboard empresarial
+                {hasUnsavedChanges && (
+                  <span className="ml-2 text-amber-600 text-sm flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    Salvando automaticamente...
+                  </span>
+                )}
+              </p>
             </div>
           </div>
           
@@ -36,9 +45,10 @@ const ConfigHeader: React.FC<ConfigHeaderProps> = ({ onSave, isLoading }) => {
             onClick={onSave} 
             disabled={isLoading}
             className="flex items-center gap-2"
+            variant={hasUnsavedChanges ? "default" : "outline"}
           >
             <Save className="h-4 w-4" />
-            {isLoading ? 'Salvando...' : 'Salvar Configurações'}
+            {isLoading ? 'Salvando...' : hasUnsavedChanges ? 'Salvar e Finalizar' : 'Finalizar Configuração'}
           </Button>
         </div>
       </div>

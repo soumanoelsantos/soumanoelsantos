@@ -17,7 +17,7 @@ import { Target } from 'lucide-react';
 const DashboardConfig = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { config, setConfig, saveConfig, isLoading } = useDashboardConfig();
+  const { config, setConfig, saveConfig, isLoading, hasUnsavedChanges } = useDashboardConfig();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -34,7 +34,7 @@ const DashboardConfig = () => {
       [key]: value
     };
     
-    // Update local state immediately for UI responsiveness
+    // This will trigger auto-save
     setConfig(newConfig);
   };
 
@@ -47,8 +47,8 @@ const DashboardConfig = () => {
     setConfig(newConfig);
   };
 
-  const handleSave = async () => {
-    console.log('🔵 DashboardConfig - SAVE BUTTON CLICKED');
+  const handleManualSave = async () => {
+    console.log('🔵 DashboardConfig - Manual save requested');
     
     try {
       const success = await saveConfig(config);
@@ -57,8 +57,6 @@ const DashboardConfig = () => {
       if (success) {
         console.log('🟢 DashboardConfig - Save successful, navigating to dashboard');
         navigate('/dashboard');
-      } else {
-        console.log('🔴 DashboardConfig - Save failed, staying on config page');
       }
     } catch (error) {
       console.error('🔴 DashboardConfig - Error during save:', error);
@@ -71,7 +69,11 @@ const DashboardConfig = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ConfigHeader onSave={handleSave} isLoading={isLoading} />
+      <ConfigHeader 
+        onSave={handleManualSave} 
+        isLoading={isLoading}
+        hasUnsavedChanges={hasUnsavedChanges}
+      />
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
