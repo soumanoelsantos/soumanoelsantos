@@ -56,7 +56,6 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     {
       title: 'Atividades e Performance',
       metrics: [
-        { key: 'showConversao', label: 'Conversão' },
         { key: 'showDiariaReceita', label: 'Diária de Receita' },
         { key: 'showCallsDiarias', label: 'Calls Diárias' },
         { key: 'showCashCollect', label: 'Cash Collect' }
