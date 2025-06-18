@@ -58,12 +58,12 @@ export const useDashboardConfig = () => {
       setIsLoading(true);
       console.log('🔵 useDashboardConfig - Saving config:', newConfig);
       
-      // Update local state FIRST, then save to database
-      setConfig(newConfig);
-      console.log('🔵 useDashboardConfig - Local state updated, now saving to database');
-      
-      // Save to database
+      // Save to database FIRST, then update local state
       await saveDashboardConfig(newConfig, userId);
+      
+      // Only update local state after successful save
+      setConfig(newConfig);
+      console.log('🔵 useDashboardConfig - Local state updated after successful save');
       
       toast({
         title: "Configurações salvas!",
@@ -75,10 +75,7 @@ export const useDashboardConfig = () => {
     } catch (error: any) {
       console.error('🔴 useDashboardConfig - Erro ao salvar configurações do dashboard:', error);
       
-      // Reload config from database if save fails
-      console.log('🔴 useDashboardConfig - Save failed, reloading from database');
-      await loadConfig();
-      
+      // Don't change local state if save fails, just show error
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
