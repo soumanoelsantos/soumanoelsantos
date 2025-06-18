@@ -28,13 +28,14 @@ const DashboardConfig = () => {
   const handleConfigChange = (key: string, value: boolean | string | string[]) => {
     console.log('🔵 DashboardConfig - Changing config:', key, '=', value);
     
-    // Create new config with the updated value - DON'T SAVE YET
+    // Create new config with the updated value
     const newConfig = {
       ...config,
       [key]: value
     };
     
     console.log('🔵 DashboardConfig - New config state:', newConfig);
+    console.log('🔍 DashboardConfig - Super Meta Faturamento after change:', newConfig.showSuperMetaFaturamento);
     
     // Update local state immediately for UI responsiveness
     setConfig(newConfig);
@@ -50,13 +51,22 @@ const DashboardConfig = () => {
   };
 
   const handleSave = async () => {
-    console.log('🔵 DashboardConfig - Attempting to save config:', config);
-    const success = await saveConfig(config);
-    if (success) {
-      console.log('🟢 DashboardConfig - Save successful, navigating to dashboard');
-      navigate('/dashboard');
-    } else {
-      console.log('🔴 DashboardConfig - Save failed');
+    console.log('🔵 DashboardConfig - SAVE BUTTON CLICKED');
+    console.log('🔵 DashboardConfig - Current config before save:', config);
+    console.log('🔍 DashboardConfig - Super Meta Faturamento before save:', config.showSuperMetaFaturamento);
+    
+    try {
+      const success = await saveConfig(config);
+      console.log('🔵 DashboardConfig - Save result:', success);
+      
+      if (success) {
+        console.log('🟢 DashboardConfig - Save successful, navigating to dashboard');
+        navigate('/dashboard');
+      } else {
+        console.log('🔴 DashboardConfig - Save failed, staying on config page');
+      }
+    } catch (error) {
+      console.error('🔴 DashboardConfig - Error during save:', error);
     }
   };
 

@@ -26,6 +26,7 @@ export const useDashboardConfig = () => {
       
       if (loadedConfig) {
         console.log('🟢 useDashboardConfig - Config loaded successfully:', loadedConfig);
+        console.log('🔍 useDashboardConfig - Loaded Super Meta Faturamento:', loadedConfig.showSuperMetaFaturamento);
         setConfig(loadedConfig);
       } else {
         console.log('🟡 useDashboardConfig - No config found, using defaults');
@@ -45,7 +46,12 @@ export const useDashboardConfig = () => {
   };
 
   const saveConfig = async (newConfig: DashboardConfig) => {
+    console.log('🔵 useDashboardConfig - SAVE CONFIG CALLED');
+    console.log('🔵 useDashboardConfig - Config being saved:', newConfig);
+    console.log('🔍 useDashboardConfig - Super Meta Faturamento being saved:', newConfig.showSuperMetaFaturamento);
+    
     if (!userId) {
+      console.log('🔴 useDashboardConfig - No userId, cannot save');
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
@@ -56,14 +62,16 @@ export const useDashboardConfig = () => {
 
     try {
       setIsLoading(true);
-      console.log('🔵 useDashboardConfig - Saving config:', newConfig);
+      console.log('🔵 useDashboardConfig - Calling saveDashboardConfig service...');
       
-      // Save to database FIRST, then update local state
+      // Save to database FIRST
       await saveDashboardConfig(newConfig, userId);
+      console.log('🟢 useDashboardConfig - Database save completed successfully');
       
       // Only update local state after successful save
       setConfig(newConfig);
       console.log('🟢 useDashboardConfig - Local state updated after successful save');
+      console.log('🔍 useDashboardConfig - Local state Super Meta Faturamento:', newConfig.showSuperMetaFaturamento);
       
       toast({
         title: "Configurações salvas!",
@@ -96,6 +104,7 @@ export const useDashboardConfig = () => {
   // Debug config changes
   useEffect(() => {
     console.log('🔵 useDashboardConfig - Config state changed:', config);
+    console.log('🔍 useDashboardConfig - Current Super Meta Faturamento:', config.showSuperMetaFaturamento);
   }, [config]);
 
   return {
