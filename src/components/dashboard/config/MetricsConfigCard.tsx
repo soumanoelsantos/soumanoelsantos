@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -15,10 +14,8 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     {
       title: 'Métricas Básicas',
       metrics: [
-        { key: 'showLeads', label: 'Leads Gerados' },
         { key: 'showConversion', label: 'Taxa de Conversão' },
-        { key: 'showRevenue', label: 'Receita' },
-        { key: 'showTeam', label: 'Performance da Equipe' }
+        { key: 'showRevenue', label: 'Receita' }
       ]
     },
     {
