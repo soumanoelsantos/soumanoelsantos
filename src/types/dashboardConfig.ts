@@ -1,21 +1,18 @@
 
 export interface DashboardConfig {
-  showLeads: boolean;
   showConversion: boolean;
-  showTeam: boolean;
   showRevenue: boolean;
   // Novas opções
   showTicketFaturamento: boolean;
   showTicketReceita: boolean;
   showFaltaFaturamento: boolean;
   showFaltaReceita: boolean;
-  showConversao: boolean;
   showDiariaReceita: boolean;
+  showDiariaFaturamento: boolean;
   showSuperMetaFaturamento: boolean;
   showSuperMetaReceita: boolean;
   showHiperMetaFaturamento: boolean;
   showHiperMetaReceita: boolean;
-  showCallsDiarias: boolean;
   showFaltaReceitaSuper: boolean;
   showFaltaReceitaHiper: boolean;
   showFaltaFaturamentoSuper: boolean;

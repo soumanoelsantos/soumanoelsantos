@@ -5,13 +5,13 @@ export const useDashboardOrder = (config: DashboardConfig) => {
   const getOrderedItems = () => {
     console.log('Getting ordered items with config:', config);
     
-    // Lista de todas as chaves de métricas possíveis
+    // Lista de todas as chaves de métricas possíveis (apenas as que existem na configuração)
     const allMetricKeys = [
-      'showLeads', 'showConversion', 'showRevenue', 'showTeam',
+      'showConversion', 'showRevenue',
       'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
-      'showFaltaReceita', 'showConversao', 'showDiariaReceita',
+      'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
       'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
-      'showHiperMetaReceita', 'showCallsDiarias', 'showFaltaReceitaSuper',
+      'showHiperMetaReceita', 'showFaltaReceitaSuper',
       'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
       'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
       'showQuantidadeVendas', 'showCashCollect'

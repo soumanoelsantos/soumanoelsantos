@@ -10,7 +10,7 @@ interface ActivitiesPerformanceSectionProps {
 
 const ActivitiesPerformanceSection: React.FC<ActivitiesPerformanceSectionProps> = ({ config, orderedItems }) => {
   const activitiesMetrics = [
-    'showConversao', 'showDiariaReceita', 'showCallsDiarias', 'showCashCollect'
+    'showDiariaReceita', 'showDiariaFaturamento', 'showCashCollect'
   ];
 
   const activitiesItems = orderedItems.filter(key => activitiesMetrics.includes(key));

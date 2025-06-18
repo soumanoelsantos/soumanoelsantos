@@ -17,11 +17,10 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
   
   // Lista de todas as chaves de métricas que devem ser renderizadas como cards
   const metricKeys = [
-    'showLeads', 'showTeam',
     'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
-    'showFaltaReceita', 'showConversao', 'showDiariaReceita',
+    'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
     'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
-    'showHiperMetaReceita', 'showCallsDiarias', 'showFaltaReceitaSuper',
+    'showHiperMetaReceita', 'showFaltaReceitaSuper',
     'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
     'showQuantidadeVendas', 'showCashCollect'
@@ -98,7 +97,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <GrowthChart />;
   }
 
-  // Taxa de conversão - verificar múltiplas condições (corrigindo a condição)
+  // Taxa de conversão - verificar múltiplas condições
   if (itemKey === 'conversionRate') {
     if (!config.showMonthlyGoals || !config.showConversion) {
       console.log('Conversion rate card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showConversion:', config.showConversion);
@@ -108,7 +107,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <ConversionRateCard />;
   }
 
-  // Meta de faturamento - verificar múltiplas condições (corrigindo a condição)
+  // Meta de faturamento - verificar múltiplas condições
   if (itemKey === 'revenueGoal') {
     if (!config.showMonthlyGoals || !config.showMetaFaturamento) {
       console.log('Revenue goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showMetaFaturamento:', config.showMetaFaturamento);
@@ -118,7 +117,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <RevenueGoalCard />;
   }
 
-  // Meta de receita - verificar múltiplas condições (corrigindo a condição)
+  // Meta de receita - verificar múltiplas condições
   if (itemKey === 'salesGoal') {
     if (!config.showMonthlyGoals || !config.showMetaReceita) {
       console.log('Sales goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showMetaReceita:', config.showMetaReceita);

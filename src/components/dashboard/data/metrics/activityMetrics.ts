@@ -1,24 +1,24 @@
 
-import { Target, Users, DollarSign } from 'lucide-react';
+import { Target, DollarSign } from 'lucide-react';
 
 export const activityMetrics = [
   {
-    key: 'showConversao',
-    title: 'Conversão',
-    value: '22%',
-    description: 'Taxa de conversão atual',
-    icon: Target,
-    trend: '+2%',
-    color: 'text-green-600'
+    key: 'showDiariaReceita',
+    title: 'Diária de Receita',
+    value: 'R$ 1.950,00',
+    description: 'Receita média diária',
+    icon: DollarSign,
+    trend: '+8%',
+    color: 'text-purple-500'
   },
   {
-    key: 'showCallsDiarias',
-    title: 'Calls Diárias',
-    value: '25',
-    description: 'Chamadas realizadas hoje',
-    icon: Users,
+    key: 'showDiariaFaturamento',
+    title: 'Diária de Faturamento',
+    value: 'R$ 6.750,00',
+    description: 'Faturamento médio diário',
+    icon: DollarSign,
     trend: '+12%',
-    color: 'text-indigo-500'
+    color: 'text-green-500'
   },
   {
     key: 'showQuantidadeVendas',
