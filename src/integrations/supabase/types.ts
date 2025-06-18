@@ -103,6 +103,7 @@ export type Database = {
           id: string
           metrics_order: Json | null
           selected_goal_ids: Json | null
+          show_cac: boolean | null
           show_calls_diarias: boolean | null
           show_cash_collect: boolean | null
           show_charts: boolean | null
@@ -143,6 +144,7 @@ export type Database = {
           id?: string
           metrics_order?: Json | null
           selected_goal_ids?: Json | null
+          show_cac?: boolean | null
           show_calls_diarias?: boolean | null
           show_cash_collect?: boolean | null
           show_charts?: boolean | null
@@ -183,6 +185,7 @@ export type Database = {
           id?: string
           metrics_order?: Json | null
           selected_goal_ids?: Json | null
+          show_cac?: boolean | null
           show_calls_diarias?: boolean | null
           show_cash_collect?: boolean | null
           show_charts?: boolean | null
