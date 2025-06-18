@@ -42,6 +42,16 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     return children;
   };
 
+  const getParentNodes = (nodeId: string): string[] => {
+    const parents: string[] = [];
+    edges.forEach(edge => {
+      if (edge.target === nodeId) {
+        parents.push(edge.source);
+      }
+    });
+    return parents;
+  };
+
   const getDirectChildNodes = (nodeId: string): string[] => {
     return getChildNodes(nodeId);
   };
@@ -165,6 +175,67 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     ));
   };
 
+  // New node type changing functions
+  const changeNodeToMain = (nodeId: string) => {
+    // Remove all connections where this node is a target (remove parent connections)
+    setEdges(prev => prev.filter(edge => edge.target !== nodeId));
+    
+    // Update node color to indicate it's a main node
+    setNodes(prev => prev.map(node =>
+      node.id === nodeId
+        ? { ...node, data: { ...node.data, color: '#3b82f6' } }
+        : node
+    ));
+  };
+
+  const changeNodeToChild = (nodeId: string, newParentId: string) => {
+    // Remove existing parent connections
+    setEdges(prev => prev.filter(edge => edge.target !== nodeId));
+    
+    // Add new connection to the specified parent
+    const newEdge: MindMapEdge = {
+      id: `edge-${Date.now()}`,
+      source: newParentId,
+      target: nodeId
+    };
+    setEdges(prev => [...prev, newEdge]);
+    
+    // Update node color
+    setNodes(prev => prev.map(node =>
+      node.id === nodeId
+        ? { ...node, data: { ...node.data, color: '#10b981' } }
+        : node
+    ));
+  };
+
+  const changeNodeToGrandchild = (nodeId: string, newParentId: string) => {
+    // Same logic as child but with different color
+    setEdges(prev => prev.filter(edge => edge.target !== nodeId));
+    
+    const newEdge: MindMapEdge = {
+      id: `edge-${Date.now()}`,
+      source: newParentId,
+      target: nodeId
+    };
+    setEdges(prev => [...prev, newEdge]);
+    
+    // Update node color for grandchild
+    setNodes(prev => prev.map(node =>
+      node.id === nodeId
+        ? { ...node, data: { ...node.data, color: '#f59e0b' } }
+        : node
+    ));
+  };
+
+  const getAvailableParents = (nodeId: string) => {
+    // Get all nodes except the current node and its descendants
+    const descendants = getAllChildNodesRecursive(nodeId);
+    return nodes.filter(node => 
+      node.id !== nodeId && 
+      !descendants.includes(node.id)
+    );
+  };
+
   // New alignment functions
   const alignNodesHorizontally = (nodeIds: string[]) => {
     if (nodeIds.length < 2) return;
@@ -271,6 +342,11 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     removeConnection,
     toggleNodeVisibility,
     getConnectedNodes,
+    getParentNodes,
+    getAvailableParents,
+    changeNodeToMain,
+    changeNodeToChild,
+    changeNodeToGrandchild,
     alignNodesHorizontally,
     alignNodesVertically,
     distributeNodesHorizontally,

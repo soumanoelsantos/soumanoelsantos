@@ -9,6 +9,7 @@ import MindMapNode from './components/MindMapNode';
 import AddNodeDialog from './components/AddNodeDialog';
 import EditNodeDialog from './components/EditNodeDialog';
 import AlignmentToolbar from './components/AlignmentToolbar';
+import ChangeNodeTypeDialog from './components/ChangeNodeTypeDialog';
 
 interface MindMapCanvasProps {
   initialContent: MindMapContent;
@@ -29,6 +30,10 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     updateNodePosition,
     toggleNodeVisibility,
     getConnectedNodes,
+    getAvailableParents,
+    changeNodeToMain,
+    changeNodeToChild,
+    changeNodeToGrandchild,
     alignNodesHorizontally,
     alignNodesVertically,
     distributeNodesHorizontally,
@@ -43,6 +48,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [editingNode, setEditingNode] = useState<string | null>(null);
+  const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
   const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const [showAlignmentToolbar, setShowAlignmentToolbar] = useState(false);
 
@@ -64,6 +70,10 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setEditingNode(nodeId);
   };
 
+  const handleChangeNodeType = (nodeId: string) => {
+    setChangingNodeType(nodeId);
+  };
+
   const handleSaveEdit = (label: string) => {
     if (editingNode) {
       updateNodeLabel(editingNode, label);
@@ -75,6 +85,11 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     if (!editingNode) return '';
     const node = nodes.find(n => n.id === editingNode);
     return node?.data.label || '';
+  };
+
+  const getChangingNode = () => {
+    if (!changingNodeType) return null;
+    return nodes.find(n => n.id === changingNodeType) || null;
   };
 
   const getDirectChildNodes = (nodeId: string): string[] => {
@@ -183,6 +198,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
               onEdit={() => handleEditNode(node.id)}
               onDelete={() => deleteNode(node.id)}
               onToggleConnections={() => toggleNodeVisibility(node.id)}
+              onChangeType={() => handleChangeNodeType(node.id)}
             />
           );
         })}
@@ -215,6 +231,16 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         currentLabel={getEditingNodeLabel()}
         onClose={() => setEditingNode(null)}
         onSave={handleSaveEdit}
+      />
+
+      <Change 
+        isOpen={!!changingNodeType}
+        node={getChangingNode()}
+        availableParents={changingNodeType ? getAvailableParents(changingNodeType) : []}
+        onClose={() => setChangingNodeType(null)}
+        onChangeToMain={changeNodeToMain}
+        onChangeToChild={changeNodeToChild}
+        onChangeToGrandchild={changeNodeToGrandchild}
       />
     </div>
   );

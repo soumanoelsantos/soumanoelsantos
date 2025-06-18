@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit2, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Edit2, Trash2, Eye, EyeOff, Network } from 'lucide-react';
 import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
 
 interface MindMapNodeProps {
@@ -16,6 +16,7 @@ interface MindMapNodeProps {
   onEdit: () => void;
   onDelete: () => void;
   onToggleConnections: () => void;
+  onChangeType: () => void;
 }
 
 const MindMapNode = ({
@@ -28,7 +29,8 @@ const MindMapNode = ({
   onClick,
   onEdit,
   onDelete,
-  onToggleConnections
+  onToggleConnections,
+  onChangeType
 }: MindMapNodeProps) => {
   return (
     <div
@@ -77,7 +79,7 @@ const MindMapNode = ({
           </div>
           
           {isSelected && (
-            <div className="flex gap-1 mt-2">
+            <div className="flex gap-1 mt-2 flex-wrap">
               <Button
                 size="sm"
                 variant="outline"
@@ -85,8 +87,20 @@ const MindMapNode = ({
                   e.stopPropagation();
                   onEdit();
                 }}
+                title="Editar nó"
               >
                 <Edit2 className="h-3 w-3" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeType();
+                }}
+                title="Alterar tipo do nó"
+              >
+                <Network className="h-3 w-3" />
               </Button>
               <Button
                 size="sm"
@@ -95,6 +109,7 @@ const MindMapNode = ({
                   e.stopPropagation();
                   onDelete();
                 }}
+                title="Excluir nó"
               >
                 <Trash2 className="h-3 w-3" />
               </Button>
