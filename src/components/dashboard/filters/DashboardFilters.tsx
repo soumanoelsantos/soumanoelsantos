@@ -1,0 +1,62 @@
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Filter, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import DateRangeFilter from './DateRangeFilter';
+import SalespersonFilter from './SalespersonFilter';
+
+interface DashboardFiltersProps {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  selectedSalespeople: string[];
+  onDateChange: (startDate: Date | undefined, endDate: Date | undefined) => void;
+  onSalespeopleChange: (salespeople: string[]) => void;
+  onReset: () => void;
+}
+
+const DashboardFilters: React.FC<DashboardFiltersProps> = ({
+  startDate,
+  endDate,
+  selectedSalespeople,
+  onDateChange,
+  onSalespeopleChange,
+  onReset
+}) => {
+  return (
+    <Card className="mb-6">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filtros do Dashboard
+          </CardTitle>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onReset}
+            className="flex items-center gap-2"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Limpar Filtros
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <DateRangeFilter
+            startDate={startDate}
+            endDate={endDate}
+            onDateChange={onDateChange}
+          />
+          <SalespersonFilter
+            selectedSalespeople={selectedSalespeople}
+            onSelectionChange={onSalespeopleChange}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default DashboardFilters;
