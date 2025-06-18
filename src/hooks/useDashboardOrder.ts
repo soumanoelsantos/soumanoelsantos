@@ -5,7 +5,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
   const getOrderedItems = () => {
     console.log('Getting ordered items with config:', config);
     
-    // Lista de todas as chaves de métricas possíveis (removidas showSales, showTicketMedio)
+    // Lista de todas as chaves de métricas possíveis
     const allMetricKeys = [
       'showLeads', 'showConversion', 'showRevenue', 'showTeam',
       'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
@@ -46,7 +46,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       orderedItems.push('specificGoals');
     }
 
-    // Depois, adicionar métricas de cards
+    // Depois, adicionar métricas de cards APENAS as habilitadas
     let cardMetrics: string[] = [];
     
     // Se há uma ordem definida, usar ela como base

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
@@ -14,7 +15,7 @@ interface ItemRendererProps {
 export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) => {
   console.log('ItemRenderer - Processing key:', itemKey, 'Config value:', config[itemKey as keyof DashboardConfig]);
   
-  // Lista de todas as chaves de métricas que devem ser renderizadas como cards (removidas showSales, showTicketMedio)
+  // Lista de todas as chaves de métricas que devem ser renderizadas como cards
   const metricKeys = [
     'showLeads', 'showTeam',
     'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
@@ -31,70 +32,98 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     const isEnabled = config[itemKey as keyof DashboardConfig] as boolean;
     console.log(`Metric ${itemKey} is enabled:`, isEnabled);
     
-    if (isEnabled) {
-      const metrics = allMetricsCards.filter(m => m.key === itemKey);
-      console.log(`Found ${metrics.length} metrics for key ${itemKey}:`, metrics);
-      
-      return (
-        <>
-          {metrics.map((metric, index) => (
-            <Card key={`${metric.key}-${index}`} className="h-40 flex flex-col">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
-                <CardTitle className="text-xs font-medium text-gray-600">
-                  {metric.title}
-                </CardTitle>
-                <metric.icon className={`h-3 w-3 ${metric.color} flex-shrink-0`} />
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col justify-between p-3">
-                <div className="text-lg font-bold">{metric.value}</div>
-                <div className="mt-auto">
-                  <p className="text-xs text-gray-600 mt-1">
-                    {metric.description}
-                  </p>
-                  <div className="text-xs text-green-600 mt-2">
-                    {metric.trend} vs mês anterior
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </>
-      );
+    // Se não está habilitada, não renderizar nada
+    if (!isEnabled) {
+      console.log(`Metric ${itemKey} is disabled, not rendering`);
+      return null;
     }
+    
+    const metrics = allMetricsCards.filter(m => m.key === itemKey);
+    console.log(`Found ${metrics.length} metrics for key ${itemKey}:`, metrics);
+    
+    return (
+      <>
+        {metrics.map((metric, index) => (
+          <Card key={`${metric.key}-${index}`} className="h-40 flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
+              <CardTitle className="text-xs font-medium text-gray-600">
+                {metric.title}
+              </CardTitle>
+              <metric.icon className={`h-3 w-3 ${metric.color} flex-shrink-0`} />
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col justify-between p-3">
+              <div className="text-lg font-bold">{metric.value}</div>
+              <div className="mt-auto">
+                <p className="text-xs text-gray-600 mt-1">
+                  {metric.description}
+                </p>
+                <div className="text-xs text-green-600 mt-2">
+                  {metric.trend} vs mês anterior
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </>
+    );
   }
 
-  // Metas específicas
-  if (itemKey === 'specificGoals' && config.showSpecificGoals) {
+  // Metas específicas - verificar se está habilitado
+  if (itemKey === 'specificGoals') {
+    if (!config.showSpecificGoals) {
+      console.log('Specific goals is disabled, not rendering');
+      return null;
+    }
     console.log('Rendering specific goals cards');
     return <SpecificGoalsCards config={config} />;
   }
 
-  // Gráfico de vendas por mês
-  if (itemKey === 'salesChart' && config.showCharts) {
+  // Gráfico de vendas por mês - verificar se está habilitado
+  if (itemKey === 'salesChart') {
+    if (!config.showCharts) {
+      console.log('Charts are disabled, not rendering sales chart');
+      return null;
+    }
     console.log('Rendering sales chart');
     return <SalesChart />;
   }
 
-  // Gráfico de tendência de crescimento
-  if (itemKey === 'growthChart' && config.showCharts) {
+  // Gráfico de tendência de crescimento - verificar se está habilitado
+  if (itemKey === 'growthChart') {
+    if (!config.showCharts) {
+      console.log('Charts are disabled, not rendering growth chart');
+      return null;
+    }
     console.log('Rendering growth chart');
     return <GrowthChart />;
   }
 
-  // Taxa de conversão
-  if (itemKey === 'conversionRate' && config.showMonthlyGoals && config.showConversion) {
+  // Taxa de conversão - verificar múltiplas condições
+  if (itemKey === 'conversionRate') {
+    if (!config.showMonthlyGoals || !config.showConversion) {
+      console.log('Conversion rate card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showConversion:', config.showConversion);
+      return null;
+    }
     console.log('Rendering conversion rate card');
     return <ConversionRateCard />;
   }
 
-  // Meta de faturamento
-  if (itemKey === 'revenueGoal' && config.showMonthlyGoals && config.showRevenue) {
+  // Meta de faturamento - verificar múltiplas condições
+  if (itemKey === 'revenueGoal') {
+    if (!config.showMonthlyGoals || !config.showRevenue) {
+      console.log('Revenue goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showRevenue:', config.showRevenue);
+      return null;
+    }
     console.log('Rendering revenue goal card');
     return <RevenueGoalCard />;
   }
 
-  // Meta de receita
-  if (itemKey === 'salesGoal' && config.showMonthlyGoals && config.showRevenue) {
+  // Meta de receita - verificar múltiplas condições
+  if (itemKey === 'salesGoal') {
+    if (!config.showMonthlyGoals || !config.showRevenue) {
+      console.log('Sales goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showRevenue:', config.showRevenue);
+      return null;
+    }
     console.log('Rendering sales goal card');
     return <SalesGoalCard />;
   }
