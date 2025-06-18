@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from 'react';
 import { MindMapContent, MindMapNode, MindMapEdge } from '@/types/mindMap';
 
@@ -167,6 +165,97 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     ));
   };
 
+  // New alignment functions
+  const alignNodesHorizontally = (nodeIds: string[]) => {
+    if (nodeIds.length < 2) return;
+    
+    const nodesToAlign = nodes.filter(node => nodeIds.includes(node.id));
+    const averageY = nodesToAlign.reduce((sum, node) => sum + node.position.y, 0) / nodesToAlign.length;
+    
+    setNodes(prev => prev.map(node => 
+      nodeIds.includes(node.id) 
+        ? { ...node, position: { ...node.position, y: averageY } }
+        : node
+    ));
+  };
+
+  const alignNodesVertically = (nodeIds: string[]) => {
+    if (nodeIds.length < 2) return;
+    
+    const nodesToAlign = nodes.filter(node => nodeIds.includes(node.id));
+    const averageX = nodesToAlign.reduce((sum, node) => sum + node.position.x, 0) / nodesToAlign.length;
+    
+    setNodes(prev => prev.map(node => 
+      nodeIds.includes(node.id) 
+        ? { ...node, position: { ...node.position, x: averageX } }
+        : node
+    ));
+  };
+
+  const distributeNodesHorizontally = (nodeIds: string[]) => {
+    if (nodeIds.length < 3) return;
+    
+    const nodesToDistribute = nodes.filter(node => nodeIds.includes(node.id))
+      .sort((a, b) => a.position.x - b.position.x);
+    
+    const leftmost = nodesToDistribute[0].position.x;
+    const rightmost = nodesToDistribute[nodesToDistribute.length - 1].position.x;
+    const spacing = (rightmost - leftmost) / (nodesToDistribute.length - 1);
+    
+    setNodes(prev => prev.map(node => {
+      const index = nodesToDistribute.findIndex(n => n.id === node.id);
+      if (index !== -1) {
+        return { ...node, position: { ...node.position, x: leftmost + (index * spacing) } };
+      }
+      return node;
+    }));
+  };
+
+  const distributeNodesVertically = (nodeIds: string[]) => {
+    if (nodeIds.length < 3) return;
+    
+    const nodesToDistribute = nodes.filter(node => nodeIds.includes(node.id))
+      .sort((a, b) => a.position.y - b.position.y);
+    
+    const topmost = nodesToDistribute[0].position.y;
+    const bottommost = nodesToDistribute[nodesToDistribute.length - 1].position.y;
+    const spacing = (bottommost - topmost) / (nodesToDistribute.length - 1);
+    
+    setNodes(prev => prev.map(node => {
+      const index = nodesToDistribute.findIndex(n => n.id === node.id);
+      if (index !== -1) {
+        return { ...node, position: { ...node.position, y: topmost + (index * spacing) } };
+      }
+      return node;
+    }));
+  };
+
+  const arrangeInGrid = (nodeIds: string[], columns: number = 3) => {
+    if (nodeIds.length < 2) return;
+    
+    const nodesToArrange = nodes.filter(node => nodeIds.includes(node.id));
+    const rows = Math.ceil(nodesToArrange.length / columns);
+    const spacing = { x: 150, y: 100 };
+    const startX = 200;
+    const startY = 200;
+    
+    setNodes(prev => prev.map(node => {
+      const index = nodesToArrange.findIndex(n => n.id === node.id);
+      if (index !== -1) {
+        const row = Math.floor(index / columns);
+        const col = index % columns;
+        return { 
+          ...node, 
+          position: { 
+            x: startX + (col * spacing.x), 
+            y: startY + (row * spacing.y) 
+          } 
+        };
+      }
+      return node;
+    }));
+  };
+
   return {
     nodes,
     edges,
@@ -181,7 +270,11 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     addConnection,
     removeConnection,
     toggleNodeVisibility,
-    getConnectedNodes
+    getConnectedNodes,
+    alignNodesHorizontally,
+    alignNodesVertically,
+    distributeNodesHorizontally,
+    distributeNodesVertically,
+    arrangeInGrid
   };
 };
-

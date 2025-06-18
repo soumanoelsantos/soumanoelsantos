@@ -33,7 +33,7 @@ const MindMapNode = ({
   return (
     <div
       className={`absolute cursor-move select-none ${
-        isSelected ? 'ring-2 ring-blue-500' : ''
+        isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
       } ${isDragged ? 'z-50' : 'z-10'}`}
       style={{
         left: node.position.x,
@@ -43,7 +43,9 @@ const MindMapNode = ({
       onMouseDown={onMouseDown}
       onClick={onClick}
     >
-      <Card className="min-w-[120px] shadow-lg hover:shadow-xl transition-shadow relative">
+      <Card className={`min-w-[120px] shadow-lg hover:shadow-xl transition-all relative ${
+        isSelected ? 'border-blue-500 bg-blue-50' : ''
+      }`}>
         <CardContent className="p-3">
           <div className="flex items-center justify-between mb-2">
             <div
