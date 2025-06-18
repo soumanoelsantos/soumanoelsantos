@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { usePanAndZoom } from './hooks/usePanAndZoom';
 import { useAlignmentIndicator } from './hooks/useAlignmentIndicator';
+import { useCanvasInteractions } from './hooks/useCanvasInteractions';
 import MindMapToolbar from './components/MindMapToolbar';
-import MindMapEdges from './components/MindMapEdges';
-import MindMapNode from './components/MindMapNode';
-import AddNodeDialog from './components/AddNodeDialog';
-import EditNodeDialog from './components/EditNodeDialog';
 import AlignmentToolbar from './components/AlignmentToolbar';
-import ChangeNodeTypeDialog from './components/ChangeNodeTypeDialog';
-import AlignmentIndicator from './components/AlignmentIndicator';
+import CanvasContent from './components/CanvasContent';
+import DialogManager from './components/DialogManager';
 
 interface MindMapCanvasProps {
   initialContent: MindMapContent;
@@ -31,7 +29,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     updateNodeLabel,
     updateNodePosition,
     toggleNodeVisibility,
-    getConnectedNodes,
     getAvailableParents,
     changeNodeToMain,
     changeNodeToChild,
@@ -48,15 +45,27 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setSelectedNode
   });
 
-  const { panOffset, isPanning, handlePanStart, handleCanvasMouseDown } = usePanAndZoom();
+  const { panOffset, isPanning, handleCanvasMouseDown } = usePanAndZoom();
 
   const { alignmentLines, showAlignmentIndicator } = useAlignmentIndicator(nodes, updateNodePosition);
+
+  const {
+    selectedNodes,
+    setSelectedNodes,
+    showAlignmentToolbar,
+    setShowAlignmentToolbar,
+    handleNodeClick,
+    handleCanvasClick,
+    clearSelection
+  } = useCanvasInteractions({
+    setSelectedNode,
+    isPanning,
+    isDragging
+  });
 
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [editingNode, setEditingNode] = useState<string | null>(null);
   const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
-  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
-  const [showAlignmentToolbar, setShowAlignmentToolbar] = useState(false);
 
   const handleSave = async () => {
     console.log('Salvando mapa mental com conteúdo:', { nodes, edges });
@@ -80,57 +89,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setChangingNodeType(nodeId);
   };
 
-  const handleSaveEdit = (label: string) => {
-    if (editingNode) {
-      updateNodeLabel(editingNode, label);
-      setEditingNode(null);
-    }
-  };
-
-  const getEditingNodeLabel = () => {
-    if (!editingNode) return '';
-    const node = nodes.find(n => n.id === editingNode);
-    return node?.data.label || '';
-  };
-
-  const getChangingNode = () => {
-    if (!changingNodeType) return null;
-    return nodes.find(n => n.id === changingNodeType) || null;
-  };
-
-  const getDirectChildNodes = (nodeId: string): string[] => {
-    const children: string[] = [];
-    edges.forEach(edge => {
-      if (edge.source === nodeId) {
-        children.push(edge.target);
-      }
-    });
-    return children;
-  };
-
-  const handleNodeClick = (e: React.MouseEvent, nodeId: string) => {
-    e.stopPropagation();
-    
-    if (e.ctrlKey || e.metaKey) {
-      if (selectedNodes.includes(nodeId)) {
-        setSelectedNodes(prev => prev.filter(id => id !== nodeId));
-      } else {
-        setSelectedNodes(prev => [...prev, nodeId]);
-      }
-    } else {
-      setSelectedNode(nodeId);
-      setSelectedNodes([]);
-    }
-  };
-
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if (!isPanning && !isDragging) {
-      setSelectedNode(null);
-      setSelectedNodes([]);
-      setShowAlignmentToolbar(false);
-    }
-  };
-
   const handleAlignmentAction = (action: string) => {
     const nodesToAlign = selectedNodes.length > 0 ? selectedNodes : (selectedNode ? [selectedNode] : []);
     
@@ -152,11 +110,11 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
-  React.useEffect(() => {
+  useEffect(() => {
     setShowAlignmentToolbar(selectedNodes.length >= 2);
-  }, [selectedNodes]);
+  }, [selectedNodes, setShowAlignmentToolbar]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (draggedNode) {
       showAlignmentIndicator(draggedNode);
     }
@@ -177,46 +135,24 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         onMouseDown={handleCanvasMouseDown}
         onClick={handleCanvasClick}
       >
-        <div
-          className="absolute inset-0"
-          style={{
-            transform: `translate(${panOffset.x}px, ${panOffset.y}px)`,
-            transition: isPanning ? 'none' : 'transform 0.1s ease-out'
-          }}
-        >
-          <MindMapEdges 
-            nodes={nodes} 
-            edges={edges} 
-            hiddenNodes={hiddenNodes}
-          />
-
-          {visibleNodes.map(node => {
-            const directChildNodes = getDirectChildNodes(node.id);
-            const hasChildNodes = directChildNodes.length > 0;
-            const hasHiddenDirectChildren = directChildNodes.some(id => hiddenNodes.has(id));
-            const isNodeSelected = selectedNode === node.id || selectedNodes.includes(node.id);
-
-            return (
-              <MindMapNode
-                key={node.id}
-                node={node}
-                isSelected={isNodeSelected}
-                isDragged={draggedNode === node.id}
-                hasChildNodes={hasChildNodes}
-                hasHiddenDirectChildren={hasHiddenDirectChildren}
-                onMouseDown={(e) => handleMouseDown(e, node.id, node.position)}
-                onTouchStart={(e) => handleTouchStart(e, node.id, node.position)}
-                onClick={(e) => handleNodeClick(e, node.id)}
-                onEdit={() => handleEditNode(node.id)}
-                onDelete={() => deleteNode(node.id)}
-                onToggleConnections={() => toggleNodeVisibility(node.id)}
-                onChangeType={() => handleChangeNodeType(node.id)}
-              />
-            );
-          })}
-
-          <AlignmentIndicator lines={alignmentLines} />
-        </div>
+        <CanvasContent
+          nodes={nodes}
+          edges={edges}
+          selectedNode={selectedNode}
+          selectedNodes={selectedNodes}
+          hiddenNodes={hiddenNodes}
+          draggedNode={draggedNode}
+          alignmentLines={alignmentLines}
+          panOffset={panOffset}
+          isPanning={isPanning}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          onNodeClick={handleNodeClick}
+          onEditNode={handleEditNode}
+          onDeleteNode={deleteNode}
+          onToggleNodeVisibility={toggleNodeVisibility}
+          onChangeNodeType={handleChangeNodeType}
+        />
       </div>
 
       {showAlignmentToolbar && (
@@ -227,32 +163,22 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
           onDistributeHorizontally={distributeNodesHorizontally}
           onDistributeVertically={distributeNodesVertically}
           onArrangeInGrid={arrangeInGrid}
-          onClose={() => {
-            setSelectedNodes([]);
-            setShowAlignmentToolbar(false);
-          }}
+          onClose={clearSelection}
         />
       )}
 
-      <AddNodeDialog
-        isOpen={isAddingNode}
-        onClose={() => setIsAddingNode(false)}
-        onAdd={handleAddNode}
-        nodes={visibleNodes}
-      />
-
-      <EditNodeDialog
-        isOpen={!!editingNode}
-        currentLabel={getEditingNodeLabel()}
-        onClose={() => setEditingNode(null)}
-        onSave={handleSaveEdit}
-      />
-
-      <ChangeNodeTypeDialog 
-        isOpen={!!changingNodeType}
-        node={getChangingNode()}
-        availableParents={changingNodeType ? getAvailableParents(changingNodeType) : []}
-        onClose={() => setChangingNodeType(null)}
+      <DialogManager
+        isAddingNode={isAddingNode}
+        setIsAddingNode={setIsAddingNode}
+        editingNode={editingNode}
+        setEditingNode={setEditingNode}
+        changingNodeType={changingNodeType}
+        setChangingNodeType={setChangingNodeType}
+        visibleNodes={visibleNodes}
+        nodes={nodes}
+        onAddNode={handleAddNode}
+        onUpdateNodeLabel={updateNodeLabel}
+        getAvailableParents={getAvailableParents}
         onChangeToMain={changeNodeToMain}
         onChangeToChild={changeNodeToChild}
         onChangeToGrandchild={changeNodeToGrandchild}
