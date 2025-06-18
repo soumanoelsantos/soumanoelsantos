@@ -13,7 +13,7 @@ export const activityMetrics = [
   },
   {
     key: 'showDiariaFaturamento',
-    title: 'Diária de Faturamento',
+    title: 'Diário de Faturamento',
     value: 'R$ 6.750,00',
     description: 'Faturamento médio diário',
     icon: DollarSign,

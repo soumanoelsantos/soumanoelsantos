@@ -108,6 +108,7 @@ export type Database = {
           show_charts: boolean | null
           show_conversao: boolean | null
           show_conversion: boolean | null
+          show_diaria_faturamento: boolean | null
           show_diaria_receita: boolean | null
           show_falta_faturamento: boolean | null
           show_falta_faturamento_hiper: boolean | null
@@ -147,6 +148,7 @@ export type Database = {
           show_charts?: boolean | null
           show_conversao?: boolean | null
           show_conversion?: boolean | null
+          show_diaria_faturamento?: boolean | null
           show_diaria_receita?: boolean | null
           show_falta_faturamento?: boolean | null
           show_falta_faturamento_hiper?: boolean | null
@@ -186,6 +188,7 @@ export type Database = {
           show_charts?: boolean | null
           show_conversao?: boolean | null
           show_conversion?: boolean | null
+          show_diaria_faturamento?: boolean | null
           show_diaria_receita?: boolean | null
           show_falta_faturamento?: boolean | null
           show_falta_faturamento_hiper?: boolean | null

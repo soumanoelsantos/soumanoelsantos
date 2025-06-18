@@ -19,14 +19,5 @@ export const revenueMetrics = [
     icon: DollarSign,
     trend: '+12%',
     color: 'text-green-500'
-  },
-  {
-    key: 'showDiariaFaturamento',
-    title: 'Diário de Faturamento',
-    value: 'R$ 6.750,00',
-    description: 'Faturamento médio diário',
-    icon: DollarSign,
-    trend: '+12%',
-    color: 'text-green-500'
   }
 ];
