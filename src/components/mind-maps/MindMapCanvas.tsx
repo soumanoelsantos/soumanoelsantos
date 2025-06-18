@@ -132,18 +132,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         </div>
       </div>
 
-      {showAlignmentToolbar && selectedNodes.length >= 2 && (
-        <AlignmentToolbar
-          selectedNodes={selectedNodes}
-          onAlignHorizontally={alignNodesHorizontally}
-          onAlignVertically={alignNodesVertically}
-          onDistributeHorizontally={distributeNodesHorizontally}
-          onDistributeVertically={distributeNodesVertically}
-          onArrangeInGrid={arrangeInGrid}
-          onClose={clearSelection}
-        />
-      )}
-
       <DialogManager
         isAddingNode={isAddingNode}
         setIsAddingNode={setIsAddingNode}
@@ -153,6 +141,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         setChangingNodeType={setChangingNodeType}
         visibleNodes={visibleNodes}
         nodes={nodes}
+        edges={edges}
         onAddNode={handleAddNode}
         onUpdateNodeLabel={updateNodeLabel}
         getAvailableParents={getAvailableParents}

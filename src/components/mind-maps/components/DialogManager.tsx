@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MindMapNode } from '@/types/mindMap';
+import { MindMapNode, MindMapEdge } from '@/types/mindMap';
 import AddNodeDialog from './AddNodeDialog';
 import EditNodeDialog from './EditNodeDialog';
 import ChangeNodeTypeDialog from './ChangeNodeTypeDialog';
@@ -14,6 +14,7 @@ interface DialogManagerProps {
   setChangingNodeType: (value: string | null) => void;
   visibleNodes: MindMapNode[];
   nodes: MindMapNode[];
+  edges: MindMapEdge[];
   onAddNode: (label: string, connectToNodeId?: string) => void;
   onUpdateNodeLabel: (nodeId: string, label: string) => void;
   getAvailableParents: (nodeId: string) => MindMapNode[];
@@ -31,6 +32,7 @@ const DialogManager = ({
   setChangingNodeType,
   visibleNodes,
   nodes,
+  edges,
   onAddNode,
   onUpdateNodeLabel,
   getAvailableParents,
@@ -63,6 +65,7 @@ const DialogManager = ({
         onClose={() => setIsAddingNode(false)}
         onAdd={onAddNode}
         nodes={visibleNodes}
+        edges={edges}
       />
 
       <EditNodeDialog
