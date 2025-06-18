@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -54,7 +55,7 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
       title: 'Atividades e Performance',
       metrics: [
         { key: 'showDiariaReceita', label: 'Diária de Receita' },
-        { key: 'showCallsDiarias', label: 'Calls Diárias' },
+        { key: 'showDiariaFaturamento', label: 'Diária de Faturamento' },
         { key: 'showCashCollect', label: 'Cash Collect' }
       ]
     }
