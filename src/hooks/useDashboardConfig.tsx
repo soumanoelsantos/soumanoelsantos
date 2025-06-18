@@ -63,7 +63,7 @@ export const useDashboardConfig = () => {
       
       // Only update local state after successful save
       setConfig(newConfig);
-      console.log('🔵 useDashboardConfig - Local state updated after successful save');
+      console.log('🟢 useDashboardConfig - Local state updated after successful save');
       
       toast({
         title: "Configurações salvas!",

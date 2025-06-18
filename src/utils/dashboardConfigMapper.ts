@@ -76,11 +76,13 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
   };
 
   console.log('🟢 dashboardConfigMapper - Final mapped config:', mappedConfig);
+  console.log('🔍 dashboardConfigMapper - Super Meta Faturamento value:', mappedConfig.showSuperMetaFaturamento);
   return mappedConfig;
 };
 
 export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => {
   console.log('🔵 dashboardConfigMapper - Mapping config to database format:', config);
+  console.log('🔍 dashboardConfigMapper - Super Meta Faturamento input value:', config.showSuperMetaFaturamento);
   
   const databaseData = {
     user_id: userId,
@@ -120,5 +122,6 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
   };
 
   console.log('🟢 dashboardConfigMapper - Final database data:', databaseData);
+  console.log('🔍 dashboardConfigMapper - Super Meta Faturamento output value:', databaseData.show_super_meta_faturamento);
   return databaseData;
 };
