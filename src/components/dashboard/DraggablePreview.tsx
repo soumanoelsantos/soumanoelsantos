@@ -6,7 +6,7 @@ import { GripVertical } from 'lucide-react';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
 
 interface MetricItem {
-  key: keyof DashboardConfig | 'charts' | 'salesChart' | 'growthChart' | 'conversionRate' | 'revenueGoal' | 'salesGoal';
+  key: keyof DashboardConfig | 'charts' | 'salesChart' | 'growthChart' | 'specificGoals';
   title: string;
   enabled: boolean;
   isChart?: boolean;
@@ -28,34 +28,34 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
 
   // Lista de todas as chaves de métricas que podem aparecer
   const metricConfigKeys = [
-    'showSales', 'showLeads', 'showTicketMedio', 'showTeam',
+    'showConversion', 'showRevenue',
     'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
-    'showFaltaReceita', 'showConversao', 'showDiariaReceita',
+    'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
     'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
-    'showHiperMetaReceita', 'showCallsDiarias', 'showFaltaReceitaSuper',
-    'showFaltaReceitaHiper', 'showMetaFaturamento', 'showMetaReceita',
-    'showFaturamento', 'showReceita', 'showQuantidadeVendas', 'showCashCollect'
+    'showHiperMetaReceita', 'showFaltaReceitaSuper',
+    'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
+    'showQuantidadeVendas', 'showCashCollect'
   ];
 
   // Nomes amigáveis para as métricas
   const metricTitles: { [key: string]: string[] } = {
-    'showSales': ['Total de Vendas', 'Número de Vendas'],
-    'showLeads': ['Leads Gerados'],
-    'showTicketMedio': ['Ticket Médio'],
-    'showTeam': ['Performance da Equipe'],
+    'showConversion': ['Taxa de Conversão'],
+    'showRevenue': ['Receita'],
     'showTicketFaturamento': ['Ticket Faturamento'],
     'showTicketReceita': ['Ticket Receita'],
     'showFaltaFaturamento': ['Falta de Faturamento'],
     'showFaltaReceita': ['Falta de Receita'],
-    'showConversao': ['Conversão'],
     'showDiariaReceita': ['Diária de Receita'],
+    'showDiariaFaturamento': ['Diária de Faturamento'],
     'showSuperMetaFaturamento': ['Super Meta Faturamento'],
     'showSuperMetaReceita': ['Super Meta Receita'],
     'showHiperMetaFaturamento': ['Hiper Meta Faturamento'],
     'showHiperMetaReceita': ['Hiper Meta Receita'],
-    'showCallsDiarias': ['Calls Diárias'],
     'showFaltaReceitaSuper': ['Falta Receita (Super)'],
     'showFaltaReceitaHiper': ['Falta Receita (Hiper)'],
+    'showFaltaFaturamentoSuper': ['Falta Faturamento (Super)'],
+    'showFaltaFaturamentoHiper': ['Falta Faturamento (Hiper)'],
     'showMetaFaturamento': ['Meta Faturamento'],
     'showMetaReceita': ['Meta Receita'],
     'showFaturamento': ['Faturamento'],
@@ -74,16 +74,9 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
     }
   });
 
-  // Metas mensais
-  if (config.showMonthlyGoals && config.showConversion) {
-    allMetrics.push({ key: 'conversionRate', title: 'Taxa de Conversão', enabled: true });
-  }
-
-  if (config.showMonthlyGoals && config.showRevenue) {
-    allMetrics.push(
-      { key: 'revenueGoal', title: 'Meta de Faturamento', enabled: true },
-      { key: 'salesGoal', title: 'Meta de Receita', enabled: true }
-    );
+  // Metas específicas se habilitadas
+  if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
+    allMetrics.push({ key: 'specificGoals', title: 'Metas Específicas', enabled: true });
   }
 
   // Gráficos

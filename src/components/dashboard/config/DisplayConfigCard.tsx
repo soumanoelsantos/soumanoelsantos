@@ -26,15 +26,6 @@ const DisplayConfigCard: React.FC<DisplayConfigCardProps> = ({ config, onConfigC
           />
           <Label htmlFor="showCharts">Exibir Gráficos</Label>
         </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="showMonthlyGoals"
-            checked={config.showMonthlyGoals}
-            onCheckedChange={(checked) => onConfigChange('showMonthlyGoals', checked as boolean)}
-          />
-          <Label htmlFor="showMonthlyGoals">Metas Mensais</Label>
-        </div>
       </CardContent>
     </Card>
   );
