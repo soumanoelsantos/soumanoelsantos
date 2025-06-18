@@ -14,7 +14,7 @@ export const mindMapService = {
     if (error) throw error;
     return (data || []).map(item => ({
       ...item,
-      content: item.content as MindMapContent
+      content: item.content as unknown as MindMapContent
     }));
   },
 
@@ -33,7 +33,7 @@ export const mindMapService = {
     }
     return {
       ...data,
-      content: data.content as MindMapContent
+      content: data.content as unknown as MindMapContent
     };
   },
 
@@ -51,7 +51,7 @@ export const mindMapService = {
     }
     return {
       ...data,
-      content: data.content as MindMapContent
+      content: data.content as unknown as MindMapContent
     };
   },
 
@@ -62,7 +62,7 @@ export const mindMapService = {
       .insert({
         user_id: userId,
         title: mindMapData.title,
-        content: mindMapData.content || { nodes: [], edges: [] },
+        content: (mindMapData.content || { nodes: [], edges: [] }) as any,
         is_public: true // Tornar público por padrão para permitir compartilhamento
       })
       .select()
@@ -71,13 +71,16 @@ export const mindMapService = {
     if (error) throw error;
     return {
       ...data,
-      content: data.content as MindMapContent
+      content: data.content as unknown as MindMapContent
     };
   },
 
   // Atualizar mapa
   async updateMindMap(id: string, updates: UpdateMindMapData): Promise<MindMap> {
     const updateData: any = { ...updates };
+    if (updateData.content) {
+      updateData.content = updateData.content as any;
+    }
     
     const { data, error } = await supabase
       .from('mind_maps')
@@ -89,13 +92,16 @@ export const mindMapService = {
     if (error) throw error;
     return {
       ...data,
-      content: data.content as MindMapContent
+      content: data.content as unknown as MindMapContent
     };
   },
 
   // Atualizar mapa por token (para usuários com link)
   async updateMindMapByToken(shareToken: string, updates: UpdateMindMapData): Promise<MindMap> {
     const updateData: any = { ...updates };
+    if (updateData.content) {
+      updateData.content = updateData.content as any;
+    }
     
     const { data, error } = await supabase
       .from('mind_maps')
@@ -108,7 +114,7 @@ export const mindMapService = {
     if (error) throw error;
     return {
       ...data,
-      content: data.content as MindMapContent
+      content: data.content as unknown as MindMapContent
     };
   },
 
