@@ -4,12 +4,7 @@ import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardOrder } from '@/hooks/useDashboardOrder';
 import { useDashboardFilters } from '@/hooks/useDashboardFilters';
 import DashboardFilters from './filters/DashboardFilters';
-import TicketsValuesSection from './sections/TicketsValuesSection';
-import GoalsProjectionsSection from './sections/GoalsProjectionsSection';
-import GapsSection from './sections/GapsSection';
-import ActivitiesPerformanceSection from './sections/ActivitiesPerformanceSection';
-import SpecificGoalsSection from './sections/SpecificGoalsSection';
-import ChartsSection from './sections/ChartsSection';
+import { ItemRenderer } from './renderers/ItemRenderer';
 
 const DashboardMetrics = () => {
   const { config } = useDashboardConfig();
@@ -38,17 +33,18 @@ const DashboardMetrics = () => {
         onReset={resetFilters}
       />
       
-      <TicketsValuesSection config={config} orderedItems={orderedItems} />
-      
-      <GoalsProjectionsSection config={config} orderedItems={orderedItems} />
-      
-      <GapsSection config={config} orderedItems={orderedItems} />
-      
-      <ActivitiesPerformanceSection config={config} orderedItems={orderedItems} />
-      
-      <SpecificGoalsSection config={config} orderedItems={orderedItems} />
-      
-      <ChartsSection config={config} orderedItems={orderedItems} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        {orderedItems.map((key, index) => {
+          const components = <ItemRenderer itemKey={key} config={config} />;
+          if (!components) return null;
+          
+          return (
+            <React.Fragment key={`${key}-${index}`}>
+              {components}
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -74,7 +74,11 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
       return null;
     }
     console.log('Rendering specific goals cards');
-    return <SpecificGoalsCards config={config} />;
+    return (
+      <div className="col-span-full">
+        <SpecificGoalsCards config={config} />
+      </div>
+    );
   }
 
   // Gráfico de vendas por mês - verificar se está habilitado
@@ -84,7 +88,11 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
       return null;
     }
     console.log('Rendering sales chart');
-    return <SalesChart />;
+    return (
+      <div className="col-span-full lg:col-span-3">
+        <SalesChart />
+      </div>
+    );
   }
 
   // Gráfico de tendência de crescimento - verificar se está habilitado
@@ -94,7 +102,11 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
       return null;
     }
     console.log('Rendering growth chart');
-    return <GrowthChart />;
+    return (
+      <div className="col-span-full lg:col-span-3">
+        <GrowthChart />
+      </div>
+    );
   }
 
   // Taxa de conversão - verificar múltiplas condições
