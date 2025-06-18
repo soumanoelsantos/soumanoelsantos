@@ -24,8 +24,8 @@ const DashboardFilters: React.FC<DashboardFiltersProps> = ({
   onReset
 }) => {
   return (
-    <Card className="mb-6">
-      <CardHeader className="pb-4">
+    <Card className="mb-6 bg-white border border-gray-200 shadow-sm">
+      <CardHeader className="pb-4 bg-white">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
@@ -35,14 +35,14 @@ const DashboardFilters: React.FC<DashboardFiltersProps> = ({
             variant="outline"
             size="sm"
             onClick={onReset}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-white hover:bg-gray-50"
           >
             <RotateCcw className="h-4 w-4" />
             Limpar Filtros
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="bg-white">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <DateRangeFilter
             startDate={startDate}
