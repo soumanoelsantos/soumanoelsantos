@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { MindMap, CreateMindMapData, UpdateMindMapData } from '@/types/mindMap';
+import { MindMap, CreateMindMapData, UpdateMindMapData, MindMapContent } from '@/types/mindMap';
 
 export const mindMapService = {
   // Buscar todos os mapas do usuário
@@ -12,7 +12,10 @@ export const mindMapService = {
       .order('updated_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return (data || []).map(item => ({
+      ...item,
+      content: item.content as MindMapContent
+    }));
   },
 
   // Buscar mapa por share_token (para acesso público)
@@ -28,7 +31,10 @@ export const mindMapService = {
       if (error.code === 'PGRST116') return null;
       throw error;
     }
-    return data;
+    return {
+      ...data,
+      content: data.content as MindMapContent
+    };
   },
 
   // Buscar mapa por ID (para o owner)
@@ -43,51 +49,67 @@ export const mindMapService = {
       if (error.code === 'PGRST116') return null;
       throw error;
     }
-    return data;
+    return {
+      ...data,
+      content: data.content as MindMapContent
+    };
   },
 
   // Criar novo mapa
   async createMindMap(userId: string, mindMapData: CreateMindMapData): Promise<MindMap> {
     const { data, error } = await supabase
       .from('mind_maps')
-      .insert([{
+      .insert({
         user_id: userId,
         title: mindMapData.title,
         content: mindMapData.content || { nodes: [], edges: [] },
         is_public: true // Tornar público por padrão para permitir compartilhamento
-      }])
+      })
       .select()
       .single();
 
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      content: data.content as MindMapContent
+    };
   },
 
   // Atualizar mapa
   async updateMindMap(id: string, updates: UpdateMindMapData): Promise<MindMap> {
+    const updateData: any = { ...updates };
+    
     const { data, error } = await supabase
       .from('mind_maps')
-      .update(updates)
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
 
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      content: data.content as MindMapContent
+    };
   },
 
   // Atualizar mapa por token (para usuários com link)
   async updateMindMapByToken(shareToken: string, updates: UpdateMindMapData): Promise<MindMap> {
+    const updateData: any = { ...updates };
+    
     const { data, error } = await supabase
       .from('mind_maps')
-      .update(updates)
+      .update(updateData)
       .eq('share_token', shareToken)
       .eq('is_public', true)
       .select()
       .single();
 
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      content: data.content as MindMapContent
+    };
   },
 
   // Deletar mapa
