@@ -69,6 +69,16 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     return node?.data.label || '';
   };
 
+  const getChildNodes = (nodeId: string): string[] => {
+    const children: string[] = [];
+    edges.forEach(edge => {
+      if (edge.source === nodeId) {
+        children.push(edge.target);
+      }
+    });
+    return children;
+  };
+
   // Filter visible nodes
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
@@ -93,9 +103,9 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         />
 
         {visibleNodes.map(node => {
-          const connectedNodes = getConnectedNodes(node.id);
-          const hasConnections = connectedNodes.length > 0;
-          const hasHiddenConnections = connectedNodes.some(id => hiddenNodes.has(id));
+          const childNodes = getChildNodes(node.id);
+          const hasChildNodes = childNodes.length > 0;
+          const hasHiddenChildren = childNodes.some(id => hiddenNodes.has(id));
 
           return (
             <MindMapNode
@@ -103,8 +113,8 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
               node={node}
               isSelected={selectedNode === node.id}
               isDragged={draggedNode === node.id}
-              hasConnections={hasConnections}
-              hasHiddenConnections={hasHiddenConnections}
+              hasChildNodes={hasChildNodes}
+              hasHiddenChildren={hasHiddenChildren}
               onMouseDown={(e) => handleMouseDown(e, node.id, node.position)}
               onClick={(e) => {
                 e.stopPropagation();

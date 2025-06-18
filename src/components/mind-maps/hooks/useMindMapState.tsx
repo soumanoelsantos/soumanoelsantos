@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MindMapContent, MindMapNode, MindMapEdge } from '@/types/mindMap';
 
@@ -33,35 +32,45 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     return connected;
   };
 
-  const getAllConnectedNodesRecursive = (nodeId: string, visited = new Set<string>()): string[] => {
+  const getChildNodes = (nodeId: string): string[] => {
+    const children: string[] = [];
+    edges.forEach(edge => {
+      if (edge.source === nodeId) {
+        children.push(edge.target);
+      }
+    });
+    return children;
+  };
+
+  const getAllChildNodesRecursive = (nodeId: string, visited = new Set<string>()): string[] => {
     if (visited.has(nodeId)) return [];
     
     visited.add(nodeId);
-    const directConnections = getConnectedNodes(nodeId);
-    let allConnected = [...directConnections];
+    const directChildren = getChildNodes(nodeId);
+    let allChildren = [...directChildren];
     
-    directConnections.forEach(connectedId => {
-      if (!visited.has(connectedId)) {
-        allConnected = [...allConnected, ...getAllConnectedNodesRecursive(connectedId, visited)];
+    directChildren.forEach(childId => {
+      if (!visited.has(childId)) {
+        allChildren = [...allChildren, ...getAllChildNodesRecursive(childId, visited)];
       }
     });
     
-    return [...new Set(allConnected)]; // Remove duplicates
+    return [...new Set(allChildren)]; // Remove duplicates
   };
 
   const toggleNodeVisibility = (nodeId: string) => {
-    const allConnectedNodes = getAllConnectedNodesRecursive(nodeId);
+    const allChildNodes = getAllChildNodesRecursive(nodeId);
     const newHiddenNodes = new Set(hiddenNodes);
     
-    // Check if any connected nodes are currently hidden
-    const hasHiddenConnected = allConnectedNodes.some(id => hiddenNodes.has(id));
+    // Check if any child nodes are currently hidden
+    const hasHiddenChildren = allChildNodes.some(id => hiddenNodes.has(id));
     
-    if (hasHiddenConnected) {
-      // Show all connected nodes in the chain
-      allConnectedNodes.forEach(id => newHiddenNodes.delete(id));
+    if (hasHiddenChildren) {
+      // Show all child nodes
+      allChildNodes.forEach(id => newHiddenNodes.delete(id));
     } else {
-      // Hide all connected nodes in the chain except the main one
-      allConnectedNodes.forEach(id => newHiddenNodes.add(id));
+      // Hide all child nodes
+      allChildNodes.forEach(id => newHiddenNodes.add(id));
     }
     
     setHiddenNodes(newHiddenNodes);

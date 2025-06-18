@@ -9,8 +9,8 @@ interface MindMapNodeProps {
   node: MindMapNodeType;
   isSelected: boolean;
   isDragged: boolean;
-  hasConnections: boolean;
-  hasHiddenConnections: boolean;
+  hasChildNodes: boolean;
+  hasHiddenChildren: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onClick: (e: React.MouseEvent) => void;
   onEdit: () => void;
@@ -22,8 +22,8 @@ const MindMapNode = ({
   node,
   isSelected,
   isDragged,
-  hasConnections,
-  hasHiddenConnections,
+  hasChildNodes,
+  hasHiddenChildren,
   onMouseDown,
   onClick,
   onEdit,
@@ -50,7 +50,7 @@ const MindMapNode = ({
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: node.data.color }}
             />
-            {hasConnections && (
+            {hasChildNodes && (
               <Button
                 size="sm"
                 variant="ghost"
@@ -59,9 +59,9 @@ const MindMapNode = ({
                   e.stopPropagation();
                   onToggleConnections();
                 }}
-                title={hasHiddenConnections ? "Mostrar toda a cadeia conectada" : "Ocultar toda a cadeia conectada"}
+                title={hasHiddenChildren ? "Mostrar nós filhos" : "Ocultar nós filhos"}
               >
-                {hasHiddenConnections ? (
+                {hasHiddenChildren ? (
                   <Eye className="h-3 w-3" />
                 ) : (
                   <EyeOff className="h-3 w-3" />
