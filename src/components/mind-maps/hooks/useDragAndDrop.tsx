@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect, useRef } from 'react';
 
 interface UseDragAndDropProps {
@@ -49,16 +50,8 @@ export const useDragAndDrop = ({ updateNodePosition, setSelectedNode }: UseDragA
     const newX = mouseX - dragOffset.x;
     const newY = mouseY - dragOffset.y;
     
-    // Add boundaries to keep nodes within reasonable area
-    const minX = 60;
-    const minY = 60;
-    const maxX = Math.max(800, canvasRect.width - 60);
-    const maxY = Math.max(600, canvasRect.height - 60);
-    
-    const limitedX = Math.max(minX, Math.min(newX, maxX));
-    const limitedY = Math.max(minY, Math.min(newY, maxY));
-    
-    updateNodePosition(draggedNode, { x: limitedX, y: limitedY });
+    // Removed boundaries to allow free movement across larger canvas
+    updateNodePosition(draggedNode, { x: newX, y: newY });
   }, [draggedNode, dragOffset, updateNodePosition, isDragging]);
 
   const handleMouseUp = useCallback(() => {
@@ -110,15 +103,8 @@ export const useDragAndDrop = ({ updateNodePosition, setSelectedNode }: UseDragA
     const newX = touchX - dragOffset.x;
     const newY = touchY - dragOffset.y;
     
-    const minX = 60;
-    const minY = 60;
-    const maxX = Math.max(800, canvasRect.width - 60);
-    const maxY = Math.max(600, canvasRect.height - 60);
-    
-    const limitedX = Math.max(minX, Math.min(newX, maxX));
-    const limitedY = Math.max(minY, Math.min(newY, maxY));
-    
-    updateNodePosition(draggedNode, { x: limitedX, y: limitedY });
+    // Removed boundaries to allow free movement
+    updateNodePosition(draggedNode, { x: newX, y: newY });
   }, [draggedNode, dragOffset, updateNodePosition, isDragging]);
 
   const handleTouchEnd = useCallback(() => {

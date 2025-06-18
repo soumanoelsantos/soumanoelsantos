@@ -3,16 +3,6 @@ import React from 'react';
 import { MindMapNode, MindMapEdge } from '@/types/mindMap';
 import MindMapEdges from './MindMapEdges';
 import NodesRenderer from './NodesRenderer';
-import AlignmentIndicator from './AlignmentIndicator';
-
-interface AlignmentLine {
-  id: string;
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  type: 'horizontal' | 'vertical';
-}
 
 interface CanvasContentProps {
   nodes: MindMapNode[];
@@ -21,7 +11,7 @@ interface CanvasContentProps {
   selectedNodes: string[];
   hiddenNodes: Set<string>;
   draggedNode: string | null;
-  alignmentLines: AlignmentLine[];
+  alignmentLines: any[];
   panOffset: { x: number; y: number };
   isPanning: boolean;
   onMouseDown: (e: React.MouseEvent, nodeId: string, position: { x: number; y: number }) => void;
@@ -40,9 +30,6 @@ const CanvasContent = ({
   selectedNodes,
   hiddenNodes,
   draggedNode,
-  alignmentLines,
-  panOffset,
-  isPanning,
   onMouseDown,
   onTouchStart,
   onNodeClick,
@@ -54,13 +41,7 @@ const CanvasContent = ({
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
   return (
-    <div
-      className="absolute inset-0"
-      style={{
-        transform: `translate(${panOffset.x}px, ${panOffset.y}px)`,
-        transition: isPanning ? 'none' : 'transform 0.1s ease-out'
-      }}
-    >
+    <div className="absolute inset-0">
       <MindMapEdges 
         nodes={nodes} 
         edges={edges} 
@@ -82,8 +63,6 @@ const CanvasContent = ({
         onToggleNodeVisibility={onToggleNodeVisibility}
         onChangeNodeType={onChangeNodeType}
       />
-
-      <AlignmentIndicator lines={alignmentLines} />
     </div>
   );
 };

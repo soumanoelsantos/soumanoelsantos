@@ -1,10 +1,8 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { usePanAndZoom } from './hooks/usePanAndZoom';
-import { useAlignmentIndicator } from './hooks/useAlignmentIndicator';
 import { useCanvasInteractions } from './hooks/useCanvasInteractions';
 import MindMapToolbar from './components/MindMapToolbar';
 import AlignmentToolbar from './components/AlignmentToolbar';
@@ -47,8 +45,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const { panOffset, isPanning, handleCanvasMouseDown } = usePanAndZoom();
 
-  const { alignmentLines, showAlignmentIndicator } = useAlignmentIndicator(nodes, updateNodePosition);
-
   const {
     selectedNodes,
     setSelectedNodes,
@@ -89,36 +85,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setChangingNodeType(nodeId);
   };
 
-  const handleAlignmentAction = (action: string) => {
-    const nodesToAlign = selectedNodes.length > 0 ? selectedNodes : (selectedNode ? [selectedNode] : []);
-    
-    switch (action) {
-      case 'horizontal':
-        alignNodesHorizontally(nodesToAlign);
-        break;
-      case 'vertical':
-        alignNodesVertically(nodesToAlign);
-        break;
-      case 'distributeH':
-        distributeNodesHorizontally(nodesToAlign);
-        break;
-      case 'distributeV':
-        distributeNodesVertically(nodesToAlign);
-        break;
-    }
-  };
-
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
-
-  useEffect(() => {
-    setShowAlignmentToolbar(selectedNodes.length >= 2);
-  }, [selectedNodes, setShowAlignmentToolbar]);
-
-  useEffect(() => {
-    if (draggedNode) {
-      showAlignmentIndicator(draggedNode);
-    }
-  }, [draggedNode, showAlignmentIndicator]);
 
   return (
     <div className="relative w-full h-full bg-white">
@@ -130,32 +97,42 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
       <div 
         ref={canvasRef}
-        className="w-full h-full relative overflow-hidden cursor-grab active:cursor-grabbing"
-        style={{ minHeight: '600px' }}
+        className="w-full h-full relative overflow-auto cursor-grab active:cursor-grabbing"
+        style={{ minHeight: '600px', minWidth: '100%' }}
         onMouseDown={handleCanvasMouseDown}
         onClick={handleCanvasClick}
       >
-        <CanvasContent
-          nodes={nodes}
-          edges={edges}
-          selectedNode={selectedNode}
-          selectedNodes={selectedNodes}
-          hiddenNodes={hiddenNodes}
-          draggedNode={draggedNode}
-          alignmentLines={alignmentLines}
-          panOffset={panOffset}
-          isPanning={isPanning}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onNodeClick={handleNodeClick}
-          onEditNode={handleEditNode}
-          onDeleteNode={deleteNode}
-          onToggleNodeVisibility={toggleNodeVisibility}
-          onChangeNodeType={handleChangeNodeType}
-        />
+        <div 
+          className="relative"
+          style={{ 
+            minWidth: '200vw', 
+            minHeight: '200vh',
+            transform: `translate(${panOffset.x}px, ${panOffset.y}px)`,
+            transition: isPanning ? 'none' : 'transform 0.1s ease-out'
+          }}
+        >
+          <CanvasContent
+            nodes={nodes}
+            edges={edges}
+            selectedNode={selectedNode}
+            selectedNodes={selectedNodes}
+            hiddenNodes={hiddenNodes}
+            draggedNode={draggedNode}
+            alignmentLines={[]}
+            panOffset={{ x: 0, y: 0 }}
+            isPanning={isPanning}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            onNodeClick={handleNodeClick}
+            onEditNode={handleEditNode}
+            onDeleteNode={deleteNode}
+            onToggleNodeVisibility={toggleNodeVisibility}
+            onChangeNodeType={handleChangeNodeType}
+          />
+        </div>
       </div>
 
-      {showAlignmentToolbar && (
+      {showAlignmentToolbar && selectedNodes.length >= 2 && (
         <AlignmentToolbar
           selectedNodes={selectedNodes}
           onAlignHorizontally={alignNodesHorizontally}
