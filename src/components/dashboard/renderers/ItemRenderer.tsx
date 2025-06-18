@@ -98,7 +98,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <GrowthChart />;
   }
 
-  // Taxa de conversão - verificar múltiplas condições
+  // Taxa de conversão - verificar múltiplas condições (corrigindo a condição)
   if (itemKey === 'conversionRate') {
     if (!config.showMonthlyGoals || !config.showConversion) {
       console.log('Conversion rate card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showConversion:', config.showConversion);
@@ -108,20 +108,20 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <ConversionRateCard />;
   }
 
-  // Meta de faturamento - verificar múltiplas condições
+  // Meta de faturamento - verificar múltiplas condições (corrigindo a condição)
   if (itemKey === 'revenueGoal') {
-    if (!config.showMonthlyGoals || !config.showRevenue) {
-      console.log('Revenue goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showRevenue:', config.showRevenue);
+    if (!config.showMonthlyGoals || !config.showMetaFaturamento) {
+      console.log('Revenue goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showMetaFaturamento:', config.showMetaFaturamento);
       return null;
     }
     console.log('Rendering revenue goal card');
     return <RevenueGoalCard />;
   }
 
-  // Meta de receita - verificar múltiplas condições
+  // Meta de receita - verificar múltiplas condições (corrigindo a condição)
   if (itemKey === 'salesGoal') {
-    if (!config.showMonthlyGoals || !config.showRevenue) {
-      console.log('Sales goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showRevenue:', config.showRevenue);
+    if (!config.showMonthlyGoals || !config.showMetaReceita) {
+      console.log('Sales goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showMetaReceita:', config.showMetaReceita);
       return null;
     }
     console.log('Rendering sales goal card');
