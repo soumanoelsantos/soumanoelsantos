@@ -12,6 +12,7 @@ interface MindMapNodeProps {
   hasChildNodes: boolean;
   hasHiddenDirectChildren: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
   onClick: (e: React.MouseEvent) => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -26,28 +27,49 @@ const MindMapNode = ({
   hasChildNodes,
   hasHiddenDirectChildren,
   onMouseDown,
+  onTouchStart,
   onClick,
   onEdit,
   onDelete,
   onToggleConnections,
   onChangeType
 }: MindMapNodeProps) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only start dragging if not clicking on buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    onMouseDown(e);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    // Only start dragging if not touching buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    if (onTouchStart) {
+      onTouchStart(e);
+    }
+  };
+
   return (
     <div
-      className={`absolute cursor-move select-none ${
+      className={`absolute select-none ${
         isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
-      } ${isDragged ? 'z-50' : 'z-10'}`}
+      } ${isDragged ? 'z-50 scale-105' : 'z-10'} transition-all duration-200`}
       style={{
         left: node.position.x,
         top: node.position.y,
-        transform: 'translate(-50%, -50%)'
+        transform: 'translate(-50%, -50%)',
+        cursor: isDragged ? 'grabbing' : 'grab'
       }}
-      onMouseDown={onMouseDown}
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
       onClick={onClick}
     >
       <Card className={`min-w-[120px] shadow-lg hover:shadow-xl transition-all relative ${
         isSelected ? 'border-blue-500 bg-blue-50' : ''
-      }`}>
+      } ${isDragged ? 'shadow-2xl' : ''}`}>
         <CardContent className="p-3">
           <div className="flex items-center justify-between mb-2">
             <div
@@ -74,7 +96,7 @@ const MindMapNode = ({
             )}
           </div>
           
-          <div className="text-sm font-medium text-center break-words">
+          <div className="text-sm font-medium text-center break-words pointer-events-none">
             {node.data.label}
           </div>
           

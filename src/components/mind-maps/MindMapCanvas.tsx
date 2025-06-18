@@ -43,7 +43,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     arrangeInGrid
   } = useMindMapState(initialContent);
 
-  const { draggedNode, canvasRef, handleMouseDown } = useDragAndDrop({
+  const { draggedNode, canvasRef, handleMouseDown, handleTouchStart, isDragging } = useDragAndDrop({
     updateNodePosition,
     setSelectedNode
   });
@@ -124,7 +124,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   };
 
   const handleCanvasClick = (e: React.MouseEvent) => {
-    if (!isPanning) {
+    if (!isPanning && !isDragging) {
       setSelectedNode(null);
       setSelectedNodes([]);
       setShowAlignmentToolbar(false);
@@ -205,6 +205,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
                 hasChildNodes={hasChildNodes}
                 hasHiddenDirectChildren={hasHiddenDirectChildren}
                 onMouseDown={(e) => handleMouseDown(e, node.id, node.position)}
+                onTouchStart={(e) => handleTouchStart(e, node.id, node.position)}
                 onClick={(e) => handleNodeClick(e, node.id)}
                 onEdit={() => handleEditNode(node.id)}
                 onDelete={() => deleteNode(node.id)}
