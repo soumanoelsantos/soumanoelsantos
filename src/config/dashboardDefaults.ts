@@ -27,7 +27,6 @@ export const defaultConfig: DashboardConfig = {
   showCashCollect: false,
   
   companyName: '',
-  showMonthlyGoals: true,
   showCharts: true,
   metricsOrder: ['showConversion', 'showRevenue'],
   

@@ -25,7 +25,6 @@ export interface DashboardConfig {
   showCashCollect: boolean;
   
   companyName: string;
-  showMonthlyGoals: boolean;
   showCharts: boolean;
   metricsOrder: string[];
   

@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
 import { allMetricsCards } from '../data/metrics';
 import { SalesChart, GrowthChart } from '../charts/ChartComponents';
-import { ConversionRateCard, RevenueGoalCard, SalesGoalCard } from '../goals/GoalComponents';
 import SpecificGoalsCards from '../goals/SpecificGoalsCards';
 
 interface ItemRendererProps {
@@ -17,6 +16,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
   
   // Lista de todas as chaves de métricas que devem ser renderizadas como cards
   const metricKeys = [
+    'showConversion', 'showRevenue',
     'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
     'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
     'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
@@ -107,36 +107,6 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
         <GrowthChart />
       </div>
     );
-  }
-
-  // Taxa de conversão - verificar múltiplas condições
-  if (itemKey === 'conversionRate') {
-    if (!config.showMonthlyGoals || !config.showConversion) {
-      console.log('Conversion rate card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showConversion:', config.showConversion);
-      return null;
-    }
-    console.log('Rendering conversion rate card');
-    return <ConversionRateCard />;
-  }
-
-  // Meta de faturamento - verificar múltiplas condições
-  if (itemKey === 'revenueGoal') {
-    if (!config.showMonthlyGoals || !config.showMetaFaturamento) {
-      console.log('Revenue goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showMetaFaturamento:', config.showMetaFaturamento);
-      return null;
-    }
-    console.log('Rendering revenue goal card');
-    return <RevenueGoalCard />;
-  }
-
-  // Meta de receita - verificar múltiplas condições
-  if (itemKey === 'salesGoal') {
-    if (!config.showMonthlyGoals || !config.showMetaReceita) {
-      console.log('Sales goal card disabled - showMonthlyGoals:', config.showMonthlyGoals, 'showMetaReceita:', config.showMetaReceita);
-      return null;
-    }
-    console.log('Rendering sales goal card');
-    return <SalesGoalCard />;
   }
 
   console.log(`No render for key: ${itemKey}`);

@@ -39,16 +39,6 @@ export const useDashboardOrder = (config: DashboardConfig) => {
         if (enabledMetrics.includes(key)) {
           orderedItems.push(key);
         }
-        // Verificar se são metas mensais
-        else if (key === 'revenueGoal' && config.showMonthlyGoals && config.showMetaFaturamento) {
-          orderedItems.push(key);
-        }
-        else if (key === 'salesGoal' && config.showMonthlyGoals && config.showMetaReceita) {
-          orderedItems.push(key);
-        }
-        else if (key === 'conversionRate' && config.showMonthlyGoals && config.showConversion) {
-          orderedItems.push(key);
-        }
         // Verificar se são metas específicas
         else if (key === 'specificGoals' && config.showSpecificGoals && config.selectedGoalIds.length > 0) {
           orderedItems.push(key);
@@ -65,19 +55,6 @@ export const useDashboardOrder = (config: DashboardConfig) => {
           orderedItems.push(key);
         }
       });
-
-      // Adicionar metas mensais se habilitadas e não estão na lista
-      if (config.showMonthlyGoals) {
-        if (config.showMetaFaturamento && !orderedItems.includes('revenueGoal')) {
-          orderedItems.push('revenueGoal');
-        }
-        if (config.showMetaReceita && !orderedItems.includes('salesGoal')) {
-          orderedItems.push('salesGoal');
-        }
-        if (config.showConversion && !orderedItems.includes('conversionRate')) {
-          orderedItems.push('conversionRate');
-        }
-      }
 
       // Adicionar metas específicas se habilitadas e não estão na lista
       if (config.showSpecificGoals && config.selectedGoalIds.length > 0 && !orderedItems.includes('specificGoals')) {
@@ -96,26 +73,13 @@ export const useDashboardOrder = (config: DashboardConfig) => {
     } else {
       // Se não há ordem definida, usar ordem padrão
       
-      // Primeiro, adicionar metas mensais se habilitadas
-      if (config.showMonthlyGoals) {
-        if (config.showMetaFaturamento) {
-          orderedItems.push('revenueGoal');
-        }
-        if (config.showMetaReceita) {
-          orderedItems.push('salesGoal');
-        }
-        if (config.showConversion) {
-          orderedItems.push('conversionRate');
-        }
-      }
+      // Adicionar todas as métricas habilitadas
+      orderedItems.push(...enabledMetrics);
 
       // Adicionar metas específicas se habilitadas
       if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
         orderedItems.push('specificGoals');
       }
-
-      // Adicionar todas as métricas habilitadas
-      orderedItems.push(...enabledMetrics);
 
       // Por último, adicionar gráficos se habilitados
       if (config.showCharts) {

@@ -45,9 +45,7 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'showQuantidadeVendas': 'Quantidade de Vendas',
     'showCashCollect': 'Cash Collect',
     'showConversion': 'Taxa de Conversão',
-    'conversionRate': 'Taxa de Conversão',
-    'revenueGoal': 'Meta de Faturamento',
-    'salesGoal': 'Meta de Receita',
+    'showRevenue': 'Receita',
     'salesChart': 'Gráfico de Vendas',
     'growthChart': 'Gráfico de Crescimento',
     'specificGoals': 'Metas Específicas'
@@ -55,6 +53,7 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
 
   // Lista de todas as chaves de métricas possíveis
   const allMetricKeys = [
+    'showConversion', 'showRevenue',
     'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
     'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
     'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
@@ -77,19 +76,6 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
       });
     }
   });
-
-  // Adicionar metas mensais se habilitadas
-  if (config.showMonthlyGoals) {
-    if (config.showMetaFaturamento) {
-      enabledMetrics.push({ key: 'revenueGoal', title: metricTitles['revenueGoal'], enabled: true });
-    }
-    if (config.showMetaReceita) {
-      enabledMetrics.push({ key: 'salesGoal', title: metricTitles['salesGoal'], enabled: true });
-    }
-    if (config.showConversion) {
-      enabledMetrics.push({ key: 'conversionRate', title: metricTitles['conversionRate'], enabled: true });
-    }
-  }
 
   // Adicionar metas específicas se habilitadas
   if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {

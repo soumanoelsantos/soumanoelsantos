@@ -64,7 +64,6 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showCashCollect: data.show_cash_collect ?? defaultConfig.showCashCollect,
     
     companyName: data.company_name || defaultConfig.companyName,
-    showMonthlyGoals: data.show_monthly_goals ?? defaultConfig.showMonthlyGoals,
     showCharts: data.show_charts ?? defaultConfig.showCharts,
     metricsOrder: metricsOrder,
     
@@ -73,13 +72,11 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
   };
 
   console.log('🟢 dashboardConfigMapper - Final mapped config:', mappedConfig);
-  console.log('🔍 dashboardConfigMapper - Super Meta Faturamento value:', mappedConfig.showSuperMetaFaturamento);
   return mappedConfig;
 };
 
 export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => {
   console.log('🔵 dashboardConfigMapper - Mapping config to database format:', config);
-  console.log('🔍 dashboardConfigMapper - Super Meta Faturamento input value:', config.showSuperMetaFaturamento);
   
   const databaseData = {
     user_id: userId,
@@ -107,7 +104,6 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_quantidade_vendas: config.showQuantidadeVendas,
     show_cash_collect: config.showCashCollect,
     
-    show_monthly_goals: config.showMonthlyGoals,
     show_charts: config.showCharts,
     metrics_order: config.metricsOrder,
     
@@ -116,6 +112,5 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
   };
 
   console.log('🟢 dashboardConfigMapper - Final database data:', databaseData);
-  console.log('🔍 dashboardConfigMapper - Super Meta Faturamento output value:', databaseData.show_super_meta_faturamento);
   return databaseData;
 };
