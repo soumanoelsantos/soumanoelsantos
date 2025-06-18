@@ -2,27 +2,33 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, Eye, EyeOff } from 'lucide-react';
 import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
 
 interface MindMapNodeProps {
   node: MindMapNodeType;
   isSelected: boolean;
   isDragged: boolean;
+  hasConnections: boolean;
+  hasHiddenConnections: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onClick: (e: React.MouseEvent) => void;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleConnections: () => void;
 }
 
 const MindMapNode = ({
   node,
   isSelected,
   isDragged,
+  hasConnections,
+  hasHiddenConnections,
   onMouseDown,
   onClick,
   onEdit,
-  onDelete
+  onDelete,
+  onToggleConnections
 }: MindMapNodeProps) => {
   return (
     <div
@@ -37,12 +43,32 @@ const MindMapNode = ({
       onMouseDown={onMouseDown}
       onClick={onClick}
     >
-      <Card className="min-w-[120px] shadow-lg hover:shadow-xl transition-shadow">
+      <Card className="min-w-[120px] shadow-lg hover:shadow-xl transition-shadow relative">
         <CardContent className="p-3">
-          <div
-            className="w-3 h-3 rounded-full mb-2"
-            style={{ backgroundColor: node.data.color }}
-          />
+          <div className="flex items-center justify-between mb-2">
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: node.data.color }}
+            />
+            {hasConnections && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleConnections();
+                }}
+              >
+                {hasHiddenConnections ? (
+                  <Eye className="h-3 w-3" />
+                ) : (
+                  <EyeOff className="h-3 w-3" />
+                )}
+              </Button>
+            )}
+          </div>
+          
           <div className="text-sm font-medium text-center">
             {node.data.label}
           </div>

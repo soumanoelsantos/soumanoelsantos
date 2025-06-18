@@ -20,11 +20,14 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     nodes,
     edges,
     selectedNode,
+    hiddenNodes,
     setSelectedNode,
     addNode,
     deleteNode,
     updateNodeLabel,
-    updateNodePosition
+    updateNodePosition,
+    toggleNodeVisibility,
+    getConnectedNodes
   } = useMindMapState(initialContent);
 
   const { draggedNode, canvasRef, handleMouseDown } = useDragAndDrop({
@@ -66,6 +69,9 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     return node?.data.label || '';
   };
 
+  // Filter visible nodes
+  const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
+
   return (
     <div className="relative w-full h-full bg-white">
       <MindMapToolbar
@@ -80,30 +86,43 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         style={{ minHeight: '600px' }}
         onClick={() => setSelectedNode(null)}
       >
-        <MindMapEdges nodes={nodes} edges={edges} />
+        <MindMapEdges 
+          nodes={nodes} 
+          edges={edges} 
+          hiddenNodes={hiddenNodes}
+        />
 
-        {nodes.map(node => (
-          <MindMapNode
-            key={node.id}
-            node={node}
-            isSelected={selectedNode === node.id}
-            isDragged={draggedNode === node.id}
-            onMouseDown={(e) => handleMouseDown(e, node.id, node.position)}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedNode(node.id);
-            }}
-            onEdit={() => handleEditNode(node.id)}
-            onDelete={() => deleteNode(node.id)}
-          />
-        ))}
+        {visibleNodes.map(node => {
+          const connectedNodes = getConnectedNodes(node.id);
+          const hasConnections = connectedNodes.length > 0;
+          const hasHiddenConnections = connectedNodes.some(id => hiddenNodes.has(id));
+
+          return (
+            <MindMapNode
+              key={node.id}
+              node={node}
+              isSelected={selectedNode === node.id}
+              isDragged={draggedNode === node.id}
+              hasConnections={hasConnections}
+              hasHiddenConnections={hasHiddenConnections}
+              onMouseDown={(e) => handleMouseDown(e, node.id, node.position)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedNode(node.id);
+              }}
+              onEdit={() => handleEditNode(node.id)}
+              onDelete={() => deleteNode(node.id)}
+              onToggleConnections={() => toggleNodeVisibility(node.id)}
+            />
+          );
+        })}
       </div>
 
       <AddNodeDialog
         isOpen={isAddingNode}
         onClose={() => setIsAddingNode(false)}
         onAdd={handleAddNode}
-        nodes={nodes}
+        nodes={visibleNodes}
       />
 
       <EditNodeDialog

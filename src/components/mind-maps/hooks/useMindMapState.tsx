@@ -6,6 +6,7 @@ export const useMindMapState = (initialContent: MindMapContent) => {
   const [nodes, setNodes] = useState<MindMapNode[]>(initialContent.nodes);
   const [edges, setEdges] = useState<MindMapEdge[]>(initialContent.edges);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
 
   // Add central node if none exists
   useEffect(() => {
@@ -19,6 +20,36 @@ export const useMindMapState = (initialContent: MindMapContent) => {
       setNodes([centerNode]);
     }
   }, []);
+
+  const getConnectedNodes = (nodeId: string): string[] => {
+    const connected: string[] = [];
+    edges.forEach(edge => {
+      if (edge.source === nodeId) {
+        connected.push(edge.target);
+      } else if (edge.target === nodeId) {
+        connected.push(edge.source);
+      }
+    });
+    return connected;
+  };
+
+  const toggleNodeVisibility = (nodeId: string) => {
+    const connectedNodes = getConnectedNodes(nodeId);
+    const newHiddenNodes = new Set(hiddenNodes);
+    
+    // Check if any connected nodes are currently hidden
+    const hasHiddenConnected = connectedNodes.some(id => hiddenNodes.has(id));
+    
+    if (hasHiddenConnected) {
+      // Show all connected nodes
+      connectedNodes.forEach(id => newHiddenNodes.delete(id));
+    } else {
+      // Hide all connected nodes except the main one
+      connectedNodes.forEach(id => newHiddenNodes.add(id));
+    }
+    
+    setHiddenNodes(newHiddenNodes);
+  };
 
   const addNode = (label: string, connectToNodeId?: string, x: number = Math.random() * 600 + 100, y: number = Math.random() * 400 + 100) => {
     if (!label.trim()) return;
@@ -50,6 +81,10 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     setNodes(prev => prev.filter(node => node.id !== nodeId));
     setEdges(prev => prev.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
     setSelectedNode(null);
+    // Remove from hidden nodes if it exists
+    const newHiddenNodes = new Set(hiddenNodes);
+    newHiddenNodes.delete(nodeId);
+    setHiddenNodes(newHiddenNodes);
   };
 
   const updateNode = (nodeId: string, updates: Partial<MindMapNode>) => {
@@ -104,6 +139,7 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     nodes,
     edges,
     selectedNode,
+    hiddenNodes,
     setSelectedNode,
     addNode,
     deleteNode,
@@ -111,6 +147,8 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     updateNodeLabel,
     updateNodePosition,
     addConnection,
-    removeConnection
+    removeConnection,
+    toggleNodeVisibility,
+    getConnectedNodes
   };
 };
