@@ -20,7 +20,7 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     }
   }, []);
 
-  const addNode = (label: string, x: number = Math.random() * 600 + 100, y: number = Math.random() * 400 + 100) => {
+  const addNode = (label: string, connectToNodeId?: string, x: number = Math.random() * 600 + 100, y: number = Math.random() * 400 + 100) => {
     if (!label.trim()) return;
 
     const newNode: MindMapNode = {
@@ -32,15 +32,17 @@ export const useMindMapState = (initialContent: MindMapContent) => {
 
     setNodes(prev => [...prev, newNode]);
 
-    // Connect to center node if it exists
-    const centerNode = nodes.find(node => node.id === 'center');
-    if (centerNode) {
-      const newEdge: MindMapEdge = {
-        id: `edge-${Date.now()}`,
-        source: centerNode.id,
-        target: newNode.id
-      };
-      setEdges(prev => [...prev, newEdge]);
+    // Connect to specified node if provided
+    if (connectToNodeId) {
+      const targetNode = nodes.find(node => node.id === connectToNodeId);
+      if (targetNode) {
+        const newEdge: MindMapEdge = {
+          id: `edge-${Date.now()}`,
+          source: connectToNodeId,
+          target: newNode.id
+        };
+        setEdges(prev => [...prev, newEdge]);
+      }
     }
   };
 
@@ -74,6 +76,30 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     ));
   };
 
+  const addConnection = (sourceId: string, targetId: string) => {
+    // Check if connection already exists
+    const connectionExists = edges.some(edge => 
+      (edge.source === sourceId && edge.target === targetId) ||
+      (edge.source === targetId && edge.target === sourceId)
+    );
+
+    if (!connectionExists) {
+      const newEdge: MindMapEdge = {
+        id: `edge-${Date.now()}`,
+        source: sourceId,
+        target: targetId
+      };
+      setEdges(prev => [...prev, newEdge]);
+    }
+  };
+
+  const removeConnection = (sourceId: string, targetId: string) => {
+    setEdges(prev => prev.filter(edge => 
+      !((edge.source === sourceId && edge.target === targetId) ||
+        (edge.source === targetId && edge.target === sourceId))
+    ));
+  };
+
   return {
     nodes,
     edges,
@@ -83,6 +109,8 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     deleteNode,
     updateNode,
     updateNodeLabel,
-    updateNodePosition
+    updateNodePosition,
+    addConnection,
+    removeConnection
   };
 };

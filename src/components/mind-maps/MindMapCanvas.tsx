@@ -45,8 +45,8 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     }
   };
 
-  const handleAddNode = (label: string) => {
-    addNode(label);
+  const handleAddNode = (label: string, connectToNodeId?: string) => {
+    addNode(label, connectToNodeId);
   };
 
   const handleEditNode = (nodeId: string) => {
@@ -103,6 +103,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         isOpen={isAddingNode}
         onClose={() => setIsAddingNode(false)}
         onAdd={handleAddNode}
+        nodes={nodes}
       />
 
       <EditNodeDialog
