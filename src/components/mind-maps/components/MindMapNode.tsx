@@ -1,0 +1,80 @@
+
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Edit2, Trash2 } from 'lucide-react';
+import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
+
+interface MindMapNodeProps {
+  node: MindMapNodeType;
+  isSelected: boolean;
+  isDragged: boolean;
+  onMouseDown: (e: React.MouseEvent) => void;
+  onClick: (e: React.MouseEvent) => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+const MindMapNode = ({
+  node,
+  isSelected,
+  isDragged,
+  onMouseDown,
+  onClick,
+  onEdit,
+  onDelete
+}: MindMapNodeProps) => {
+  return (
+    <div
+      className={`absolute cursor-move select-none ${
+        isSelected ? 'ring-2 ring-blue-500' : ''
+      } ${isDragged ? 'z-50' : 'z-10'}`}
+      style={{
+        left: node.position.x,
+        top: node.position.y,
+        transform: 'translate(-50%, -50%)'
+      }}
+      onMouseDown={onMouseDown}
+      onClick={onClick}
+    >
+      <Card className="min-w-[120px] shadow-lg hover:shadow-xl transition-shadow">
+        <CardContent className="p-3">
+          <div
+            className="w-3 h-3 rounded-full mb-2"
+            style={{ backgroundColor: node.data.color }}
+          />
+          <div className="text-sm font-medium text-center">
+            {node.data.label}
+          </div>
+          
+          {isSelected && (
+            <div className="flex gap-1 mt-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit();
+                }}
+              >
+                <Edit2 className="h-3 w-3" />
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default MindMapNode;
