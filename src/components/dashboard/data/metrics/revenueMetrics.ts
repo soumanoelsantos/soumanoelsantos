@@ -21,12 +21,12 @@ export const revenueMetrics = [
     color: 'text-green-500'
   },
   {
-    key: 'showDiariaReceita',
-    title: 'Diária de Receita',
-    value: 'R$ 1.950,00',
-    description: 'Receita média diária',
+    key: 'showDiariaFaturamento',
+    title: 'Diário de Faturamento',
+    value: 'R$ 6.750,00',
+    description: 'Faturamento médio diário',
     icon: DollarSign,
-    trend: '+8%',
-    color: 'text-purple-500'
+    trend: '+12%',
+    color: 'text-green-500'
   }
 ];
