@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Users } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -25,6 +24,8 @@ const SalespersonFilter: React.FC<SalespersonFilterProps> = ({
   selectedSalespeople,
   onSelectionChange
 }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
   const handleSelectionChange = (salespersonId: string, checked: boolean) => {
     if (salespersonId === 'all') {
       if (checked) {
@@ -61,18 +62,21 @@ const SalespersonFilter: React.FC<SalespersonFilterProps> = ({
 
   return (
     <div className="flex flex-col space-y-2">
-      <label className="text-sm font-medium">Vendedores</label>
-      <Popover>
+      <label className="text-sm font-medium text-gray-700">Vendedores</label>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[250px] justify-between">
+          <Button 
+            variant="outline" 
+            className="w-[250px] justify-between bg-white hover:bg-gray-50 border-gray-300 text-gray-900"
+          >
             <div className="flex items-center">
               <Users className="mr-2 h-4 w-4" />
-              {getDisplayText()}
+              <span className="text-gray-900">{getDisplayText()}</span>
             </div>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[250px] p-0">
-          <div className="p-4 space-y-3">
+        <PopoverContent className="w-[250px] p-0 bg-white border border-gray-200 shadow-lg z-50">
+          <div className="p-4 space-y-3 bg-white">
             {mockSalespeople.map((salesperson) => (
               <div key={salesperson.id} className="flex items-center space-x-2">
                 <Checkbox
@@ -88,7 +92,7 @@ const SalespersonFilter: React.FC<SalespersonFilterProps> = ({
                 />
                 <label
                   htmlFor={salesperson.id}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-gray-900"
                 >
                   {salesperson.name}
                 </label>
