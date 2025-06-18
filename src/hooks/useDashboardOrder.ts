@@ -19,19 +19,11 @@ export const useDashboardOrder = (config: DashboardConfig) => {
     ];
 
     // Filtrar apenas as métricas que estão habilitadas
-    let enabledMetrics = allMetricKeys.filter(key => {
+    const enabledMetrics = allMetricKeys.filter(key => {
       const isEnabled = config[key as keyof DashboardConfig] as boolean;
       console.log(`Metric ${key} enabled:`, isEnabled);
       return isEnabled;
     });
-
-    // Se as metas mensais estão habilitadas, remover as métricas regulares de meta para evitar duplicação
-    if (config.showMonthlyGoals) {
-      enabledMetrics = enabledMetrics.filter(key => 
-        key !== 'showMetaFaturamento' && key !== 'showMetaReceita'
-      );
-      console.log('Monthly goals enabled, filtered out regular meta metrics:', enabledMetrics);
-    }
 
     console.log('Enabled metrics:', enabledMetrics);
 
