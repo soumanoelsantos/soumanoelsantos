@@ -13,11 +13,11 @@ interface MetricsConfigCardProps {
 const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigChange }) => {
   const allMetrics = [
     { key: 'showConversion', label: 'Taxa de Conversão' },
-    { key: 'showRevenue', label: 'Receita' },
+    { key: 'showRevenue', label: 'Receita (Básica)' },
     { key: 'showTicketFaturamento', label: 'Ticket Faturamento' },
     { key: 'showTicketReceita', label: 'Ticket Receita' },
     { key: 'showFaturamento', label: 'Faturamento' },
-    { key: 'showReceita', label: 'Receita' },
+    { key: 'showReceita', label: 'Receita (Detalhada)' },
     { key: 'showQuantidadeVendas', label: 'Quantidade de Vendas' },
     { key: 'showMetaFaturamento', label: 'Meta Faturamento' },
     { key: 'showMetaReceita', label: 'Meta Receita' },
