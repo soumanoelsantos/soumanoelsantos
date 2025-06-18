@@ -16,18 +16,22 @@ export const useDashboardConfig = () => {
 
   const loadConfig = async () => {
     if (!userId) {
+      console.log('🟡 useDashboardConfig - No userId, using default config');
       setConfig(defaultConfig);
       return;
     }
     
     try {
       setIsLoading(true);
+      console.log('🔵 useDashboardConfig - Loading config for user:', userId);
       const loadedConfig = await loadDashboardConfig(userId);
       
       if (loadedConfig) {
+        console.log('🟢 useDashboardConfig - Config loaded successfully');
         setConfig(loadedConfig);
         setHasUnsavedChanges(false);
       } else {
+        console.log('🟡 useDashboardConfig - No config found, using defaults');
         setConfig(defaultConfig);
         setHasUnsavedChanges(false);
       }
@@ -47,6 +51,7 @@ export const useDashboardConfig = () => {
 
   const saveConfigToDatabase = async (configToSave: DashboardConfig) => {
     if (!userId) {
+      console.log('🔴 useDashboardConfig - No userId, cannot save');
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
@@ -57,8 +62,11 @@ export const useDashboardConfig = () => {
 
     try {
       setIsLoading(true);
+      console.log('🔵 useDashboardConfig - Starting save process for user:', userId);
+      console.log('🔵 useDashboardConfig - Config to save:', configToSave);
       
       await saveDashboardConfig(configToSave, userId);
+      console.log('🟢 useDashboardConfig - Config saved successfully');
       
       setHasUnsavedChanges(false);
       return true;
@@ -77,6 +85,7 @@ export const useDashboardConfig = () => {
   };
 
   const updateConfig = (newConfig: DashboardConfig) => {
+    console.log('🔵 useDashboardConfig - Config updated, scheduling auto-save');
     setConfig(newConfig);
     setHasUnsavedChanges(true);
 
@@ -87,17 +96,22 @@ export const useDashboardConfig = () => {
 
     // Set new timeout for auto-save (save after 1 second of no changes)
     autoSaveTimeoutRef.current = setTimeout(() => {
+      console.log('🔵 useDashboardConfig - Auto-save timeout triggered');
       saveConfigToDatabase(newConfig);
     }, 1000);
   };
 
   const saveConfig = async (configToSave: DashboardConfig) => {
+    console.log('🔵 useDashboardConfig - Manual save triggered');
+    console.log('🔵 useDashboardConfig - Config to save:', configToSave);
+    
     // Clear auto-save timeout since we're saving manually
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
 
     const success = await saveConfigToDatabase(configToSave);
+    console.log('🔵 useDashboardConfig - Save result:', success);
     
     if (success) {
       toast({
@@ -111,6 +125,7 @@ export const useDashboardConfig = () => {
 
   // Load config when userId changes
   useEffect(() => {
+    console.log('🔵 useDashboardConfig - useEffect triggered, userId:', userId);
     loadConfig();
   }, [userId]);
 

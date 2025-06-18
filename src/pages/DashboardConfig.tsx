@@ -26,6 +26,8 @@ const DashboardConfig = () => {
   }, [isAuthenticated, navigate]);
 
   const handleConfigChange = (key: string, value: boolean | string | string[]) => {
+    console.log('🔵 DashboardConfig - Changing config:', key, '=', value);
+    
     // Create new config with the updated value
     const newConfig = {
       ...config,
@@ -37,6 +39,7 @@ const DashboardConfig = () => {
   };
 
   const handleReorderMetrics = (newOrder: string[]) => {
+    console.log('🔵 DashboardConfig - Reordering metrics:', newOrder);
     const newConfig = {
       ...config,
       metricsOrder: newOrder
@@ -45,11 +48,20 @@ const DashboardConfig = () => {
   };
 
   const handleManualSave = async () => {
+    console.log('🔵 DashboardConfig - Manual save requested');
+    console.log('🔵 DashboardConfig - Current config:', config);
+    console.log('🔵 DashboardConfig - Has unsaved changes:', hasUnsavedChanges);
+    console.log('🔵 DashboardConfig - Is loading:', isLoading);
+    
     try {
       const success = await saveConfig(config);
+      console.log('🔵 DashboardConfig - Save result:', success);
       
       if (success) {
+        console.log('🟢 DashboardConfig - Save successful, navigating to dashboard');
         navigate('/dashboard');
+      } else {
+        console.log('🔴 DashboardConfig - Save failed, staying on page');
       }
     } catch (error) {
       console.error('🔴 DashboardConfig - Erro durante o salvamento:', error);
