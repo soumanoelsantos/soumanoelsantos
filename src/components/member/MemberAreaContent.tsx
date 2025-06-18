@@ -26,7 +26,7 @@ const MemberAreaContent: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
-              Mapas Mentais para Empresas
+              Mapas Mentais
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -34,7 +34,7 @@ const MemberAreaContent: React.FC = () => {
               Crie e gerencie mapas mentais para organizar ideias e compartilhar com sua equipe
             </p>
             <Button 
-              onClick={() => navigate('/empresas')} 
+              onClick={() => navigate('/mapa-mental')} 
               className="w-full"
             >
               Acessar Mapas Mentais

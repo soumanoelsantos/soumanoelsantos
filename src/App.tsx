@@ -22,7 +22,7 @@ import DashboardConfig from "@/pages/DashboardConfig";
 import GoalsManagement from "@/pages/GoalsManagement";
 import DiagnosticoLanding from "@/pages/DiagnosticoLanding";
 import DevAI from "@/pages/DevAI";
-import Empresas from "@/pages/Empresas";
+import MapaMental from "@/pages/MapaMental";
 import MindMapEditor from "@/pages/MindMapEditor";
 import SharedMindMap from "@/pages/SharedMindMap";
 
@@ -53,7 +53,7 @@ function App() {
               <Route path="/dashboard/metas" element={<GoalsManagement />} />
               <Route path="/diagnostico" element={<DiagnosticoLanding />} />
               <Route path="/dev-ai" element={<DevAI />} />
-              <Route path="/empresas" element={<Empresas />} />
+              <Route path="/mapa-mental" element={<MapaMental />} />
               <Route path="/mapa-mental/:id" element={<MindMapEditor />} />
               <Route path="/mapa-mental/compartilhado/:shareToken" element={<SharedMindMap />} />
             </Routes>

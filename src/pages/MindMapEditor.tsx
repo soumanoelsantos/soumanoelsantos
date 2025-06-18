@@ -38,7 +38,7 @@ const MindMapEditor = () => {
           title: "Mapa não encontrado",
           description: "O mapa mental não foi encontrado."
         });
-        navigate('/empresas');
+        navigate('/mapa-mental');
         return;
       }
 
@@ -51,7 +51,7 @@ const MindMapEditor = () => {
         title: "Erro ao carregar mapa",
         description: "Não foi possível carregar o mapa mental."
       });
-      navigate('/empresas');
+      navigate('/mapa-mental');
     } finally {
       setIsLoading(false);
     }
@@ -124,7 +124,7 @@ const MindMapEditor = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/empresas')}
+              onClick={() => navigate('/mapa-mental')}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
