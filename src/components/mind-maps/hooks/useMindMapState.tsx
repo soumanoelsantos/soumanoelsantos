@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from 'react';
 import { MindMapContent, MindMapNode, MindMapEdge } from '@/types/mindMap';
 
@@ -65,17 +66,18 @@ export const useMindMapState = (initialContent: MindMapContent) => {
 
   const toggleNodeVisibility = (nodeId: string) => {
     const directChildren = getDirectChildNodes(nodeId);
+    const allChildNodes = getAllChildNodesRecursive(nodeId);
     const newHiddenNodes = new Set(hiddenNodes);
     
     // Check if any direct children are currently hidden
     const hasHiddenDirectChildren = directChildren.some(id => hiddenNodes.has(id));
     
     if (hasHiddenDirectChildren) {
-      // Show only direct children
+      // Show only direct children (step by step)
       directChildren.forEach(id => newHiddenNodes.delete(id));
     } else {
-      // Hide only direct children
-      directChildren.forEach(id => newHiddenNodes.add(id));
+      // Hide all descendant nodes at once
+      allChildNodes.forEach(id => newHiddenNodes.add(id));
     }
     
     setHiddenNodes(newHiddenNodes);
@@ -182,3 +184,4 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     getConnectedNodes
   };
 };
+
