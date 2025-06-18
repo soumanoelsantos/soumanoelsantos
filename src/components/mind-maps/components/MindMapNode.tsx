@@ -10,7 +10,7 @@ interface MindMapNodeProps {
   isSelected: boolean;
   isDragged: boolean;
   hasChildNodes: boolean;
-  hasHiddenChildren: boolean;
+  hasHiddenDirectChildren: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onClick: (e: React.MouseEvent) => void;
   onEdit: () => void;
@@ -23,7 +23,7 @@ const MindMapNode = ({
   isSelected,
   isDragged,
   hasChildNodes,
-  hasHiddenChildren,
+  hasHiddenDirectChildren,
   onMouseDown,
   onClick,
   onEdit,
@@ -59,9 +59,9 @@ const MindMapNode = ({
                   e.stopPropagation();
                   onToggleConnections();
                 }}
-                title={hasHiddenChildren ? "Mostrar nós filhos" : "Ocultar nós filhos"}
+                title={hasHiddenDirectChildren ? "Mostrar próximo nível" : "Ocultar filhos diretos"}
               >
-                {hasHiddenChildren ? (
+                {hasHiddenDirectChildren ? (
                   <Eye className="h-3 w-3" />
                 ) : (
                   <EyeOff className="h-3 w-3" />
