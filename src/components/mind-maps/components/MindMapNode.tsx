@@ -54,11 +54,12 @@ const MindMapNode = ({
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-6 w-6 p-0"
+                className="h-6 w-6 p-0 hover:bg-gray-100"
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleConnections();
                 }}
+                title={hasHiddenConnections ? "Mostrar toda a cadeia conectada" : "Ocultar toda a cadeia conectada"}
               >
                 {hasHiddenConnections ? (
                   <Eye className="h-3 w-3" />
@@ -69,7 +70,7 @@ const MindMapNode = ({
             )}
           </div>
           
-          <div className="text-sm font-medium text-center">
+          <div className="text-sm font-medium text-center break-words">
             {node.data.label}
           </div>
           

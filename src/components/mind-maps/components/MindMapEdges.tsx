@@ -9,22 +9,77 @@ interface MindMapEdgesProps {
 }
 
 const MindMapEdges = ({ nodes, edges, hiddenNodes = new Set() }: MindMapEdgesProps) => {
-  const getNodeCenter = (node: MindMapNode) => ({
-    x: node.position.x + 60, // Assuming node width ~120px
-    y: node.position.y + 30  // Assuming node height ~60px
+  const getNodeBounds = (node: MindMapNode) => ({
+    left: node.position.x - 60,
+    right: node.position.x + 60,
+    top: node.position.y - 30,
+    bottom: node.position.y + 30,
+    centerX: node.position.x,
+    centerY: node.position.y
   });
+
+  const getClosestPoints = (sourceNode: MindMapNode, targetNode: MindMapNode) => {
+    const source = getNodeBounds(sourceNode);
+    const target = getNodeBounds(targetNode);
+    
+    // Determinar a direção da conexão
+    const dx = target.centerX - source.centerX;
+    const dy = target.centerY - source.centerY;
+    
+    let sourcePoint = { x: source.centerX, y: source.centerY };
+    let targetPoint = { x: target.centerX, y: target.centerY };
+    
+    // Conectar pelas bordas mais próximas
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Conexão horizontal
+      if (dx > 0) {
+        // Target está à direita do source
+        sourcePoint = { x: source.right, y: source.centerY };
+        targetPoint = { x: target.left, y: target.centerY };
+      } else {
+        // Target está à esquerda do source
+        sourcePoint = { x: source.left, y: source.centerY };
+        targetPoint = { x: target.right, y: target.centerY };
+      }
+    } else {
+      // Conexão vertical
+      if (dy > 0) {
+        // Target está abaixo do source
+        sourcePoint = { x: source.centerX, y: source.bottom };
+        targetPoint = { x: target.centerX, y: target.top };
+      } else {
+        // Target está acima do source
+        sourcePoint = { x: source.centerX, y: source.top };
+        targetPoint = { x: target.centerX, y: target.bottom };
+      }
+    }
+    
+    return { sourcePoint, targetPoint };
+  };
 
   const createSmoothPath = (source: { x: number; y: number }, target: { x: number; y: number }) => {
     const dx = target.x - source.x;
     const dy = target.y - source.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     
-    // Create a smooth curve
-    const controlPointOffset = Math.min(distance * 0.3, 100);
-    const cp1x = source.x + (dx > 0 ? controlPointOffset : -controlPointOffset);
-    const cp1y = source.y;
-    const cp2x = target.x - (dx > 0 ? controlPointOffset : -controlPointOffset);
-    const cp2y = target.y;
+    // Criar curva suave baseada na distância
+    const controlPointOffset = Math.min(distance * 0.4, 80);
+    
+    let cp1x, cp1y, cp2x, cp2y;
+    
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Conexão mais horizontal
+      cp1x = source.x + (dx > 0 ? controlPointOffset : -controlPointOffset);
+      cp1y = source.y;
+      cp2x = target.x - (dx > 0 ? controlPointOffset : -controlPointOffset);
+      cp2y = target.y;
+    } else {
+      // Conexão mais vertical
+      cp1x = source.x;
+      cp1y = source.y + (dy > 0 ? controlPointOffset : -controlPointOffset);
+      cp2x = target.x;
+      cp2y = target.y - (dy > 0 ? controlPointOffset : -controlPointOffset);
+    }
 
     return `M ${source.x} ${source.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${target.x} ${target.y}`;
   };
@@ -56,9 +111,8 @@ const MindMapEdges = ({ nodes, edges, hiddenNodes = new Set() }: MindMapEdgesPro
         // Hide edge if either node is hidden
         if (hiddenNodes.has(edge.source) || hiddenNodes.has(edge.target)) return null;
 
-        const sourceCenter = getNodeCenter(sourceNode);
-        const targetCenter = getNodeCenter(targetNode);
-        const pathData = createSmoothPath(sourceCenter, targetCenter);
+        const { sourcePoint, targetPoint } = getClosestPoints(sourceNode, targetNode);
+        const pathData = createSmoothPath(sourcePoint, targetPoint);
 
         return (
           <path

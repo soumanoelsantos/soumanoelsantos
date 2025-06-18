@@ -33,19 +33,35 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     return connected;
   };
 
+  const getAllConnectedNodesRecursive = (nodeId: string, visited = new Set<string>()): string[] => {
+    if (visited.has(nodeId)) return [];
+    
+    visited.add(nodeId);
+    const directConnections = getConnectedNodes(nodeId);
+    let allConnected = [...directConnections];
+    
+    directConnections.forEach(connectedId => {
+      if (!visited.has(connectedId)) {
+        allConnected = [...allConnected, ...getAllConnectedNodesRecursive(connectedId, visited)];
+      }
+    });
+    
+    return [...new Set(allConnected)]; // Remove duplicates
+  };
+
   const toggleNodeVisibility = (nodeId: string) => {
-    const connectedNodes = getConnectedNodes(nodeId);
+    const allConnectedNodes = getAllConnectedNodesRecursive(nodeId);
     const newHiddenNodes = new Set(hiddenNodes);
     
     // Check if any connected nodes are currently hidden
-    const hasHiddenConnected = connectedNodes.some(id => hiddenNodes.has(id));
+    const hasHiddenConnected = allConnectedNodes.some(id => hiddenNodes.has(id));
     
     if (hasHiddenConnected) {
-      // Show all connected nodes
-      connectedNodes.forEach(id => newHiddenNodes.delete(id));
+      // Show all connected nodes in the chain
+      allConnectedNodes.forEach(id => newHiddenNodes.delete(id));
     } else {
-      // Hide all connected nodes except the main one
-      connectedNodes.forEach(id => newHiddenNodes.add(id));
+      // Hide all connected nodes in the chain except the main one
+      allConnectedNodes.forEach(id => newHiddenNodes.add(id));
     }
     
     setHiddenNodes(newHiddenNodes);
