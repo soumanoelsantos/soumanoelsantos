@@ -62,6 +62,7 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showReceita: data.show_receita ?? defaultConfig.showReceita,
     showQuantidadeVendas: data.show_quantidade_vendas ?? defaultConfig.showQuantidadeVendas,
     showCashCollect: data.show_cash_collect ?? defaultConfig.showCashCollect,
+    showCac: data.show_cac ?? defaultConfig.showCac,
     
     companyName: data.company_name || defaultConfig.companyName,
     showCharts: data.show_charts ?? defaultConfig.showCharts,
@@ -103,6 +104,7 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_receita: config.showReceita,
     show_quantidade_vendas: config.showQuantidadeVendas,
     show_cash_collect: config.showCashCollect,
+    show_cac: config.showCac,
     
     show_charts: config.showCharts,
     metrics_order: config.metricsOrder,

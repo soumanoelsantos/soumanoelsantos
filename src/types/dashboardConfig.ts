@@ -23,6 +23,7 @@ export interface DashboardConfig {
   showReceita: boolean;
   showQuantidadeVendas: boolean;
   showCashCollect: boolean;
+  showCac: boolean;
   
   companyName: string;
   showCharts: boolean;

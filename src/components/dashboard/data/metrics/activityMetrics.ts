@@ -8,6 +8,11 @@ const CURRENT_REVENUE = 35000; // R$ 35.000 receita atual
 const MONTHLY_BILLING_GOAL = 120000; // R$ 120.000 meta mensal de faturamento
 const CURRENT_BILLING = 80000; // R$ 80.000 faturamento atual
 
+// Valores para CAC
+const TOTAL_PAID_TRAFFIC_SPENT = 5000; // R$ 5.000 gasto total com tráfego pago
+const TOTAL_SALES = 25; // 25 vendas realizadas
+const CAC_VALUE = TOTAL_SALES > 0 ? TOTAL_PAID_TRAFFIC_SPENT / TOTAL_SALES : 0;
+
 const remainingDays = calculateRemainingDaysInMonth();
 const dailyRevenueTarget = calculateDailyTarget(MONTHLY_REVENUE_GOAL, CURRENT_REVENUE, remainingDays);
 const dailyBillingTarget = calculateDailyTarget(MONTHLY_BILLING_GOAL, CURRENT_BILLING, remainingDays);
@@ -48,5 +53,14 @@ export const activityMetrics = [
     icon: DollarSign,
     trend: '+5%',
     color: 'text-purple-600'
+  },
+  {
+    key: 'showCac',
+    title: 'CAC (Custo de Aquisição)',
+    value: formatCurrency(CAC_VALUE),
+    description: 'Custo para adquirir um cliente',
+    icon: DollarSign,
+    trend: '-8%',
+    color: 'text-orange-600'
   }
 ];

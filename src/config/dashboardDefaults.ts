@@ -25,6 +25,7 @@ export const defaultConfig: DashboardConfig = {
   showReceita: false,
   showQuantidadeVendas: false,
   showCashCollect: false,
+  showCac: false,
   
   companyName: '',
   showCharts: true,
