@@ -555,6 +555,39 @@ export type Database = {
           },
         ]
       }
+      mind_maps: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          is_public: boolean
+          share_token: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          share_token?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          share_token?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       modules: {
         Row: {
           created_at: string
