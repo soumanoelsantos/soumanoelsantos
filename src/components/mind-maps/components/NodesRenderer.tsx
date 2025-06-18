@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MindMapNode } from '@/types/mindMap';
-import MindMapNode from './MindMapNode';
+import MindMapNodeComponent from './MindMapNode';
 
 interface NodesRendererProps {
   visibleNodes: MindMapNode[];
@@ -53,7 +53,7 @@ const NodesRenderer = ({
         const isNodeSelected = selectedNode === node.id || selectedNodes.includes(node.id);
 
         return (
-          <MindMapNode
+          <MindMapNodeComponent
             key={node.id}
             node={node}
             isSelected={isNodeSelected}
