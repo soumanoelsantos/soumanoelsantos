@@ -110,6 +110,8 @@ export type Database = {
           show_conversion: boolean | null
           show_diaria_receita: boolean | null
           show_falta_faturamento: boolean | null
+          show_falta_faturamento_hiper: boolean | null
+          show_falta_faturamento_super: boolean | null
           show_falta_receita: boolean | null
           show_falta_receita_hiper: boolean | null
           show_falta_receita_super: boolean | null
@@ -147,6 +149,8 @@ export type Database = {
           show_conversion?: boolean | null
           show_diaria_receita?: boolean | null
           show_falta_faturamento?: boolean | null
+          show_falta_faturamento_hiper?: boolean | null
+          show_falta_faturamento_super?: boolean | null
           show_falta_receita?: boolean | null
           show_falta_receita_hiper?: boolean | null
           show_falta_receita_super?: boolean | null
@@ -184,6 +188,8 @@ export type Database = {
           show_conversion?: boolean | null
           show_diaria_receita?: boolean | null
           show_falta_faturamento?: boolean | null
+          show_falta_faturamento_hiper?: boolean | null
+          show_falta_faturamento_super?: boolean | null
           show_falta_receita?: boolean | null
           show_falta_receita_hiper?: boolean | null
           show_falta_receita_super?: boolean | null

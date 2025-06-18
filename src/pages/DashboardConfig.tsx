@@ -34,9 +34,6 @@ const DashboardConfig = () => {
       [key]: value
     };
     
-    console.log('🔵 DashboardConfig - New config state:', newConfig);
-    console.log('🔍 DashboardConfig - Super Meta Faturamento after change:', newConfig.showSuperMetaFaturamento);
-    
     // Update local state immediately for UI responsiveness
     setConfig(newConfig);
   };
@@ -52,8 +49,6 @@ const DashboardConfig = () => {
 
   const handleSave = async () => {
     console.log('🔵 DashboardConfig - SAVE BUTTON CLICKED');
-    console.log('🔵 DashboardConfig - Current config before save:', config);
-    console.log('🔍 DashboardConfig - Super Meta Faturamento before save:', config.showSuperMetaFaturamento);
     
     try {
       const success = await saveConfig(config);

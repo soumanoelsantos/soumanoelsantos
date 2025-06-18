@@ -19,9 +19,8 @@ export const loadDashboardConfig = async (userId: string): Promise<DashboardConf
     }
 
     if (data) {
-      console.log('🟢 dashboardConfigService - Raw data from database:', data);
+      console.log('🟢 dashboardConfigService - Config loaded from database');
       const mappedConfig = mapDatabaseToConfig(data);
-      console.log('🟢 dashboardConfigService - Mapped config:', mappedConfig);
       return mappedConfig;
     }
 
@@ -35,13 +34,10 @@ export const loadDashboardConfig = async (userId: string): Promise<DashboardConf
 
 export const saveDashboardConfig = async (config: DashboardConfig, userId: string): Promise<void> => {
   console.log('🔵 dashboardConfigService - Starting save for user:', userId);
-  console.log('🔵 dashboardConfigService - Config to save:', config);
-  console.log('🔍 dashboardConfigService - Super Meta Faturamento value:', config.showSuperMetaFaturamento);
   
   try {
     const configData = mapConfigToDatabase(config, userId);
-    console.log('🔵 dashboardConfigService - Mapped data for database:', configData);
-    console.log('🔍 dashboardConfigService - Super Meta Faturamento mapped:', configData.show_super_meta_faturamento);
+    console.log('🔵 dashboardConfigService - Mapped data for database');
 
     // Use upsert to insert or update in one operation
     const { data, error } = await supabase
@@ -55,12 +51,10 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
 
     if (error) {
       console.error('🔴 dashboardConfigService - Upsert error:', error);
-      console.error('🔴 dashboardConfigService - Error details:', JSON.stringify(error, null, 2));
       throw error;
     }
 
-    console.log('🟢 dashboardConfigService - Configuration saved successfully:', data);
-    console.log('🔍 dashboardConfigService - Saved Super Meta Faturamento:', data?.show_super_meta_faturamento);
+    console.log('🟢 dashboardConfigService - Configuration saved successfully');
   } catch (error) {
     console.error('🔴 dashboardConfigService - Unexpected error during save:', error);
     throw error;

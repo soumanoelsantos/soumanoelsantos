@@ -25,8 +25,7 @@ export const useDashboardConfig = () => {
       const loadedConfig = await loadDashboardConfig(userId);
       
       if (loadedConfig) {
-        console.log('🟢 useDashboardConfig - Config loaded successfully:', loadedConfig);
-        console.log('🔍 useDashboardConfig - Loaded Super Meta Faturamento:', loadedConfig.showSuperMetaFaturamento);
+        console.log('🟢 useDashboardConfig - Config loaded successfully');
         setConfig(loadedConfig);
       } else {
         console.log('🟡 useDashboardConfig - No config found, using defaults');
@@ -47,8 +46,6 @@ export const useDashboardConfig = () => {
 
   const saveConfig = async (newConfig: DashboardConfig) => {
     console.log('🔵 useDashboardConfig - SAVE CONFIG CALLED');
-    console.log('🔵 useDashboardConfig - Config being saved:', newConfig);
-    console.log('🔍 useDashboardConfig - Super Meta Faturamento being saved:', newConfig.showSuperMetaFaturamento);
     
     if (!userId) {
       console.log('🔴 useDashboardConfig - No userId, cannot save');
@@ -71,7 +68,6 @@ export const useDashboardConfig = () => {
       // Only update local state after successful save
       setConfig(newConfig);
       console.log('🟢 useDashboardConfig - Local state updated after successful save');
-      console.log('🔍 useDashboardConfig - Local state Super Meta Faturamento:', newConfig.showSuperMetaFaturamento);
       
       toast({
         title: "Configurações salvas!",
@@ -100,12 +96,6 @@ export const useDashboardConfig = () => {
     console.log('🔵 useDashboardConfig - useEffect triggered, userId:', userId);
     loadConfig();
   }, [userId]);
-
-  // Debug config changes
-  useEffect(() => {
-    console.log('🔵 useDashboardConfig - Config state changed:', config);
-    console.log('🔍 useDashboardConfig - Current Super Meta Faturamento:', config.showSuperMetaFaturamento);
-  }, [config]);
 
   return {
     config,
