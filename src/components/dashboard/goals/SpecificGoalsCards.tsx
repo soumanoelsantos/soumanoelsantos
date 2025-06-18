@@ -76,14 +76,8 @@ const SpecificGoalsCards: React.FC<SpecificGoalsCardsProps> = ({ config }) => {
                     : `${goal.target_value} unidades`
                   }
                 </p>
-                <div className="text-xs text-gray-500 mt-2">
-                  Progresso: {progress}%
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
-                  <div 
-                    className={`h-1 rounded-full ${goal.goal_type === 'supermeta' ? 'bg-purple-500' : 'bg-blue-500'}`}
-                    style={{ width: `${Math.min(progress, 100)}%` }}
-                  ></div>
+                <div className="text-xs text-green-600 mt-2">
+                  {progress}% concluído
                 </div>
               </div>
             </CardContent>
