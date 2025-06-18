@@ -4,6 +4,7 @@ import { DashboardConfig } from './useDashboardConfig';
 export const useDashboardOrder = (config: DashboardConfig) => {
   const getOrderedItems = () => {
     console.log('Getting ordered items with config:', config);
+    console.log('Metrics order from config:', config.metricsOrder);
     
     // Lista de todas as chaves de métricas possíveis (apenas as que existem na configuração)
     const allMetricKeys = [
@@ -28,55 +29,98 @@ export const useDashboardOrder = (config: DashboardConfig) => {
 
     let orderedItems: string[] = [];
 
-    // Primeiro, adicionar metas mensais se habilitadas (prioridade máxima)
-    if (config.showMonthlyGoals) {
-      if (config.showMetaFaturamento) {
-        orderedItems.push('revenueGoal');
-      }
-      if (config.showMetaReceita) {
-        orderedItems.push('salesGoal');
-      }
-      if (config.showConversion) {
-        orderedItems.push('conversionRate');
-      }
-    }
-
-    // Adicionar metas específicas se habilitadas
-    if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
-      orderedItems.push('specificGoals');
-    }
-
-    // Depois, adicionar métricas de cards APENAS as habilitadas
-    let cardMetrics: string[] = [];
-    
-    // Se há uma ordem definida, usar ela como base
+    // Se há uma ordem definida, usar ela como prioridade
     if (config.metricsOrder && config.metricsOrder.length > 0) {
       console.log('Using custom metrics order:', config.metricsOrder);
       
-      // Adicionar itens na ordem especificada (apenas os que estão habilitados)
+      // Primeiro, adicionar itens na ordem especificada (apenas os que estão habilitados)
       config.metricsOrder.forEach(key => {
+        // Verificar se é uma métrica habilitada
         if (enabledMetrics.includes(key)) {
-          cardMetrics.push(key);
+          orderedItems.push(key);
+        }
+        // Verificar se são metas mensais
+        else if (key === 'revenueGoal' && config.showMonthlyGoals && config.showMetaFaturamento) {
+          orderedItems.push(key);
+        }
+        else if (key === 'salesGoal' && config.showMonthlyGoals && config.showMetaReceita) {
+          orderedItems.push(key);
+        }
+        else if (key === 'conversionRate' && config.showMonthlyGoals && config.showConversion) {
+          orderedItems.push(key);
+        }
+        // Verificar se são metas específicas
+        else if (key === 'specificGoals' && config.showSpecificGoals && config.selectedGoalIds.length > 0) {
+          orderedItems.push(key);
+        }
+        // Verificar se são gráficos
+        else if ((key === 'salesChart' || key === 'growthChart') && config.showCharts) {
+          orderedItems.push(key);
         }
       });
 
       // Adicionar métricas habilitadas que não estão na ordem especificada
       enabledMetrics.forEach(key => {
-        if (!cardMetrics.includes(key)) {
-          cardMetrics.push(key);
+        if (!orderedItems.includes(key)) {
+          orderedItems.push(key);
         }
       });
+
+      // Adicionar metas mensais se habilitadas e não estão na lista
+      if (config.showMonthlyGoals) {
+        if (config.showMetaFaturamento && !orderedItems.includes('revenueGoal')) {
+          orderedItems.push('revenueGoal');
+        }
+        if (config.showMetaReceita && !orderedItems.includes('salesGoal')) {
+          orderedItems.push('salesGoal');
+        }
+        if (config.showConversion && !orderedItems.includes('conversionRate')) {
+          orderedItems.push('conversionRate');
+        }
+      }
+
+      // Adicionar metas específicas se habilitadas e não estão na lista
+      if (config.showSpecificGoals && config.selectedGoalIds.length > 0 && !orderedItems.includes('specificGoals')) {
+        orderedItems.push('specificGoals');
+      }
+
+      // Adicionar gráficos se habilitados e não estão na lista
+      if (config.showCharts) {
+        if (!orderedItems.includes('salesChart')) {
+          orderedItems.push('salesChart');
+        }
+        if (!orderedItems.includes('growthChart')) {
+          orderedItems.push('growthChart');
+        }
+      }
     } else {
-      // Se não há ordem definida, usar todas as métricas habilitadas
-      cardMetrics = [...enabledMetrics];
-    }
+      // Se não há ordem definida, usar ordem padrão
+      
+      // Primeiro, adicionar metas mensais se habilitadas
+      if (config.showMonthlyGoals) {
+        if (config.showMetaFaturamento) {
+          orderedItems.push('revenueGoal');
+        }
+        if (config.showMetaReceita) {
+          orderedItems.push('salesGoal');
+        }
+        if (config.showConversion) {
+          orderedItems.push('conversionRate');
+        }
+      }
 
-    // Adicionar as métricas de cards à lista ordenada
-    orderedItems.push(...cardMetrics);
+      // Adicionar metas específicas se habilitadas
+      if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
+        orderedItems.push('specificGoals');
+      }
 
-    // Por último, adicionar gráficos se habilitados
-    if (config.showCharts) {
-      orderedItems.push('salesChart', 'growthChart');
+      // Adicionar todas as métricas habilitadas
+      orderedItems.push(...enabledMetrics);
+
+      // Por último, adicionar gráficos se habilitados
+      if (config.showCharts) {
+        orderedItems.push('salesChart', 'growthChart');
+      }
     }
 
     console.log('Final ordered items:', orderedItems);

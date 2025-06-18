@@ -67,19 +67,6 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
   // Obter métricas habilitadas
   const enabledMetrics: MetricItem[] = [];
 
-  // Adicionar metas mensais se habilitadas
-  if (config.showMonthlyGoals) {
-    if (config.showConversion) {
-      enabledMetrics.push({ key: 'conversionRate', title: metricTitles['conversionRate'], enabled: true });
-    }
-    if (config.showMetaFaturamento) {
-      enabledMetrics.push({ key: 'revenueGoal', title: metricTitles['revenueGoal'], enabled: true });
-    }
-    if (config.showMetaReceita) {
-      enabledMetrics.push({ key: 'salesGoal', title: metricTitles['salesGoal'], enabled: true });
-    }
-  }
-
   // Adicionar métricas de cards habilitadas
   allMetricKeys.forEach(key => {
     if (config[key as keyof DashboardConfig]) {
@@ -90,6 +77,19 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
       });
     }
   });
+
+  // Adicionar metas mensais se habilitadas
+  if (config.showMonthlyGoals) {
+    if (config.showMetaFaturamento) {
+      enabledMetrics.push({ key: 'revenueGoal', title: metricTitles['revenueGoal'], enabled: true });
+    }
+    if (config.showMetaReceita) {
+      enabledMetrics.push({ key: 'salesGoal', title: metricTitles['salesGoal'], enabled: true });
+    }
+    if (config.showConversion) {
+      enabledMetrics.push({ key: 'conversionRate', title: metricTitles['conversionRate'], enabled: true });
+    }
+  }
 
   // Adicionar metas específicas se habilitadas
   if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
@@ -114,7 +114,9 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     if (index > 0) {
       const newOrder = [...orderedMetrics];
       [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-      onReorderMetrics(newOrder.map(item => item.key));
+      const newOrderKeys = newOrder.map(item => item.key);
+      console.log('Moving up - new order:', newOrderKeys);
+      onReorderMetrics(newOrderKeys);
     }
   };
 
@@ -122,7 +124,9 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     if (index < orderedMetrics.length - 1) {
       const newOrder = [...orderedMetrics];
       [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
-      onReorderMetrics(newOrder.map(item => item.key));
+      const newOrderKeys = newOrder.map(item => item.key);
+      console.log('Moving down - new order:', newOrderKeys);
+      onReorderMetrics(newOrderKeys);
     }
   };
 
