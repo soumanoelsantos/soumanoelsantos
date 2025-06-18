@@ -1,23 +1,34 @@
 
 import { Target, DollarSign } from 'lucide-react';
+import { calculateRemainingDaysInMonth, calculateDailyTarget, formatCurrency } from '@/utils/goalCalculations';
+
+// Valores de exemplo - em uma implementação real, estes viriam de uma API ou contexto
+const MONTHLY_REVENUE_GOAL = 60000; // R$ 60.000 meta mensal de receita
+const CURRENT_REVENUE = 35000; // R$ 35.000 receita atual
+const MONTHLY_BILLING_GOAL = 120000; // R$ 120.000 meta mensal de faturamento
+const CURRENT_BILLING = 80000; // R$ 80.000 faturamento atual
+
+const remainingDays = calculateRemainingDaysInMonth();
+const dailyRevenueTarget = calculateDailyTarget(MONTHLY_REVENUE_GOAL, CURRENT_REVENUE, remainingDays);
+const dailyBillingTarget = calculateDailyTarget(MONTHLY_BILLING_GOAL, CURRENT_BILLING, remainingDays);
 
 export const activityMetrics = [
   {
     key: 'showDiariaReceita',
-    title: 'Diária de Receita',
-    value: 'R$ 1.950,00',
-    description: 'Receita média diária',
+    title: 'Meta Diária de Receita',
+    value: formatCurrency(dailyRevenueTarget),
+    description: `Para atingir a meta em ${remainingDays} dias`,
     icon: DollarSign,
-    trend: '+8%',
+    trend: `${remainingDays} dias restantes`,
     color: 'text-purple-500'
   },
   {
     key: 'showDiariaFaturamento',
-    title: 'Diário de Faturamento',
-    value: 'R$ 6.750,00',
-    description: 'Faturamento médio diário',
+    title: 'Meta Diária de Faturamento',
+    value: formatCurrency(dailyBillingTarget),
+    description: `Para atingir a meta em ${remainingDays} dias`,
     icon: DollarSign,
-    trend: '+12%',
+    trend: `${remainingDays} dias restantes`,
     color: 'text-green-500'
   },
   {
