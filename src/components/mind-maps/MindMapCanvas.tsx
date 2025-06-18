@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { MindMapContent, MindMapNode, MindMapEdge } from '@/types/mindMap';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,9 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   const [newNodeLabel, setNewNodeLabel] = useState('');
   const [editingNode, setEditingNode] = useState<string | null>(null);
   const [editLabel, setEditLabel] = useState('');
+  const [draggedNode, setDraggedNode] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   // Adicionar nó central se não existir
   useEffect(() => {
@@ -36,7 +39,13 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   }, []);
 
   const handleSave = async () => {
-    await onSave({ nodes, edges });
+    console.log('Salvando mapa mental com conteúdo:', { nodes, edges });
+    try {
+      await onSave({ nodes, edges });
+      console.log('Mapa mental salvo com sucesso');
+    } catch (error) {
+      console.error('Erro ao salvar mapa mental:', error);
+    }
   };
 
   const addNode = (x: number = Math.random() * 600 + 100, y: number = Math.random() * 400 + 100) => {
@@ -93,21 +102,61 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setEditLabel('');
   };
 
-  const connectNodes = (sourceId: string, targetId: string) => {
-    const edgeExists = edges.some(edge =>
-      (edge.source === sourceId && edge.target === targetId) ||
-      (edge.source === targetId && edge.target === sourceId)
-    );
+  const handleMouseDown = (e: React.MouseEvent, nodeId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const node = nodes.find(n => n.id === nodeId);
+    if (!node) return;
 
-    if (!edgeExists) {
-      const newEdge: MindMapEdge = {
-        id: `edge-${Date.now()}`,
-        source: sourceId,
-        target: targetId
-      };
-      setEdges(prev => [...prev, newEdge]);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const canvasRect = canvasRef.current?.getBoundingClientRect();
+    
+    if (canvasRect) {
+      setDragOffset({
+        x: e.clientX - (canvasRect.left + node.position.x),
+        y: e.clientY - (canvasRect.top + node.position.y)
+      });
     }
+    
+    setDraggedNode(nodeId);
+    setSelectedNode(nodeId);
   };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!draggedNode || !canvasRef.current) return;
+    
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const newX = e.clientX - canvasRect.left - dragOffset.x;
+    const newY = e.clientY - canvasRect.top - dragOffset.y;
+    
+    // Limitar dentro dos limites do canvas
+    const limitedX = Math.max(50, Math.min(newX, canvasRect.width - 50));
+    const limitedY = Math.max(50, Math.min(newY, canvasRect.height - 50));
+    
+    setNodes(prev => prev.map(node =>
+      node.id === draggedNode
+        ? { ...node, position: { x: limitedX, y: limitedY } }
+        : node
+    ));
+  }, [draggedNode, dragOffset]);
+
+  const handleMouseUp = useCallback(() => {
+    setDraggedNode(null);
+    setDragOffset({ x: 0, y: 0 });
+  }, []);
+
+  useEffect(() => {
+    if (draggedNode) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [draggedNode, handleMouseMove, handleMouseUp]);
 
   return (
     <div className="relative w-full h-full bg-white">
@@ -133,79 +182,90 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
       </div>
 
       {/* Canvas */}
-      <svg className="w-full h-full" style={{ minHeight: '600px' }}>
-        {/* Render edges */}
-        {edges.map(edge => {
-          const sourceNode = nodes.find(n => n.id === edge.source);
-          const targetNode = nodes.find(n => n.id === edge.target);
-          
-          if (!sourceNode || !targetNode) return null;
+      <div 
+        ref={canvasRef}
+        className="w-full h-full relative overflow-hidden"
+        style={{ minHeight: '600px' }}
+      >
+        {/* SVG para as linhas de conexão */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+          {edges.map(edge => {
+            const sourceNode = nodes.find(n => n.id === edge.source);
+            const targetNode = nodes.find(n => n.id === edge.target);
+            
+            if (!sourceNode || !targetNode) return null;
 
-          return (
-            <line
-              key={edge.id}
-              x1={sourceNode.position.x + 60}
-              y1={sourceNode.position.y + 30}
-              x2={targetNode.position.x + 60}
-              y2={targetNode.position.y + 30}
-              stroke="#6b7280"
-              strokeWidth="2"
-            />
-          );
-        })}
-      </svg>
-
-      {/* Render nodes */}
-      {nodes.map(node => (
-        <div
-          key={node.id}
-          className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-move ${
-            selectedNode === node.id ? 'ring-2 ring-blue-500' : ''
-          }`}
-          style={{
-            left: node.position.x,
-            top: node.position.y,
-          }}
-          onClick={() => setSelectedNode(node.id)}
-        >
-          <Card className="min-w-[120px] shadow-lg hover:shadow-xl transition-shadow">
-            <CardContent className="p-3">
-              <div
-                className="w-3 h-3 rounded-full mb-2"
-                style={{ backgroundColor: node.data.color }}
+            return (
+              <line
+                key={edge.id}
+                x1={sourceNode.position.x + 60}
+                y1={sourceNode.position.y + 30}
+                x2={targetNode.position.x + 60}
+                y2={targetNode.position.y + 30}
+                stroke="#6b7280"
+                strokeWidth="2"
               />
-              <div className="text-sm font-medium text-center">
-                {node.data.label}
-              </div>
-              
-              {selectedNode === node.id && (
-                <div className="flex gap-1 mt-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      startEditNode(node.id);
-                    }}
-                  >
-                    <Edit2 className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteNode(node.id);
-                    }}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+            );
+          })}
+        </svg>
+
+        {/* Render nodes */}
+        {nodes.map(node => (
+          <div
+            key={node.id}
+            className={`absolute cursor-move select-none ${
+              selectedNode === node.id ? 'ring-2 ring-blue-500' : ''
+            } ${draggedNode === node.id ? 'z-50' : 'z-10'}`}
+            style={{
+              left: node.position.x,
+              top: node.position.y,
+              transform: 'translate(-50%, -50%)'
+            }}
+            onMouseDown={(e) => handleMouseDown(e, node.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedNode(node.id);
+            }}
+          >
+            <Card className="min-w-[120px] shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-3">
+                <div
+                  className="w-3 h-3 rounded-full mb-2"
+                  style={{ backgroundColor: node.data.color }}
+                />
+                <div className="text-sm font-medium text-center">
+                  {node.data.label}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      ))}
+                
+                {selectedNode === node.id && (
+                  <div className="flex gap-1 mt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startEditNode(node.id);
+                      }}
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNode(node.id);
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+      </div>
 
       {/* Dialog para adicionar nó */}
       <Dialog open={isAddingNode} onOpenChange={setIsAddingNode}>
