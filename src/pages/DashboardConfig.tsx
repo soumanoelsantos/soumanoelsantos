@@ -9,7 +9,7 @@ import GeneralConfigCard from '@/components/dashboard/config/GeneralConfigCard';
 import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import SpecificGoalsConfigCard from '@/components/dashboard/config/SpecificGoalsConfigCard';
-import DraggablePreview from '@/components/dashboard/DraggablePreview';
+import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Target } from 'lucide-react';
@@ -123,7 +123,7 @@ const DashboardConfig = () => {
             </CardContent>
           </Card>
 
-          <DraggablePreview 
+          <MetricsOrderManager 
             config={config}
             metricsOrder={config.metricsOrder}
             onReorderMetrics={handleReorderMetrics}
