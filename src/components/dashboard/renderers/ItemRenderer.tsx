@@ -29,11 +29,18 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
   // Verificar se a chave é uma métrica e se está habilitada
   if (metricKeys.includes(itemKey)) {
     const isEnabled = config[itemKey as keyof DashboardConfig] as boolean;
-    console.log(`Metric ${itemKey} is enabled:`, isEnabled);
+    console.log(`Metric ${itemKey} enabled:`, isEnabled);
     
     // Se não está habilitada, não renderizar nada
     if (!isEnabled) {
       console.log(`Metric ${itemKey} is disabled, not rendering`);
+      return null;
+    }
+
+    // Se as metas mensais estão habilitadas, não renderizar as métricas regulares de meta
+    // para evitar duplicação
+    if (config.showMonthlyGoals && (itemKey === 'showMetaFaturamento' || itemKey === 'showMetaReceita')) {
+      console.log(`Monthly goals enabled, skipping regular metric ${itemKey} to avoid duplication`);
       return null;
     }
     
