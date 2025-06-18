@@ -1,11 +1,12 @@
+
 import React, { useState } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { usePanAndZoom } from './hooks/usePanAndZoom';
 import { useCanvasInteractions } from './hooks/useCanvasInteractions';
+import { useAutoSave } from './hooks/useAutoSave';
 import MindMapToolbar from './components/MindMapToolbar';
-import AlignmentToolbar from './components/AlignmentToolbar';
 import CanvasContent from './components/CanvasContent';
 import DialogManager from './components/DialogManager';
 
@@ -59,17 +60,25 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     isDragging
   });
 
+  // Auto-save hook
+  useAutoSave({
+    content: { nodes, edges },
+    onSave,
+    delay: 2000, // 2 segundos após a última modificação
+    enabled: true
+  });
+
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [editingNode, setEditingNode] = useState<string | null>(null);
   const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
 
   const handleSave = async () => {
-    console.log('Salvando mapa mental com conteúdo:', { nodes, edges });
+    console.log('Salvamento manual do mapa mental:', { nodes, edges });
     try {
       await onSave({ nodes, edges });
-      console.log('Mapa mental salvo com sucesso');
+      console.log('Mapa mental salvo manualmente com sucesso');
     } catch (error) {
-      console.error('Erro ao salvar mapa mental:', error);
+      console.error('Erro ao salvar mapa mental manualmente:', error);
     }
   };
 
