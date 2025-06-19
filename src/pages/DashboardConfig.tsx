@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -34,11 +35,7 @@ const DashboardConfig = () => {
       [key]: value
     };
     
-    console.log('🔵 DashboardConfig - New config projection indicators after change:', {
-      showProjecaoReceita: newConfig.showProjecaoReceita,
-      showProjecaoFaturamento: newConfig.showProjecaoFaturamento,
-      showNoShow: newConfig.showNoShow
-    });
+    console.log('🔵 DashboardConfig - New config after change:', newConfig);
     
     // This will trigger auto-save
     setConfig(newConfig);
@@ -56,9 +53,8 @@ const DashboardConfig = () => {
 
   const handleManualSave = async () => {
     console.log('🔵 DashboardConfig - Manual save requested');
-    console.log('🔵 DashboardConfig - Current config metricsOrder:', config.metricsOrder);
+    console.log('🔵 DashboardConfig - Current config:', config);
     console.log('🔵 DashboardConfig - Has unsaved changes:', hasUnsavedChanges);
-    console.log('🔵 DashboardConfig - Is loading:', isLoading);
     
     try {
       const success = await saveConfig();

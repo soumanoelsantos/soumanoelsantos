@@ -41,7 +41,6 @@ const defaultConfig: DashboardConfig = {
   showBillingEvolutionChart: true,
   showSellerRevenueChart: true,
   showSellerBillingChart: true,
-  // Novos gráficos de análise temporal
   showTemporalRevenueChart: true,
   showTemporalBillingChart: true,
 };
@@ -52,35 +51,55 @@ export const useDashboardConfig = () => {
   const [config, setConfig] = useState<DashboardConfig>(defaultConfig);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     loadConfig();
-  }, []);
+  }, [userId]);
 
+  // Auto-save com debounce melhorado
   useEffect(() => {
-    if (hasUnsavedChanges) {
-      console.log('🔵 useDashboardConfig - Auto-save triggered, will save in 3 seconds');
-      const timer = setTimeout(() => {
+    if (hasUnsavedChanges && userId) {
+      console.log('🔵 useDashboardConfig - Setting up auto-save timer');
+      
+      // Limpar timer anterior se existir
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+      }
+
+      // Configurar novo timer
+      const timer = setTimeout(async () => {
         console.log('🔵 useDashboardConfig - Executing auto-save');
-        saveConfig(config);
-        setHasUnsavedChanges(false);
-      }, 3000);
+        const success = await performSave(config);
+        if (success) {
+          setHasUnsavedChanges(false);
+        }
+      }, 2000); // Reduzido para 2 segundos
+
+      setAutoSaveTimer(timer);
 
       return () => {
-        console.log('🔵 useDashboardConfig - Auto-save timer cleared');
-        clearTimeout(timer);
+        if (timer) {
+          clearTimeout(timer);
+        }
       };
     }
-  }, [config, hasUnsavedChanges]);
+  }, [config, hasUnsavedChanges, userId]);
 
   const loadConfig = async () => {
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     try {
-      console.log('🔵 useDashboardConfig - Loading configuration');
+      console.log('🔵 useDashboardConfig - Loading configuration for user:', userId);
       const { data, error } = await supabase
         .from('dashboard_configs')
         .select('*')
-        .single();
+        .eq('user_id', userId)
+        .maybeSingle();
 
       if (error) {
         console.error("🔴 useDashboardConfig - Erro ao carregar configuração:", error);
@@ -90,12 +109,13 @@ export const useDashboardConfig = () => {
       if (data) {
         console.log('🟢 useDashboardConfig - Configuration loaded from database');
         const mappedConfig = mapDatabaseToConfig(data);
-        console.log('🔍 useDashboardConfig - Mapped config metricsOrder:', mappedConfig.metricsOrder);
+        console.log('🔍 useDashboardConfig - Mapped config:', mappedConfig);
         setConfig(mappedConfig);
       } else {
         console.log("🟡 useDashboardConfig - No configuration found, using default");
         setConfig(defaultConfig);
-        await saveConfig(defaultConfig);
+        // Salvar configuração padrão
+        await performSave(defaultConfig);
       }
     } catch (error) {
       console.error("🔴 useDashboardConfig - Failed to load configuration:", error);
@@ -110,19 +130,18 @@ export const useDashboardConfig = () => {
     }
   };
 
-  const saveConfig = async (newConfig: DashboardConfig): Promise<boolean> => {
+  const performSave = async (configToSave: DashboardConfig): Promise<boolean> => {
     if (!userId) {
       console.error("🔴 useDashboardConfig - User not found");
       return false;
     }
 
     console.log('🔵 useDashboardConfig - Starting save process');
-    console.log('🔍 useDashboardConfig - Config to save metricsOrder:', newConfig.metricsOrder);
+    console.log('🔍 useDashboardConfig - Config to save:', configToSave);
     
-    setIsLoading(true);
     try {
-      const databaseData = mapConfigToDatabase(newConfig, userId);
-      console.log('🔍 useDashboardConfig - Database data metrics_order:', databaseData.metrics_order);
+      const databaseData = mapConfigToDatabase(configToSave, userId);
+      console.log('🔍 useDashboardConfig - Database data:', databaseData);
       
       const { error } = await supabase
         .from('dashboard_configs')
@@ -134,10 +153,6 @@ export const useDashboardConfig = () => {
       }
 
       console.log('🟢 useDashboardConfig - Configuration saved successfully');
-      toast({
-        title: "Sucesso",
-        description: "Configurações do dashboard salvas com sucesso.",
-      });
       return true;
     } catch (error) {
       console.error("🔴 useDashboardConfig - Failed to save configuration:", error);
@@ -147,30 +162,44 @@ export const useDashboardConfig = () => {
         variant: "destructive",
       });
       return false;
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const setConfigWithAutoSave = (newConfig: DashboardConfig) => {
-    console.log('🔵 useDashboardConfig - Config updated, setting auto-save flag');
-    console.log('🔍 useDashboardConfig - New metricsOrder:', newConfig.metricsOrder);
+  const updateConfig = (newConfig: DashboardConfig) => {
+    console.log('🔵 useDashboardConfig - Config updated');
+    console.log('🔍 useDashboardConfig - New config:', newConfig);
     setConfig(newConfig);
     setHasUnsavedChanges(true);
   };
 
   const forceSave = async (): Promise<boolean> => {
     console.log('🔵 useDashboardConfig - Force save requested');
-    const success = await saveConfig(config);
-    if (success) {
-      setHasUnsavedChanges(false);
+    setIsLoading(true);
+    
+    // Limpar timer de auto-save se existir
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer);
+      setAutoSaveTimer(null);
     }
-    return success;
+    
+    try {
+      const success = await performSave(config);
+      if (success) {
+        setHasUnsavedChanges(false);
+        toast({
+          title: "Sucesso",
+          description: "Configurações salvas com sucesso.",
+        });
+      }
+      return success;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
     config,
-    setConfig: setConfigWithAutoSave,
+    setConfig: updateConfig,
     saveConfig: forceSave,
     isLoading,
     hasUnsavedChanges

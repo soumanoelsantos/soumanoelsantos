@@ -133,10 +133,14 @@ export type Database = {
           show_revenue: boolean | null
           show_revenue_evolution_chart: boolean | null
           show_sales: boolean | null
+          show_seller_billing_chart: boolean | null
+          show_seller_revenue_chart: boolean | null
           show_specific_goals: boolean | null
           show_super_meta_faturamento: boolean | null
           show_super_meta_receita: boolean | null
           show_team: boolean | null
+          show_temporal_billing_chart: boolean | null
+          show_temporal_revenue_chart: boolean | null
           show_ticket_faturamento: boolean | null
           show_ticket_medio: boolean | null
           show_ticket_receita: boolean | null
@@ -179,10 +183,14 @@ export type Database = {
           show_revenue?: boolean | null
           show_revenue_evolution_chart?: boolean | null
           show_sales?: boolean | null
+          show_seller_billing_chart?: boolean | null
+          show_seller_revenue_chart?: boolean | null
           show_specific_goals?: boolean | null
           show_super_meta_faturamento?: boolean | null
           show_super_meta_receita?: boolean | null
           show_team?: boolean | null
+          show_temporal_billing_chart?: boolean | null
+          show_temporal_revenue_chart?: boolean | null
           show_ticket_faturamento?: boolean | null
           show_ticket_medio?: boolean | null
           show_ticket_receita?: boolean | null
@@ -225,10 +233,14 @@ export type Database = {
           show_revenue?: boolean | null
           show_revenue_evolution_chart?: boolean | null
           show_sales?: boolean | null
+          show_seller_billing_chart?: boolean | null
+          show_seller_revenue_chart?: boolean | null
           show_specific_goals?: boolean | null
           show_super_meta_faturamento?: boolean | null
           show_super_meta_receita?: boolean | null
           show_team?: boolean | null
+          show_temporal_billing_chart?: boolean | null
+          show_temporal_revenue_chart?: boolean | null
           show_ticket_faturamento?: boolean | null
           show_ticket_medio?: boolean | null
           show_ticket_receita?: boolean | null
