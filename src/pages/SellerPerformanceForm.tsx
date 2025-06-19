@@ -48,7 +48,7 @@ const SellerPerformanceForm = () => {
 
       try {
         console.log('🔄 [DEBUG] Fazendo consulta ao banco de dados...');
-        console.log('🔄 [DEBUG] Supabase URL:', supabase.supabaseUrl);
+        console.log('🔄 [DEBUG] Supabase client initialized');
         
         // Tentar diferentes abordagens de consulta
         console.log('🔄 [DEBUG] Tentativa 1: Consulta direta');
@@ -82,7 +82,7 @@ const SellerPerformanceForm = () => {
         console.log('🔄 [DEBUG] Tentativa 2: Usando RPC function');
         try {
           const { data: rpcData, error: rpcError } = await supabase
-            .rpc('get_seller_by_token', { token_param: token });
+            .rpc('get_seller_by_token' as any, { token_param: token });
 
           console.log('📋 [DEBUG] Resultado RPC:', { data: rpcData, error: rpcError });
 
@@ -91,9 +91,9 @@ const SellerPerformanceForm = () => {
             setDebugInfo(`Erro RPC: ${rpcError.message}`);
           }
 
-          if (rpcData) {
+          if (rpcData && typeof rpcData === 'object' && 'name' in rpcData) {
             console.log('✅ [DEBUG] Vendedor encontrado via RPC:', rpcData.name);
-            setSeller(rpcData);
+            setSeller(rpcData as Seller);
             setHasError(false);
             setDebugInfo(`Sucesso RPC: ${rpcData.name}`);
             setIsLoading(false);
