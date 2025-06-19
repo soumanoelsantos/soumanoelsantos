@@ -627,7 +627,9 @@ export type Database = {
       monthly_goals: {
         Row: {
           created_at: string
+          currency: string | null
           current_value: number
+          financial_category: string | null
           goal_type: string
           id: string
           month: number
@@ -640,7 +642,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          currency?: string | null
           current_value?: number
+          financial_category?: string | null
           goal_type: string
           id?: string
           month: number
@@ -653,7 +657,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          currency?: string | null
           current_value?: number
+          financial_category?: string | null
           goal_type?: string
           id?: string
           month?: number
