@@ -25,6 +25,11 @@ export interface DashboardConfig {
   showCashCollect: boolean;
   showCac: boolean;
   
+  // Novos indicadores de projeção
+  showProjecaoReceita: boolean;
+  showProjecaoFaturamento: boolean;
+  showNoShow: boolean;
+  
   companyName: string;
   metricsOrder: string[];
   

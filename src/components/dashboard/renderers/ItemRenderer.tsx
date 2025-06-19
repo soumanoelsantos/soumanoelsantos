@@ -24,7 +24,8 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     'showHiperMetaReceita', 'showFaltaReceitaSuper',
     'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
-    'showQuantidadeVendas', 'showCashCollect', 'showCac'
+    'showQuantidadeVendas', 'showCashCollect', 'showCac',
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ];
 
   // Verificar se a chave é uma métrica e se está habilitada
