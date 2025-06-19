@@ -1,19 +1,18 @@
+
 import { basicMetrics } from './basicMetrics';
 import { ticketMetrics } from './ticketMetrics';
 import { gapMetrics } from './gapMetrics';
 import { goalMetrics } from './goalMetrics';
 import { revenueMetrics } from './revenueMetrics';
 import { activityMetrics } from './activityMetrics';
-import { projectionMetrics } from './projectionMetrics';
 
 export const allMetricsCards = [
   ...basicMetrics,
-  ...revenueMetrics,
   ...ticketMetrics,
-  ...goalMetrics,
   ...gapMetrics,
-  ...activityMetrics,
-  ...projectionMetrics
+  ...goalMetrics,
+  ...revenueMetrics,
+  ...activityMetrics
 ];
 
 // Export individual metric categories for specific use cases

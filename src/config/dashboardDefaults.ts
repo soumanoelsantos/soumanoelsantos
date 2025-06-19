@@ -26,11 +26,6 @@ export const defaultConfig: DashboardConfig = {
   showCashCollect: false,
   showCac: false,
   
-  // Novos indicadores de projeção
-  showProjecaoReceita: false,
-  showProjecaoFaturamento: false,
-  showNoShow: false,
-  
   companyName: 'Minha Empresa',
   metricsOrder: [
     'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
@@ -39,7 +34,6 @@ export const defaultConfig: DashboardConfig = {
     'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
     'specificGoals', 'revenueEvolutionChart', 'billingEvolutionChart'
   ],
   

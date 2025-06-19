@@ -47,9 +47,6 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'showCac': 'CAC (Custo de Aquisição)',
     'showConversion': 'Taxa de Conversão',
     'showRevenue': 'Receita',
-    'showProjecaoReceita': 'Projeção de Receita',
-    'showProjecaoFaturamento': 'Projeção de Faturamento',
-    'showNoShow': 'No-Show',
     'specificGoals': 'Metas Específicas',
     'revenueEvolutionChart': 'Gráfico de Evolução de Receita',
     'billingEvolutionChart': 'Gráfico de Evolução de Faturamento'
@@ -64,8 +61,7 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'showHiperMetaReceita', 'showFaltaReceitaSuper',
     'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
-    'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
+    'showQuantidadeVendas', 'showCashCollect', 'showCac'
   ];
 
   // Obter métricas habilitadas
