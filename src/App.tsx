@@ -25,6 +25,7 @@ import DevAI from "@/pages/DevAI";
 import MapaMental from "@/pages/MapaMental";
 import MindMapEditor from "@/pages/MindMapEditor";
 import SharedMindMap from "@/pages/SharedMindMap";
+import SellerPerformanceForm from "@/pages/SellerPerformanceForm";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/dashboard/configurar" element={<DashboardConfig />} />
               <Route path="/dashboard/metas" element={<GoalsManagement />} />
+              <Route path="/vendedor/:token" element={<SellerPerformanceForm />} />
               <Route path="/diagnostico" element={<DiagnosticoLanding />} />
               <Route path="/dev-ai" element={<DevAI />} />
               <Route path="/mapa-mental" element={<MapaMental />} />
