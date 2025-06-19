@@ -23,8 +23,8 @@ const DisplayConfigCard: React.FC<DisplayConfigCardProps> = ({ config, onConfigC
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Gráficos e Visualizações</CardTitle>
-        <CardDescription>Configure quais gráficos serão exibidos no dashboard</CardDescription>
+        <CardTitle>Gráficos e Visualizações do Comercial</CardTitle>
+        <CardDescription>Configure quais gráficos do comercial serão exibidos no dashboard</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {chartOptions.map((option) => (

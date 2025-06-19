@@ -50,10 +50,10 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ArrowUpDown className="h-5 w-5" />
-          Ordem dos Indicadores
+          Ordem dos Indicadores do Comercial
         </CardTitle>
         <p className="text-sm text-gray-600">
-          Use os botões para reordenar como os indicadores aparecerão no dashboard
+          Use os botões para reordenar como os indicadores do comercial aparecerão no dashboard
         </p>
       </CardHeader>
       <CardContent>

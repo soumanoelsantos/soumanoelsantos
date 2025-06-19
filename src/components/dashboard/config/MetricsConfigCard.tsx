@@ -48,8 +48,8 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Indicadores</CardTitle>
-        <CardDescription>Selecione quais indicadores deseja exibir no dashboard</CardDescription>
+        <CardTitle>Indicadores do Comercial</CardTitle>
+        <CardDescription>Selecione quais indicadores do comercial deseja exibir no dashboard</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
