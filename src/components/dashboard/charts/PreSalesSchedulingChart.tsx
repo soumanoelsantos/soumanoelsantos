@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 interface PreSalesSchedulingChartProps {
   data: Array<{
@@ -40,25 +40,27 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar 
+              <Line 
+                type="monotone" 
                 dataKey="agendamentos" 
-                fill="var(--color-schedulings)" 
+                stroke="var(--color-schedulings)" 
+                strokeWidth={2}
                 name="Agendamentos"
-                radius={[4, 4, 0, 0]}
               />
-              <Bar 
+              <Line 
+                type="monotone" 
                 dataKey="meta" 
-                fill="var(--color-meta)" 
+                stroke="var(--color-meta)" 
+                strokeWidth={2}
+                strokeDasharray="5 5"
                 name="Meta"
-                opacity={0.5}
-                radius={[4, 4, 0, 0]}
               />
-            </BarChart>
+            </LineChart>
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>

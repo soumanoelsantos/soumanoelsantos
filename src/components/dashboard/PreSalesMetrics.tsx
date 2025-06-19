@@ -60,86 +60,122 @@ const PreSalesMetrics = () => {
     return null;
   }
 
+  // Cards de métricas no mesmo estilo do comercial
+  const metricsCards = [];
+  
+  // Verificar quais cards devem ser exibidos baseado na configuração
+  if (config.showPreSalesCalls) {
+    metricsCards.push(
+      <div key="calls" className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+          <div className="text-xs font-medium text-gray-600">
+            Tentativas de Ligação
+          </div>
+          <Phone className="h-3 w-3 text-blue-600 flex-shrink-0" />
+        </div>
+        <div className="flex-1 flex flex-col justify-between p-3 pt-0">
+          <div className="text-lg font-bold">{preSalesData.dailyCalls}</div>
+          <div className="mt-auto">
+            <p className="text-xs text-gray-600 mt-1">
+              Meta: {preSalesData.dailyCallsTarget}
+            </p>
+            <div className="text-xs text-green-600 mt-2">
+              {((preSalesData.dailyCalls / preSalesData.dailyCallsTarget) * 100).toFixed(1)}% da meta
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (config.showPreSalesSchedulings) {
+    metricsCards.push(
+      <div key="schedulings" className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+          <div className="text-xs font-medium text-gray-600">
+            Agendamentos Diários
+          </div>
+          <Calendar className="h-3 w-3 text-green-600 flex-shrink-0" />
+        </div>
+        <div className="flex-1 flex flex-col justify-between p-3 pt-0">
+          <div className="text-lg font-bold">{preSalesData.dailySchedulings}</div>
+          <div className="mt-auto">
+            <p className="text-xs text-gray-600 mt-1">
+              Meta: {preSalesData.dailySchedulingsTarget}
+            </p>
+            <div className="text-xs text-green-600 mt-2">
+              {((preSalesData.dailySchedulings / preSalesData.dailySchedulingsTarget) * 100).toFixed(1)}% da meta
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (config.showPreSalesNoShow) {
+    metricsCards.push(
+      <div key="noshow" className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+          <div className="text-xs font-medium text-gray-600">
+            No-Show Diário
+          </div>
+          <UserX className="h-3 w-3 text-red-600 flex-shrink-0" />
+        </div>
+        <div className="flex-1 flex flex-col justify-between p-3 pt-0">
+          <div className="text-lg font-bold">{preSalesData.dailyNoShow}</div>
+          <div className="mt-auto">
+            <p className="text-xs text-gray-600 mt-1">
+              Taxa: {preSalesData.dailyNoShowRate}%
+            </p>
+            <div className="text-xs text-red-600 mt-2">
+              {preSalesData.dailyNoShowRate > 20 ? 'Acima do ideal' : 'Dentro do esperado'}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Card fixo da média por SDR (sempre exibido)
+  metricsCards.push(
+    <div key="average" className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+        <div className="text-xs font-medium text-gray-600">
+          Média por SDR
+        </div>
+        <Users className="h-3 w-3 text-purple-600 flex-shrink-0" />
+      </div>
+      <div className="flex-1 flex flex-col justify-between p-3 pt-0">
+        <div className="text-lg font-bold">{preSalesData.averageSchedulingsPerSDR}</div>
+        <div className="mt-auto">
+          <p className="text-xs text-gray-600 mt-1">
+            Agendamentos/SDR
+          </p>
+          <div className="text-xs text-purple-600 mt-2">
+            {preSalesData.totalSDRs} SDRs ativos
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   // Função para renderizar cada componente baseado na ordem configurada
   const renderComponent = (itemKey: string) => {
     switch (itemKey) {
-      case 'showPreSalesCalls':
-        return (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Tentativas de Ligação
-              </CardTitle>
-              <Phone className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{preSalesData.dailyCalls}</div>
-              <p className="text-xs text-gray-600 mt-1">
-                Meta: {preSalesData.dailyCallsTarget}
-              </p>
-              <div className="text-xs text-green-600 mt-2">
-                {((preSalesData.dailyCalls / preSalesData.dailyCallsTarget) * 100).toFixed(1)}% da meta
-              </div>
-            </CardContent>
-          </Card>
-        );
-
-      case 'showPreSalesSchedulings':
-        return (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Agendamentos Diários
-              </CardTitle>
-              <Calendar className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{preSalesData.dailySchedulings}</div>
-              <p className="text-xs text-gray-600 mt-1">
-                Meta: {preSalesData.dailySchedulingsTarget}
-              </p>
-              <div className="text-xs text-green-600 mt-2">
-                {((preSalesData.dailySchedulings / preSalesData.dailySchedulingsTarget) * 100).toFixed(1)}% da meta
-              </div>
-            </CardContent>
-          </Card>
-        );
-
-      case 'showPreSalesNoShow':
-        return (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                No-Show Diário
-              </CardTitle>
-              <UserX className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{preSalesData.dailyNoShow}</div>
-              <p className="text-xs text-gray-600 mt-1">
-                Taxa: {preSalesData.dailyNoShowRate}%
-              </p>
-              <div className="text-xs text-red-600 mt-2">
-                {preSalesData.dailyNoShowRate > 20 ? 'Acima do ideal' : 'Dentro do esperado'}
-              </div>
-            </CardContent>
-          </Card>
-        );
-
       case 'showPreSalesCallsChart':
-        return <PreSalesCallsChart data={preSalesData.weeklyData} />;
+        return config.showPreSalesCallsChart ? <PreSalesCallsChart data={preSalesData.weeklyData} /> : null;
 
       case 'showPreSalesSchedulingChart':
-        return <PreSalesSchedulingChart data={preSalesData.weeklyData} />;
+        return config.showPreSalesSchedulingChart ? <PreSalesSchedulingChart data={preSalesData.weeklyData} /> : null;
 
       case 'showPreSalesNoShowChart':
-        return <PreSalesNoShowChart data={preSalesData.weeklyData} />;
+        return config.showPreSalesNoShowChart ? <PreSalesNoShowChart data={preSalesData.weeklyData} /> : null;
 
       case 'showPreSalesSDRComparisonChart':
-        return <PreSalesSDRComparisonChart data={preSalesData.sdrPerformance} />;
+        return config.showPreSalesSDRComparisonChart ? <PreSalesSDRComparisonChart data={preSalesData.sdrPerformance} /> : null;
 
       case 'showPreSalesSDRTable':
-        return <PreSalesSDRTable data={preSalesData.sdrPerformance} />;
+        return config.showPreSalesSDRTable ? <PreSalesSDRTable data={preSalesData.sdrPerformance} /> : null;
 
       default:
         return null;
@@ -148,6 +184,15 @@ const PreSalesMetrics = () => {
 
   return (
     <div className="space-y-8">
+      {/* Cards de métricas no mesmo estilo do comercial */}
+      {metricsCards.length > 0 && (
+        <div className="bg-white rounded-lg border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {metricsCards}
+          </div>
+        </div>
+      )}
+      
       {/* Renderizar componentes na ordem configurada */}
       {orderedItems.map((item, index) => {
         const component = renderComponent(item.key);
@@ -161,25 +206,6 @@ const PreSalesMetrics = () => {
           </div>
         );
       })}
-      
-      {/* Card fixo da média por SDR (sempre no final) */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-gray-600">
-            Média por SDR
-          </CardTitle>
-          <Users className="h-4 w-4 text-purple-600" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{preSalesData.averageSchedulingsPerSDR}</div>
-          <p className="text-xs text-gray-600 mt-1">
-            Agendamentos/SDR
-          </p>
-          <div className="text-xs text-purple-600 mt-2">
-            {preSalesData.totalSDRs} SDRs ativos
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
