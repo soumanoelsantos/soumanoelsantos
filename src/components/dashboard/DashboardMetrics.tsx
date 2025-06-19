@@ -22,6 +22,11 @@ const DashboardMetrics = () => {
   console.log('DashboardMetrics - Ordered items:', orderedItems);
   console.log('DashboardMetrics - Current filters:', filters);
 
+  // Separar itens que devem ocupar toda a largura dos que ficam no grid
+  const fullWidthItems = ['revenueEvolutionChart', 'billingEvolutionChart'];
+  const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
+  const fullWidthOrderedItems = orderedItems.filter(item => fullWidthItems.includes(item));
+
   return (
     <div className="space-y-8">
       <DashboardFilters
@@ -33,8 +38,9 @@ const DashboardMetrics = () => {
         onReset={resetFilters}
       />
       
+      {/* Grid para métricas e gráficos menores */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-        {orderedItems.map((key, index) => {
+        {gridItems.map((key, index) => {
           const components = <ItemRenderer itemKey={key} config={config} />;
           if (!components) return null;
           
@@ -45,6 +51,18 @@ const DashboardMetrics = () => {
           );
         })}
       </div>
+
+      {/* Seção para gráficos de largura completa */}
+      {fullWidthOrderedItems.map((key, index) => {
+        const components = <ItemRenderer itemKey={key} config={config} />;
+        if (!components) return null;
+        
+        return (
+          <div key={`${key}-${index}`} className="w-full">
+            {components}
+          </div>
+        );
+      })}
     </div>
   );
 };

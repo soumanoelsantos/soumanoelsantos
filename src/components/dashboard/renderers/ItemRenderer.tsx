@@ -85,11 +85,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
       return null;
     }
     console.log('Rendering sales chart');
-    return (
-      <div className="col-span-full lg:col-span-3">
-        <SalesChart />
-      </div>
-    );
+    return <SalesChart />;
   }
 
   // Gráfico de tendência de crescimento - verificar se está habilitado
@@ -99,11 +95,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
       return null;
     }
     console.log('Rendering growth chart');
-    return (
-      <div className="col-span-full lg:col-span-3">
-        <GrowthChart />
-      </div>
-    );
+    return <GrowthChart />;
   }
 
   // Gráfico de evolução de receita - verificar configuração específica
@@ -113,11 +105,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
       return null;
     }
     console.log('Rendering revenue evolution chart');
-    return (
-      <div className="col-span-full">
-        <RevenueEvolutionChart />
-      </div>
-    );
+    return <RevenueEvolutionChart />;
   }
 
   // Gráfico de evolução de faturamento - verificar configuração específica
@@ -127,11 +115,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
       return null;
     }
     console.log('Rendering billing evolution chart');
-    return (
-      <div className="col-span-full">
-        <BillingEvolutionChart />
-      </div>
-    );
+    return <BillingEvolutionChart />;
   }
 
   console.log(`No render for key: ${itemKey}`);
