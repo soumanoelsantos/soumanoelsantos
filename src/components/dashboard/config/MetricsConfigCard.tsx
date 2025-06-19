@@ -33,7 +33,11 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     { key: 'showDiariaReceita', label: 'Diária de Receita' },
     { key: 'showDiariaFaturamento', label: 'Diária de Faturamento' },
     { key: 'showCashCollect', label: 'Cash Collect' },
-    { key: 'showCac', label: 'CAC (Custo de Aquisição)' }
+    { key: 'showCac', label: 'CAC (Custo de Aquisição)' },
+    // Novos indicadores de projeção
+    { key: 'showProjecaoReceita', label: 'Projeção de Receita' },
+    { key: 'showProjecaoFaturamento', label: 'Projeção de Faturamento' },
+    { key: 'showNoShow', label: 'No-Show' }
   ];
 
   return (

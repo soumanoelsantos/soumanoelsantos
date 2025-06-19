@@ -47,6 +47,7 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'showCac': 'CAC (Custo de Aquisição)',
     'showConversion': 'Taxa de Conversão',
     'showRevenue': 'Receita',
+    // Novos indicadores de projeção
     'showProjecaoReceita': 'Projeção de Receita',
     'showProjecaoFaturamento': 'Projeção de Faturamento',
     'showNoShow': 'No-Show',
@@ -65,6 +66,7 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
+    // Incluir os novos indicadores de projeção
     'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ];
 
