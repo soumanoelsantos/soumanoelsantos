@@ -1,14 +1,11 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import { DashboardConfig } from '@/types/dashboardConfig';
-
-interface MetricItem {
-  key: string;
-  title: string;
-  enabled: boolean;
-}
+import { useMetricsOrder } from './metrics-order/useMetricsOrder';
+import { MetricOrderItem } from './metrics-order/MetricOrderItem';
+import { EmptyMetricsState } from './metrics-order/EmptyMetricsState';
 
 interface MetricsOrderManagerProps {
   config: DashboardConfig;
@@ -21,117 +18,8 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
   metricsOrder,
   onReorderMetrics
 }) => {
-  // Mapeamento de chaves para títulos amigáveis
-  const metricTitles: { [key: string]: string } = {
-    'showTicketFaturamento': 'Ticket Faturamento',
-    'showTicketReceita': 'Ticket Receita',
-    'showFaltaFaturamento': 'Falta de Faturamento',
-    'showFaltaReceita': 'Falta de Receita',
-    'showDiariaReceita': 'Diária de Receita',
-    'showDiariaFaturamento': 'Diária de Faturamento',
-    'showSuperMetaFaturamento': 'Super Meta Faturamento',
-    'showSuperMetaReceita': 'Super Meta Receita',
-    'showHiperMetaFaturamento': 'Hiper Meta Faturamento',
-    'showHiperMetaReceita': 'Hiper Meta Receita',
-    'showFaltaReceitaSuper': 'Falta Receita (Super)',
-    'showFaltaReceitaHiper': 'Falta Receita (Hiper)',
-    'showFaltaFaturamentoSuper': 'Falta Faturamento (Super)',
-    'showFaltaFaturamentoHiper': 'Falta Faturamento (Hiper)',
-    'showMetaFaturamento': 'Meta Faturamento',
-    'showMetaReceita': 'Meta Receita',
-    'showFaturamento': 'Faturamento',
-    'showReceita': 'Receita',
-    'showQuantidadeVendas': 'Quantidade de Vendas',
-    'showCashCollect': 'Cash Collect',
-    'showCac': 'CAC (Custo de Aquisição)',
-    'showConversion': 'Taxa de Conversão',
-    'showRevenue': 'Receita',
-    // Novos indicadores de projeção
-    'showProjecaoReceita': 'Projeção de Receita',
-    'showProjecaoFaturamento': 'Projeção de Faturamento',
-    'showNoShow': 'No-Show',
-    'specificGoals': 'Metas Específicas',
-    'revenueEvolutionChart': 'Gráfico de Evolução de Receita',
-    'billingEvolutionChart': 'Gráfico de Evolução de Faturamento',
-    // Novos gráficos de vendedores
-    'sellerRevenueChart': 'Gráfico de Receita por Vendedor',
-    'sellerBillingChart': 'Gráfico de Faturamento por Vendedor',
-    // Novos gráficos de análise temporal
-    'temporalRevenueChart': 'Gráfico de Análise Temporal de Receita',
-    'temporalBillingChart': 'Gráfico de Análise Temporal de Faturamento',
-    // Nova tabela de performance dos closers
-    'closersPerformanceTable': 'Tabela de desempenho dos closers'
-  };
-
-  // Lista de todas as chaves de métricas possíveis
-  const allMetricKeys = [
-    'showConversion', 'showRevenue',
-    'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
-    'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
-    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
-    'showHiperMetaReceita', 'showFaltaReceitaSuper',
-    'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
-    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
-    'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    // Incluir os novos indicadores de projeção
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
-    // Incluir a nova tabela de closers
-    'showClosersPerformanceTable'
-  ];
-
-  // Obter métricas habilitadas
-  const enabledMetrics: MetricItem[] = [];
-
-  // Adicionar métricas de cards habilitadas
-  allMetricKeys.forEach(key => {
-    if (config[key as keyof DashboardConfig]) {
-      enabledMetrics.push({
-        key,
-        title: metricTitles[key] || key,
-        enabled: true
-      });
-    }
-  });
-
-  // Adicionar metas específicas se habilitadas
-  if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
-    enabledMetrics.push({ key: 'specificGoals', title: metricTitles['specificGoals'], enabled: true });
-  }
-
-  // Adicionar gráficos de evolução se habilitados
-  if (config.showRevenueEvolutionChart) {
-    enabledMetrics.push({ key: 'revenueEvolutionChart', title: metricTitles['revenueEvolutionChart'], enabled: true });
-  }
-  
-  if (config.showBillingEvolutionChart) {
-    enabledMetrics.push({ key: 'billingEvolutionChart', title: metricTitles['billingEvolutionChart'], enabled: true });
-  }
-  
-  // Adicionar novos gráficos de vendedores se habilitados
-  if (config.showSellerRevenueChart) {
-    enabledMetrics.push({ key: 'sellerRevenueChart', title: metricTitles['sellerRevenueChart'], enabled: true });
-  }
-  
-  if (config.showSellerBillingChart) {
-    enabledMetrics.push({ key: 'sellerBillingChart', title: metricTitles['sellerBillingChart'], enabled: true });
-  }
-
-  // Adicionar novos gráficos de análise temporal se habilitados
-  if (config.showTemporalRevenueChart) {
-    enabledMetrics.push({ key: 'temporalRevenueChart', title: metricTitles['temporalRevenueChart'], enabled: true });
-  }
-  
-  if (config.showTemporalBillingChart) {
-    enabledMetrics.push({ key: 'temporalBillingChart', title: metricTitles['temporalBillingChart'], enabled: true });
-  }
-
-  // Ordenar métricas com base na ordem salva
-  const orderedMetrics = metricsOrder
-    .map(key => enabledMetrics.find(metric => metric.key === key))
-    .filter((metric): metric is MetricItem => metric !== undefined)
-    .concat(
-      enabledMetrics.filter(metric => !metricsOrder.includes(metric.key))
-    );
+  const { getOrderedMetrics } = useMetricsOrder(config);
+  const orderedMetrics = getOrderedMetrics(metricsOrder);
 
   const moveUp = (index: number) => {
     if (index > 0) {
@@ -154,21 +42,7 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
   };
 
   if (orderedMetrics.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ArrowUpDown className="h-5 w-5" />
-            Ordem dos Indicadores
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-gray-500">
-            Nenhum indicador habilitado. Ative alguns indicadores para poder organizá-los.
-          </p>
-        </CardContent>
-      </Card>
-    );
+    return <EmptyMetricsState />;
   }
 
   return (
@@ -185,34 +59,15 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
       <CardContent>
         <div className="space-y-2">
           {orderedMetrics.map((metric, index) => (
-            <div
+            <MetricOrderItem
               key={metric.key}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
-            >
-              <span className="text-sm font-medium text-gray-700">
-                {index + 1}. {metric.title}
-              </span>
-              <div className="flex gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => moveUp(index)}
-                  disabled={index === 0}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronUp className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => moveDown(index)}
-                  disabled={index === orderedMetrics.length - 1}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+              metric={metric}
+              index={index}
+              isFirst={index === 0}
+              isLast={index === orderedMetrics.length - 1}
+              onMoveUp={() => moveUp(index)}
+              onMoveDown={() => moveDown(index)}
+            />
           ))}
         </div>
       </CardContent>
