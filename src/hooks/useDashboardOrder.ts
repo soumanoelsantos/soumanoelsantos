@@ -24,7 +24,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       return finalOrder;
     }
 
-    // Ordem padrão com todos os itens incluindo os novos gráficos na ordem correta
+    // Ordem padrão com todos os itens incluindo os novos indicadores de projeção
     const defaultOrder = [
       'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
       'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
@@ -32,7 +32,9 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
       'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
       'showQuantidadeVendas', 'showCashCollect', 'showCac',
-      'specificGoals', 'salesChart', 'growthChart'
+      // Novos indicadores de projeção
+      'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
+      'specificGoals'
     ];
 
     // Adicionar gráficos de evolução se habilitados
@@ -44,7 +46,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       defaultOrder.push('billingEvolutionChart');
     }
 
-    console.log('useDashboardOrder - Using default order with evolution charts:', defaultOrder);
+    console.log('useDashboardOrder - Using default order with projection indicators:', defaultOrder);
     return defaultOrder;
   };
 

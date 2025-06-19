@@ -35,6 +35,12 @@ const DashboardConfig = () => {
       [key]: value
     };
     
+    console.log('🔵 DashboardConfig - New config projection indicators after change:', {
+      showProjecaoReceita: newConfig.showProjecaoReceita,
+      showProjecaoFaturamento: newConfig.showProjecaoFaturamento,
+      showNoShow: newConfig.showNoShow
+    });
+    
     // This will trigger auto-save
     setConfig(newConfig);
   };
@@ -50,7 +56,11 @@ const DashboardConfig = () => {
 
   const handleManualSave = async () => {
     console.log('🔵 DashboardConfig - Manual save requested');
-    console.log('🔵 DashboardConfig - Current config:', config);
+    console.log('🔵 DashboardConfig - Current config projection indicators:', {
+      showProjecaoReceita: config.showProjecaoReceita,
+      showProjecaoFaturamento: config.showProjecaoFaturamento,
+      showNoShow: config.showNoShow
+    });
     console.log('🔵 DashboardConfig - Has unsaved changes:', hasUnsavedChanges);
     console.log('🔵 DashboardConfig - Is loading:', isLoading);
     

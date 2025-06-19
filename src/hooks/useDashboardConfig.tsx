@@ -32,18 +32,15 @@ export const useDashboardConfig = () => {
       
       if (loadedConfig) {
         console.log('🟢 useDashboardConfig - Config loaded successfully');
-        console.log('🟢 useDashboardConfig - Loaded evolution charts config:', {
-          showRevenueEvolutionChart: loadedConfig.showRevenueEvolutionChart,
-          showBillingEvolutionChart: loadedConfig.showBillingEvolutionChart
+        console.log('🟢 useDashboardConfig - Loaded projection indicators:', {
+          showProjecaoReceita: loadedConfig.showProjecaoReceita,
+          showProjecaoFaturamento: loadedConfig.showProjecaoFaturamento,
+          showNoShow: loadedConfig.showNoShow
         });
         setConfig(loadedConfig);
         setHasUnsavedChanges(false);
       } else {
         console.log('🟡 useDashboardConfig - No config found, using defaults');
-        console.log('🟡 useDashboardConfig - Default evolution charts config:', {
-          showRevenueEvolutionChart: defaultConfig.showRevenueEvolutionChart,
-          showBillingEvolutionChart: defaultConfig.showBillingEvolutionChart
-        });
         setConfig(defaultConfig);
         setHasUnsavedChanges(false);
       }
@@ -75,7 +72,11 @@ export const useDashboardConfig = () => {
     try {
       setIsLoading(true);
       console.log('🔵 useDashboardConfig - Starting save process for user:', userId);
-      console.log('🔵 useDashboardConfig - Config to save:', configToSave);
+      console.log('🔵 useDashboardConfig - Config to save with projection indicators:', {
+        showProjecaoReceita: configToSave.showProjecaoReceita,
+        showProjecaoFaturamento: configToSave.showProjecaoFaturamento,
+        showNoShow: configToSave.showNoShow
+      });
       
       await saveDashboardConfig(configToSave, userId);
       console.log('🟢 useDashboardConfig - Config saved successfully');
@@ -98,6 +99,11 @@ export const useDashboardConfig = () => {
 
   const updateConfig = (newConfig: DashboardConfig) => {
     console.log('🔵 useDashboardConfig - Config updated, scheduling auto-save');
+    console.log('🔵 useDashboardConfig - New config projection indicators:', {
+      showProjecaoReceita: newConfig.showProjecaoReceita,
+      showProjecaoFaturamento: newConfig.showProjecaoFaturamento,
+      showNoShow: newConfig.showNoShow
+    });
     setConfig(newConfig);
     setHasUnsavedChanges(true);
 
@@ -115,7 +121,11 @@ export const useDashboardConfig = () => {
 
   const saveConfig = async (configToSave: DashboardConfig) => {
     console.log('🔵 useDashboardConfig - Manual save triggered');
-    console.log('🔵 useDashboardConfig - Config to save:', configToSave);
+    console.log('🔵 useDashboardConfig - Config to save projection indicators:', {
+      showProjecaoReceita: configToSave.showProjecaoReceita,
+      showProjecaoFaturamento: configToSave.showProjecaoFaturamento,
+      showNoShow: configToSave.showNoShow
+    });
     
     // Clear auto-save timeout since we're saving manually
     if (autoSaveTimeoutRef.current) {

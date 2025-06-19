@@ -40,6 +40,13 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     { key: 'showNoShow', label: 'No-Show' }
   ];
 
+  console.log('🔍 MetricsConfigCard - Current config:', config);
+  console.log('🔍 MetricsConfigCard - Projection indicators:', {
+    showProjecaoReceita: config.showProjecaoReceita,
+    showProjecaoFaturamento: config.showProjecaoFaturamento,
+    showNoShow: config.showNoShow
+  });
+
   return (
     <Card>
       <CardHeader>
@@ -53,7 +60,10 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
               <Checkbox
                 id={metric.key}
                 checked={config[metric.key as keyof DashboardConfig] as boolean}
-                onCheckedChange={(checked) => onConfigChange(metric.key, checked as boolean)}
+                onCheckedChange={(checked) => {
+                  console.log('🔍 MetricsConfigCard - Checkbox changed:', metric.key, '=', checked);
+                  onConfigChange(metric.key, checked as boolean);
+                }}
               />
               <Label htmlFor={metric.key} className="text-sm">{metric.label}</Label>
             </div>
