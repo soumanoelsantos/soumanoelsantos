@@ -17,11 +17,11 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
   const chartConfig = {
     calls: {
       label: "Ligações",
-      color: "hsl(var(--chart-1))",
+      color: "#3b82f6",
     },
     target: {
       label: "Meta",
-      color: "hsl(var(--chart-2))",
+      color: "#ef4444",
     },
   };
 
@@ -33,20 +33,24 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
   }));
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Ligações Diárias - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px]">
+        <ChartContainer config={chartConfig} className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="date" 
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={60}
               />
               <YAxis 
                 fontSize={12}
@@ -57,16 +61,16 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
               <Line 
                 type="monotone" 
                 dataKey="calls" 
-                stroke="var(--color-calls)" 
+                stroke="#3b82f6"
                 strokeWidth={3}
-                dot={{ fill: "var(--color-calls)", strokeWidth: 2, r: 4 }}
+                dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6 }}
                 name="Ligações"
               />
               <Line 
                 type="monotone" 
                 dataKey="target" 
-                stroke="var(--color-target)" 
+                stroke="#ef4444"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 dot={false}

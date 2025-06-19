@@ -17,11 +17,11 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
   const chartConfig = {
     schedulings: {
       label: "Agendamentos",
-      color: "hsl(var(--chart-3))",
+      color: "#10b981",
     },
     meta: {
       label: "Meta",
-      color: "hsl(var(--chart-4))",
+      color: "#f59e0b",
     },
   };
 
@@ -33,20 +33,24 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
   }));
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Agendamentos Diários - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px]">
+        <ChartContainer config={chartConfig} className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="date" 
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={60}
               />
               <YAxis 
                 fontSize={12}
@@ -57,16 +61,16 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
               <Line 
                 type="monotone" 
                 dataKey="agendamentos" 
-                stroke="var(--color-schedulings)" 
+                stroke="#10b981"
                 strokeWidth={3}
-                dot={{ fill: "var(--color-schedulings)", strokeWidth: 2, r: 4 }}
+                dot={{ fill: "#10b981", strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6 }}
                 name="Agendamentos"
               />
               <Line 
                 type="monotone" 
                 dataKey="meta" 
-                stroke="var(--color-meta)" 
+                stroke="#f59e0b"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 dot={false}

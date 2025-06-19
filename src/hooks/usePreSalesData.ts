@@ -25,7 +25,7 @@ interface PreSalesData {
   }>;
 }
 
-// Função para gerar dados do mês atual
+// Função para gerar dados do mês atual - dados mais realistas para Sabrina
 const generateCurrentMonthData = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -39,11 +39,18 @@ const generateCurrentMonthData = () => {
     const date = new Date(year, month, day);
     const dayName = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
     
-    // Simular dados realistas para Sabrina
+    // Simular dados realistas para Sabrina - mais consistentes
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-    const baseCalls = isWeekend ? 0 : Math.floor(Math.random() * 20) + 25; // 25-45 calls por dia útil
-    const schedulings = isWeekend ? 0 : Math.floor(baseCalls * (0.15 + Math.random() * 0.1)); // 15-25% conversão
-    const noShow = schedulings > 0 ? Math.floor(schedulings * (Math.random() * 0.3)) : 0; // 0-30% no-show
+    let baseCalls = 0;
+    let schedulings = 0;
+    let noShow = 0;
+    
+    if (!isWeekend) {
+      // Dados mais realistas para dias úteis
+      baseCalls = Math.floor(Math.random() * 15) + 30; // 30-45 calls por dia útil
+      schedulings = Math.floor(baseCalls * (0.15 + Math.random() * 0.10)); // 15-25% conversão
+      noShow = schedulings > 0 ? Math.floor(schedulings * (Math.random() * 0.2)) : 0; // 0-20% no-show
+    }
     
     monthlyData.push({
       date: dayName,
