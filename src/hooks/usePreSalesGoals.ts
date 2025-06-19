@@ -27,7 +27,7 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setPreSalesGoals(data || []);
+      setPreSalesGoals((data || []) as PreSalesGoal[]);
     } catch (error) {
       console.error('Erro ao carregar metas de pré-vendas:', error);
       toast({
@@ -57,7 +57,7 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
 
       if (error) throw error;
 
-      setPreSalesGoals(prev => [data, ...prev]);
+      setPreSalesGoals(prev => [data as PreSalesGoal, ...prev]);
       toast({
         title: "Sucesso",
         description: "Meta de pré-vendas criada com sucesso",
@@ -89,7 +89,7 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
 
       if (error) throw error;
 
-      setPreSalesGoals(prev => prev.map(g => g.id === goalId ? updatedGoal : g));
+      setPreSalesGoals(prev => prev.map(g => g.id === goalId ? updatedGoal as PreSalesGoal : g));
       toast({
         title: "Sucesso",
         description: "Meta de pré-vendas atualizada com sucesso",
