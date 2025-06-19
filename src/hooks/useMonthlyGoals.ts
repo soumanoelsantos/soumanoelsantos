@@ -16,6 +16,8 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
 
     setIsLoading(true);
     try {
+      console.log('🔍 [DEBUG] Buscando metas para usuário:', userId);
+      
       let query = supabase
         .from('monthly_goals')
         .select(`
@@ -30,9 +32,14 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
 
       const { data, error } = await query.order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [DEBUG] Erro na query:', error);
+        throw error;
+      }
       
-      // Type assertion para garantir que os tipos estão corretos
+      console.log('📊 [DEBUG] Dados retornados da query:', data);
+      
+      // Properly type the data with the new columns
       const typedGoals = (data || []).map(goal => ({
         ...goal,
         goal_type: goal.goal_type as 'meta' | 'supermeta',
@@ -41,6 +48,7 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
         currency: goal.currency as 'BRL' | 'USD' | undefined
       })) as MonthlyGoal[];
       
+      console.log('✅ [DEBUG] Metas processadas:', typedGoals);
       setGoals(typedGoals);
     } catch (error: any) {
       console.error('❌ [DEBUG] Erro ao carregar metas:', error);
