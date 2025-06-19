@@ -48,4 +48,7 @@ export const defaultConfig: DashboardConfig = {
 
   showRevenueEvolutionChart: true,
   showBillingEvolutionChart: true,
+  // Add the new seller chart properties
+  showSellerRevenueChart: true,
+  showSellerBillingChart: true,
 };

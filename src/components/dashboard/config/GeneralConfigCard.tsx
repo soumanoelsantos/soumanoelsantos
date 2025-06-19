@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { DashboardConfig } from '@/hooks/useDashboardConfig';
+import { DashboardConfig } from '@/types/dashboardConfig';
 
 interface GeneralConfigCardProps {
   config: DashboardConfig;

@@ -3,7 +3,7 @@ import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GripVertical } from 'lucide-react';
-import { DashboardConfig } from '@/hooks/useDashboardConfig';
+import { DashboardConfig } from '@/types/dashboardConfig';
 
 interface MetricItem {
   key: keyof DashboardConfig | 'charts' | 'specificGoals' | 'revenueEvolutionChart' | 'billingEvolutionChart';
@@ -112,7 +112,7 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    const newOrder = items.map(item => item.key as string);
+    const newOrder = items.map(item => String(item.key));
     onReorderMetrics(newOrder);
   };
 
@@ -142,7 +142,7 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
                       className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-1"
                     >
                       {cards.map((metric, index) => (
-                        <Draggable key={`card-${metric.key}-${index}`} draggableId={`card-${metric.key}-${index}`} index={index}>
+                        <Draggable key={`card-${String(metric.key)}-${index}`} draggableId={`card-${String(metric.key)}-${index}`} index={index}>
                           {(provided, snapshot) => (
                             <div
                               ref={provided.innerRef}
@@ -175,7 +175,7 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
                       className="grid grid-cols-1 lg:grid-cols-2 gap-1.5"
                     >
                       {charts.map((metric, index) => (
-                        <Draggable key={`chart-${metric.key}-${index}`} draggableId={`chart-${metric.key}-${index}`} index={index + cards.length}>
+                        <Draggable key={`chart-${String(metric.key)}-${index}`} draggableId={`chart-${String(metric.key)}-${index}`} index={index + cards.length}>
                           {(provided, snapshot) => (
                             <div
                               ref={provided.innerRef}

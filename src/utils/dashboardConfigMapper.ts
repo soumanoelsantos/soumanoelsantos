@@ -78,6 +78,10 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     // Mapeamento explícito dos gráficos de evolução com fallback para true
     showRevenueEvolutionChart: data.show_revenue_evolution_chart !== undefined ? data.show_revenue_evolution_chart : true,
     showBillingEvolutionChart: data.show_billing_evolution_chart !== undefined ? data.show_billing_evolution_chart : true,
+    
+    // Mapeamento dos novos gráficos de vendedores
+    showSellerRevenueChart: data.show_seller_revenue_chart !== undefined ? data.show_seller_revenue_chart : true,
+    showSellerBillingChart: data.show_seller_billing_chart !== undefined ? data.show_seller_billing_chart : true,
   };
 
   console.log('🟢 dashboardConfigMapper - Final mapped config with projection indicators:', {
@@ -132,6 +136,10 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     // Novos gráficos de evolução
     show_revenue_evolution_chart: config.showRevenueEvolutionChart,
     show_billing_evolution_chart: config.showBillingEvolutionChart,
+    
+    // Novos gráficos de vendedores
+    show_seller_revenue_chart: config.showSellerRevenueChart,
+    show_seller_billing_chart: config.showSellerBillingChart,
   };
 
   console.log('🟢 dashboardConfigMapper - Final database data with projection indicators:', {

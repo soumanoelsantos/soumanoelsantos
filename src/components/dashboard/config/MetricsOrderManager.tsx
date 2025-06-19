@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
-import { DashboardConfig } from '@/hooks/useDashboardConfig';
+import { DashboardConfig } from '@/types/dashboardConfig';
 
 interface MetricItem {
   key: string;

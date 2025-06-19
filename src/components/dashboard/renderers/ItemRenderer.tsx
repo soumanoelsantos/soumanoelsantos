@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DashboardConfig } from '@/hooks/useDashboardConfig';
+import { DashboardConfig } from '@/types/dashboardConfig';
 import { allMetricsCards } from '../data/metrics';
 import { RevenueEvolutionChart, BillingEvolutionChart } from '../charts/EvolutionCharts';
 import { SellerRevenueChart, SellerBillingChart } from '../charts/SellerPerformanceCharts';

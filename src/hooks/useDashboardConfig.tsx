@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,7 +37,7 @@ const defaultConfig: DashboardConfig = {
   selectedGoalIds: [],
   showRevenueEvolutionChart: true,
   showBillingEvolutionChart: true,
-  // Novos gráficos de performance dos vendedores
+  // Add the new seller chart properties
   showSellerRevenueChart: true,
   showSellerBillingChart: true,
 };
@@ -66,7 +67,7 @@ export const useDashboardConfig = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
-        .from('dashboard_config')
+        .from('dashboard_configs')
         .select('*')
         .single();
 
@@ -99,7 +100,7 @@ export const useDashboardConfig = () => {
     setIsLoading(true);
     try {
       const { error } = await supabase
-        .from('dashboard_config')
+        .from('dashboard_configs')
         .upsert(newConfig, { onConflict: ['id'] });
 
       if (error) {
