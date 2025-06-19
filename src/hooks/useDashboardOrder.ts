@@ -11,7 +11,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       return config.metricsOrder;
     }
 
-    // Ordem padrão com todos os itens incluindo os novos gráficos
+    // Ordem padrão com todos os itens incluindo os novos gráficos na ordem correta
     const defaultOrder = [
       'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
       'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
