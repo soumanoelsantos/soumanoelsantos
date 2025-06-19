@@ -142,7 +142,7 @@ const SellerPerformanceForm = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <SellerPerformanceHeader seller={seller} />
-        <SellerPerformanceFormComponent onSubmit={onSubmit} isSubmitting={isSubmitting} />
+        <SellerPerformanceFormComponent onSubmit={onSubmit} isSubmitting={isSubmitting} seller={seller} />
         <SellerPerformanceFooter />
       </div>
     </div>

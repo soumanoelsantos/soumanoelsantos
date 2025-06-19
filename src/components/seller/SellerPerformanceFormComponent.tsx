@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
+import { Seller } from '@/types/sellers';
 
 interface PerformanceFormData {
   date: string;
@@ -23,11 +24,13 @@ interface PerformanceFormData {
 interface SellerPerformanceFormComponentProps {
   onSubmit: (data: PerformanceFormData) => Promise<void>;
   isSubmitting: boolean;
+  seller: Seller;
 }
 
 const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentProps> = ({
   onSubmit,
-  isSubmitting
+  isSubmitting,
+  seller
 }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PerformanceFormData>({
     defaultValues: {
@@ -43,9 +46,18 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   });
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
+    // Se for closer, zerar os campos não utilizados
+    if (seller.seller_type === 'closer') {
+      data.leads_count = 0;
+      data.calls_count = 0;
+      data.notes = '';
+    }
+    
     await onSubmit(data);
     reset();
   };
+
+  const isCloser = seller.seller_type === 'closer';
 
   return (
     <Card>
@@ -91,23 +103,25 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="leads_count">Leads Gerados *</Label>
-              <Input
-                id="leads_count"
-                type="number"
-                min="0"
-                {...register('leads_count', { 
-                  required: 'Campo obrigatório',
-                  valueAsNumber: true,
-                  min: { value: 0, message: 'Valor deve ser maior ou igual a 0' }
-                })}
-                placeholder="Quantidade de leads"
-              />
-              {errors.leads_count && (
-                <p className="text-sm text-red-600">{errors.leads_count.message}</p>
-              )}
-            </div>
+            {!isCloser && (
+              <div className="space-y-2">
+                <Label htmlFor="leads_count">Leads Gerados *</Label>
+                <Input
+                  id="leads_count"
+                  type="number"
+                  min="0"
+                  {...register('leads_count', { 
+                    required: 'Campo obrigatório',
+                    valueAsNumber: true,
+                    min: { value: 0, message: 'Valor deve ser maior ou igual a 0' }
+                  })}
+                  placeholder="Quantidade de leads"
+                />
+                {errors.leads_count && (
+                  <p className="text-sm text-red-600">{errors.leads_count.message}</p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -169,34 +183,38 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="calls_count">Ligações *</Label>
-              <Input
-                id="calls_count"
-                type="number"
-                min="0"
-                {...register('calls_count', { 
-                  required: 'Campo obrigatório',
-                  valueAsNumber: true,
-                  min: { value: 0, message: 'Valor deve ser maior ou igual a 0' }
-                })}
-                placeholder="Quantidade de ligações"
-              />
-              {errors.calls_count && (
-                <p className="text-sm text-red-600">{errors.calls_count.message}</p>
-              )}
-            </div>
+            {!isCloser && (
+              <div className="space-y-2">
+                <Label htmlFor="calls_count">Ligações *</Label>
+                <Input
+                  id="calls_count"
+                  type="number"
+                  min="0"
+                  {...register('calls_count', { 
+                    required: 'Campo obrigatório',
+                    valueAsNumber: true,
+                    min: { value: 0, message: 'Valor deve ser maior ou igual a 0' }
+                  })}
+                  placeholder="Quantidade de ligações"
+                />
+                {errors.calls_count && (
+                  <p className="text-sm text-red-600">{errors.calls_count.message}</p>
+                )}
+              </div>
+            )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="notes">Observações</Label>
-            <Textarea
-              id="notes"
-              {...register('notes')}
-              placeholder="Adicione observações sobre seu dia de trabalho..."
-              rows={4}
-            />
-          </div>
+          {!isCloser && (
+            <div className="space-y-2">
+              <Label htmlFor="notes">Observações</Label>
+              <Textarea
+                id="notes"
+                {...register('notes')}
+                placeholder="Adicione observações sobre seu dia de trabalho..."
+                rows={4}
+              />
+            </div>
+          )}
 
           <div className="flex gap-3 pt-4">
             <Button
