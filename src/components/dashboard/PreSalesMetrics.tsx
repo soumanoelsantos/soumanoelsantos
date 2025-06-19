@@ -3,6 +3,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Phone, Calendar, UserCheck, UserX, Users, TrendingUp } from 'lucide-react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
+import { usePreSalesOrder } from './config/pre-sales-order/usePreSalesOrder';
+import { usePreSalesData } from '@/hooks/usePreSalesData';
 import PreSalesCallsChart from './charts/PreSalesCallsChart';
 import PreSalesSchedulingChart from './charts/PreSalesSchedulingChart';
 import PreSalesNoShowChart from './charts/PreSalesNoShowChart';
@@ -11,27 +13,59 @@ import PreSalesSDRTable from './tables/PreSalesSDRTable';
 
 const PreSalesMetrics = () => {
   const { config } = useDashboardConfig();
+  const { getOrderedPreSalesItems } = usePreSalesOrder(config);
+  const { data: preSalesData, isLoading, error } = usePreSalesData();
+  const orderedItems = getOrderedPreSalesItems(config.preSalesOrder);
   
   console.log('🔍 PreSalesMetrics - Rendering pre-sales dashboard with config:', config);
+  console.log('🔍 PreSalesMetrics - Ordered items:', orderedItems);
+  console.log('🔍 PreSalesMetrics - Pre-sales data:', preSalesData);
 
-  // Dados mock para demonstração
-  const mockData = {
-    dailyCalls: 125,
-    dailyCallsTarget: 150,
-    dailySchedulings: 18,
-    dailySchedulingsTarget: 25,
-    dailyNoShow: 3,
-    dailyNoShowRate: 16.7,
-    totalSDRs: 4,
-    averageSchedulingsPerSDR: 4.5
-  };
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map(i => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 w-16 bg-gray-200 rounded animate-pulse mb-2"></div>
+                <div className="h-3 w-20 bg-gray-200 rounded animate-pulse"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-  return (
-    <div className="space-y-8">
-      {/* Cards de métricas principais */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {config.showPreSalesCalls && (
-          <Card>
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-red-600">
+              <p>Erro ao carregar dados de pré-vendas: {error}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!preSalesData) {
+    return null;
+  }
+
+  // Componentes de cards individuais
+  const renderCard = (itemKey: string) => {
+    switch (itemKey) {
+      case 'showPreSalesCalls':
+        return (
+          <Card key="calls">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">
                 Tentativas de Ligação
@@ -39,19 +73,20 @@ const PreSalesMetrics = () => {
               <Phone className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{mockData.dailyCalls}</div>
+              <div className="text-2xl font-bold">{preSalesData.dailyCalls}</div>
               <p className="text-xs text-gray-600 mt-1">
-                Meta: {mockData.dailyCallsTarget}
+                Meta: {preSalesData.dailyCallsTarget}
               </p>
               <div className="text-xs text-green-600 mt-2">
-                {((mockData.dailyCalls / mockData.dailyCallsTarget) * 100).toFixed(1)}% da meta
+                {((preSalesData.dailyCalls / preSalesData.dailyCallsTarget) * 100).toFixed(1)}% da meta
               </div>
             </CardContent>
           </Card>
-        )}
+        );
 
-        {config.showPreSalesSchedulings && (
-          <Card>
+      case 'showPreSalesSchedulings':
+        return (
+          <Card key="schedulings">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">
                 Agendamentos Diários
@@ -59,19 +94,20 @@ const PreSalesMetrics = () => {
               <Calendar className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{mockData.dailySchedulings}</div>
+              <div className="text-2xl font-bold">{preSalesData.dailySchedulings}</div>
               <p className="text-xs text-gray-600 mt-1">
-                Meta: {mockData.dailySchedulingsTarget}
+                Meta: {preSalesData.dailySchedulingsTarget}
               </p>
               <div className="text-xs text-green-600 mt-2">
-                {((mockData.dailySchedulings / mockData.dailySchedulingsTarget) * 100).toFixed(1)}% da meta
+                {((preSalesData.dailySchedulings / preSalesData.dailySchedulingsTarget) * 100).toFixed(1)}% da meta
               </div>
             </CardContent>
           </Card>
-        )}
+        );
 
-        {config.showPreSalesNoShow && (
-          <Card>
+      case 'showPreSalesNoShow':
+        return (
+          <Card key="noshow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">
                 No-Show Diário
@@ -79,17 +115,58 @@ const PreSalesMetrics = () => {
               <UserX className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{mockData.dailyNoShow}</div>
+              <div className="text-2xl font-bold">{preSalesData.dailyNoShow}</div>
               <p className="text-xs text-gray-600 mt-1">
-                Taxa: {mockData.dailyNoShowRate}%
+                Taxa: {preSalesData.dailyNoShowRate}%
               </p>
               <div className="text-xs text-red-600 mt-2">
-                {mockData.dailyNoShowRate > 20 ? 'Acima do ideal' : 'Dentro do esperado'}
+                {preSalesData.dailyNoShowRate > 20 ? 'Acima do ideal' : 'Dentro do esperado'}
               </div>
             </CardContent>
           </Card>
-        )}
+        );
 
+      default:
+        return null;
+    }
+  };
+
+  // Renderizar gráficos na ordem configurada
+  const renderChart = (itemKey: string) => {
+    switch (itemKey) {
+      case 'showPreSalesCallsChart':
+        return <PreSalesCallsChart key="calls-chart" data={preSalesData.weeklyData} />;
+      case 'showPreSalesSchedulingChart':
+        return <PreSalesSchedulingChart key="scheduling-chart" data={preSalesData.weeklyData} />;
+      case 'showPreSalesNoShowChart':
+        return <PreSalesNoShowChart key="noshow-chart" data={preSalesData.weeklyData} />;
+      case 'showPreSalesSDRComparisonChart':
+        return <PreSalesSDRComparisonChart key="sdr-comparison-chart" data={preSalesData.sdrPerformance} />;
+      default:
+        return null;
+    }
+  };
+
+  // Separar cards, gráficos e tabelas baseado na ordem configurada
+  const cards = orderedItems.filter(item => 
+    ['showPreSalesCalls', 'showPreSalesSchedulings', 'showPreSalesNoShow'].includes(item.key)
+  );
+
+  const charts = orderedItems.filter(item => 
+    ['showPreSalesCallsChart', 'showPreSalesSchedulingChart', 'showPreSalesNoShowChart', 'showPreSalesSDRComparisonChart'].includes(item.key)
+  );
+
+  const tables = orderedItems.filter(item => 
+    item.key === 'showPreSalesSDRTable'
+  );
+
+  return (
+    <div className="space-y-8">
+      {/* Cards de métricas principais na ordem configurada */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {cards.map(item => renderCard(item.key))}
+        
+        {/* Card fixo da média por SDR */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
@@ -98,34 +175,40 @@ const PreSalesMetrics = () => {
             <Users className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockData.averageSchedulingsPerSDR}</div>
+            <div className="text-2xl font-bold">{preSalesData.averageSchedulingsPerSDR}</div>
             <p className="text-xs text-gray-600 mt-1">
               Agendamentos/SDR
             </p>
             <div className="text-xs text-purple-600 mt-2">
-              {mockData.totalSDRs} SDRs ativos
+              {preSalesData.totalSDRs} SDRs ativos
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Gráficos */}
-      {(config.showPreSalesCallsChart || config.showPreSalesSchedulingChart) && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {config.showPreSalesCallsChart && <PreSalesCallsChart />}
-          {config.showPreSalesSchedulingChart && <PreSalesSchedulingChart />}
+      {/* Gráficos na ordem configurada */}
+      {charts.length > 0 && (
+        <div className="space-y-6">
+          {charts.length <= 2 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {charts.map(item => renderChart(item.key))}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {charts.map(item => (
+                <div key={item.key} className="w-full">
+                  {renderChart(item.key)}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {(config.showPreSalesNoShowChart || config.showPreSalesSDRComparisonChart) && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {config.showPreSalesNoShowChart && <PreSalesNoShowChart />}
-          {config.showPreSalesSDRComparisonChart && <PreSalesSDRComparisonChart />}
-        </div>
-      )}
-
-      {/* Tabela de SDRs */}
-      {config.showPreSalesSDRTable && <PreSalesSDRTable />}
+      {/* Tabelas na ordem configurada */}
+      {tables.map(item => (
+        item.key === 'showPreSalesSDRTable' && <PreSalesSDRTable key="sdr-table" data={preSalesData.sdrPerformance} />
+      ))}
     </div>
   );
 };
