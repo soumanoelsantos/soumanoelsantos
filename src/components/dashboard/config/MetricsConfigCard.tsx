@@ -39,7 +39,7 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     { key: 'showProjecaoFaturamento', label: 'Projeção de Faturamento' },
     { key: 'showNoShow', label: 'No-Show' },
     // Nova tabela de performance dos closers
-    { key: 'showClosersPerformanceTable', label: 'Tabela de Performance dos Closers' }
+    { key: 'showClosersPerformanceTable', label: 'Tabela de desempenho dos closers' }
   ];
 
   console.log('🔍 MetricsConfigCard - Current config:', config);
