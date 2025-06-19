@@ -520,6 +520,42 @@ export type Database = {
           },
         ]
       }
+      goal_types: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          target_scope: string
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          target_scope: string
+          unit: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          target_scope?: string
+          unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           created_at: string
@@ -784,6 +820,60 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      pre_sales_goals: {
+        Row: {
+          created_at: string
+          current_value: number
+          goal_type_id: string | null
+          id: string
+          month: number
+          seller_id: string | null
+          target_value: number
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          current_value?: number
+          goal_type_id?: string | null
+          id?: string
+          month: number
+          seller_id?: string | null
+          target_value: number
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          current_value?: number
+          goal_type_id?: string | null
+          id?: string
+          month?: number
+          seller_id?: string | null
+          target_value?: number
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pre_sales_goals_goal_type_id_fkey"
+            columns: ["goal_type_id"]
+            isOneToOne: false
+            referencedRelation: "goal_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pre_sales_goals_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
