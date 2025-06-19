@@ -26,12 +26,12 @@ export const defaultConfig: DashboardConfig = {
   showCashCollect: false,
   showCac: false,
   
-  // Novos indicadores de projeção
+  // Novos indicadores de projeção com valores padrão corretos
   showProjecaoReceita: false,
   showProjecaoFaturamento: false,
   showNoShow: false,
   
-  companyName: 'Minha Empresa',
+  companyName: '',
   metricsOrder: [
     'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
     'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
@@ -39,14 +39,13 @@ export const defaultConfig: DashboardConfig = {
     'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
-    'specificGoals', 'revenueEvolutionChart', 'billingEvolutionChart'
+    // Incluir os novos indicadores na ordem padrão
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ],
   
   showSpecificGoals: false,
   selectedGoalIds: [],
 
-  // Novos gráficos de evolução habilitados por padrão
   showRevenueEvolutionChart: true,
   showBillingEvolutionChart: true,
 };
