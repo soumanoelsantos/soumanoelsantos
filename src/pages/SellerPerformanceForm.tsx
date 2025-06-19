@@ -96,28 +96,26 @@ const SellerPerformanceForm = () => {
       console.log('📤 [DEBUG] Seller ID:', seller.id);
       console.log('📤 [DEBUG] Dados do formulário:', data);
       
-      // Preparar dados com estrutura exata da tabela
+      // Usar a mesma estrutura exata que o hook useSellerPerformance usa
       const performanceData = {
         seller_id: seller.id,
         date: data.date,
         sales_count: Number(data.sales_count) || 0,
         revenue_amount: Number(data.revenue_amount) || 0,
         billing_amount: Number(data.billing_amount) || 0,
-        leads_count: 0,
+        leads_count: Number(data.leads_count) || 0,
         meetings_count: Number(data.meetings_count) || 0,
-        calls_count: 0,
-        notes: '',
+        calls_count: Number(data.calls_count) || 0,
+        notes: data.notes || '',
         submitted_by_seller: true,
       };
 
       console.log('📤 [DEBUG] Dados preparados para inserção:', performanceData);
       
-      // Tentar inserir os dados
+      // Usar upsert igual ao hook useSellerPerformance
       const { data: savedData, error } = await supabase
         .from('seller_daily_performance')
-        .upsert(performanceData, {
-          onConflict: 'seller_id,date'
-        })
+        .upsert(performanceData)
         .select()
         .single();
 
@@ -139,16 +137,6 @@ const SellerPerformanceForm = () => {
         title: "✅ Sucesso!",
         description: "Performance registrada com sucesso!",
       });
-
-      // Verificar se os dados foram realmente salvos
-      const { data: verificacao, error: errorVerificacao } = await supabase
-        .from('seller_daily_performance')
-        .select('*')
-        .eq('seller_id', seller.id)
-        .eq('date', data.date)
-        .single();
-
-      console.log('🔍 [DEBUG] Verificação dos dados salvos:', { verificacao, errorVerificacao });
 
     } catch (error: any) {
       console.error('💥 [DEBUG] Erro completo ao salvar performance:', {
