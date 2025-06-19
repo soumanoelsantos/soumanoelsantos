@@ -49,6 +49,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
       console.log('📝 [DEBUG] Dados do formulário do vendedor antes do envio:', data);
+      console.log('📝 [DEBUG] Vendedor:', seller.name, 'ID:', seller.id);
       
       await onSubmit(data);
       
@@ -67,7 +68,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
     } catch (error) {
       console.error('❌ [DEBUG] Erro ao enviar performance do vendedor:', error);
       toast.error("❌ Erro ao Registrar", {
-        description: "Não foi possível salvar sua performance. Tente novamente.",
+        description: `Não foi possível salvar sua performance: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
         duration: 4000,
       });
     }
@@ -80,10 +81,10 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="h-5 w-5" />
-          Dados de Performance
+          Dados de Performance - {seller.name}
         </CardTitle>
         <CardDescription>
-          Preencha os dados da sua performance do dia
+          Preencha os dados da sua performance do dia (ID: {seller.id})
         </CardDescription>
       </CardHeader>
       <CardContent>

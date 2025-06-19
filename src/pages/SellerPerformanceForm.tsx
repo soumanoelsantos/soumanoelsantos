@@ -81,6 +81,7 @@ const SellerPerformanceForm = () => {
 
   const onSubmit = async (data: PerformanceFormData) => {
     if (!seller) {
+      console.log('❌ [DEBUG] Seller não encontrado');
       toast({
         title: "Erro",
         description: "Vendedor não encontrado",
@@ -92,43 +93,73 @@ const SellerPerformanceForm = () => {
     setIsSubmitting(true);
     try {
       console.log('📤 [DEBUG] Enviando dados de performance do vendedor:', seller.name);
-      console.log('📤 [DEBUG] Dados completos:', data);
+      console.log('📤 [DEBUG] Seller ID:', seller.id);
+      console.log('📤 [DEBUG] Dados do formulário:', data);
       
-      // Salvar diretamente no banco usando a mesma estrutura do admin
+      // Preparar dados com estrutura exata da tabela
+      const performanceData = {
+        seller_id: seller.id,
+        date: data.date,
+        sales_count: Number(data.sales_count) || 0,
+        revenue_amount: Number(data.revenue_amount) || 0,
+        billing_amount: Number(data.billing_amount) || 0,
+        leads_count: 0,
+        meetings_count: Number(data.meetings_count) || 0,
+        calls_count: 0,
+        notes: '',
+        submitted_by_seller: true,
+      };
+
+      console.log('📤 [DEBUG] Dados preparados para inserção:', performanceData);
+      
+      // Tentar inserir os dados
       const { data: savedData, error } = await supabase
         .from('seller_daily_performance')
-        .upsert({
-          seller_id: seller.id,
-          date: data.date,
-          sales_count: data.sales_count,
-          revenue_amount: data.revenue_amount,
-          billing_amount: data.billing_amount,
-          leads_count: 0,
-          meetings_count: data.meetings_count,
-          calls_count: 0,
-          notes: '',
-          submitted_by_seller: true,
+        .upsert(performanceData, {
+          onConflict: 'seller_id,date'
         })
         .select()
         .single();
 
+      console.log('📋 [DEBUG] Resultado da inserção:', { savedData, error });
+
       if (error) {
-        console.error('❌ [DEBUG] Erro ao salvar:', error);
+        console.error('❌ [DEBUG] Erro detalhado ao salvar:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         throw error;
       }
 
       console.log('✅ [DEBUG] Performance salva com sucesso:', savedData);
       
       toast({
-        title: "Sucesso!",
+        title: "✅ Sucesso!",
         description: "Performance registrada com sucesso!",
       });
 
-    } catch (error) {
-      console.error('💥 [DEBUG] Erro ao salvar performance:', error);
+      // Verificar se os dados foram realmente salvos
+      const { data: verificacao, error: errorVerificacao } = await supabase
+        .from('seller_daily_performance')
+        .select('*')
+        .eq('seller_id', seller.id)
+        .eq('date', data.date)
+        .single();
+
+      console.log('🔍 [DEBUG] Verificação dos dados salvos:', { verificacao, errorVerificacao });
+
+    } catch (error: any) {
+      console.error('💥 [DEBUG] Erro completo ao salvar performance:', {
+        error,
+        message: error?.message,
+        details: error?.details,
+        stack: error?.stack
+      });
       toast({
-        title: "Erro",
-        description: "Não foi possível salvar a performance. Tente novamente.",
+        title: "❌ Erro",
+        description: `Não foi possível salvar a performance: ${error?.message || 'Erro desconhecido'}`,
         variant: "destructive",
       });
       throw error;
