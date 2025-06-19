@@ -5,6 +5,7 @@ import { DashboardConfig } from '@/types/dashboardConfig';
 import { allMetricsCards } from '../data/metrics';
 import { RevenueEvolutionChart, BillingEvolutionChart } from '../charts/EvolutionCharts';
 import { SellerRevenueChart, SellerBillingChart } from '../charts/SellerPerformanceCharts';
+import { TemporalRevenueChart, TemporalBillingChart } from '../charts/TemporalAnalysisCharts';
 import SpecificGoalsCards from '../goals/SpecificGoalsCards';
 
 interface ItemRendererProps {
@@ -26,7 +27,6 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    // Incluir explicitamente os novos indicadores de projeção
     'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ];
 
@@ -35,17 +35,14 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     const isEnabled = config[itemKey as keyof DashboardConfig] as boolean;
     console.log(`🔍 Metric ${itemKey} is enabled:`, isEnabled);
     
-    // Se não está habilitada, não renderizar nada
     if (!isEnabled) {
       console.log(`❌ Metric ${itemKey} is disabled, not rendering`);
       return null;
     }
     
-    // Buscar a métrica correspondente nos dados
     const metric = allMetricsCards.find(m => m.key === itemKey);
     console.log(`🔍 Found metric for key ${itemKey}:`, metric);
     
-    // Se encontrou a métrica, renderizar o card sem bordas individuais
     if (metric) {
       console.log(`✅ Rendering metric card for ${itemKey}`);
       return (
@@ -76,7 +73,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return null;
   }
 
-  // Metas específicas - renderizar cada meta como um card individual
+  // Metas específicas
   if (itemKey === 'specificGoals') {
     if (!config.showSpecificGoals) {
       console.log('❌ Specific goals is disabled, not rendering');
@@ -86,7 +83,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <SpecificGoalsCards config={config} />;
   }
 
-  // Gráfico de evolução de receita - verificar configuração específica
+  // Gráfico de evolução de receita
   if (itemKey === 'revenueEvolutionChart') {
     console.log('🔍 Revenue evolution chart - Config value:', config.showRevenueEvolutionChart);
     if (!config.showRevenueEvolutionChart) {
@@ -97,7 +94,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <RevenueEvolutionChart />;
   }
 
-  // Gráfico de evolução de faturamento - verificar configuração específica
+  // Gráfico de evolução de faturamento
   if (itemKey === 'billingEvolutionChart') {
     console.log('🔍 Billing evolution chart - Config value:', config.showBillingEvolutionChart);
     if (!config.showBillingEvolutionChart) {
@@ -108,7 +105,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <BillingEvolutionChart />;
   }
 
-  // Novo gráfico de receita dos vendedores
+  // Gráfico de receita dos vendedores
   if (itemKey === 'sellerRevenueChart') {
     console.log('🔍 Seller revenue chart - Config value:', config.showSellerRevenueChart);
     if (!config.showSellerRevenueChart) {
@@ -119,7 +116,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <SellerRevenueChart />;
   }
 
-  // Novo gráfico de faturamento dos vendedores
+  // Gráfico de faturamento dos vendedores
   if (itemKey === 'sellerBillingChart') {
     console.log('🔍 Seller billing chart - Config value:', config.showSellerBillingChart);
     if (!config.showSellerBillingChart) {
@@ -128,6 +125,28 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     }
     console.log('✅ Rendering seller billing chart');
     return <SellerBillingChart />;
+  }
+
+  // Novo gráfico de análise temporal de receita
+  if (itemKey === 'temporalRevenueChart') {
+    console.log('🔍 Temporal revenue chart - Config value:', config.showTemporalRevenueChart);
+    if (!config.showTemporalRevenueChart) {
+      console.log('❌ Temporal revenue chart is disabled, not rendering');
+      return null;
+    }
+    console.log('✅ Rendering temporal revenue chart');
+    return <TemporalRevenueChart />;
+  }
+
+  // Novo gráfico de análise temporal de faturamento
+  if (itemKey === 'temporalBillingChart') {
+    console.log('🔍 Temporal billing chart - Config value:', config.showTemporalBillingChart);
+    if (!config.showTemporalBillingChart) {
+      console.log('❌ Temporal billing chart is disabled, not rendering');
+      return null;
+    }
+    console.log('✅ Rendering temporal billing chart');
+    return <TemporalBillingChart />;
   }
 
   console.log(`❓ No render logic found for key: ${itemKey}`);

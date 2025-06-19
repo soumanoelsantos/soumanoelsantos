@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,6 +40,9 @@ const defaultConfig: DashboardConfig = {
   showBillingEvolutionChart: true,
   showSellerRevenueChart: true,
   showSellerBillingChart: true,
+  // Novos gráficos de análise temporal
+  showTemporalRevenueChart: true,
+  showTemporalBillingChart: true,
 };
 
 export const useDashboardConfig = () => {

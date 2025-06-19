@@ -41,7 +41,11 @@ export interface DashboardConfig {
   showRevenueEvolutionChart: boolean;
   showBillingEvolutionChart: boolean;
   
-  // Novos gráficos de performance dos vendedores
+  // Gráficos de performance dos vendedores
   showSellerRevenueChart: boolean;
   showSellerBillingChart: boolean;
+  
+  // Novos gráficos de análise temporal
+  showTemporalRevenueChart: boolean;
+  showTemporalBillingChart: boolean;
 }

@@ -4,20 +4,14 @@ import { DashboardConfig } from '@/types/dashboardConfig';
 export const useDashboardOrder = (config: DashboardConfig) => {
   const getOrderedItems = () => {
     console.log('🔍 useDashboardOrder - Getting ordered items with config:', config);
-    console.log('🔍 useDashboardOrder - Projection indicators in config:', {
-      showProjecaoReceita: config.showProjecaoReceita,
-      showProjecaoFaturamento: config.showProjecaoFaturamento,
-      showNoShow: config.showNoShow
-    });
     
     // Se existe uma ordem personalizada, usar ela
     if (config.metricsOrder && config.metricsOrder.length > 0) {
       console.log('🔍 useDashboardOrder - Using custom order:', config.metricsOrder);
       
-      // Garantir que os novos indicadores de projeção estejam incluídos se habilitados
       let finalOrder = [...config.metricsOrder];
       
-      // Adicionar indicadores de projeção se não estiverem na ordem e estiverem habilitados
+      // Garantir que os novos indicadores de projeção estejam incluídos se habilitados
       if (config.showProjecaoReceita && !finalOrder.includes('showProjecaoReceita')) {
         finalOrder.push('showProjecaoReceita');
       }
@@ -39,13 +33,22 @@ export const useDashboardOrder = (config: DashboardConfig) => {
         finalOrder.push('billingEvolutionChart');
       }
       
-      // Garantir que os novos gráficos de vendedores estejam incluídos se habilitados
+      // Garantir que os gráficos de vendedores estejam incluídos se habilitados
       if (config.showSellerRevenueChart && !finalOrder.includes('sellerRevenueChart')) {
         finalOrder.push('sellerRevenueChart');
       }
       
       if (config.showSellerBillingChart && !finalOrder.includes('sellerBillingChart')) {
         finalOrder.push('sellerBillingChart');
+      }
+      
+      // Garantir que os novos gráficos de análise temporal estejam incluídos se habilitados
+      if (config.showTemporalRevenueChart && !finalOrder.includes('temporalRevenueChart')) {
+        finalOrder.push('temporalRevenueChart');
+      }
+      
+      if (config.showTemporalBillingChart && !finalOrder.includes('temporalBillingChart')) {
+        finalOrder.push('temporalBillingChart');
       }
       
       console.log('🔍 useDashboardOrder - Final custom order with all items:', finalOrder);
@@ -60,7 +63,6 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
       'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
       'showQuantidadeVendas', 'showCashCollect', 'showCac',
-      // Incluir explicitamente os novos indicadores de projeção
       'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
     ];
 
@@ -78,7 +80,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       defaultOrder.push('billingEvolutionChart');
     }
     
-    // Adicionar novos gráficos de vendedores se habilitados
+    // Adicionar gráficos de vendedores se habilitados
     if (config.showSellerRevenueChart) {
       defaultOrder.push('sellerRevenueChart');
     }
@@ -86,8 +88,17 @@ export const useDashboardOrder = (config: DashboardConfig) => {
     if (config.showSellerBillingChart) {
       defaultOrder.push('sellerBillingChart');
     }
+    
+    // Adicionar novos gráficos de análise temporal se habilitados
+    if (config.showTemporalRevenueChart) {
+      defaultOrder.push('temporalRevenueChart');
+    }
+    
+    if (config.showTemporalBillingChart) {
+      defaultOrder.push('temporalBillingChart');
+    }
 
-    console.log('🔍 useDashboardOrder - Using default order with projection indicators:', defaultOrder);
+    console.log('🔍 useDashboardOrder - Using default order with temporal charts:', defaultOrder);
     return defaultOrder;
   };
 

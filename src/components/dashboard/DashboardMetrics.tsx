@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardOrder } from '@/hooks/useDashboardOrder';
@@ -20,18 +19,15 @@ const DashboardMetrics = () => {
   
   console.log('🔍 DashboardMetrics - Rendering with config:', config);
   console.log('🔍 DashboardMetrics - Ordered items:', orderedItems);
-  console.log('🔍 DashboardMetrics - Projection indicators in config:', {
-    showProjecaoReceita: config.showProjecaoReceita,
-    showProjecaoFaturamento: config.showProjecaoFaturamento,
-    showNoShow: config.showNoShow
-  });
 
   // Separar itens que devem ocupar toda a largura dos que ficam no grid
   const fullWidthItems = [
     'revenueEvolutionChart', 
     'billingEvolutionChart', 
     'sellerRevenueChart', 
-    'sellerBillingChart'
+    'sellerBillingChart',
+    'temporalRevenueChart',
+    'temporalBillingChart'
   ];
   const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
   const evolutionCharts = orderedItems.filter(item => fullWidthItems.includes(item));
@@ -65,10 +61,10 @@ const DashboardMetrics = () => {
         </div>
       </div>
 
-      {/* Seção dedicada para gráficos de evolução */}
+      {/* Seção dedicada para gráficos de evolução e análise temporal */}
       {evolutionCharts.length > 0 && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução e Performance</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução e Análise Temporal</h2>
           {evolutionCharts.map((key, index) => {
             console.log(`🔍 DashboardMetrics - Rendering evolution chart: ${key}`);
             const component = <ItemRenderer itemKey={key} config={config} />;
