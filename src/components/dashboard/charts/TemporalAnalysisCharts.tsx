@@ -73,7 +73,7 @@ export const TemporalRevenueChart = () => {
             
             {/* Linha MAT - Laranja */}
             <Line 
-              type="monotone" 
+              type="linear" 
               dataKey="mat" 
               stroke="#f59e0b" 
               strokeWidth={3}
@@ -83,7 +83,7 @@ export const TemporalRevenueChart = () => {
             
             {/* Linha YTD - Azul */}
             <Line 
-              type="monotone" 
+              type="linear" 
               dataKey="ytd" 
               stroke="#3b82f6" 
               strokeWidth={3}
@@ -93,7 +93,7 @@ export const TemporalRevenueChart = () => {
             
             {/* Linha QTR - Roxo */}
             <Line 
-              type="monotone" 
+              type="linear" 
               dataKey="qtr" 
               stroke="#8b5cf6" 
               strokeWidth={3}
@@ -103,7 +103,7 @@ export const TemporalRevenueChart = () => {
             
             {/* Linha Mês Atual - Verde pontilhada */}
             <Line 
-              type="monotone" 
+              type="linear" 
               dataKey="current" 
               stroke="#22c55e" 
               strokeWidth={2}
@@ -168,7 +168,7 @@ export const TemporalBillingChart = () => {
             
             {/* Linha MAT - Laranja */}
             <Line 
-              type="monotone" 
+              type="linear" 
               dataKey="mat" 
               stroke="#f59e0b" 
               strokeWidth={3}
@@ -178,7 +178,7 @@ export const TemporalBillingChart = () => {
             
             {/* Linha YTD - Azul */}
             <Line 
-              type="monotone" 
+              type="linear" 
               dataKey="ytd" 
               stroke="#3b82f6" 
               strokeWidth={3}
@@ -188,7 +188,7 @@ export const TemporalBillingChart = () => {
             
             {/* Linha QTR - Roxo */}
             <Line 
-              type="monotone" 
+              type="linear" 
               dataKey="qtr" 
               stroke="#8b5cf6" 
               strokeWidth={3}
@@ -198,7 +198,7 @@ export const TemporalBillingChart = () => {
             
             {/* Linha Mês Atual - Verde pontilhada */}
             <Line 
-              type="monotone" 
+              type="linear" 
               dataKey="current" 
               stroke="#22c55e" 
               strokeWidth={2}
