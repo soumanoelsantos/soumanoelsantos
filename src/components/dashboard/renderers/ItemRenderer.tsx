@@ -44,18 +44,18 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     const metric = allMetricsCards.find(m => m.key === itemKey);
     console.log(`🔍 Found metric for key ${itemKey}:`, metric);
     
-    // Se encontrou a métrica, renderizar o card sem espaçamento
+    // Se encontrou a métrica, renderizar o card sem bordas individuais
     if (metric) {
       console.log(`✅ Rendering metric card for ${itemKey}`);
       return (
-        <div className="h-40 flex flex-col border-0 border-r border-b border-gray-200 last:border-r-0 [&:nth-child(6n)]:border-r-0">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3 bg-white">
+        <div className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
             <div className="text-xs font-medium text-gray-600">
               {metric.title}
             </div>
             <metric.icon className={`h-3 w-3 ${metric.color} flex-shrink-0`} />
           </div>
-          <div className="flex-1 flex flex-col justify-between p-3 pt-0 bg-white">
+          <div className="flex-1 flex flex-col justify-between p-3 pt-0">
             <div className="text-lg font-bold">{metric.value}</div>
             <div className="mt-auto">
               <p className="text-xs text-gray-600 mt-1">
