@@ -28,57 +28,91 @@ const SellerPerformanceForm = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   useEffect(() => {
     const fetchSeller = async () => {
-      console.log('🔍 Iniciando busca do vendedor com token:', token);
+      console.log('🔍 [DEBUG] Iniciando busca do vendedor');
+      console.log('🔍 [DEBUG] Token da URL:', token);
+      console.log('🔍 [DEBUG] Length do token:', token?.length);
+      
+      setDebugInfo(`Token: ${token?.substring(0, 10)}...`);
       
       if (!token) {
-        console.log('❌ Token não encontrado na URL');
+        console.log('❌ [DEBUG] Token não encontrado na URL');
         setHasError(true);
         setIsLoading(false);
+        setDebugInfo('Erro: Token não encontrado na URL');
         return;
       }
 
       try {
-        console.log('🔄 Fazendo consulta ao banco de dados...');
+        console.log('🔄 [DEBUG] Fazendo consulta ao banco de dados...');
+        console.log('🔄 [DEBUG] Supabase URL:', supabase.supabaseUrl);
         
-        // Fazendo consulta direta sem RLS, pois é acesso público por token
-        const { data, error } = await supabase
+        // Tentar diferentes abordagens de consulta
+        console.log('🔄 [DEBUG] Tentativa 1: Consulta direta');
+        const { data: directData, error: directError } = await supabase
           .from('sellers')
           .select('*')
-          .eq('access_token', token)
-          .single();
+          .eq('access_token', token);
 
-        console.log('📋 Resultado da consulta:', { data, error });
+        console.log('📋 [DEBUG] Resultado consulta direta:', { 
+          data: directData, 
+          error: directError,
+          count: directData?.length 
+        });
 
-        if (error) {
-          console.error('❌ Erro na consulta ao banco:', error);
-          if (error.code === 'PGRST116') {
-            console.log('📝 Nenhum vendedor encontrado com este token');
-            setHasError(true);
-          } else {
-            console.error('💥 Erro inesperado:', error.message);
-            setHasError(true);
+        if (directError) {
+          console.error('❌ [DEBUG] Erro na consulta direta:', directError);
+          setDebugInfo(`Erro consulta: ${directError.message}`);
+        }
+
+        if (directData && directData.length > 0) {
+          const sellerData = directData[0];
+          console.log('✅ [DEBUG] Vendedor encontrado via consulta direta:', sellerData.name);
+          setSeller(sellerData);
+          setHasError(false);
+          setDebugInfo(`Sucesso: ${sellerData.name}`);
+          setIsLoading(false);
+          return;
+        }
+
+        // Se a primeira tentativa falhou, tentar com RPC
+        console.log('🔄 [DEBUG] Tentativa 2: Usando RPC function');
+        try {
+          const { data: rpcData, error: rpcError } = await supabase
+            .rpc('get_seller_by_token', { token_param: token });
+
+          console.log('📋 [DEBUG] Resultado RPC:', { data: rpcData, error: rpcError });
+
+          if (rpcError) {
+            console.error('❌ [DEBUG] Erro RPC:', rpcError);
+            setDebugInfo(`Erro RPC: ${rpcError.message}`);
           }
-          setIsLoading(false);
-          return;
+
+          if (rpcData) {
+            console.log('✅ [DEBUG] Vendedor encontrado via RPC:', rpcData.name);
+            setSeller(rpcData);
+            setHasError(false);
+            setDebugInfo(`Sucesso RPC: ${rpcData.name}`);
+            setIsLoading(false);
+            return;
+          }
+        } catch (rpcError) {
+          console.error('❌ [DEBUG] RPC não disponível ou erro:', rpcError);
+          setDebugInfo(`RPC indisponível: ${rpcError}`);
         }
 
-        if (!data) {
-          console.log('📝 Dados retornados são nulos');
-          setHasError(true);
-          setIsLoading(false);
-          return;
-        }
-
-        console.log('✅ Vendedor encontrado:', data.name);
-        setSeller(data);
-        setHasError(false);
+        // Se chegou até aqui, não encontrou o vendedor
+        console.log('📝 [DEBUG] Nenhum vendedor encontrado com este token');
+        setHasError(true);
+        setDebugInfo('Vendedor não encontrado');
         
       } catch (error) {
-        console.error('💥 Erro durante a busca:', error);
+        console.error('💥 [DEBUG] Erro durante a busca:', error);
         setHasError(true);
+        setDebugInfo(`Erro geral: ${error}`);
         toast({
           title: "Erro",
           description: "Erro ao carregar dados do vendedor",
@@ -104,7 +138,7 @@ const SellerPerformanceForm = () => {
 
     setIsSubmitting(true);
     try {
-      console.log('📤 Enviando dados de performance:', data);
+      console.log('📤 [DEBUG] Enviando dados de performance:', data);
       
       const { error } = await supabase
         .from('seller_daily_performance')
@@ -122,17 +156,17 @@ const SellerPerformanceForm = () => {
         });
 
       if (error) {
-        console.error('❌ Erro ao salvar performance:', error);
+        console.error('❌ [DEBUG] Erro ao salvar performance:', error);
         throw error;
       }
 
-      console.log('✅ Performance salva com sucesso');
+      console.log('✅ [DEBUG] Performance salva com sucesso');
       toast({
         title: "Sucesso!",
         description: "Performance registrada com sucesso",
       });
     } catch (error) {
-      console.error('💥 Erro ao salvar performance:', error);
+      console.error('💥 [DEBUG] Erro ao salvar performance:', error);
       toast({
         title: "Erro",
         description: "Não foi possível salvar a performance",
@@ -148,7 +182,16 @@ const SellerPerformanceForm = () => {
   }
 
   if (hasError || !seller) {
-    return <SellerPerformanceAccessDenied />;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <SellerPerformanceAccessDenied />
+          <div className="mt-4 p-4 bg-gray-100 rounded text-sm text-gray-600">
+            <strong>Debug Info:</strong> {debugInfo}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
