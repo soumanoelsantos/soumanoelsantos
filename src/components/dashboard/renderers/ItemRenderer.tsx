@@ -44,11 +44,11 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     const metric = allMetricsCards.find(m => m.key === itemKey);
     console.log(`🔍 Found metric for key ${itemKey}:`, metric);
     
-    // Se encontrou a métrica, renderizar o card
+    // Se encontrou a métrica, renderizar o card sem bordas individuais
     if (metric) {
       console.log(`✅ Rendering metric card for ${itemKey}`);
       return (
-        <div className="h-40 flex flex-col border-r border-b border-gray-200">
+        <div className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
             <div className="text-xs font-medium text-gray-600">
               {metric.title}

@@ -45,7 +45,7 @@ const DashboardMetrics = () => {
         onReset={resetFilters}
       />
       
-      {/* Grid para métricas sem espaçamento com borda externa */}
+      {/* Grid para métricas sem espaçamento */}
       <div className="border border-gray-200 rounded-lg overflow-hidden">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {gridItems.map((key, index) => {
