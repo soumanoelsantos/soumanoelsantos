@@ -33,6 +33,7 @@ const defaultConfig: DashboardConfig = {
   showProjecaoReceita: false,
   showProjecaoFaturamento: false,
   showNoShow: false,
+  showClosersPerformanceTable: true,
   companyName: '',
   metricsOrder: [],
   showSpecificGoals: false,

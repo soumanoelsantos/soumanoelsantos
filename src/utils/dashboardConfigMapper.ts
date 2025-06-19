@@ -69,6 +69,9 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProjecaoFaturamento: data.show_projecao_faturamento ?? defaultConfig.showProjecaoFaturamento,
     showNoShow: data.show_no_show ?? defaultConfig.showNoShow,
     
+    // Nova tabela de performance dos closers
+    showClosersPerformanceTable: data.show_closers_performance_table ?? defaultConfig.showClosersPerformanceTable,
+    
     companyName: data.company_name || defaultConfig.companyName,
     metricsOrder: metricsOrder,
     
@@ -91,7 +94,8 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
   console.log('🟢 dashboardConfigMapper - Final mapped config with projection indicators:', {
     showProjecaoReceita: mappedConfig.showProjecaoReceita,
     showProjecaoFaturamento: mappedConfig.showProjecaoFaturamento,
-    showNoShow: mappedConfig.showNoShow
+    showNoShow: mappedConfig.showNoShow,
+    showClosersPerformanceTable: mappedConfig.showClosersPerformanceTable
   });
   
   return mappedConfig;
@@ -132,6 +136,9 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_projecao_faturamento: config.showProjecaoFaturamento,
     show_no_show: config.showNoShow,
     
+    // Nova tabela de performance dos closers
+    show_closers_performance_table: config.showClosersPerformanceTable,
+    
     metrics_order: config.metricsOrder,
     
     show_specific_goals: config.showSpecificGoals,
@@ -153,7 +160,8 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
   console.log('🟢 dashboardConfigMapper - Final database data with projection indicators:', {
     show_projecao_receita: databaseData.show_projecao_receita,
     show_projecao_faturamento: databaseData.show_projecao_faturamento,
-    show_no_show: databaseData.show_no_show
+    show_no_show: databaseData.show_no_show,
+    show_closers_performance_table: databaseData.show_closers_performance_table
   });
   
   return databaseData;
