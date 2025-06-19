@@ -45,14 +45,14 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     if (metrics.length > 0) {
       const metric = metrics[0];
       return (
-        <Card className="h-40 flex flex-col">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
+        <Card className="h-40 flex flex-col m-0 border-r-0 border-b-0 rounded-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
             <CardTitle className="text-xs font-medium text-gray-600">
               {metric.title}
             </CardTitle>
             <metric.icon className={`h-3 w-3 ${metric.color} flex-shrink-0`} />
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col justify-between p-3">
+          <CardContent className="flex-1 flex flex-col justify-between p-3 pt-0">
             <div className="text-lg font-bold">{metric.value}</div>
             <div className="mt-auto">
               <p className="text-xs text-gray-600 mt-1">
