@@ -26,6 +26,7 @@ export const METRIC_TITLES: { [key: string]: string } = {
   'showProjecaoReceita': 'Projeção de Receita',
   'showProjecaoFaturamento': 'Projeção de Faturamento',
   'showNoShow': 'No-Show',
+  'showClosersPerformanceTable': 'Tabela de desempenho dos closers',
   'specificGoals': 'Metas Específicas',
   'revenueEvolutionChart': 'Gráfico de Evolução de Receita',
   'billingEvolutionChart': 'Gráfico de Evolução de Faturamento',
