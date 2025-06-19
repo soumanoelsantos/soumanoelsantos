@@ -15,18 +15,18 @@ const SellersManagementCard: React.FC = () => {
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
 
   const sellerTypeLabels = {
+    sdr: 'SDR (Pré-vendas)',
+    closer: 'Closer (Comercial)',
     pap: 'Porta a Porta',
-    sdr: 'SDR',
-    closer: 'Closer',
     vendedor_interno: 'Vendedor Interno',
     outro: 'Outro'
   };
 
   const getSellerTypeColor = (type: string) => {
     const colors = {
-      pap: 'bg-blue-100 text-blue-800',
       sdr: 'bg-green-100 text-green-800',
       closer: 'bg-purple-100 text-purple-800',
+      pap: 'bg-blue-100 text-blue-800',
       vendedor_interno: 'bg-orange-100 text-orange-800',
       outro: 'bg-gray-100 text-gray-800'
     };

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -56,9 +55,18 @@ export const useSellers = () => {
       if (error) throw error;
 
       setSellers(prev => [...prev, data]);
+      
+      const typeLabels = {
+        sdr: 'SDR (Pré-vendas)',
+        closer: 'Closer (Comercial)',
+        pap: 'Porta a Porta',
+        vendedor_interno: 'Vendedor Interno',
+        outro: 'Outro'
+      };
+      
       toast({
-        title: "Sucesso",
-        description: "Vendedor criado com sucesso",
+        title: "Vendedor cadastrado com sucesso!",
+        description: `${sellerData.name} foi adicionado como ${typeLabels[sellerData.seller_type]}`,
       });
       return true;
     } catch (error) {

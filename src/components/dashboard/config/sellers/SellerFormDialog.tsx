@@ -45,9 +45,9 @@ export const SellerFormDialog: React.FC<SellerFormDialogProps> = ({
   };
 
   const sellerTypeOptions = [
+    { value: 'sdr', label: 'SDR (Pré-vendas)' },
+    { value: 'closer', label: 'Closer (Comercial)' },
     { value: 'pap', label: 'Porta a Porta (PAP)' },
-    { value: 'sdr', label: 'SDR' },
-    { value: 'closer', label: 'Closer' },
     { value: 'vendedor_interno', label: 'Vendedor Interno' },
     { value: 'outro', label: 'Outro' },
   ];
@@ -89,7 +89,7 @@ export const SellerFormDialog: React.FC<SellerFormDialogProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor="email">E-mail (opcional)</Label>
             <Input
               id="email"
               type="email"
@@ -99,7 +99,7 @@ export const SellerFormDialog: React.FC<SellerFormDialogProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Telefone</Label>
+            <Label htmlFor="phone">Telefone (opcional)</Label>
             <Input
               id="phone"
               {...register('phone')}
@@ -117,7 +117,7 @@ export const SellerFormDialog: React.FC<SellerFormDialogProps> = ({
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Salvando...' : 'Salvar'}
+              {isSubmitting ? 'Salvando...' : 'Salvar Vendedor'}
             </Button>
           </div>
         </form>
