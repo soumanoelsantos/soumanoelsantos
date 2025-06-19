@@ -6,6 +6,7 @@ import { allMetricsCards } from '../data/metrics';
 import { RevenueEvolutionChart, BillingEvolutionChart } from '../charts/EvolutionCharts';
 import { SellerRevenueChart, SellerBillingChart } from '../charts/SellerPerformanceCharts';
 import { TemporalRevenueChart, TemporalBillingChart } from '../charts/TemporalAnalysisCharts';
+import ClosersPerformanceTable from '../tables/ClosersPerformanceTable';
 import SpecificGoalsCards from '../goals/SpecificGoalsCards';
 
 interface ItemRendererProps {
@@ -147,6 +148,12 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     }
     console.log('✅ Rendering temporal billing chart');
     return <TemporalBillingChart />;
+  }
+
+  // Nova tabela de performance dos closers
+  if (itemKey === 'closersPerformanceTable') {
+    console.log('✅ Rendering closers performance table');
+    return <ClosersPerformanceTable />;
   }
 
   console.log(`❓ No render logic found for key: ${itemKey}`);

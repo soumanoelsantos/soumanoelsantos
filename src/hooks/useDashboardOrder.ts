@@ -51,6 +51,11 @@ export const useDashboardOrder = (config: DashboardConfig) => {
         finalOrder.push('temporalBillingChart');
       }
       
+      // Adicionar tabela de performance dos closers sempre no final
+      if (!finalOrder.includes('closersPerformanceTable')) {
+        finalOrder.push('closersPerformanceTable');
+      }
+      
       console.log('🔍 useDashboardOrder - Final custom order with all items:', finalOrder);
       return finalOrder;
     }
@@ -98,7 +103,10 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       defaultOrder.push('temporalBillingChart');
     }
 
-    console.log('🔍 useDashboardOrder - Using default order with temporal charts:', defaultOrder);
+    // Adicionar tabela de performance dos closers sempre no final
+    defaultOrder.push('closersPerformanceTable');
+
+    console.log('🔍 useDashboardOrder - Using default order with closers table:', defaultOrder);
     return defaultOrder;
   };
 

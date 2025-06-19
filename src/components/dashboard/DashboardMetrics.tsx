@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardOrder } from '@/hooks/useDashboardOrder';
@@ -27,13 +28,14 @@ const DashboardMetrics = () => {
     'sellerRevenueChart', 
     'sellerBillingChart',
     'temporalRevenueChart',
-    'temporalBillingChart'
+    'temporalBillingChart',
+    'closersPerformanceTable'
   ];
   const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
   const evolutionCharts = orderedItems.filter(item => fullWidthItems.includes(item));
 
   console.log('🔍 DashboardMetrics - Grid items:', gridItems);
-  console.log('🔍 DashboardMetrics - Evolution charts found:', evolutionCharts);
+  console.log('🔍 DashboardMetrics - Evolution charts and tables found:', evolutionCharts);
 
   return (
     <div className="space-y-8">
@@ -61,15 +63,15 @@ const DashboardMetrics = () => {
         </div>
       </div>
 
-      {/* Seção dedicada para gráficos de evolução e análise temporal */}
+      {/* Seção dedicada para gráficos de evolução, análise temporal e tabelas */}
       {evolutionCharts.length > 0 && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução e Análise Temporal</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução, Análise Temporal e Tabelas de Performance</h2>
           {evolutionCharts.map((key, index) => {
-            console.log(`🔍 DashboardMetrics - Rendering evolution chart: ${key}`);
+            console.log(`🔍 DashboardMetrics - Rendering evolution chart/table: ${key}`);
             const component = <ItemRenderer itemKey={key} config={config} />;
             if (!component) {
-              console.log(`❌ DashboardMetrics - No component returned for evolution chart: ${key}`);
+              console.log(`❌ DashboardMetrics - No component returned for evolution chart/table: ${key}`);
               return null;
             }
             
