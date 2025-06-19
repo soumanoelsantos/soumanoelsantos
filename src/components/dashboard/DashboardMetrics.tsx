@@ -29,7 +29,7 @@ const DashboardMetrics = () => {
     'sellerBillingChart',
     'temporalRevenueChart',
     'temporalBillingChart',
-    'closersPerformanceTable'
+    'showClosersPerformanceTable'  // Usar a chave consistente
   ];
   const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
   const evolutionCharts = orderedItems.filter(item => fullWidthItems.includes(item));

@@ -51,12 +51,15 @@ export const useDashboardOrder = (config: DashboardConfig) => {
         finalOrder.push('temporalBillingChart');
       }
       
-      // Garantir que a tabela de closers esteja incluída se habilitada (usando ambas as chaves)
-      if (config.showClosersPerformanceTable) {
-        if (!finalOrder.includes('closersPerformanceTable') && !finalOrder.includes('showClosersPerformanceTable')) {
-          finalOrder.push('closersPerformanceTable');
-        }
+      // Garantir que a tabela de closers esteja incluída se habilitada - usar sempre a mesma chave
+      if (config.showClosersPerformanceTable && !finalOrder.includes('showClosersPerformanceTable')) {
+        finalOrder.push('showClosersPerformanceTable');
       }
+      
+      // Converter closersPerformanceTable para showClosersPerformanceTable para consistência
+      finalOrder = finalOrder.map(item => 
+        item === 'closersPerformanceTable' ? 'showClosersPerformanceTable' : item
+      );
       
       console.log('🔍 useDashboardOrder - Final custom order with all items:', finalOrder);
       return finalOrder;
@@ -76,6 +79,11 @@ export const useDashboardOrder = (config: DashboardConfig) => {
     // Adicionar metas específicas se habilitadas
     if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
       defaultOrder.push('specificGoals');
+    }
+
+    // Adicionar tabela de performance dos closers se habilitada - usando a chave consistente
+    if (config.showClosersPerformanceTable) {
+      defaultOrder.push('showClosersPerformanceTable');
     }
 
     // Adicionar gráficos de evolução se habilitados
@@ -103,11 +111,6 @@ export const useDashboardOrder = (config: DashboardConfig) => {
     
     if (config.showTemporalBillingChart) {
       defaultOrder.push('temporalBillingChart');
-    }
-
-    // Adicionar tabela de performance dos closers se habilitada
-    if (config.showClosersPerformanceTable) {
-      defaultOrder.push('closersPerformanceTable');
     }
 
     console.log('🔍 useDashboardOrder - Using default order with closers table:', defaultOrder);

@@ -150,8 +150,8 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <TemporalBillingChart />;
   }
 
-  // Nova tabela de performance dos closers
-  if (itemKey === 'closersPerformanceTable') {
+  // Tabela de performance dos closers - usando a chave consistente
+  if (itemKey === 'showClosersPerformanceTable') {
     console.log('🔍 Closers performance table - Config value:', config.showClosersPerformanceTable);
     if (!config.showClosersPerformanceTable) {
       console.log('❌ Closers performance table is disabled, not rendering');
