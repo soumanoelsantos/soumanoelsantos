@@ -24,7 +24,8 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     'showHiperMetaReceita', 'showFaltaReceitaSuper',
     'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
-    'showQuantidadeVendas', 'showCashCollect', 'showCac'
+    'showQuantidadeVendas', 'showCashCollect', 'showCac',
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ];
 
   // Verificar se a chave é uma métrica e se está habilitada
@@ -45,14 +46,14 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     if (metrics.length > 0) {
       const metric = metrics[0];
       return (
-        <Card className="h-40 flex flex-col m-0 border-r-0 border-b-0 rounded-none">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
-            <CardTitle className="text-xs font-medium text-gray-600">
+        <div className="h-40 flex flex-col border-r border-b border-gray-200">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+            <div className="text-xs font-medium text-gray-600">
               {metric.title}
-            </CardTitle>
+            </div>
             <metric.icon className={`h-3 w-3 ${metric.color} flex-shrink-0`} />
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col justify-between p-3 pt-0">
+          </div>
+          <div className="flex-1 flex flex-col justify-between p-3 pt-0">
             <div className="text-lg font-bold">{metric.value}</div>
             <div className="mt-auto">
               <p className="text-xs text-gray-600 mt-1">
@@ -62,8 +63,8 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
                 {metric.trend} vs mês anterior
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       );
     }
     
