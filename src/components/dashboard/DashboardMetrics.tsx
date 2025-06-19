@@ -28,10 +28,10 @@ const DashboardMetrics = () => {
   // Separar itens que devem ocupar toda a largura dos que ficam no grid
   const fullWidthItems = ['revenueEvolutionChart', 'billingEvolutionChart'];
   const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
-  const fullWidthOrderedItems = orderedItems.filter(item => fullWidthItems.includes(item));
+  const evolutionCharts = orderedItems.filter(item => fullWidthItems.includes(item));
 
   console.log('🔍 DashboardMetrics - Grid items:', gridItems);
-  console.log('🔍 DashboardMetrics - Full width items:', fullWidthOrderedItems);
+  console.log('🔍 DashboardMetrics - Evolution charts found:', evolutionCharts);
 
   return (
     <div className="space-y-8">
@@ -59,21 +59,41 @@ const DashboardMetrics = () => {
         })}
       </div>
 
-      {/* Seção para gráficos de largura completa */}
-      {fullWidthOrderedItems.map((key, index) => {
-        console.log(`🔍 DashboardMetrics - Rendering full width item: ${key}`);
-        const component = <ItemRenderer itemKey={key} config={config} />;
-        if (!component) {
-          console.log(`❌ DashboardMetrics - No component returned for: ${key}`);
-          return null;
-        }
-        
-        return (
-          <div key={`${key}-${index}`} className="w-full">
-            {component}
-          </div>
-        );
-      })}
+      {/* Seção dedicada para gráficos de evolução */}
+      {evolutionCharts.length > 0 && (
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução</h2>
+          {evolutionCharts.map((key, index) => {
+            console.log(`🔍 DashboardMetrics - Rendering evolution chart: ${key}`);
+            const component = <ItemRenderer itemKey={key} config={config} />;
+            if (!component) {
+              console.log(`❌ DashboardMetrics - No component returned for evolution chart: ${key}`);
+              return null;
+            }
+            
+            return (
+              <div key={`evolution-${key}-${index}`} className="w-full">
+                {component}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Fallback direto para gráficos de evolução se não estiverem na lista */}
+      {!evolutionCharts.includes('revenueEvolutionChart') && config.showRevenueEvolutionChart && (
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-gray-800">Gráfico de Evolução de Receita</h2>
+          <ItemRenderer itemKey="revenueEvolutionChart" config={config} />
+        </div>
+      )}
+
+      {!evolutionCharts.includes('billingEvolutionChart') && config.showBillingEvolutionChart && (
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-gray-800">Gráfico de Evolução de Faturamento</h2>
+          <ItemRenderer itemKey="billingEvolutionChart" config={config} />
+        </div>
+      )}
     </div>
   );
 };
