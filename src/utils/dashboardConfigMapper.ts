@@ -82,6 +82,10 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     // Mapeamento dos novos gráficos de vendedores
     showSellerRevenueChart: data.show_seller_revenue_chart !== undefined ? data.show_seller_revenue_chart : true,
     showSellerBillingChart: data.show_seller_billing_chart !== undefined ? data.show_seller_billing_chart : true,
+    
+    // Mapeamento dos novos gráficos de análise temporal
+    showTemporalRevenueChart: data.show_temporal_revenue_chart !== undefined ? data.show_temporal_revenue_chart : true,
+    showTemporalBillingChart: data.show_temporal_billing_chart !== undefined ? data.show_temporal_billing_chart : true,
   };
 
   console.log('🟢 dashboardConfigMapper - Final mapped config with projection indicators:', {
@@ -140,6 +144,10 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     // Novos gráficos de vendedores
     show_seller_revenue_chart: config.showSellerRevenueChart,
     show_seller_billing_chart: config.showSellerBillingChart,
+    
+    // Novos gráficos de análise temporal
+    show_temporal_revenue_chart: config.showTemporalRevenueChart,
+    show_temporal_billing_chart: config.showTemporalBillingChart,
   };
 
   console.log('🟢 dashboardConfigMapper - Final database data with projection indicators:', {

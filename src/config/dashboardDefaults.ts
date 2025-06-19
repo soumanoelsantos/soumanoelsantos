@@ -51,4 +51,8 @@ export const defaultConfig: DashboardConfig = {
   // Add the new seller chart properties
   showSellerRevenueChart: true,
   showSellerBillingChart: true,
+  
+  // Add the new temporal chart properties
+  showTemporalRevenueChart: true,
+  showTemporalBillingChart: true,
 };
