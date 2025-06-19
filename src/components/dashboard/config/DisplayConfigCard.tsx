@@ -16,6 +16,8 @@ const DisplayConfigCard: React.FC<DisplayConfigCardProps> = ({ config, onConfigC
     { key: 'showBillingEvolutionChart', label: 'Gráfico de Evolução de Faturamento' },
     { key: 'showSellerRevenueChart', label: 'Gráfico de Receita por Vendedor' },
     { key: 'showSellerBillingChart', label: 'Gráfico de Faturamento por Vendedor' },
+    { key: 'showTemporalRevenueChart', label: 'Gráfico de Análise Temporal de Receita' },
+    { key: 'showTemporalBillingChart', label: 'Gráfico de Análise Temporal de Faturamento' },
   ];
 
   return (

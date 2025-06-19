@@ -56,7 +56,10 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'billingEvolutionChart': 'Gráfico de Evolução de Faturamento',
     // Novos gráficos de vendedores
     'sellerRevenueChart': 'Gráfico de Receita por Vendedor',
-    'sellerBillingChart': 'Gráfico de Faturamento por Vendedor'
+    'sellerBillingChart': 'Gráfico de Faturamento por Vendedor',
+    // Novos gráficos de análise temporal
+    'temporalRevenueChart': 'Gráfico de Análise Temporal de Receita',
+    'temporalBillingChart': 'Gráfico de Análise Temporal de Faturamento'
   };
 
   // Lista de todas as chaves de métricas possíveis
@@ -108,6 +111,15 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
   
   if (config.showSellerBillingChart) {
     enabledMetrics.push({ key: 'sellerBillingChart', title: metricTitles['sellerBillingChart'], enabled: true });
+  }
+
+  // Adicionar novos gráficos de análise temporal se habilitados
+  if (config.showTemporalRevenueChart) {
+    enabledMetrics.push({ key: 'temporalRevenueChart', title: metricTitles['temporalRevenueChart'], enabled: true });
+  }
+  
+  if (config.showTemporalBillingChart) {
+    enabledMetrics.push({ key: 'temporalBillingChart', title: metricTitles['temporalBillingChart'], enabled: true });
   }
 
   // Ordenar métricas com base na ordem salva
