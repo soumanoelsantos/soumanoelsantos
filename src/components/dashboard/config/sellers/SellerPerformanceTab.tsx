@@ -1,9 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, BarChart3, Trash2, Edit, Calendar, RefreshCw } from 'lucide-react';
@@ -51,6 +49,11 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   }, [sellerId, performances, isLoading]);
 
   const onSubmit = async (data: PerformanceFormData) => {
+    // Zerar os campos removidos
+    data.leads_count = 0;
+    data.calls_count = 0;
+    data.notes = '';
+    
     const success = await createOrUpdatePerformance(data);
     if (success) {
       reset();
@@ -114,25 +117,14 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Vendas Realizadas</Label>
-                  <Input
-                    type="number"
-                    {...register('sales_count', { valueAsNumber: true })}
-                    min="0"
-                    placeholder="Quantidade"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Leads Gerados</Label>
-                  <Input
-                    type="number"
-                    {...register('leads_count', { valueAsNumber: true })}
-                    min="0"
-                    placeholder="Quantidade"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>Vendas Realizadas</Label>
+                <Input
+                  type="number"
+                  {...register('sales_count', { valueAsNumber: true })}
+                  min="0"
+                  placeholder="Quantidade"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -158,33 +150,13 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Reuniões</Label>
-                  <Input
-                    type="number"
-                    {...register('meetings_count', { valueAsNumber: true })}
-                    min="0"
-                    placeholder="Quantidade"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Ligações</Label>
-                  <Input
-                    type="number"
-                    {...register('calls_count', { valueAsNumber: true })}
-                    min="0"
-                    placeholder="Quantidade"
-                  />
-                </div>
-              </div>
-
               <div className="space-y-2">
-                <Label>Observações</Label>
-                <Textarea
-                  {...register('notes')}
-                  placeholder="Adicione observações sobre o dia..."
-                  rows={3}
+                <Label>Reuniões</Label>
+                <Input
+                  type="number"
+                  {...register('meetings_count', { valueAsNumber: true })}
+                  min="0"
+                  placeholder="Quantidade"
                 />
               </div>
 
@@ -253,10 +225,6 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                     <p className="font-medium">{performance.sales_count}</p>
                   </div>
                   <div>
-                    <span className="text-gray-500">Leads:</span>
-                    <p className="font-medium">{performance.leads_count}</p>
-                  </div>
-                  <div>
                     <span className="text-gray-500">Receita:</span>
                     <p className="font-medium">{formatCurrency(performance.revenue_amount)}</p>
                   </div>
@@ -264,25 +232,11 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                     <span className="text-gray-500">Faturamento:</span>
                     <p className="font-medium">{formatCurrency(performance.billing_amount)}</p>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 text-sm mt-2">
                   <div>
                     <span className="text-gray-500">Reuniões:</span>
                     <p className="font-medium">{performance.meetings_count}</p>
                   </div>
-                  <div>
-                    <span className="text-gray-500">Ligações:</span>
-                    <p className="font-medium">{performance.calls_count}</p>
-                  </div>
                 </div>
-
-                {performance.notes && (
-                  <div className="mt-3 pt-3 border-t">
-                    <span className="text-gray-500 text-sm">Observações:</span>
-                    <p className="text-sm mt-1">{performance.notes}</p>
-                  </div>
-                )}
 
                 <div className="mt-3 pt-3 border-t text-xs text-gray-500">
                   Lançado em: {format(new Date(performance.submitted_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
