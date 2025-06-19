@@ -31,6 +31,9 @@ export const defaultConfig: DashboardConfig = {
   showProjecaoFaturamento: false,
   showNoShow: false,
   
+  // Nova configuração para tabela de closers
+  showClosersPerformanceTable: true,
+  
   companyName: '',
   metricsOrder: [
     'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
@@ -40,7 +43,9 @@ export const defaultConfig: DashboardConfig = {
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
     // Incluir os novos indicadores na ordem padrão
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
+    // Incluir a tabela de closers na ordem padrão
+    'closersPerformanceTable'
   ],
   
   showSpecificGoals: false,

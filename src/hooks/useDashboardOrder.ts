@@ -1,4 +1,3 @@
-
 import { DashboardConfig } from '@/types/dashboardConfig';
 
 export const useDashboardOrder = (config: DashboardConfig) => {
@@ -51,8 +50,8 @@ export const useDashboardOrder = (config: DashboardConfig) => {
         finalOrder.push('temporalBillingChart');
       }
       
-      // Adicionar tabela de performance dos closers sempre no final
-      if (!finalOrder.includes('closersPerformanceTable')) {
+      // Garantir que a tabela de closers esteja incluída se habilitada
+      if (config.showClosersPerformanceTable && !finalOrder.includes('closersPerformanceTable')) {
         finalOrder.push('closersPerformanceTable');
       }
       
@@ -103,8 +102,10 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       defaultOrder.push('temporalBillingChart');
     }
 
-    // Adicionar tabela de performance dos closers sempre no final
-    defaultOrder.push('closersPerformanceTable');
+    // Adicionar tabela de performance dos closers se habilitada
+    if (config.showClosersPerformanceTable) {
+      defaultOrder.push('closersPerformanceTable');
+    }
 
     console.log('🔍 useDashboardOrder - Using default order with closers table:', defaultOrder);
     return defaultOrder;

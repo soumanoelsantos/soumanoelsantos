@@ -30,6 +30,9 @@ export interface DashboardConfig {
   showProjecaoFaturamento: boolean;
   showNoShow: boolean;
   
+  // Nova configuração para tabela de performance dos closers
+  showClosersPerformanceTable: boolean;
+  
   companyName: string;
   metricsOrder: string[];
   

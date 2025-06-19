@@ -37,15 +37,13 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     // Novos indicadores de projeção
     { key: 'showProjecaoReceita', label: 'Projeção de Receita' },
     { key: 'showProjecaoFaturamento', label: 'Projeção de Faturamento' },
-    { key: 'showNoShow', label: 'No-Show' }
+    { key: 'showNoShow', label: 'No-Show' },
+    // Nova tabela de performance dos closers
+    { key: 'showClosersPerformanceTable', label: 'Tabela de Performance dos Closers' }
   ];
 
   console.log('🔍 MetricsConfigCard - Current config:', config);
-  console.log('🔍 MetricsConfigCard - Projection indicators:', {
-    showProjecaoReceita: config.showProjecaoReceita,
-    showProjecaoFaturamento: config.showProjecaoFaturamento,
-    showNoShow: config.showNoShow
-  });
+  console.log('🔍 MetricsConfigCard - Closers table config:', config.showClosersPerformanceTable);
 
   return (
     <Card>

@@ -152,6 +152,11 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
 
   // Nova tabela de performance dos closers
   if (itemKey === 'closersPerformanceTable') {
+    console.log('🔍 Closers performance table - Config value:', config.showClosersPerformanceTable);
+    if (!config.showClosersPerformanceTable) {
+      console.log('❌ Closers performance table is disabled, not rendering');
+      return null;
+    }
     console.log('✅ Rendering closers performance table');
     return <ClosersPerformanceTable />;
   }

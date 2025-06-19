@@ -59,7 +59,9 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'sellerBillingChart': 'Gráfico de Faturamento por Vendedor',
     // Novos gráficos de análise temporal
     'temporalRevenueChart': 'Gráfico de Análise Temporal de Receita',
-    'temporalBillingChart': 'Gráfico de Análise Temporal de Faturamento'
+    'temporalBillingChart': 'Gráfico de Análise Temporal de Faturamento',
+    // Nova tabela de performance dos closers
+    'closersPerformanceTable': 'Tabela de Performance dos Closers'
   };
 
   // Lista de todas as chaves de métricas possíveis
@@ -73,7 +75,9 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
     // Incluir os novos indicadores de projeção
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
+    // Incluir a nova tabela de closers
+    'showClosersPerformanceTable'
   ];
 
   // Obter métricas habilitadas
