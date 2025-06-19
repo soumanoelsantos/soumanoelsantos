@@ -34,6 +34,16 @@ export const defaultConfig: DashboardConfig = {
   // Nova configuração para tabela de closers
   showClosersPerformanceTable: true,
   
+  // Configurações de pré-vendas com valores padrão
+  showPreSalesCalls: true,
+  showPreSalesSchedulings: true,
+  showPreSalesNoShow: true,
+  showPreSalesSDRTable: true,
+  showPreSalesCallsChart: true,
+  showPreSalesSchedulingChart: true,
+  showPreSalesNoShowChart: true,
+  showPreSalesSDRComparisonChart: true,
+  
   companyName: '',
   metricsOrder: [
     'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',

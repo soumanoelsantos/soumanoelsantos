@@ -72,6 +72,16 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     // Nova tabela de performance dos closers
     showClosersPerformanceTable: data.show_closers_performance_table ?? defaultConfig.showClosersPerformanceTable,
     
+    // Configurações de pré-vendas
+    showPreSalesCalls: data.show_pre_sales_calls ?? defaultConfig.showPreSalesCalls,
+    showPreSalesSchedulings: data.show_pre_sales_schedulings ?? defaultConfig.showPreSalesSchedulings,
+    showPreSalesNoShow: data.show_pre_sales_no_show ?? defaultConfig.showPreSalesNoShow,
+    showPreSalesSDRTable: data.show_pre_sales_sdr_table ?? defaultConfig.showPreSalesSDRTable,
+    showPreSalesCallsChart: data.show_pre_sales_calls_chart ?? defaultConfig.showPreSalesCallsChart,
+    showPreSalesSchedulingChart: data.show_pre_sales_scheduling_chart ?? defaultConfig.showPreSalesSchedulingChart,
+    showPreSalesNoShowChart: data.show_pre_sales_no_show_chart ?? defaultConfig.showPreSalesNoShowChart,
+    showPreSalesSDRComparisonChart: data.show_pre_sales_sdr_comparison_chart ?? defaultConfig.showPreSalesSDRComparisonChart,
+    
     companyName: data.company_name || defaultConfig.companyName,
     metricsOrder: metricsOrder,
     
@@ -138,6 +148,16 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     
     // Nova tabela de performance dos closers
     show_closers_performance_table: config.showClosersPerformanceTable,
+    
+    // Configurações de pré-vendas
+    show_pre_sales_calls: config.showPreSalesCalls,
+    show_pre_sales_schedulings: config.showPreSalesSchedulings,
+    show_pre_sales_no_show: config.showPreSalesNoShow,
+    show_pre_sales_sdr_table: config.showPreSalesSDRTable,
+    show_pre_sales_calls_chart: config.showPreSalesCallsChart,
+    show_pre_sales_scheduling_chart: config.showPreSalesSchedulingChart,
+    show_pre_sales_no_show_chart: config.showPreSalesNoShowChart,
+    show_pre_sales_sdr_comparison_chart: config.showPreSalesSDRComparisonChart,
     
     metrics_order: config.metricsOrder,
     
