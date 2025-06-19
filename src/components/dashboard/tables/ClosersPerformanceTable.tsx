@@ -98,37 +98,6 @@ const ClosersPerformanceTable = () => {
             </TableRow>
           </TableBody>
         </Table>
-        
-        {/* Seção VENDAS NO MÊS */}
-        <div className="mt-8">
-          <div className="bg-yellow-400 text-black font-bold text-center py-2 mb-4 rounded">
-            VENDAS NO MÊS
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-800">
-                <TableHead className="text-white font-bold">Produto</TableHead>
-                <TableHead className="text-white font-bold text-center">Posição</TableHead>
-                <TableHead className="text-white font-bold text-center">SDR (15%)</TableHead>
-                <TableHead className="text-white font-bold text-center">Closer Agenda (5%)</TableHead>
-                <TableHead className="text-white font-bold text-center">Closer Venda (20%)</TableHead>
-                <TableHead className="text-white font-bold text-center">Total pago</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.vendasMes.map((venda, index) => (
-                <TableRow key={index} className="hover:bg-gray-50">
-                  <TableCell className="font-medium">{venda.produto}</TableCell>
-                  <TableCell className="text-center">{venda.posicao}</TableCell>
-                  <TableCell className="text-center">{formatCurrency(venda.sdr)}</TableCell>
-                  <TableCell className="text-center">{formatCurrency(venda.closerAgenda)}</TableCell>
-                  <TableCell className="text-center">{formatCurrency(venda.closerVenda)}</TableCell>
-                  <TableCell className="text-center font-bold">{formatCurrency(venda.totalPago)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
       </CardContent>
     </Card>
   );

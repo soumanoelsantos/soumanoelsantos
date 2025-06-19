@@ -19,19 +19,9 @@ interface CloserData {
   cashCollect: number;
 }
 
-interface VendaMesData {
-  produto: string;
-  posicao: string;
-  sdr: number;
-  closerAgenda: number;
-  closerVenda: number;
-  totalPago: number;
-}
-
 interface ClosersPerformanceData {
   closers: CloserData[];
   total: CloserData;
-  vendasMes: VendaMesData[];
 }
 
 export const useClosersPerformanceData = () => {
@@ -52,8 +42,7 @@ export const useClosersPerformanceData = () => {
       ticketMedio: 0,
       conversao: 0,
       cashCollect: 0,
-    },
-    vendasMes: []
+    }
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -159,30 +148,9 @@ export const useClosersPerformanceData = () => {
         cashCollect: closersData.length > 0 ? closersData.reduce((sum, c) => sum + c.cashCollect, 0) / closersData.length : 0,
       };
 
-      // Dados de vendas do mês (exemplo)
-      const vendasMes: VendaMesData[] = [
-        {
-          produto: 'Produto A',
-          posicao: '1º',
-          sdr: 15000,
-          closerAgenda: 5000,
-          closerVenda: 20000,
-          totalPago: 40000
-        },
-        {
-          produto: 'Produto B',
-          posicao: '2º',
-          sdr: 12000,
-          closerAgenda: 4000,
-          closerVenda: 16000,
-          totalPago: 32000
-        }
-      ];
-
       setData({
         closers: closersData,
-        total,
-        vendasMes
+        total
       });
 
     } catch (error) {
@@ -275,29 +243,9 @@ export const useClosersPerformanceData = () => {
       cashCollect: 45.01,
     };
 
-    const vendasMes: VendaMesData[] = [
-      {
-        produto: 'Consultoria Premium',
-        posicao: '1º',
-        sdr: 15000,
-        closerAgenda: 5000,
-        closerVenda: 20000,
-        totalPago: 40000
-      },
-      {
-        produto: 'Curso Avançado',
-        posicao: '2º',
-        sdr: 12000,
-        closerAgenda: 4000,
-        closerVenda: 16000,
-        totalPago: 32000
-      }
-    ];
-
     setData({
       closers: exampleClosers,
-      total,
-      vendasMes
+      total
     });
   };
 
