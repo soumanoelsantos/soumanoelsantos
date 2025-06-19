@@ -41,9 +41,9 @@ export const RevenueEvolutionChart = () => {
   const chartData = revenueData.map((item, index) => ({
     ...item,
     // Só mostrar receita realizada até o dia atual
-    receita: item.day <= currentDay ? item.receita : null,
+    receita: Number(item.day) <= currentDay ? item.receita : null,
     // Adicionar dados de projeção (linha pontilhada do dia atual até o final do mês)
-    projecaoReceita: item.day >= currentDay ? (item.receita || 0) * 1.15 : null, // Projeção 15% maior
+    projecaoReceita: Number(item.day) >= currentDay ? (item.receita || 0) * 1.15 : null, // Projeção 15% maior
   }));
 
   return (
@@ -165,9 +165,9 @@ export const BillingEvolutionChart = () => {
   const chartData = billingData.map((item, index) => ({
     ...item,
     // Só mostrar faturamento realizado até o dia atual
-    faturamento: item.day <= currentDay ? item.faturamento : null,
+    faturamento: Number(item.day) <= currentDay ? item.faturamento : null,
     // Adicionar dados de projeção (linha pontilhada do dia atual até o final do mês)
-    projecaoFaturamento: item.day >= currentDay ? (item.faturamento || 0) * 1.18 : null, // Projeção 18% maior
+    projecaoFaturamento: Number(item.day) >= currentDay ? (item.faturamento || 0) * 1.18 : null, // Projeção 18% maior
   }));
 
   return (
