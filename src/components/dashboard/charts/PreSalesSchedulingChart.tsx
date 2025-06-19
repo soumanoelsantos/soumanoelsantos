@@ -4,19 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
-const PreSalesSchedulingChart = () => {
-  const data = [
-    { date: '01/12', agendamentos: 15, meta: 25 },
-    { date: '02/12', agendamentos: 22, meta: 25 },
-    { date: '03/12', agendamentos: 18, meta: 25 },
-    { date: '04/12', agendamentos: 28, meta: 25 },
-    { date: '05/12', agendamentos: 31, meta: 25 },
-    { date: '06/12', agendamentos: 19, meta: 25 },
-    { date: '07/12', agendamentos: 24, meta: 25 }
-  ];
+interface PreSalesSchedulingChartProps {
+  data: Array<{
+    date: string;
+    calls: number;
+    schedulings: number;
+    noShow: number;
+  }>;
+}
 
+const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
   const chartConfig = {
-    agendamentos: {
+    schedulings: {
       label: "Agendamentos",
       color: "hsl(var(--chart-3))",
     },
@@ -26,6 +25,13 @@ const PreSalesSchedulingChart = () => {
     },
   };
 
+  // Transform data to include target line
+  const chartData = data.map(item => ({
+    date: item.date,
+    agendamentos: item.schedulings,
+    meta: 25 // Meta fixa, pode ser configurável depois
+  }));
+
   return (
     <Card>
       <CardHeader>
@@ -34,14 +40,14 @@ const PreSalesSchedulingChart = () => {
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
+            <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Bar 
                 dataKey="agendamentos" 
-                fill="var(--color-agendamentos)" 
+                fill="var(--color-schedulings)" 
                 name="Agendamentos"
                 radius={[4, 4, 0, 0]}
               />

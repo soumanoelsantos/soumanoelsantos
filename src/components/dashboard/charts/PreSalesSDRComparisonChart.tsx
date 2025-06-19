@@ -4,14 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
-const PreSalesSDRComparisonChart = () => {
-  const data = [
-    { sdr: 'João', agendamentos: 28, meta: 25 },
-    { sdr: 'Maria', agendamentos: 22, meta: 25 },
-    { sdr: 'Pedro', agendamentos: 18, meta: 25 },
-    { sdr: 'Ana', agendamentos: 31, meta: 25 }
-  ];
+interface PreSalesSDRComparisonChartProps {
+  data: Array<{
+    name: string;
+    calls: number;
+    schedulings: number;
+    noShow: number;
+    conversionRate: number;
+  }>;
+}
 
+const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) => {
   const chartConfig = {
     agendamentos: {
       label: "Agendamentos",
@@ -23,6 +26,13 @@ const PreSalesSDRComparisonChart = () => {
     },
   };
 
+  // Transform data for chart
+  const chartData = data.map(sdr => ({
+    sdr: sdr.name,
+    agendamentos: sdr.schedulings,
+    meta: 25 // Meta fixa, pode ser configurável depois
+  }));
+
   return (
     <Card>
       <CardHeader>
@@ -31,7 +41,7 @@ const PreSalesSDRComparisonChart = () => {
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
+            <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="sdr" />
               <YAxis />

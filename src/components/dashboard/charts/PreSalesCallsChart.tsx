@@ -4,17 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
-const PreSalesCallsChart = () => {
-  const data = [
-    { date: '01/12', calls: 120, target: 150 },
-    { date: '02/12', calls: 135, target: 150 },
-    { date: '03/12', calls: 110, target: 150 },
-    { date: '04/12', calls: 145, target: 150 },
-    { date: '05/12', calls: 155, target: 150 },
-    { date: '06/12', calls: 125, target: 150 },
-    { date: '07/12', calls: 140, target: 150 }
-  ];
+interface PreSalesCallsChartProps {
+  data: Array<{
+    date: string;
+    calls: number;
+    schedulings: number;
+    noShow: number;
+  }>;
+}
 
+const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
   const chartConfig = {
     calls: {
       label: "Tentativas",
@@ -26,6 +25,12 @@ const PreSalesCallsChart = () => {
     },
   };
 
+  // Transform data to include target line
+  const chartData = data.map(item => ({
+    ...item,
+    target: 150 // Meta fixa, pode ser configurável depois
+  }));
+
   return (
     <Card>
       <CardHeader>
@@ -34,7 +39,7 @@ const PreSalesCallsChart = () => {
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />

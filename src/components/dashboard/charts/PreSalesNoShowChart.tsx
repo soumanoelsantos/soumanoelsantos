@@ -4,17 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
-const PreSalesNoShowChart = () => {
-  const data = [
-    { date: '01/12', noShow: 2, taxa: 13.3 },
-    { date: '02/12', noShow: 4, taxa: 18.2 },
-    { date: '03/12', noShow: 3, taxa: 16.7 },
-    { date: '04/12', noShow: 5, taxa: 17.9 },
-    { date: '05/12', noShow: 6, taxa: 19.4 },
-    { date: '06/12', noShow: 2, taxa: 10.5 },
-    { date: '07/12', noShow: 3, taxa: 12.5 }
-  ];
+interface PreSalesNoShowChartProps {
+  data: Array<{
+    date: string;
+    calls: number;
+    schedulings: number;
+    noShow: number;
+  }>;
+}
 
+const PreSalesNoShowChart = ({ data }: PreSalesNoShowChartProps) => {
   const chartConfig = {
     noShow: {
       label: "No-Show",
@@ -26,6 +25,13 @@ const PreSalesNoShowChart = () => {
     },
   };
 
+  // Transform data to calculate percentage
+  const chartData = data.map(item => ({
+    date: item.date,
+    noShow: item.noShow,
+    taxa: item.schedulings > 0 ? ((item.noShow / item.schedulings) * 100) : 0
+  }));
+
   return (
     <Card>
       <CardHeader>
@@ -34,7 +40,7 @@ const PreSalesNoShowChart = () => {
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis yAxisId="left" />
