@@ -13,9 +13,9 @@ interface ItemRendererProps {
 
 export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) => {
   console.log('🔍 ItemRenderer - Processing key:', itemKey);
-  console.log('🔍 ItemRenderer - Full config:', config);
+  console.log('🔍 ItemRenderer - Config value for key:', config[itemKey as keyof DashboardConfig]);
   
-  // Lista de todas as chaves de métricas que devem ser renderizadas como cards
+  // Lista completa de todas as chaves de métricas que devem ser renderizadas como cards
   const metricKeys = [
     'showConversion', 'showRevenue',
     'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
@@ -25,6 +25,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
+    // Incluir explicitamente os novos indicadores de projeção
     'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ];
 
@@ -39,12 +40,13 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
       return null;
     }
     
-    const metrics = allMetricsCards.filter(m => m.key === itemKey);
-    console.log(`✅ Found ${metrics.length} metrics for key ${itemKey}`);
+    // Buscar a métrica correspondente nos dados
+    const metric = allMetricsCards.find(m => m.key === itemKey);
+    console.log(`🔍 Found metric for key ${itemKey}:`, metric);
     
-    // Renderizar apenas o primeiro card encontrado
-    if (metrics.length > 0) {
-      const metric = metrics[0];
+    // Se encontrou a métrica, renderizar o card
+    if (metric) {
+      console.log(`✅ Rendering metric card for ${itemKey}`);
       return (
         <div className="h-40 flex flex-col border-r border-b border-gray-200">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
@@ -66,6 +68,8 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
           </div>
         </div>
       );
+    } else {
+      console.log(`❌ No metric data found for key: ${itemKey}`);
     }
     
     return null;

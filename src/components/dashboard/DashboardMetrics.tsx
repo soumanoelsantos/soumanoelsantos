@@ -20,9 +20,10 @@ const DashboardMetrics = () => {
   
   console.log('🔍 DashboardMetrics - Rendering with config:', config);
   console.log('🔍 DashboardMetrics - Ordered items:', orderedItems);
-  console.log('🔍 DashboardMetrics - Evolution charts config:', {
-    showRevenueEvolutionChart: config.showRevenueEvolutionChart,
-    showBillingEvolutionChart: config.showBillingEvolutionChart
+  console.log('🔍 DashboardMetrics - Projection indicators in config:', {
+    showProjecaoReceita: config.showProjecaoReceita,
+    showProjecaoFaturamento: config.showProjecaoFaturamento,
+    showNoShow: config.showNoShow
   });
 
   // Separar itens que devem ocupar toda a largura dos que ficam no grid
@@ -48,13 +49,11 @@ const DashboardMetrics = () => {
       <div className="border border-gray-200 rounded-lg overflow-hidden">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {gridItems.map((key, index) => {
-            console.log(`🔍 DashboardMetrics - Rendering grid item: ${key}`);
-            const component = <ItemRenderer itemKey={key} config={config} />;
-            if (!component) return null;
+            console.log(`🔍 DashboardMetrics - Rendering grid item: ${key} (enabled: ${config[key as keyof typeof config]})`);
             
             return (
               <div key={`${key}-${index}`}>
-                {component}
+                <ItemRenderer itemKey={key} config={config} />
               </div>
             );
           })}
@@ -79,21 +78,6 @@ const DashboardMetrics = () => {
               </div>
             );
           })}
-        </div>
-      )}
-
-      {/* Fallback direto para gráficos de evolução se não estiverem na lista */}
-      {!evolutionCharts.includes('revenueEvolutionChart') && config.showRevenueEvolutionChart && (
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-800">Gráfico de Evolução de Receita</h2>
-          <ItemRenderer itemKey="revenueEvolutionChart" config={config} />
-        </div>
-      )}
-
-      {!evolutionCharts.includes('billingEvolutionChart') && config.showBillingEvolutionChart && (
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-800">Gráfico de Evolução de Faturamento</h2>
-          <ItemRenderer itemKey="billingEvolutionChart" config={config} />
         </div>
       )}
     </div>
