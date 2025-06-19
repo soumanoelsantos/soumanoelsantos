@@ -55,31 +55,53 @@ const SellerPerformanceForm = () => {
 
   useEffect(() => {
     const fetchSeller = async () => {
+      console.log('Token recebido:', token);
+      
       if (!token) {
+        console.log('Token não encontrado na URL');
         toast({
           title: "Erro",
           description: "Token de acesso inválido",
           variant: "destructive",
         });
+        setIsLoading(false);
         return;
       }
 
       try {
+        console.log('Buscando vendedor com token:', token);
+        
         const { data, error } = await supabase
           .from('sellers')
           .select('*')
           .eq('access_token', token)
-          .single();
+          .maybeSingle();
 
-        if (error || !data) {
+        console.log('Resultado da busca:', { data, error });
+
+        if (error) {
+          console.error('Erro na consulta:', error);
           toast({
             title: "Erro",
-            description: "Vendedor não encontrado ou token inválido",
+            description: "Erro ao verificar token de acesso",
             variant: "destructive",
           });
+          setIsLoading(false);
           return;
         }
 
+        if (!data) {
+          console.log('Nenhum vendedor encontrado com este token');
+          toast({
+            title: "Erro",
+            description: "Token de acesso inválido ou vendedor não encontrado",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        console.log('Vendedor encontrado:', data);
         setSeller(data);
       } catch (error) {
         console.error('Erro ao buscar vendedor:', error);
