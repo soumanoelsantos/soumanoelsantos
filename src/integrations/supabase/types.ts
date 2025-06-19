@@ -102,6 +102,7 @@ export type Database = {
           created_at: string
           id: string
           metrics_order: Json | null
+          pre_sales_order: Json | null
           selected_goal_ids: Json | null
           show_billing_evolution_chart: boolean | null
           show_cac: boolean | null
@@ -127,6 +128,14 @@ export type Database = {
           show_meta_receita: boolean | null
           show_monthly_goals: boolean | null
           show_no_show: boolean | null
+          show_pre_sales_calls: boolean | null
+          show_pre_sales_calls_chart: boolean | null
+          show_pre_sales_no_show: boolean | null
+          show_pre_sales_no_show_chart: boolean | null
+          show_pre_sales_scheduling_chart: boolean | null
+          show_pre_sales_schedulings: boolean | null
+          show_pre_sales_sdr_comparison_chart: boolean | null
+          show_pre_sales_sdr_table: boolean | null
           show_projecao_faturamento: boolean | null
           show_projecao_receita: boolean | null
           show_quantidade_vendas: boolean | null
@@ -153,6 +162,7 @@ export type Database = {
           created_at?: string
           id?: string
           metrics_order?: Json | null
+          pre_sales_order?: Json | null
           selected_goal_ids?: Json | null
           show_billing_evolution_chart?: boolean | null
           show_cac?: boolean | null
@@ -178,6 +188,14 @@ export type Database = {
           show_meta_receita?: boolean | null
           show_monthly_goals?: boolean | null
           show_no_show?: boolean | null
+          show_pre_sales_calls?: boolean | null
+          show_pre_sales_calls_chart?: boolean | null
+          show_pre_sales_no_show?: boolean | null
+          show_pre_sales_no_show_chart?: boolean | null
+          show_pre_sales_scheduling_chart?: boolean | null
+          show_pre_sales_schedulings?: boolean | null
+          show_pre_sales_sdr_comparison_chart?: boolean | null
+          show_pre_sales_sdr_table?: boolean | null
           show_projecao_faturamento?: boolean | null
           show_projecao_receita?: boolean | null
           show_quantidade_vendas?: boolean | null
@@ -204,6 +222,7 @@ export type Database = {
           created_at?: string
           id?: string
           metrics_order?: Json | null
+          pre_sales_order?: Json | null
           selected_goal_ids?: Json | null
           show_billing_evolution_chart?: boolean | null
           show_cac?: boolean | null
@@ -229,6 +248,14 @@ export type Database = {
           show_meta_receita?: boolean | null
           show_monthly_goals?: boolean | null
           show_no_show?: boolean | null
+          show_pre_sales_calls?: boolean | null
+          show_pre_sales_calls_chart?: boolean | null
+          show_pre_sales_no_show?: boolean | null
+          show_pre_sales_no_show_chart?: boolean | null
+          show_pre_sales_scheduling_chart?: boolean | null
+          show_pre_sales_schedulings?: boolean | null
+          show_pre_sales_sdr_comparison_chart?: boolean | null
+          show_pre_sales_sdr_table?: boolean | null
           show_projecao_faturamento?: boolean | null
           show_projecao_receita?: boolean | null
           show_quantidade_vendas?: boolean | null
