@@ -48,13 +48,13 @@ const DashboardMetrics = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {gridItems.map((key, index) => {
           console.log(`🔍 DashboardMetrics - Rendering grid item: ${key}`);
-          const components = <ItemRenderer itemKey={key} config={config} />;
-          if (!components) return null;
+          const component = <ItemRenderer itemKey={key} config={config} />;
+          if (!component) return null;
           
           return (
-            <React.Fragment key={`${key}-${index}`}>
-              {components}
-            </React.Fragment>
+            <div key={`${key}-${index}`}>
+              {component}
+            </div>
           );
         })}
       </div>
@@ -62,15 +62,15 @@ const DashboardMetrics = () => {
       {/* Seção para gráficos de largura completa */}
       {fullWidthOrderedItems.map((key, index) => {
         console.log(`🔍 DashboardMetrics - Rendering full width item: ${key}`);
-        const components = <ItemRenderer itemKey={key} config={config} />;
-        if (!components) {
+        const component = <ItemRenderer itemKey={key} config={config} />;
+        if (!component) {
           console.log(`❌ DashboardMetrics - No component returned for: ${key}`);
           return null;
         }
         
         return (
           <div key={`${key}-${index}`} className="w-full">
-            {components}
+            {component}
           </div>
         );
       })}

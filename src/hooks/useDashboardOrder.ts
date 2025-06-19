@@ -19,7 +19,8 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
       'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
       'showQuantidadeVendas', 'showCashCollect', 'showCac',
-      'specificGoals', 'salesChart', 'growthChart', 'revenueEvolutionChart', 'billingEvolutionChart'
+      'specificGoals', 'salesChart', 'growthChart', 
+      'revenueEvolutionChart', 'billingEvolutionChart'
     ];
 
     console.log('useDashboardOrder - Using default order:', defaultOrder);

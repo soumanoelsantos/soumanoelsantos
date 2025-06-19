@@ -42,31 +42,33 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     const metrics = allMetricsCards.filter(m => m.key === itemKey);
     console.log(`✅ Found ${metrics.length} metrics for key ${itemKey}`);
     
-    return (
-      <>
-        {metrics.map((metric, index) => (
-          <Card key={`${metric.key}-${index}`} className="h-40 flex flex-col">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
-              <CardTitle className="text-xs font-medium text-gray-600">
-                {metric.title}
-              </CardTitle>
-              <metric.icon className={`h-3 w-3 ${metric.color} flex-shrink-0`} />
-            </CardHeader>
-            <CardContent className="flex-1 flex flex-col justify-between p-3">
-              <div className="text-lg font-bold">{metric.value}</div>
-              <div className="mt-auto">
-                <p className="text-xs text-gray-600 mt-1">
-                  {metric.description}
-                </p>
-                <div className="text-xs text-green-600 mt-2">
-                  {metric.trend} vs mês anterior
-                </div>
+    // Renderizar apenas o primeiro card encontrado
+    if (metrics.length > 0) {
+      const metric = metrics[0];
+      return (
+        <Card className="h-40 flex flex-col">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
+            <CardTitle className="text-xs font-medium text-gray-600">
+              {metric.title}
+            </CardTitle>
+            <metric.icon className={`h-3 w-3 ${metric.color} flex-shrink-0`} />
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col justify-between p-3">
+            <div className="text-lg font-bold">{metric.value}</div>
+            <div className="mt-auto">
+              <p className="text-xs text-gray-600 mt-1">
+                {metric.description}
+              </p>
+              <div className="text-xs text-green-600 mt-2">
+                {metric.trend} vs mês anterior
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </>
-    );
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+    
+    return null;
   }
 
   // Metas específicas - renderizar cada meta como um card individual
