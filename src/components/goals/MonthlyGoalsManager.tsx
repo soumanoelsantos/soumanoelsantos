@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -47,15 +46,25 @@ const MonthlyGoalsManager = () => {
   const years = Array.from({ length: 10 }, (_, i) => currentDate.getFullYear() + i - 2);
 
   const handleCreateGoal = async () => {
-    if (newGoal.target_value <= 0) return;
+    console.log('🎯 [DEBUG] Iniciando criação de meta');
+    console.log('🎯 [DEBUG] Dados da nova meta:', newGoal);
+    
+    if (!newGoal.target_value || newGoal.target_value <= 0) {
+      console.log('❌ [DEBUG] Valor da meta inválido:', newGoal.target_value);
+      return;
+    }
 
+    console.log('🎯 [DEBUG] Chamando createGoal...');
     const success = await createGoal({
       ...newGoal,
       month: selectedMonth,
       year: selectedYear,
     });
     
+    console.log('🎯 [DEBUG] Resultado da criação:', success);
+    
     if (success) {
+      console.log('✅ [DEBUG] Meta criada com sucesso, resetando formulário');
       setNewGoal({
         month: selectedMonth,
         year: selectedYear,
@@ -66,6 +75,8 @@ const MonthlyGoalsManager = () => {
         target_value: 0,
       });
       setIsCreating(false);
+    } else {
+      console.log('❌ [DEBUG] Falha na criação da meta');
     }
   };
 
@@ -213,9 +224,10 @@ const MonthlyGoalsManager = () => {
                 <Label>Tipo de Meta</Label>
                 <Select 
                   value={newGoal.goal_type} 
-                  onValueChange={(value: 'meta' | 'supermeta') => 
-                    setNewGoal(prev => ({ ...prev, goal_type: value }))
-                  }
+                  onValueChange={(value: 'meta' | 'supermeta') => {
+                    console.log('🎯 [DEBUG] Alterando tipo de meta para:', value);
+                    setNewGoal(prev => ({ ...prev, goal_type: value }));
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -230,9 +242,10 @@ const MonthlyGoalsManager = () => {
                 <Label>Tipo de Alvo</Label>
                 <Select 
                   value={newGoal.target_type} 
-                  onValueChange={(value: 'financial' | 'quantity') => 
-                    setNewGoal(prev => ({ ...prev, target_type: value }))
-                  }
+                  onValueChange={(value: 'financial' | 'quantity') => {
+                    console.log('🎯 [DEBUG] Alterando tipo de alvo para:', value);
+                    setNewGoal(prev => ({ ...prev, target_type: value }));
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -251,9 +264,10 @@ const MonthlyGoalsManager = () => {
                   <Label>Categoria Financeira</Label>
                   <Select 
                     value={newGoal.financial_category || 'faturamento'} 
-                    onValueChange={(value: 'faturamento' | 'receita') => 
-                      setNewGoal(prev => ({ ...prev, financial_category: value }))
-                    }
+                    onValueChange={(value: 'faturamento' | 'receita') => {
+                      console.log('🎯 [DEBUG] Alterando categoria financeira para:', value);
+                      setNewGoal(prev => ({ ...prev, financial_category: value }));
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -268,9 +282,10 @@ const MonthlyGoalsManager = () => {
                   <Label>Moeda</Label>
                   <Select 
                     value={newGoal.currency || 'BRL'} 
-                    onValueChange={(value: 'BRL' | 'USD') => 
-                      setNewGoal(prev => ({ ...prev, currency: value }))
-                    }
+                    onValueChange={(value: 'BRL' | 'USD') => {
+                      console.log('🎯 [DEBUG] Alterando moeda para:', value);
+                      setNewGoal(prev => ({ ...prev, currency: value }));
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -288,12 +303,13 @@ const MonthlyGoalsManager = () => {
               <Label>Produto (opcional)</Label>
               <Select 
                 value={newGoal.product_id || 'general'} 
-                onValueChange={(value) => 
+                onValueChange={(value) => {
+                  console.log('🎯 [DEBUG] Alterando produto para:', value);
                   setNewGoal(prev => ({ 
                     ...prev, 
                     product_id: value === 'general' ? undefined : value 
-                  }))
-                }
+                  }));
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -319,10 +335,14 @@ const MonthlyGoalsManager = () => {
               <Input
                 type="number"
                 value={newGoal.target_value}
-                onChange={(e) => setNewGoal(prev => ({ 
-                  ...prev, 
-                  target_value: parseFloat(e.target.value) || 0 
-                }))}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  console.log('🎯 [DEBUG] Alterando valor da meta para:', value);
+                  setNewGoal(prev => ({ 
+                    ...prev, 
+                    target_value: value
+                  }));
+                }}
                 placeholder={newGoal.target_type === 'financial' ? '0,00' : '0'}
                 min="0"
                 step={newGoal.target_type === 'financial' ? '0.01' : '1'}
@@ -330,7 +350,11 @@ const MonthlyGoalsManager = () => {
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={handleCreateGoal} disabled={newGoal.target_value <= 0}>
+              <Button 
+                onClick={handleCreateGoal} 
+                disabled={newGoal.target_value <= 0}
+                className="flex-1"
+              >
                 Criar Meta
               </Button>
               <Button variant="outline" onClick={() => setIsCreating(false)}>
