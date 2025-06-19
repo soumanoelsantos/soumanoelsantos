@@ -36,11 +36,14 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
       const typedGoals = (data || []).map(goal => ({
         ...goal,
         goal_type: goal.goal_type as 'meta' | 'supermeta',
-        target_type: goal.target_type as 'quantity' | 'financial'
+        target_type: goal.target_type as 'quantity' | 'financial',
+        financial_category: goal.financial_category as 'faturamento' | 'receita' | undefined,
+        currency: goal.currency as 'BRL' | 'USD' | undefined
       })) as MonthlyGoal[];
       
       setGoals(typedGoals);
     } catch (error: any) {
+      console.error('❌ [DEBUG] Erro ao carregar metas:', error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar metas",
@@ -52,17 +55,40 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
   };
 
   const createGoal = async (goalData: CreateGoalData) => {
-    if (!userId) return false;
+    if (!userId) {
+      console.log('❌ [DEBUG] Sem userId para criar meta');
+      return false;
+    }
 
     try {
-      const { error } = await supabase
+      console.log('📤 [DEBUG] Dados para inserção:', {
+        ...goalData,
+        user_id: userId,
+      });
+
+      const { data, error } = await supabase
         .from('monthly_goals')
         .insert({
-          ...goalData,
           user_id: userId,
-        });
+          month: goalData.month,
+          year: goalData.year,
+          product_id: goalData.product_id || null,
+          goal_type: goalData.goal_type,
+          target_type: goalData.target_type,
+          financial_category: goalData.financial_category || null,
+          currency: goalData.currency || null,
+          target_value: goalData.target_value,
+          current_value: 0,
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [DEBUG] Erro detalhado na inserção:', error);
+        throw error;
+      }
+
+      console.log('✅ [DEBUG] Meta criada com sucesso:', data);
 
       toast({
         title: "Meta criada",
@@ -72,10 +98,11 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
       fetchGoals();
       return true;
     } catch (error: any) {
+      console.error('💥 [DEBUG] Erro completo ao criar meta:', error);
       toast({
         variant: "destructive",
         title: "Erro ao criar meta",
-        description: error.message,
+        description: error.message || 'Erro desconhecido ao criar meta',
       });
       return false;
     }
