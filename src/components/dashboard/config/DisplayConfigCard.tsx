@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { DashboardConfig } from '@/hooks/useDashboardConfig';
+import { BarChart3 } from 'lucide-react';
+import { DashboardConfig } from '@/types/dashboardConfig';
 
 interface DisplayConfigCardProps {
   config: DashboardConfig;
@@ -14,17 +15,57 @@ const DisplayConfigCard: React.FC<DisplayConfigCardProps> = ({ config, onConfigC
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Visualização</CardTitle>
-        <CardDescription>Configure como o dashboard será exibido</CardDescription>
+        <CardTitle className="flex items-center gap-2">
+          <BarChart3 className="h-5 w-5" />
+          Exibição e Gráficos
+        </CardTitle>
+        <CardDescription>
+          Configure quais gráficos e visualizações serão mostradas no dashboard
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
+        <div className="flex items-center justify-between">
+          <Label htmlFor="showCharts" className="text-sm font-medium">
+            Mostrar Gráficos Gerais
+          </Label>
+          <Switch
             id="showCharts"
             checked={config.showCharts}
-            onCheckedChange={(checked) => onConfigChange('showCharts', checked as boolean)}
+            onCheckedChange={(checked) => onConfigChange('showCharts', checked)}
           />
-          <Label htmlFor="showCharts">Exibir Gráficos</Label>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="showRevenueEvolutionChart" className="text-sm font-medium">
+            Gráfico de Evolução de Receita
+          </Label>
+          <Switch
+            id="showRevenueEvolutionChart"
+            checked={config.showRevenueEvolutionChart}
+            onCheckedChange={(checked) => onConfigChange('showRevenueEvolutionChart', checked)}
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="showBillingEvolutionChart" className="text-sm font-medium">
+            Gráfico de Evolução de Faturamento
+          </Label>
+          <Switch
+            id="showBillingEvolutionChart"
+            checked={config.showBillingEvolutionChart}
+            onCheckedChange={(checked) => onConfigChange('showBillingEvolutionChart', checked)}
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="showSpecificGoals" className="text-sm font-medium">
+            Mostrar Metas Específicas
+          </Label>
+          <Switch
+            id="showSpecificGoals"
+            checked={config.showSpecificGoals}
+            onCheckedChange={(checked) => onConfigChange('showSpecificGoals', checked)}
+          />
         </div>
       </CardContent>
     </Card>

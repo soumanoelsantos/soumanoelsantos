@@ -69,7 +69,11 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     metricsOrder: metricsOrder,
     
     showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
-    selectedGoalIds: selectedGoalIds
+    selectedGoalIds: selectedGoalIds,
+
+    // Novos gráficos de evolução
+    showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? defaultConfig.showRevenueEvolutionChart,
+    showBillingEvolutionChart: data.show_billing_evolution_chart ?? defaultConfig.showBillingEvolutionChart,
   };
 
   console.log('🟢 dashboardConfigMapper - Final mapped config:', mappedConfig);
@@ -110,7 +114,11 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     metrics_order: config.metricsOrder,
     
     show_specific_goals: config.showSpecificGoals,
-    selected_goal_ids: config.selectedGoalIds
+    selected_goal_ids: config.selectedGoalIds,
+
+    // Novos gráficos de evolução
+    show_revenue_evolution_chart: config.showRevenueEvolutionChart,
+    show_billing_evolution_chart: config.showBillingEvolutionChart,
   };
 
   console.log('🟢 dashboardConfigMapper - Final database data:', databaseData);

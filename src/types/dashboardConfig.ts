@@ -32,4 +32,8 @@ export interface DashboardConfig {
   // Novas opções para metas específicas
   showSpecificGoals: boolean;
   selectedGoalIds: string[];
+
+  // Novos gráficos de evolução
+  showRevenueEvolutionChart: boolean;
+  showBillingEvolutionChart: boolean;
 }

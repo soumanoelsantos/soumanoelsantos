@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
 import { allMetricsCards } from '../data/metrics';
 import { SalesChart, GrowthChart } from '../charts/ChartComponents';
+import { RevenueEvolutionChart, BillingEvolutionChart } from '../charts/EvolutionCharts';
 import SpecificGoalsCards from '../goals/SpecificGoalsCards';
 
 interface ItemRendererProps {
@@ -101,6 +102,34 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return (
       <div className="col-span-full lg:col-span-3">
         <GrowthChart />
+      </div>
+    );
+  }
+
+  // Gráfico de evolução de receita
+  if (itemKey === 'revenueEvolutionChart') {
+    if (!config.showCharts) {
+      console.log('Charts are disabled, not rendering revenue evolution chart');
+      return null;
+    }
+    console.log('Rendering revenue evolution chart');
+    return (
+      <div className="col-span-full">
+        <RevenueEvolutionChart />
+      </div>
+    );
+  }
+
+  // Gráfico de evolução de faturamento
+  if (itemKey === 'billingEvolutionChart') {
+    if (!config.showCharts) {
+      console.log('Charts are disabled, not rendering billing evolution chart');
+      return null;
+    }
+    console.log('Rendering billing evolution chart');
+    return (
+      <div className="col-span-full">
+        <BillingEvolutionChart />
       </div>
     );
   }

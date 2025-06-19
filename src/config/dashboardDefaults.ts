@@ -4,7 +4,6 @@ import { DashboardConfig } from '@/types/dashboardConfig';
 export const defaultConfig: DashboardConfig = {
   showConversion: true,
   showRevenue: true,
-  // Novas configurações
   showTicketFaturamento: false,
   showTicketReceita: false,
   showFaltaFaturamento: false,
@@ -27,11 +26,22 @@ export const defaultConfig: DashboardConfig = {
   showCashCollect: false,
   showCac: false,
   
-  companyName: '',
+  companyName: 'Minha Empresa',
   showCharts: true,
-  metricsOrder: ['showConversion', 'showRevenue'],
+  metricsOrder: [
+    'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
+    'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
+    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
+    'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
+    'showQuantidadeVendas', 'showCashCollect', 'showCac',
+    'specificGoals', 'salesChart', 'growthChart', 'revenueEvolutionChart', 'billingEvolutionChart'
+  ],
   
-  // Novas configurações para metas específicas
   showSpecificGoals: false,
   selectedGoalIds: [],
+
+  // Novos gráficos de evolução habilitados por padrão
+  showRevenueEvolutionChart: true,
+  showBillingEvolutionChart: true,
 };
