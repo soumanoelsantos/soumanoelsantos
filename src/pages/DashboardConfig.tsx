@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -46,26 +45,23 @@ const DashboardConfig = () => {
   };
 
   const handleReorderMetrics = (newOrder: string[]) => {
-    console.log('🔵 DashboardConfig - Reordering metrics:', newOrder);
+    console.log('🔵 DashboardConfig - Reordering metrics to:', newOrder);
     const newConfig = {
       ...config,
       metricsOrder: newOrder
     };
+    console.log('🔵 DashboardConfig - Updated config with new metricsOrder:', newConfig.metricsOrder);
     setConfig(newConfig);
   };
 
   const handleManualSave = async () => {
     console.log('🔵 DashboardConfig - Manual save requested');
-    console.log('🔵 DashboardConfig - Current config projection indicators:', {
-      showProjecaoReceita: config.showProjecaoReceita,
-      showProjecaoFaturamento: config.showProjecaoFaturamento,
-      showNoShow: config.showNoShow
-    });
+    console.log('🔵 DashboardConfig - Current config metricsOrder:', config.metricsOrder);
     console.log('🔵 DashboardConfig - Has unsaved changes:', hasUnsavedChanges);
     console.log('🔵 DashboardConfig - Is loading:', isLoading);
     
     try {
-      const success = await saveConfig(config);
+      const success = await saveConfig();
       console.log('🔵 DashboardConfig - Save result:', success);
       
       if (success) {
@@ -75,7 +71,7 @@ const DashboardConfig = () => {
         console.log('🔴 DashboardConfig - Save failed, staying on page');
       }
     } catch (error) {
-      console.error('🔴 DashboardConfig - Erro durante o salvamento:', error);
+      console.error('🔴 DashboardConfig - Error during save:', error);
     }
   };
 
