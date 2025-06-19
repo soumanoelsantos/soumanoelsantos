@@ -108,6 +108,7 @@ export type Database = {
           show_calls_diarias: boolean | null
           show_cash_collect: boolean | null
           show_charts: boolean | null
+          show_closers_performance_table: boolean | null
           show_conversao: boolean | null
           show_conversion: boolean | null
           show_diaria_faturamento: boolean | null
@@ -158,6 +159,7 @@ export type Database = {
           show_calls_diarias?: boolean | null
           show_cash_collect?: boolean | null
           show_charts?: boolean | null
+          show_closers_performance_table?: boolean | null
           show_conversao?: boolean | null
           show_conversion?: boolean | null
           show_diaria_faturamento?: boolean | null
@@ -208,6 +210,7 @@ export type Database = {
           show_calls_diarias?: boolean | null
           show_cash_collect?: boolean | null
           show_charts?: boolean | null
+          show_closers_performance_table?: boolean | null
           show_conversao?: boolean | null
           show_conversion?: boolean | null
           show_diaria_faturamento?: boolean | null

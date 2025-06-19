@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -61,7 +60,7 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'temporalRevenueChart': 'Gráfico de Análise Temporal de Receita',
     'temporalBillingChart': 'Gráfico de Análise Temporal de Faturamento',
     // Nova tabela de performance dos closers
-    'closersPerformanceTable': 'Tabela de Performance dos Closers'
+    'closersPerformanceTable': 'Tabela de desempenho dos closers'
   };
 
   // Lista de todas as chaves de métricas possíveis
