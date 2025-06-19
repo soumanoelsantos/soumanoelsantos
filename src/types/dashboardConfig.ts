@@ -45,6 +45,7 @@ export interface DashboardConfig {
   
   companyName: string;
   metricsOrder: string[];
+  preSalesOrder: string[];
   
   // Novas opções para metas específicas
   showSpecificGoals: boolean;

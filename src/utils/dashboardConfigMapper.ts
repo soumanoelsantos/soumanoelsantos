@@ -22,6 +22,23 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     }
   }
 
+  // Safely parse pre_sales_order with type checking
+  let preSalesOrder = defaultConfig.preSalesOrder;
+  if (data.pre_sales_order) {
+    if (Array.isArray(data.pre_sales_order)) {
+      preSalesOrder = data.pre_sales_order as string[];
+    } else if (typeof data.pre_sales_order === 'string') {
+      try {
+        const parsed = JSON.parse(data.pre_sales_order);
+        if (Array.isArray(parsed)) {
+          preSalesOrder = parsed;
+        }
+      } catch (e) {
+        console.warn('🟡 Failed to parse pre_sales_order, using default');
+      }
+    }
+  }
+
   // Safely parse selected_goal_ids with type checking
   let selectedGoalIds = defaultConfig.selectedGoalIds;
   if (data.selected_goal_ids) {
@@ -84,6 +101,7 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     
     companyName: data.company_name || defaultConfig.companyName,
     metricsOrder: metricsOrder,
+    preSalesOrder: preSalesOrder,
     
     showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
     selectedGoalIds: selectedGoalIds,
@@ -105,7 +123,8 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProjecaoReceita: mappedConfig.showProjecaoReceita,
     showProjecaoFaturamento: mappedConfig.showProjecaoFaturamento,
     showNoShow: mappedConfig.showNoShow,
-    showClosersPerformanceTable: mappedConfig.showClosersPerformanceTable
+    showClosersPerformanceTable: mappedConfig.showClosersPerformanceTable,
+    preSalesOrder: mappedConfig.preSalesOrder
   });
   
   return mappedConfig;
@@ -160,6 +179,7 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_pre_sales_sdr_comparison_chart: config.showPreSalesSDRComparisonChart,
     
     metrics_order: config.metricsOrder,
+    pre_sales_order: config.preSalesOrder,
     
     show_specific_goals: config.showSpecificGoals,
     selected_goal_ids: config.selectedGoalIds,
@@ -181,7 +201,8 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_projecao_receita: databaseData.show_projecao_receita,
     show_projecao_faturamento: databaseData.show_projecao_faturamento,
     show_no_show: databaseData.show_no_show,
-    show_closers_performance_table: databaseData.show_closers_performance_table
+    show_closers_performance_table: databaseData.show_closers_performance_table,
+    pre_sales_order: databaseData.pre_sales_order
   });
   
   return databaseData;

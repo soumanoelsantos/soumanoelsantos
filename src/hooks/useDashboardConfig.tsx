@@ -47,6 +47,7 @@ const defaultConfig: DashboardConfig = {
   
   companyName: '',
   metricsOrder: [],
+  preSalesOrder: [],
   showSpecificGoals: false,
   selectedGoalIds: [],
   showRevenueEvolutionChart: true,

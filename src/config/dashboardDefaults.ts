@@ -57,6 +57,10 @@ export const defaultConfig: DashboardConfig = {
     // Incluir a tabela de closers na ordem padrão
     'closersPerformanceTable'
   ],
+  preSalesOrder: [
+    'showPreSalesCalls', 'showPreSalesSchedulings', 'showPreSalesNoShow', 'showPreSalesSDRTable',
+    'showPreSalesCallsChart', 'showPreSalesSchedulingChart', 'showPreSalesNoShowChart', 'showPreSalesSDRComparisonChart'
+  ],
   
   showSpecificGoals: false,
   selectedGoalIds: [],

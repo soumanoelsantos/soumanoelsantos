@@ -11,6 +11,7 @@ import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import SpecificGoalsConfigCard from '@/components/dashboard/config/SpecificGoalsConfigCard';
 import PreSalesConfigCard from '@/components/dashboard/config/PreSalesConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
+import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
 import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,16 @@ const DashboardConfig = () => {
       metricsOrder: newOrder
     };
     console.log('🔵 DashboardConfig - Updated config with new metricsOrder:', newConfig.metricsOrder);
+    setConfig(newConfig);
+  };
+
+  const handleReorderPreSales = (newOrder: string[]) => {
+    console.log('🔵 DashboardConfig - Reordering pre-sales to:', newOrder);
+    const newConfig = {
+      ...config,
+      preSalesOrder: newOrder
+    };
+    console.log('🔵 DashboardConfig - Updated config with new preSalesOrder:', newConfig.preSalesOrder);
     setConfig(newConfig);
   };
 
@@ -138,6 +149,12 @@ const DashboardConfig = () => {
             config={config}
             metricsOrder={config.metricsOrder}
             onReorderMetrics={handleReorderMetrics}
+          />
+
+          <PreSalesOrderManager 
+            config={config}
+            preSalesOrder={config.preSalesOrder}
+            onReorderPreSales={handleReorderPreSales}
           />
         </div>
       </main>
