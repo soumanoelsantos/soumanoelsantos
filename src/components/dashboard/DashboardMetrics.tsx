@@ -18,14 +18,20 @@ const DashboardMetrics = () => {
 
   const orderedItems = getOrderedItems();
   
-  console.log('DashboardMetrics - Rendering with config:', config);
-  console.log('DashboardMetrics - Ordered items:', orderedItems);
-  console.log('DashboardMetrics - Current filters:', filters);
+  console.log('🔍 DashboardMetrics - Rendering with config:', config);
+  console.log('🔍 DashboardMetrics - Ordered items:', orderedItems);
+  console.log('🔍 DashboardMetrics - Evolution charts config:', {
+    showRevenueEvolutionChart: config.showRevenueEvolutionChart,
+    showBillingEvolutionChart: config.showBillingEvolutionChart
+  });
 
   // Separar itens que devem ocupar toda a largura dos que ficam no grid
   const fullWidthItems = ['revenueEvolutionChart', 'billingEvolutionChart'];
   const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
   const fullWidthOrderedItems = orderedItems.filter(item => fullWidthItems.includes(item));
+
+  console.log('🔍 DashboardMetrics - Grid items:', gridItems);
+  console.log('🔍 DashboardMetrics - Full width items:', fullWidthOrderedItems);
 
   return (
     <div className="space-y-8">
@@ -41,6 +47,7 @@ const DashboardMetrics = () => {
       {/* Grid para métricas e gráficos menores */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {gridItems.map((key, index) => {
+          console.log(`🔍 DashboardMetrics - Rendering grid item: ${key}`);
           const components = <ItemRenderer itemKey={key} config={config} />;
           if (!components) return null;
           
@@ -54,8 +61,12 @@ const DashboardMetrics = () => {
 
       {/* Seção para gráficos de largura completa */}
       {fullWidthOrderedItems.map((key, index) => {
+        console.log(`🔍 DashboardMetrics - Rendering full width item: ${key}`);
         const components = <ItemRenderer itemKey={key} config={config} />;
-        if (!components) return null;
+        if (!components) {
+          console.log(`❌ DashboardMetrics - No component returned for: ${key}`);
+          return null;
+        }
         
         return (
           <div key={`${key}-${index}`} className="w-full">

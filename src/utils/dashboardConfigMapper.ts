@@ -71,12 +71,16 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
     selectedGoalIds: selectedGoalIds,
 
-    // Novos gráficos de evolução
-    showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? defaultConfig.showRevenueEvolutionChart,
-    showBillingEvolutionChart: data.show_billing_evolution_chart ?? defaultConfig.showBillingEvolutionChart,
+    // Mapeamento explícito dos gráficos de evolução com fallback para true
+    showRevenueEvolutionChart: data.show_revenue_evolution_chart !== undefined ? data.show_revenue_evolution_chart : true,
+    showBillingEvolutionChart: data.show_billing_evolution_chart !== undefined ? data.show_billing_evolution_chart : true,
   };
 
-  console.log('🟢 dashboardConfigMapper - Final mapped config:', mappedConfig);
+  console.log('🟢 dashboardConfigMapper - Final mapped config with evolution charts:', {
+    showRevenueEvolutionChart: mappedConfig.showRevenueEvolutionChart,
+    showBillingEvolutionChart: mappedConfig.showBillingEvolutionChart
+  });
+  
   return mappedConfig;
 };
 

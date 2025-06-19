@@ -17,6 +17,10 @@ export const useDashboardConfig = () => {
   const loadConfig = async () => {
     if (!userId) {
       console.log('🟡 useDashboardConfig - No userId, using default config');
+      console.log('🟡 useDashboardConfig - Default config evolution charts:', {
+        showRevenueEvolutionChart: defaultConfig.showRevenueEvolutionChart,
+        showBillingEvolutionChart: defaultConfig.showBillingEvolutionChart
+      });
       setConfig(defaultConfig);
       return;
     }
@@ -28,10 +32,18 @@ export const useDashboardConfig = () => {
       
       if (loadedConfig) {
         console.log('🟢 useDashboardConfig - Config loaded successfully');
+        console.log('🟢 useDashboardConfig - Loaded evolution charts config:', {
+          showRevenueEvolutionChart: loadedConfig.showRevenueEvolutionChart,
+          showBillingEvolutionChart: loadedConfig.showBillingEvolutionChart
+        });
         setConfig(loadedConfig);
         setHasUnsavedChanges(false);
       } else {
         console.log('🟡 useDashboardConfig - No config found, using defaults');
+        console.log('🟡 useDashboardConfig - Default evolution charts config:', {
+          showRevenueEvolutionChart: defaultConfig.showRevenueEvolutionChart,
+          showBillingEvolutionChart: defaultConfig.showBillingEvolutionChart
+        });
         setConfig(defaultConfig);
         setHasUnsavedChanges(false);
       }

@@ -13,7 +13,8 @@ interface ItemRendererProps {
 }
 
 export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) => {
-  console.log('ItemRenderer - Processing key:', itemKey, 'Config value:', config[itemKey as keyof DashboardConfig]);
+  console.log('🔍 ItemRenderer - Processing key:', itemKey);
+  console.log('🔍 ItemRenderer - Full config:', config);
   
   // Lista de todas as chaves de métricas que devem ser renderizadas como cards
   const metricKeys = [
@@ -30,16 +31,16 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
   // Verificar se a chave é uma métrica e se está habilitada
   if (metricKeys.includes(itemKey)) {
     const isEnabled = config[itemKey as keyof DashboardConfig] as boolean;
-    console.log(`Metric ${itemKey} is enabled:`, isEnabled);
+    console.log(`🔍 Metric ${itemKey} is enabled:`, isEnabled);
     
     // Se não está habilitada, não renderizar nada
     if (!isEnabled) {
-      console.log(`Metric ${itemKey} is disabled, not rendering`);
+      console.log(`❌ Metric ${itemKey} is disabled, not rendering`);
       return null;
     }
     
     const metrics = allMetricsCards.filter(m => m.key === itemKey);
-    console.log(`Found ${metrics.length} metrics for key ${itemKey}:`, metrics);
+    console.log(`✅ Found ${metrics.length} metrics for key ${itemKey}`);
     
     return (
       <>
@@ -71,53 +72,55 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
   // Metas específicas - renderizar cada meta como um card individual
   if (itemKey === 'specificGoals') {
     if (!config.showSpecificGoals) {
-      console.log('Specific goals is disabled, not rendering');
+      console.log('❌ Specific goals is disabled, not rendering');
       return null;
     }
-    console.log('Rendering specific goals cards');
+    console.log('✅ Rendering specific goals cards');
     return <SpecificGoalsCards config={config} />;
   }
 
   // Gráfico de vendas por mês - verificar se está habilitado
   if (itemKey === 'salesChart') {
     if (!config.showCharts) {
-      console.log('Charts are disabled, not rendering sales chart');
+      console.log('❌ Charts are disabled, not rendering sales chart');
       return null;
     }
-    console.log('Rendering sales chart');
+    console.log('✅ Rendering sales chart');
     return <SalesChart />;
   }
 
   // Gráfico de tendência de crescimento - verificar se está habilitado
   if (itemKey === 'growthChart') {
     if (!config.showCharts) {
-      console.log('Charts are disabled, not rendering growth chart');
+      console.log('❌ Charts are disabled, not rendering growth chart');
       return null;
     }
-    console.log('Rendering growth chart');
+    console.log('✅ Rendering growth chart');
     return <GrowthChart />;
   }
 
   // Gráfico de evolução de receita - verificar configuração específica
   if (itemKey === 'revenueEvolutionChart') {
+    console.log('🔍 Revenue evolution chart - Config value:', config.showRevenueEvolutionChart);
     if (!config.showRevenueEvolutionChart) {
-      console.log('Revenue evolution chart is disabled, not rendering');
+      console.log('❌ Revenue evolution chart is disabled, not rendering');
       return null;
     }
-    console.log('Rendering revenue evolution chart');
+    console.log('✅ Rendering revenue evolution chart');
     return <RevenueEvolutionChart />;
   }
 
   // Gráfico de evolução de faturamento - verificar configuração específica
   if (itemKey === 'billingEvolutionChart') {
+    console.log('🔍 Billing evolution chart - Config value:', config.showBillingEvolutionChart);
     if (!config.showBillingEvolutionChart) {
-      console.log('Billing evolution chart is disabled, not rendering');
+      console.log('❌ Billing evolution chart is disabled, not rendering');
       return null;
     }
-    console.log('Rendering billing evolution chart');
+    console.log('✅ Rendering billing evolution chart');
     return <BillingEvolutionChart />;
   }
 
-  console.log(`No render for key: ${itemKey}`);
+  console.log(`❓ No render logic found for key: ${itemKey}`);
   return null;
 };
