@@ -18,21 +18,22 @@ const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) =
   const chartConfig = {
     agendamentos: {
       label: "Agendamentos",
-      color: "hsl(var(--chart-1))",
+      color: "#10b981",
     },
     conversao: {
       label: "Taxa Conversão (%)",
-      color: "hsl(var(--chart-2))",
+      color: "#3b82f6",
     },
   };
 
   // Transform data for chart
-  const chartData = data.map((sdr, index) => ({
+  const chartData = data.map((sdr) => ({
     sdr: sdr.name,
     agendamentos: sdr.schedulings || 0,
-    conversao: sdr.conversionRate || 0,
-    index: index
+    conversao: Math.round(sdr.conversionRate || 0),
   }));
+
+  console.log('🔍 PreSalesSDRComparisonChart - Chart data:', chartData);
 
   return (
     <Card className="w-full">
@@ -49,10 +50,6 @@ const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) =
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={60}
               />
               <YAxis 
                 fontSize={12}
@@ -62,7 +59,7 @@ const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) =
               <ChartTooltip content={<ChartTooltipContent />} />
               <Bar 
                 dataKey="agendamentos" 
-                fill="var(--color-agendamentos)" 
+                fill="#10b981"
                 name="Agendamentos"
                 radius={[4, 4, 0, 0]}
               />
