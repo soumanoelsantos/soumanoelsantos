@@ -37,22 +37,18 @@ export const useSellerGoals = (sellerId?: string) => {
     }
   };
 
-  const createOrUpdateGoal = async (goalData: {
+  const addGoal = async (goalData: {
+    seller_id: string;
     month: number;
     year: number;
     sales_goal: number;
     revenue_goal: number;
     billing_goal: number;
   }) => {
-    if (!sellerId) return false;
-
     try {
       const { data, error } = await supabase
         .from('seller_monthly_goals')
-        .upsert({
-          seller_id: sellerId,
-          ...goalData,
-        })
+        .upsert(goalData)
         .select()
         .single();
 
@@ -77,6 +73,35 @@ export const useSellerGoals = (sellerId?: string) => {
       toast({
         title: "Erro",
         description: "Não foi possível salvar a meta",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  const updateGoal = async (goalId: string, data: Partial<SellerMonthlyGoal>) => {
+    try {
+      const { data: updatedGoal, error } = await supabase
+        .from('seller_monthly_goals')
+        .update(data)
+        .eq('id', goalId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setGoals(prev => prev.map(g => g.id === goalId ? updatedGoal : g));
+      
+      toast({
+        title: "Sucesso",
+        description: "Meta atualizada com sucesso",
+      });
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar meta:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar a meta",
         variant: "destructive",
       });
       return false;
@@ -116,7 +141,8 @@ export const useSellerGoals = (sellerId?: string) => {
   return {
     goals,
     isLoading,
-    createOrUpdateGoal,
+    addGoal,
+    updateGoal,
     deleteGoal,
     refetch: fetchGoals,
   };
