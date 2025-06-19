@@ -48,12 +48,10 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
-      // Se for closer, zerar os campos não utilizados
-      if (seller.seller_type === 'closer') {
-        data.leads_count = 0;
-        data.calls_count = 0;
-        data.notes = '';
-      }
+      // Sempre zerar os campos removidos
+      data.leads_count = 0;
+      data.calls_count = 0;
+      data.notes = '';
       
       await onSubmit(data);
       
