@@ -5,23 +5,16 @@ import { useEvolutionData } from '@/hooks/useEvolutionData';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { ChartContainer } from './ChartContainer';
 import { RevenueChartLines } from './ChartLines';
-import { formatCurrency, getCurrentDay, calculateProjection, formatYAxisValue } from '../utils/chartUtils';
+import { formatCurrency, formatYAxisValue } from '../utils/chartUtils';
 
 export const RevenueEvolutionChart = () => {
   const { revenueData, isLoading } = useEvolutionData();
   const { config } = useDashboardConfig();
-  
-  const currentDay = getCurrentDay();
-  
-  // Calcular dados com projeção
-  const dataWithProjection = React.useMemo(() => {
-    return calculateProjection(revenueData, 'receita', currentDay);
-  }, [revenueData, currentDay]);
 
   return (
     <ChartContainer title="EVOLUÇÃO DE RECEITA" isLoading={isLoading}>
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={dataWithProjection}>
+        <LineChart data={revenueData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="day" 

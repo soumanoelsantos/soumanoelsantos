@@ -46,13 +46,13 @@ const DashboardMetrics = () => {
       />
       
       {/* Grid para métricas sem espaçamento */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-0">
           {gridItems.map((key, index) => {
             console.log(`🔍 DashboardMetrics - Rendering grid item: ${key} (enabled: ${config[key as keyof typeof config]})`);
             
             return (
-              <div key={`${key}-${index}`}>
+              <div key={`${key}-${index}`} className="border-0">
                 <ItemRenderer itemKey={key} config={config} />
               </div>
             );

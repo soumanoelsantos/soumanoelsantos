@@ -7,10 +7,12 @@ interface EvolutionDataPoint {
   day: string;
   metaReceita: number;
   receita: number | null;
+  receitaProjection?: number;
   superMetaReceita?: number;
   hiperMetaReceita?: number;
   metaFaturamento: number;
   faturamento: number | null;
+  faturamentoProjection?: number;
   superMetaFaturamento?: number;
   hiperMetaFaturamento?: number;
 }
@@ -99,12 +101,25 @@ export const useEvolutionData = () => {
         const metaReceitaDiaria = dailyRevenueGoal * day;
         const metaFaturamentoDiaria = dailyBillingGoal * day;
 
+        // Calcular projeção baseada na tendência dos últimos dados
+        let receitaProjection = null;
+        let faturamentoProjection = null;
+        
+        if (day > currentDay && currentDay > 1) {
+          const dailyAverageRevenue = accumulatedRevenue / currentDay;
+          const dailyAverageBilling = accumulatedBilling / currentDay;
+          
+          receitaProjection = accumulatedRevenue + (dailyAverageRevenue * (day - currentDay));
+          faturamentoProjection = accumulatedBilling + (dailyAverageBilling * (day - currentDay));
+        }
+
         revenueEvolutionData.push({
           day: dayStr,
           metaReceita: metaReceitaDiaria,
           receita: day <= currentDay ? accumulatedRevenue : null,
-          superMetaReceita: metaReceitaDiaria * 3, // 3x a meta normal
-          hiperMetaReceita: metaReceitaDiaria * 5, // 5x a meta normal
+          receitaProjection: receitaProjection,
+          superMetaReceita: metaReceitaDiaria * 3,
+          hiperMetaReceita: metaReceitaDiaria * 5,
           metaFaturamento: 0,
           faturamento: 0
         });
@@ -113,10 +128,11 @@ export const useEvolutionData = () => {
           day: dayStr,
           metaFaturamento: metaFaturamentoDiaria,
           faturamento: day <= currentDay ? accumulatedBilling : null,
-          superMetaFaturamento: metaFaturamentoDiaria * 2.5, // 2.5x a meta normal
-          hiperMetaFaturamento: metaFaturamentoDiaria * 4, // 4x a meta normal
+          faturamentoProjection: faturamentoProjection,
+          superMetaFaturamento: metaFaturamentoDiaria * 2.5,
+          hiperMetaFaturamento: metaFaturamentoDiaria * 4,
           metaReceita: 0,
-          receita: 0
+          receita: null
         });
       }
 

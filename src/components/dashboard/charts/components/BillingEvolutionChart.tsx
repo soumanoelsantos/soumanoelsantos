@@ -5,23 +5,16 @@ import { useEvolutionData } from '@/hooks/useEvolutionData';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { ChartContainer } from './ChartContainer';
 import { BillingChartLines } from './ChartLines';
-import { formatCurrency, getCurrentDay, calculateProjection, formatYAxisValue } from '../utils/chartUtils';
+import { formatCurrency, formatYAxisValue } from '../utils/chartUtils';
 
 export const BillingEvolutionChart = () => {
   const { billingData, isLoading } = useEvolutionData();
   const { config } = useDashboardConfig();
-  
-  const currentDay = getCurrentDay();
-  
-  // Calcular dados com projeção
-  const dataWithProjection = React.useMemo(() => {
-    return calculateProjection(billingData, 'faturamento', currentDay);
-  }, [billingData, currentDay]);
 
   return (
     <ChartContainer title="EVOLUÇÃO FATURAMENTO" isLoading={isLoading}>
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={dataWithProjection}>
+        <LineChart data={billingData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="day" 
