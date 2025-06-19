@@ -83,9 +83,11 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     enabledMetrics.push({ key: 'specificGoals', title: metricTitles['specificGoals'], enabled: true });
   }
 
-  // Adicionar gráficos se habilitados
-  if (config.showCharts) {
+  // Adicionar gráficos se estão na ordem (sempre disponíveis)
+  if (metricsOrder.includes('salesChart')) {
     enabledMetrics.push({ key: 'salesChart', title: metricTitles['salesChart'], enabled: true });
+  }
+  if (metricsOrder.includes('growthChart')) {
     enabledMetrics.push({ key: 'growthChart', title: metricTitles['growthChart'], enabled: true });
   }
 

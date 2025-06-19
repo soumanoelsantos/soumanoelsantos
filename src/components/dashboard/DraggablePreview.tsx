@@ -79,12 +79,12 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
     allMetrics.push({ key: 'specificGoals', title: 'Metas Específicas', enabled: true });
   }
 
-  // Gráficos
-  if (config.showCharts) {
-    allMetrics.push(
-      { key: 'salesChart', title: '📊 Vendas por Mês', enabled: true, isChart: true },
-      { key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: true, isChart: true }
-    );
+  // Gráficos - always show salesChart and growthChart if they're in the order
+  if (metricsOrder.includes('salesChart')) {
+    allMetrics.push({ key: 'salesChart', title: '📊 Vendas por Mês', enabled: true, isChart: true });
+  }
+  if (metricsOrder.includes('growthChart')) {
+    allMetrics.push({ key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: true, isChart: true });
   }
 
   // Ordena as métricas com base na ordem salva
