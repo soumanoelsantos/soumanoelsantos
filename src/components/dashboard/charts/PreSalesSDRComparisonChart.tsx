@@ -37,7 +37,7 @@ const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) =
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Performance dos SDRs</CardTitle>
+        <CardTitle>Performance dos SDRs - Últimos 7 dias</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
@@ -45,11 +45,9 @@ const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) =
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="sdr" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
+              <YAxis />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Line 
-                yAxisId="left"
                 type="monotone" 
                 dataKey="agendamentos" 
                 stroke="var(--color-agendamentos)" 
@@ -57,7 +55,6 @@ const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) =
                 name="Agendamentos"
               />
               <Line 
-                yAxisId="right"
                 type="monotone" 
                 dataKey="conversao" 
                 stroke="var(--color-conversao)" 

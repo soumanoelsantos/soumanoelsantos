@@ -15,10 +15,8 @@ const PreSalesMetrics = () => {
   const { config } = useDashboardConfig();
   const { getOrderedPreSalesItems } = usePreSalesOrder(config);
   const { data: preSalesData, isLoading, error } = usePreSalesData();
-  const orderedItems = getOrderedPreSalesItems(config.preSalesOrder);
   
   console.log('🔍 PreSalesMetrics - Rendering pre-sales dashboard with config:', config);
-  console.log('🔍 PreSalesMetrics - Ordered items:', orderedItems);
   console.log('🔍 PreSalesMetrics - Pre-sales data:', preSalesData);
 
   if (isLoading) {
@@ -60,148 +58,144 @@ const PreSalesMetrics = () => {
     return null;
   }
 
-  // Cards de métricas no mesmo estilo do comercial
-  const metricsCards = [];
+  // Obter itens ordenados baseado na configuração
+  const orderedItems = getOrderedPreSalesItems(config.preSalesOrder || []);
   
-  // Verificar quais cards devem ser exibidos baseado na configuração
-  if (config.showPreSalesCalls) {
-    metricsCards.push(
-      <div key="calls" className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
-        <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
-          <div className="text-xs font-medium text-gray-600">
-            Tentativas de Ligação
-          </div>
-          <Phone className="h-3 w-3 text-blue-600 flex-shrink-0" />
-        </div>
-        <div className="flex-1 flex flex-col justify-between p-3 pt-0">
-          <div className="text-lg font-bold">{preSalesData.dailyCalls}</div>
-          <div className="mt-auto">
-            <p className="text-xs text-gray-600 mt-1">
-              Meta: {preSalesData.dailyCallsTarget}
-            </p>
-            <div className="text-xs text-green-600 mt-2">
-              {((preSalesData.dailyCalls / preSalesData.dailyCallsTarget) * 100).toFixed(1)}% da meta
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  console.log('🔍 PreSalesMetrics - Ordered items:', orderedItems);
 
-  if (config.showPreSalesSchedulings) {
-    metricsCards.push(
-      <div key="schedulings" className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
-        <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
-          <div className="text-xs font-medium text-gray-600">
-            Agendamentos Diários
-          </div>
-          <Calendar className="h-3 w-3 text-green-600 flex-shrink-0" />
-        </div>
-        <div className="flex-1 flex flex-col justify-between p-3 pt-0">
-          <div className="text-lg font-bold">{preSalesData.dailySchedulings}</div>
-          <div className="mt-auto">
-            <p className="text-xs text-gray-600 mt-1">
-              Meta: {preSalesData.dailySchedulingsTarget}
-            </p>
-            <div className="text-xs text-green-600 mt-2">
-              {((preSalesData.dailySchedulings / preSalesData.dailySchedulingsTarget) * 100).toFixed(1)}% da meta
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (config.showPreSalesNoShow) {
-    metricsCards.push(
-      <div key="noshow" className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
-        <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
-          <div className="text-xs font-medium text-gray-600">
-            No-Show Diário
-          </div>
-          <UserX className="h-3 w-3 text-red-600 flex-shrink-0" />
-        </div>
-        <div className="flex-1 flex flex-col justify-between p-3 pt-0">
-          <div className="text-lg font-bold">{preSalesData.dailyNoShow}</div>
-          <div className="mt-auto">
-            <p className="text-xs text-gray-600 mt-1">
-              Taxa: {preSalesData.dailyNoShowRate}%
-            </p>
-            <div className="text-xs text-red-600 mt-2">
-              {preSalesData.dailyNoShowRate > 20 ? 'Acima do ideal' : 'Dentro do esperado'}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Card fixo da média por SDR (sempre exibido)
-  metricsCards.push(
-    <div key="average" className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
-      <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
-        <div className="text-xs font-medium text-gray-600">
-          Média por SDR
-        </div>
-        <Users className="h-3 w-3 text-purple-600 flex-shrink-0" />
-      </div>
-      <div className="flex-1 flex flex-col justify-between p-3 pt-0">
-        <div className="text-lg font-bold">{preSalesData.averageSchedulingsPerSDR}</div>
-        <div className="mt-auto">
-          <p className="text-xs text-gray-600 mt-1">
-            Agendamentos/SDR
-          </p>
-          <div className="text-xs text-purple-600 mt-2">
-            {preSalesData.totalSDRs} SDRs ativos
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Função para renderizar cada componente baseado na ordem configurada
+  // Função para renderizar cada componente baseado na chave
   const renderComponent = (itemKey: string) => {
+    console.log('🔍 PreSalesMetrics - Rendering component:', itemKey);
+    
     switch (itemKey) {
       case 'showPreSalesCallsChart':
-        return config.showPreSalesCallsChart ? <PreSalesCallsChart data={preSalesData.weeklyData} /> : null;
+        return <PreSalesCallsChart key={itemKey} data={preSalesData.weeklyData} />;
 
       case 'showPreSalesSchedulingChart':
-        return config.showPreSalesSchedulingChart ? <PreSalesSchedulingChart data={preSalesData.weeklyData} /> : null;
+        return <PreSalesSchedulingChart key={itemKey} data={preSalesData.weeklyData} />;
 
       case 'showPreSalesNoShowChart':
-        return config.showPreSalesNoShowChart ? <PreSalesNoShowChart data={preSalesData.weeklyData} /> : null;
+        return <PreSalesNoShowChart key={itemKey} data={preSalesData.weeklyData} />;
 
       case 'showPreSalesSDRComparisonChart':
-        return config.showPreSalesSDRComparisonChart ? <PreSalesSDRComparisonChart data={preSalesData.sdrPerformance} /> : null;
+        return <PreSalesSDRComparisonChart key={itemKey} data={preSalesData.sdrPerformance} />;
 
       case 'showPreSalesSDRTable':
-        return config.showPreSalesSDRTable ? <PreSalesSDRTable data={preSalesData.sdrPerformance} /> : null;
+        return <PreSalesSDRTable key={itemKey} data={preSalesData.sdrPerformance} />;
 
       default:
         return null;
     }
   };
 
+  // Cards de métricas no mesmo estilo do comercial - renderizar apenas se algum estiver habilitado
+  const showAnyMetricCard = config.showPreSalesCalls || config.showPreSalesSchedulings || config.showPreSalesNoShow;
+
   return (
     <div className="space-y-8">
       {/* Cards de métricas no mesmo estilo do comercial */}
-      {metricsCards.length > 0 && (
+      {showAnyMetricCard && (
         <div className="bg-white rounded-lg border">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {metricsCards}
+            {config.showPreSalesCalls && (
+              <div className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+                  <div className="text-xs font-medium text-gray-600">
+                    Tentativas de Ligação
+                  </div>
+                  <Phone className="h-3 w-3 text-blue-600 flex-shrink-0" />
+                </div>
+                <div className="flex-1 flex flex-col justify-between p-3 pt-0">
+                  <div className="text-lg font-bold">{preSalesData.dailyCalls}</div>
+                  <div className="mt-auto">
+                    <p className="text-xs text-gray-600 mt-1">
+                      Meta: {preSalesData.dailyCallsTarget}
+                    </p>
+                    <div className="text-xs text-green-600 mt-2">
+                      {((preSalesData.dailyCalls / preSalesData.dailyCallsTarget) * 100).toFixed(1)}% da meta
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {config.showPreSalesSchedulings && (
+              <div className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+                  <div className="text-xs font-medium text-gray-600">
+                    Agendamentos Diários
+                  </div>
+                  <Calendar className="h-3 w-3 text-green-600 flex-shrink-0" />
+                </div>
+                <div className="flex-1 flex flex-col justify-between p-3 pt-0">
+                  <div className="text-lg font-bold">{preSalesData.dailySchedulings}</div>
+                  <div className="mt-auto">
+                    <p className="text-xs text-gray-600 mt-1">
+                      Meta: {preSalesData.dailySchedulingsTarget}
+                    </p>
+                    <div className="text-xs text-green-600 mt-2">
+                      {((preSalesData.dailySchedulings / preSalesData.dailySchedulingsTarget) * 100).toFixed(1)}% da meta
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {config.showPreSalesNoShow && (
+              <div className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+                  <div className="text-xs font-medium text-gray-600">
+                    No-Show Diário
+                  </div>
+                  <UserX className="h-3 w-3 text-red-600 flex-shrink-0" />
+                </div>
+                <div className="flex-1 flex flex-col justify-between p-3 pt-0">
+                  <div className="text-lg font-bold">{preSalesData.dailyNoShow}</div>
+                  <div className="mt-auto">
+                    <p className="text-xs text-gray-600 mt-1">
+                      Taxa: {preSalesData.dailyNoShowRate}%
+                    </p>
+                    <div className="text-xs text-red-600 mt-2">
+                      {preSalesData.dailyNoShowRate > 20 ? 'Acima do ideal' : 'Dentro do esperado'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Card fixo da média por SDR (sempre exibido se algum card estiver habilitado) */}
+            <div className="h-40 flex flex-col border-r border-b border-gray-200 last:border-r-0">
+              <div className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0 p-3">
+                <div className="text-xs font-medium text-gray-600">
+                  Média por SDR
+                </div>
+                <Users className="h-3 w-3 text-purple-600 flex-shrink-0" />
+              </div>
+              <div className="flex-1 flex flex-col justify-between p-3 pt-0">
+                <div className="text-lg font-bold">{preSalesData.averageSchedulingsPerSDR}</div>
+                <div className="mt-auto">
+                  <p className="text-xs text-gray-600 mt-1">
+                    Agendamentos/SDR
+                  </p>
+                  <div className="text-xs text-purple-600 mt-2">
+                    {preSalesData.totalSDRs} SDRs ativos
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
       
       {/* Renderizar componentes na ordem configurada */}
-      {orderedItems.map((item, index) => {
+      {orderedItems.map((item) => {
         const component = renderComponent(item.key);
         if (!component) return null;
         
-        console.log(`🔍 PreSalesMetrics - Rendering component ${item.key} at position ${index}`);
+        console.log(`🔍 PreSalesMetrics - Rendering component ${item.key}`);
         
         return (
-          <div key={`${item.key}-${index}`} className="w-full">
+          <div key={item.key} className="w-full">
             {component}
           </div>
         );
