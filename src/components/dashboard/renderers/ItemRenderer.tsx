@@ -3,7 +3,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
 import { allMetricsCards } from '../data/metrics';
-import { SalesChart, GrowthChart } from '../charts/ChartComponents';
 import { RevenueEvolutionChart, BillingEvolutionChart } from '../charts/EvolutionCharts';
 import SpecificGoalsCards from '../goals/SpecificGoalsCards';
 
@@ -79,18 +78,6 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     }
     console.log('✅ Rendering specific goals cards');
     return <SpecificGoalsCards config={config} />;
-  }
-
-  // Gráfico de vendas por mês - sempre renderizar se solicitado
-  if (itemKey === 'salesChart') {
-    console.log('✅ Rendering sales chart');
-    return <SalesChart />;
-  }
-
-  // Gráfico de tendência de crescimento - sempre renderizar se solicitado
-  if (itemKey === 'growthChart') {
-    console.log('✅ Rendering growth chart');
-    return <GrowthChart />;
   }
 
   // Gráfico de evolução de receita - verificar configuração específica

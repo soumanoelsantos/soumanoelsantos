@@ -6,7 +6,7 @@ import { GripVertical } from 'lucide-react';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
 
 interface MetricItem {
-  key: keyof DashboardConfig | 'charts' | 'salesChart' | 'growthChart' | 'specificGoals';
+  key: keyof DashboardConfig | 'charts' | 'specificGoals' | 'revenueEvolutionChart' | 'billingEvolutionChart';
   title: string;
   enabled: boolean;
   isChart?: boolean;
@@ -79,12 +79,13 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
     allMetrics.push({ key: 'specificGoals', title: 'Metas Específicas', enabled: true });
   }
 
-  // Gráficos - always show salesChart and growthChart if they're in the order
-  if (metricsOrder.includes('salesChart')) {
-    allMetrics.push({ key: 'salesChart', title: '📊 Vendas por Mês', enabled: true, isChart: true });
+  // Gráficos de evolução se habilitados
+  if (config.showRevenueEvolutionChart) {
+    allMetrics.push({ key: 'revenueEvolutionChart', title: '📊 Evolução de Receita', enabled: true, isChart: true });
   }
-  if (metricsOrder.includes('growthChart')) {
-    allMetrics.push({ key: 'growthChart', title: '📈 Tendência de Crescimento', enabled: true, isChart: true });
+  
+  if (config.showBillingEvolutionChart) {
+    allMetrics.push({ key: 'billingEvolutionChart', title: '📈 Evolução de Faturamento', enabled: true, isChart: true });
   }
 
   // Ordena as métricas com base na ordem salva

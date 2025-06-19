@@ -47,9 +47,9 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'showCac': 'CAC (Custo de Aquisição)',
     'showConversion': 'Taxa de Conversão',
     'showRevenue': 'Receita',
-    'salesChart': 'Gráfico de Vendas',
-    'growthChart': 'Gráfico de Crescimento',
-    'specificGoals': 'Metas Específicas'
+    'specificGoals': 'Metas Específicas',
+    'revenueEvolutionChart': 'Gráfico de Evolução de Receita',
+    'billingEvolutionChart': 'Gráfico de Evolução de Faturamento'
   };
 
   // Lista de todas as chaves de métricas possíveis
@@ -83,12 +83,13 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     enabledMetrics.push({ key: 'specificGoals', title: metricTitles['specificGoals'], enabled: true });
   }
 
-  // Adicionar gráficos se estão na ordem (sempre disponíveis)
-  if (metricsOrder.includes('salesChart')) {
-    enabledMetrics.push({ key: 'salesChart', title: metricTitles['salesChart'], enabled: true });
+  // Adicionar gráficos de evolução se habilitados
+  if (config.showRevenueEvolutionChart) {
+    enabledMetrics.push({ key: 'revenueEvolutionChart', title: metricTitles['revenueEvolutionChart'], enabled: true });
   }
-  if (metricsOrder.includes('growthChart')) {
-    enabledMetrics.push({ key: 'growthChart', title: metricTitles['growthChart'], enabled: true });
+  
+  if (config.showBillingEvolutionChart) {
+    enabledMetrics.push({ key: 'billingEvolutionChart', title: metricTitles['billingEvolutionChart'], enabled: true });
   }
 
   // Ordenar métricas com base na ordem salva

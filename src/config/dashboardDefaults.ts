@@ -34,7 +34,7 @@ export const defaultConfig: DashboardConfig = {
     'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    'specificGoals', 'salesChart', 'growthChart', 'revenueEvolutionChart', 'billingEvolutionChart'
+    'specificGoals', 'revenueEvolutionChart', 'billingEvolutionChart'
   ],
   
   showSpecificGoals: false,
