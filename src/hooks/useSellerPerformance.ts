@@ -15,6 +15,8 @@ export const useSellerPerformance = (sellerId?: string) => {
       return;
     }
 
+    console.log('🔍 [DEBUG] Buscando performances para o vendedor:', sellerId);
+
     try {
       const { data, error } = await supabase
         .from('seller_daily_performance')
@@ -22,7 +24,14 @@ export const useSellerPerformance = (sellerId?: string) => {
         .eq('seller_id', sellerId)
         .order('date', { ascending: false });
 
-      if (error) throw error;
+      console.log('📋 [DEBUG] Resultado da consulta de performances:', { data, error });
+
+      if (error) {
+        console.error('❌ [DEBUG] Erro na consulta:', error);
+        throw error;
+      }
+      
+      console.log('✅ [DEBUG] Performances encontradas:', data?.length || 0);
       setPerformances(data || []);
     } catch (error) {
       console.error('Erro ao carregar performances:', error);
@@ -50,6 +59,8 @@ export const useSellerPerformance = (sellerId?: string) => {
     if (!sellerId) return false;
 
     try {
+      console.log('📤 [DEBUG] Salvando performance:', performanceData);
+      
       const { data, error } = await supabase
         .from('seller_daily_performance')
         .upsert({
@@ -60,7 +71,12 @@ export const useSellerPerformance = (sellerId?: string) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [DEBUG] Erro ao salvar:', error);
+        throw error;
+      }
+
+      console.log('✅ [DEBUG] Performance salva:', data);
 
       setPerformances(prev => {
         const existing = prev.find(p => p.date === performanceData.date);
@@ -115,6 +131,35 @@ export const useSellerPerformance = (sellerId?: string) => {
 
   useEffect(() => {
     fetchPerformances();
+  }, [sellerId]);
+
+  // Configurar real-time para receber atualizações
+  useEffect(() => {
+    if (!sellerId) return;
+
+    console.log('🔄 [DEBUG] Configurando real-time para vendedor:', sellerId);
+
+    const channel = supabase
+      .channel('seller-performance-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'seller_daily_performance',
+          filter: `seller_id=eq.${sellerId}`
+        },
+        (payload) => {
+          console.log('📡 [DEBUG] Real-time update recebido:', payload);
+          fetchPerformances(); // Recarregar dados quando houver mudanças
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('🔄 [DEBUG] Removendo canal real-time');
+      supabase.removeChannel(channel);
+    };
   }, [sellerId]);
 
   return {

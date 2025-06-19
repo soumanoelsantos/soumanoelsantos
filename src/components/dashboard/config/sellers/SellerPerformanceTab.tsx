@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, BarChart3, Trash2, Edit, Calendar } from 'lucide-react';
+import { Plus, BarChart3, Trash2, Edit, Calendar, RefreshCw } from 'lucide-react';
 import { useSellerPerformance } from '@/hooks/useSellerPerformance';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
@@ -28,7 +28,7 @@ interface PerformanceFormData {
 }
 
 export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sellerId }) => {
-  const { performances, isLoading, createOrUpdatePerformance, deletePerformance } = useSellerPerformance(sellerId);
+  const { performances, isLoading, createOrUpdatePerformance, deletePerformance, refetch } = useSellerPerformance(sellerId);
   const [showForm, setShowForm] = useState(false);
   const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<PerformanceFormData>({
     defaultValues: {
@@ -43,12 +43,24 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
     }
   });
 
+  // Log para debug
+  useEffect(() => {
+    console.log('📊 [DEBUG] SellerPerformanceTab - sellerId:', sellerId);
+    console.log('📊 [DEBUG] SellerPerformanceTab - performances:', performances);
+    console.log('📊 [DEBUG] SellerPerformanceTab - isLoading:', isLoading);
+  }, [sellerId, performances, isLoading]);
+
   const onSubmit = async (data: PerformanceFormData) => {
     const success = await createOrUpdatePerformance(data);
     if (success) {
       reset();
       setShowForm(false);
     }
+  };
+
+  const handleRefresh = () => {
+    console.log('🔄 [DEBUG] Refresh manual solicitado');
+    refetch();
   };
 
   const formatCurrency = (value: number) => {
@@ -69,11 +81,19 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h4 className="font-medium text-sm text-gray-700">Lançamentos de Performance</h4>
-        <Button size="sm" onClick={() => setShowForm(!showForm)}>
-          <Plus className="h-4 w-4 mr-1" />
-          Novo Lançamento
-        </Button>
+        <h4 className="font-medium text-sm text-gray-700">
+          Lançamentos de Performance ({performances.length} registros)
+        </h4>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={handleRefresh}>
+            <RefreshCw className="h-4 w-4 mr-1" />
+            Atualizar
+          </Button>
+          <Button size="sm" onClick={() => setShowForm(!showForm)}>
+            <Plus className="h-4 w-4 mr-1" />
+            Novo Lançamento
+          </Button>
+        </div>
       </div>
 
       {showForm && (
@@ -191,6 +211,9 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
           <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
           <p>Nenhum lançamento registrado</p>
           <p className="text-sm">Clique em "Novo Lançamento" para começar</p>
+          <p className="text-xs mt-2 text-gray-400">
+            Vendedor ID: {sellerId}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -263,6 +286,8 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
 
                 <div className="mt-3 pt-3 border-t text-xs text-gray-500">
                   Lançado em: {format(new Date(performance.submitted_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  <br />
+                  ID: {performance.id}
                 </div>
               </CardContent>
             </Card>
