@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, TrendingUp } from 'lucide-react';
+import { Calendar, TrendingUp, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { Seller } from '@/types/sellers';
+import { useToast } from '@/components/ui/use-toast';
 
 interface PerformanceFormData {
   date: string;
@@ -32,6 +33,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   isSubmitting,
   seller
 }) => {
+  const { toast } = useToast();
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PerformanceFormData>({
     defaultValues: {
       date: format(new Date(), 'yyyy-MM-dd'),
@@ -46,15 +48,28 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   });
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
-    // Se for closer, zerar os campos não utilizados
-    if (seller.seller_type === 'closer') {
-      data.leads_count = 0;
-      data.calls_count = 0;
-      data.notes = '';
+    try {
+      // Se for closer, zerar os campos não utilizados
+      if (seller.seller_type === 'closer') {
+        data.leads_count = 0;
+        data.calls_count = 0;
+        data.notes = '';
+      }
+      
+      await onSubmit(data);
+      
+      // Mostrar mensagem de sucesso
+      toast({
+        title: "✅ Performance Registrada!",
+        description: "Sua performance foi enviada com sucesso. Obrigado por manter seus dados atualizados!",
+        variant: "default",
+      });
+      
+      reset();
+    } catch (error) {
+      // Mensagem de erro já é tratada no componente pai
+      console.error('Erro ao enviar performance:', error);
     }
-    
-    await onSubmit(data);
-    reset();
   };
 
   const isCloser = seller.seller_type === 'closer';

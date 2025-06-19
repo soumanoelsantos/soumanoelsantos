@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -114,17 +113,14 @@ const SellerPerformanceForm = () => {
       }
 
       console.log('✅ [DEBUG] Performance salva com sucesso');
-      toast({
-        title: "Sucesso!",
-        description: "Performance registrada com sucesso",
-      });
     } catch (error) {
       console.error('💥 [DEBUG] Erro ao salvar performance:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível salvar a performance",
+        description: "Não foi possível salvar a performance. Tente novamente.",
         variant: "destructive",
       });
+      throw error;
     } finally {
       setIsSubmitting(false);
     }
