@@ -45,7 +45,7 @@ const defaultConfig: DashboardConfig = {
 
 export const useDashboardConfig = () => {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { userId } = useAuth();
   const [config, setConfig] = useState<DashboardConfig>(defaultConfig);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -100,14 +100,14 @@ export const useDashboardConfig = () => {
   };
 
   const saveConfig = async (newConfig: DashboardConfig): Promise<boolean> => {
-    if (!user?.id) {
+    if (!userId) {
       console.error("Usuário não encontrado");
       return false;
     }
 
     setIsLoading(true);
     try {
-      const databaseData = mapConfigToDatabase(newConfig, user.id);
+      const databaseData = mapConfigToDatabase(newConfig, userId);
       
       const { error } = await supabase
         .from('dashboard_configs')
