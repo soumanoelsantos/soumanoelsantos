@@ -27,59 +27,58 @@ const SellerPerformanceForm = () => {
   const [seller, setSeller] = useState<Seller | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const fetchSeller = async () => {
-      console.log('Token recebido:', token);
+      console.log('🔍 Iniciando busca do vendedor com token:', token);
       
       if (!token) {
-        console.log('Token não encontrado na URL');
-        toast({
-          title: "Erro",
-          description: "Token de acesso inválido",
-          variant: "destructive",
-        });
+        console.log('❌ Token não encontrado na URL');
+        setHasError(true);
         setIsLoading(false);
         return;
       }
 
       try {
-        console.log('Buscando vendedor com token:', token);
+        console.log('🔄 Fazendo consulta ao banco de dados...');
         
+        // Fazendo consulta direta sem RLS, pois é acesso público por token
         const { data, error } = await supabase
           .from('sellers')
           .select('*')
           .eq('access_token', token)
-          .maybeSingle();
+          .single();
 
-        console.log('Resultado da busca:', { data, error });
+        console.log('📋 Resultado da consulta:', { data, error });
 
         if (error) {
-          console.error('Erro na consulta:', error);
-          toast({
-            title: "Erro",
-            description: "Erro ao verificar token de acesso",
-            variant: "destructive",
-          });
+          console.error('❌ Erro na consulta ao banco:', error);
+          if (error.code === 'PGRST116') {
+            console.log('📝 Nenhum vendedor encontrado com este token');
+            setHasError(true);
+          } else {
+            console.error('💥 Erro inesperado:', error.message);
+            setHasError(true);
+          }
           setIsLoading(false);
           return;
         }
 
         if (!data) {
-          console.log('Nenhum vendedor encontrado com este token');
-          toast({
-            title: "Erro",
-            description: "Token de acesso inválido ou vendedor não encontrado",
-            variant: "destructive",
-          });
+          console.log('📝 Dados retornados são nulos');
+          setHasError(true);
           setIsLoading(false);
           return;
         }
 
-        console.log('Vendedor encontrado:', data);
+        console.log('✅ Vendedor encontrado:', data.name);
         setSeller(data);
+        setHasError(false);
+        
       } catch (error) {
-        console.error('Erro ao buscar vendedor:', error);
+        console.error('💥 Erro durante a busca:', error);
+        setHasError(true);
         toast({
           title: "Erro",
           description: "Erro ao carregar dados do vendedor",
@@ -94,10 +93,19 @@ const SellerPerformanceForm = () => {
   }, [token, toast]);
 
   const onSubmit = async (data: PerformanceFormData) => {
-    if (!seller) return;
+    if (!seller) {
+      toast({
+        title: "Erro",
+        description: "Vendedor não encontrado",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsSubmitting(true);
     try {
+      console.log('📤 Enviando dados de performance:', data);
+      
       const { error } = await supabase
         .from('seller_daily_performance')
         .upsert({
@@ -113,14 +121,18 @@ const SellerPerformanceForm = () => {
           submitted_by_seller: true,
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro ao salvar performance:', error);
+        throw error;
+      }
 
+      console.log('✅ Performance salva com sucesso');
       toast({
         title: "Sucesso!",
         description: "Performance registrada com sucesso",
       });
     } catch (error) {
-      console.error('Erro ao salvar performance:', error);
+      console.error('💥 Erro ao salvar performance:', error);
       toast({
         title: "Erro",
         description: "Não foi possível salvar a performance",
@@ -135,7 +147,7 @@ const SellerPerformanceForm = () => {
     return <SellerPerformanceLoading />;
   }
 
-  if (!seller) {
+  if (hasError || !seller) {
     return <SellerPerformanceAccessDenied />;
   }
 
