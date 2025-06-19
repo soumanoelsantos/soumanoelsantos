@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Seller } from '@/types/sellers';
 import SellerPerformanceHeader from '@/components/seller/SellerPerformanceHeader';
-import SellerPerformanceFormComponent from '@/components/seller/SellerPerformanceFormComponent';
+import SellerPerformanceManager from '@/components/seller/SellerPerformanceManager';
 import SellerPerformanceLoading from '@/components/seller/SellerPerformanceLoading';
 import SellerPerformanceAccessDenied from '@/components/seller/SellerPerformanceAccessDenied';
 import SellerPerformanceFooter from '@/components/seller/SellerPerformanceFooter';
@@ -138,7 +138,11 @@ const SellerPerformanceForm = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <SellerPerformanceHeader seller={seller} />
-        <SellerPerformanceFormComponent onSubmit={onSubmit} isSubmitting={isSubmitting} seller={seller} />
+        <SellerPerformanceManager 
+          seller={seller}
+          onSubmit={onSubmit}
+          isSubmitting={isSubmitting}
+        />
         <SellerPerformanceFooter />
       </div>
     </div>

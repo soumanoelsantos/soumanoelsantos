@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { Seller } from '@/types/sellers';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import PerformanceFormFields from './PerformanceFormFields';
 import PerformanceFormSubmit from './PerformanceFormSubmit';
 
@@ -24,14 +24,15 @@ interface SellerPerformanceFormComponentProps {
   onSubmit: (data: PerformanceFormData) => Promise<void>;
   isSubmitting: boolean;
   seller: Seller;
+  onSuccess?: () => void;
 }
 
 const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentProps> = ({
   onSubmit,
   isSubmitting,
-  seller
+  seller,
+  onSuccess
 }) => {
-  const { toast } = useToast();
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PerformanceFormData>({
     defaultValues: {
       date: format(new Date(), 'yyyy-MM-dd'),
@@ -56,14 +57,18 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
       
       await onSubmit(data);
       
-      // Mostrar mensagem de sucesso
-      toast({
-        title: "✅ Performance Registrada!",
+      // Mostrar mensagem de sucesso usando sonner
+      toast.success("✅ Performance Registrada!", {
         description: "Sua performance foi enviada com sucesso. Obrigado por manter seus dados atualizados!",
-        variant: "default",
+        duration: 4000,
       });
       
       reset();
+      
+      // Chamar callback de sucesso se fornecido
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       // Mensagem de erro já é tratada no componente pai
       console.error('Erro ao enviar performance:', error);
