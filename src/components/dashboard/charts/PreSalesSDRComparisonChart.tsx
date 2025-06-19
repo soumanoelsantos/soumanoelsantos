@@ -44,7 +44,7 @@ const PreSalesSDRComparisonChart = ({ data, weeklyData }: PreSalesSDRComparisonC
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Evolução Diária de Agendamentos - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
+        <CardTitle>Evolução Diária de Agendamentos</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[400px] w-full">

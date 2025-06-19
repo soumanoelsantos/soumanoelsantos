@@ -35,7 +35,7 @@ const PreSalesNoShowChart = ({ data }: PreSalesNoShowChartProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>No-Show Diário - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
+        <CardTitle>No-Show Diário</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[400px] w-full">

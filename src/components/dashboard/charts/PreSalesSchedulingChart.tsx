@@ -35,7 +35,7 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Agendamentos Diários - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
+        <CardTitle>Agendamentos Diários</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[400px] w-full">
