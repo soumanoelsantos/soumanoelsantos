@@ -28,28 +28,39 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
   // Transform data to include target line
   const chartData = data.map(item => ({
     date: item.date,
-    agendamentos: item.schedulings,
-    meta: 25 // Meta fixa, pode ser configurável depois
+    agendamentos: item.schedulings || 0,
+    meta: 8 // Meta diária de agendamentos
   }));
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Agendamentos Diários - Últimos 7 dias</CardTitle>
+        <CardTitle>Agendamentos Diários - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
+              <XAxis 
+                dataKey="date" 
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Line 
                 type="monotone" 
                 dataKey="agendamentos" 
                 stroke="var(--color-schedulings)" 
-                strokeWidth={2}
+                strokeWidth={3}
+                dot={{ fill: "var(--color-schedulings)", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6 }}
                 name="Agendamentos"
               />
               <Line 
@@ -58,6 +69,7 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
                 stroke="var(--color-meta)" 
                 strokeWidth={2}
                 strokeDasharray="5 5"
+                dot={false}
                 name="Meta"
               />
             </LineChart>

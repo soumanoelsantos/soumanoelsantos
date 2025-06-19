@@ -25,6 +25,37 @@ interface PreSalesData {
   }>;
 }
 
+// Função para gerar dados do mês atual
+const generateCurrentMonthData = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const today = now.getDate();
+  
+  const monthlyData = [];
+  
+  // Gerar dados para todos os dias do mês até hoje
+  for (let day = 1; day <= today; day++) {
+    const date = new Date(year, month, day);
+    const dayName = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    
+    // Simular dados realistas para Sabrina
+    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+    const baseCalls = isWeekend ? 0 : Math.floor(Math.random() * 20) + 25; // 25-45 calls por dia útil
+    const schedulings = isWeekend ? 0 : Math.floor(baseCalls * (0.15 + Math.random() * 0.1)); // 15-25% conversão
+    const noShow = schedulings > 0 ? Math.floor(schedulings * (Math.random() * 0.3)) : 0; // 0-30% no-show
+    
+    monthlyData.push({
+      date: dayName,
+      calls: baseCalls,
+      schedulings: schedulings,
+      noShow: noShow
+    });
+  }
+  
+  return monthlyData;
+};
+
 export const usePreSalesData = () => {
   const [data, setData] = useState<PreSalesData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,39 +66,40 @@ export const usePreSalesData = () => {
     setError(null);
     
     try {
-      // TODO: Implementar integração real com o banco de dados
-      // Por enquanto, usar dados mock até a integração ser implementada
-      
       console.log('🔍 usePreSalesData - Loading pre-sales data from database...');
       
       // Simular delay de carregamento
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Dados mock com variação para testar mudanças - substituir por chamada real ao banco
+      const monthlyData = generateCurrentMonthData();
+      const todayData = monthlyData[monthlyData.length - 1] || { calls: 0, schedulings: 0, noShow: 0 };
+      
+      // Calcular totais do mês
+      const totalCalls = monthlyData.reduce((sum, day) => sum + day.calls, 0);
+      const totalSchedulings = monthlyData.reduce((sum, day) => sum + day.schedulings, 0);
+      const totalNoShow = monthlyData.reduce((sum, day) => sum + day.noShow, 0);
+      
+      const conversionRate = totalCalls > 0 ? (totalSchedulings / totalCalls) * 100 : 0;
+      
       const mockData: PreSalesData = {
-        dailyCalls: Math.floor(Math.random() * 50) + 100, // 100-150
-        dailyCallsTarget: 150,
-        dailySchedulings: Math.floor(Math.random() * 15) + 15, // 15-30
-        dailySchedulingsTarget: 25,
-        dailyNoShow: Math.floor(Math.random() * 5) + 1, // 1-6
-        dailyNoShowRate: 16.7,
-        totalSDRs: 4,
-        averageSchedulingsPerSDR: 4.5,
+        dailyCalls: todayData.calls,
+        dailyCallsTarget: 40,
+        dailySchedulings: todayData.schedulings,
+        dailySchedulingsTarget: 8,
+        dailyNoShow: todayData.noShow,
+        dailyNoShowRate: totalSchedulings > 0 ? (totalNoShow / totalSchedulings) * 100 : 0,
+        totalSDRs: 1,
+        averageSchedulingsPerSDR: totalSchedulings,
         sdrPerformance: [
-          { name: 'João Silva', calls: 35, schedulings: 6, noShow: 1, conversionRate: 17.1 },
-          { name: 'Maria Santos', calls: 42, schedulings: 8, noShow: 0, conversionRate: 19.0 },
-          { name: 'Pedro Costa', calls: 28, schedulings: 3, noShow: 1, conversionRate: 10.7 },
-          { name: 'Ana Oliveira', calls: 38, schedulings: 7, noShow: 1, conversionRate: 18.4 }
+          { 
+            name: 'Sabrina', 
+            calls: totalCalls, 
+            schedulings: totalSchedulings, 
+            noShow: totalNoShow, 
+            conversionRate: conversionRate 
+          }
         ],
-        weeklyData: [
-          { date: '13/06', calls: 120, schedulings: 15, noShow: 2 },
-          { date: '14/06', calls: 135, schedulings: 22, noShow: 4 },
-          { date: '15/06', calls: 110, schedulings: 18, noShow: 3 },
-          { date: '16/06', calls: 145, schedulings: 28, noShow: 5 },
-          { date: '17/06', calls: 155, schedulings: 31, noShow: 6 },
-          { date: '18/06', calls: 125, schedulings: 19, noShow: 2 },
-          { date: '19/06', calls: 140, schedulings: 24, noShow: 3 }
-        ]
+        weeklyData: monthlyData
       };
       
       setData(mockData);

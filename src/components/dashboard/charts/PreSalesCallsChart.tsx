@@ -16,7 +16,7 @@ interface PreSalesCallsChartProps {
 const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
   const chartConfig = {
     calls: {
-      label: "Tentativas",
+      label: "Ligações",
       color: "hsl(var(--chart-1))",
     },
     target: {
@@ -25,31 +25,43 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
     },
   };
 
-  // Transform data to include target line
+  // Transform data to include target line and ensure proper data structure
   const chartData = data.map(item => ({
-    ...item,
-    target: 150 // Meta fixa, pode ser configurável depois
+    date: item.date,
+    calls: item.calls || 0,
+    target: 40 // Meta diária
   }));
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Tentativas de Ligação - Últimos 7 dias</CardTitle>
+        <CardTitle>Ligações Diárias - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
+              <XAxis 
+                dataKey="date" 
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Line 
                 type="monotone" 
                 dataKey="calls" 
                 stroke="var(--color-calls)" 
-                strokeWidth={2}
-                name="Tentativas"
+                strokeWidth={3}
+                dot={{ fill: "var(--color-calls)", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Ligações"
               />
               <Line 
                 type="monotone" 
@@ -57,6 +69,7 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
                 stroke="var(--color-target)" 
                 strokeWidth={2}
                 strokeDasharray="5 5"
+                dot={false}
                 name="Meta"
               />
             </LineChart>

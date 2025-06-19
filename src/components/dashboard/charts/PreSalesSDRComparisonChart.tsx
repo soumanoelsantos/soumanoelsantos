@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 interface PreSalesSDRComparisonChartProps {
   data: Array<{
@@ -29,40 +29,40 @@ const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) =
   // Transform data for chart
   const chartData = data.map((sdr, index) => ({
     sdr: sdr.name,
-    agendamentos: sdr.schedulings,
-    conversao: sdr.conversionRate,
+    agendamentos: sdr.schedulings || 0,
+    conversao: sdr.conversionRate || 0,
     index: index
   }));
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Performance dos SDRs - Últimos 7 dias</CardTitle>
+        <CardTitle>Performance da SDR - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="sdr" />
-              <YAxis />
+              <XAxis 
+                dataKey="sdr" 
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Line 
-                type="monotone" 
+              <Bar 
                 dataKey="agendamentos" 
-                stroke="var(--color-agendamentos)" 
-                strokeWidth={2}
+                fill="var(--color-agendamentos)" 
                 name="Agendamentos"
+                radius={[4, 4, 0, 0]}
               />
-              <Line 
-                type="monotone" 
-                dataKey="conversao" 
-                stroke="var(--color-conversao)" 
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                name="Taxa Conversão (%)"
-              />
-            </LineChart>
+            </BarChart>
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
