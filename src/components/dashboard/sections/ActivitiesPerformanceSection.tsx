@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DashboardConfig } from '@/hooks/useDashboardConfig';
+import { DashboardConfig } from '@/types/dashboardConfig';
 import { ItemRenderer } from '../renderers/ItemRenderer';
 
 interface ActivitiesPerformanceSectionProps {

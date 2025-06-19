@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { mapDatabaseToConfig, mapConfigToDatabase } from '@/utils/dashboardConfigMapper';
+import { useAuth } from '@/hooks/useAuth';
 
 const defaultConfig: DashboardConfig = {
   showConversion: true,
@@ -37,13 +39,13 @@ const defaultConfig: DashboardConfig = {
   selectedGoalIds: [],
   showRevenueEvolutionChart: true,
   showBillingEvolutionChart: true,
-  // Add the new seller chart properties
   showSellerRevenueChart: true,
   showSellerBillingChart: true,
 };
 
 export const useDashboardConfig = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [config, setConfig] = useState<DashboardConfig>(defaultConfig);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -77,11 +79,12 @@ export const useDashboardConfig = () => {
       }
 
       if (data) {
-        setConfig(data as DashboardConfig);
+        const mappedConfig = mapDatabaseToConfig(data);
+        setConfig(mappedConfig);
       } else {
         console.log("Nenhuma configuração encontrada, usando a padrão.");
         setConfig(defaultConfig);
-        await saveConfig(defaultConfig); // Salva a configuração padrão no banco
+        await saveConfig(defaultConfig);
       }
     } catch (error) {
       console.error("Falha ao carregar a configuração:", error);
@@ -90,18 +93,25 @@ export const useDashboardConfig = () => {
         description: "Falha ao carregar a configuração do dashboard.",
         variant: "destructive",
       });
-      setConfig(defaultConfig); // Garante que o estado tenha um valor padrão
+      setConfig(defaultConfig);
     } finally {
       setIsLoading(false);
     }
   };
 
   const saveConfig = async (newConfig: DashboardConfig): Promise<boolean> => {
+    if (!user?.id) {
+      console.error("Usuário não encontrado");
+      return false;
+    }
+
     setIsLoading(true);
     try {
+      const databaseData = mapConfigToDatabase(newConfig, user.id);
+      
       const { error } = await supabase
         .from('dashboard_configs')
-        .upsert(newConfig, { onConflict: ['id'] });
+        .upsert(databaseData, { onConflict: 'user_id' });
 
       if (error) {
         console.error("Erro ao salvar configuração do dashboard:", error);
