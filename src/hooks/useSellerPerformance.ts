@@ -65,7 +65,7 @@ export const useSellerPerformance = (sellerId?: string) => {
         .from('seller_daily_performance')
         .upsert({
           seller_id: sellerId,
-          submitted_by_seller: false,
+          submitted_by_seller: performanceData.submitted_by_seller ?? true,
           ...performanceData,
         })
         .select()
@@ -78,14 +78,8 @@ export const useSellerPerformance = (sellerId?: string) => {
 
       console.log('✅ [DEBUG] Performance salva:', data);
 
-      setPerformances(prev => {
-        const existing = prev.find(p => p.date === performanceData.date);
-        if (existing) {
-          return prev.map(p => p.id === existing.id ? data : p);
-        } else {
-          return [data, ...prev];
-        }
-      });
+      // Atualizar a lista local
+      await fetchPerformances();
 
       toast({
         title: "Sucesso",

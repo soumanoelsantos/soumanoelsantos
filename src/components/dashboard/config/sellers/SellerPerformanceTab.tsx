@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,10 +20,7 @@ interface PerformanceFormData {
   sales_count: number;
   revenue_amount: number;
   billing_amount: number;
-  leads_count: number;
   meetings_count: number;
-  calls_count: number;
-  notes: string;
 }
 
 export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sellerId }) => {
@@ -34,10 +32,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
       sales_count: 0,
       revenue_amount: 0,
       billing_amount: 0,
-      leads_count: 0,
       meetings_count: 0,
-      calls_count: 0,
-      notes: '',
     }
   });
 
@@ -49,12 +44,14 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   }, [sellerId, performances, isLoading]);
 
   const onSubmit = async (data: PerformanceFormData) => {
-    // Zerar os campos removidos
-    data.leads_count = 0;
-    data.calls_count = 0;
-    data.notes = '';
+    const success = await createOrUpdatePerformance({
+      ...data,
+      leads_count: 0,
+      calls_count: 0,
+      notes: '',
+      submitted_by_seller: false // Indica que foi preenchido pelo admin
+    });
     
-    const success = await createOrUpdatePerformance(data);
     if (success) {
       reset();
       setShowForm(false);

@@ -48,7 +48,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
-      // Sempre zerar os campos removidos
+      // Zerar os campos removidos
       data.leads_count = 0;
       data.calls_count = 0;
       data.notes = '';
