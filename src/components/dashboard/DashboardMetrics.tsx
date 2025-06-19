@@ -27,7 +27,12 @@ const DashboardMetrics = () => {
   });
 
   // Separar itens que devem ocupar toda a largura dos que ficam no grid
-  const fullWidthItems = ['revenueEvolutionChart', 'billingEvolutionChart'];
+  const fullWidthItems = [
+    'revenueEvolutionChart', 
+    'billingEvolutionChart', 
+    'sellerRevenueChart', 
+    'sellerBillingChart'
+  ];
   const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
   const evolutionCharts = orderedItems.filter(item => fullWidthItems.includes(item));
 
@@ -63,7 +68,7 @@ const DashboardMetrics = () => {
       {/* Seção dedicada para gráficos de evolução */}
       {evolutionCharts.length > 0 && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução e Performance</h2>
           {evolutionCharts.map((key, index) => {
             console.log(`🔍 DashboardMetrics - Rendering evolution chart: ${key}`);
             const component = <ItemRenderer itemKey={key} config={config} />;

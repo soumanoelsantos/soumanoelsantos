@@ -39,6 +39,15 @@ export const useDashboardOrder = (config: DashboardConfig) => {
         finalOrder.push('billingEvolutionChart');
       }
       
+      // Garantir que os novos gráficos de vendedores estejam incluídos se habilitados
+      if (config.showSellerRevenueChart && !finalOrder.includes('sellerRevenueChart')) {
+        finalOrder.push('sellerRevenueChart');
+      }
+      
+      if (config.showSellerBillingChart && !finalOrder.includes('sellerBillingChart')) {
+        finalOrder.push('sellerBillingChart');
+      }
+      
       console.log('🔍 useDashboardOrder - Final custom order with all items:', finalOrder);
       return finalOrder;
     }
@@ -67,6 +76,15 @@ export const useDashboardOrder = (config: DashboardConfig) => {
     
     if (config.showBillingEvolutionChart) {
       defaultOrder.push('billingEvolutionChart');
+    }
+    
+    // Adicionar novos gráficos de vendedores se habilitados
+    if (config.showSellerRevenueChart) {
+      defaultOrder.push('sellerRevenueChart');
+    }
+    
+    if (config.showSellerBillingChart) {
+      defaultOrder.push('sellerBillingChart');
     }
 
     console.log('🔍 useDashboardOrder - Using default order with projection indicators:', defaultOrder);

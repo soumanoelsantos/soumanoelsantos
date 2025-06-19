@@ -1,95 +1,123 @@
-
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
-import { defaultConfig } from '@/config/dashboardDefaults';
-import { loadDashboardConfig, saveDashboardConfig } from '@/services/dashboardConfigService';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
+
+const defaultConfig: DashboardConfig = {
+  showConversion: true,
+  showRevenue: true,
+  showTicketFaturamento: false,
+  showTicketReceita: false,
+  showFaltaFaturamento: false,
+  showFaltaReceita: false,
+  showDiariaReceita: false,
+  showDiariaFaturamento: false,
+  showSuperMetaFaturamento: false,
+  showSuperMetaReceita: false,
+  showHiperMetaFaturamento: false,
+  showHiperMetaReceita: false,
+  showFaltaReceitaSuper: false,
+  showFaltaReceitaHiper: false,
+  showFaltaFaturamentoSuper: false,
+  showFaltaFaturamentoHiper: false,
+  showMetaFaturamento: false,
+  showMetaReceita: false,
+  showFaturamento: false,
+  showReceita: false,
+  showQuantidadeVendas: false,
+  showCashCollect: false,
+  showCac: false,
+  showProjecaoReceita: false,
+  showProjecaoFaturamento: false,
+  showNoShow: false,
+  companyName: '',
+  metricsOrder: [],
+  showSpecificGoals: false,
+  selectedGoalIds: [],
+  showRevenueEvolutionChart: true,
+  showBillingEvolutionChart: true,
+  // Novos gráficos de performance dos vendedores
+  showSellerRevenueChart: true,
+  showSellerBillingChart: true,
+};
 
 export const useDashboardConfig = () => {
+  const { toast } = useToast();
   const [config, setConfig] = useState<DashboardConfig>(defaultConfig);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const { userId } = useAuth();
-  const { toast } = useToast();
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    loadConfig();
+  }, []);
+
+  useEffect(() => {
+    if (hasUnsavedChanges) {
+      const timer = setTimeout(() => {
+        saveConfig(config);
+        setHasUnsavedChanges(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [config, hasUnsavedChanges]);
 
   const loadConfig = async () => {
-    if (!userId) {
-      console.log('🟡 useDashboardConfig - No userId, using default config');
-      console.log('🟡 useDashboardConfig - Default config evolution charts:', {
-        showRevenueEvolutionChart: defaultConfig.showRevenueEvolutionChart,
-        showBillingEvolutionChart: defaultConfig.showBillingEvolutionChart
-      });
-      setConfig(defaultConfig);
-      return;
-    }
-    
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      console.log('🔵 useDashboardConfig - Loading config for user:', userId);
-      const loadedConfig = await loadDashboardConfig(userId);
-      
-      if (loadedConfig) {
-        console.log('🟢 useDashboardConfig - Config loaded successfully');
-        console.log('🟢 useDashboardConfig - Loaded projection indicators:', {
-          showProjecaoReceita: loadedConfig.showProjecaoReceita,
-          showProjecaoFaturamento: loadedConfig.showProjecaoFaturamento,
-          showNoShow: loadedConfig.showNoShow
-        });
-        setConfig(loadedConfig);
-        setHasUnsavedChanges(false);
+      const { data, error } = await supabase
+        .from('dashboard_config')
+        .select('*')
+        .single();
+
+      if (error) {
+        console.error("Erro ao carregar configuração do dashboard:", error);
+        throw error;
+      }
+
+      if (data) {
+        setConfig(data as DashboardConfig);
       } else {
-        console.log('🟡 useDashboardConfig - No config found, using defaults');
+        console.log("Nenhuma configuração encontrada, usando a padrão.");
         setConfig(defaultConfig);
-        setHasUnsavedChanges(false);
+        await saveConfig(defaultConfig); // Salva a configuração padrão no banco
       }
     } catch (error) {
-      console.error('🔴 useDashboardConfig - Erro ao carregar configurações do dashboard:', error);
+      console.error("Falha ao carregar a configuração:", error);
       toast({
+        title: "Erro",
+        description: "Falha ao carregar a configuração do dashboard.",
         variant: "destructive",
-        title: "Erro ao carregar configurações",
-        description: "Não foi possível carregar suas configurações salvas."
       });
-      setConfig(defaultConfig);
-      setHasUnsavedChanges(false);
+      setConfig(defaultConfig); // Garante que o estado tenha um valor padrão
     } finally {
       setIsLoading(false);
     }
   };
 
-  const saveConfigToDatabase = async (configToSave: DashboardConfig) => {
-    if (!userId) {
-      console.log('🔴 useDashboardConfig - No userId, cannot save');
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Você precisa estar logado para salvar as configurações."
-      });
-      return false;
-    }
-
+  const saveConfig = async (newConfig: DashboardConfig): Promise<boolean> => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      console.log('🔵 useDashboardConfig - Starting save process for user:', userId);
-      console.log('🔵 useDashboardConfig - Config to save with projection indicators:', {
-        showProjecaoReceita: configToSave.showProjecaoReceita,
-        showProjecaoFaturamento: configToSave.showProjecaoFaturamento,
-        showNoShow: configToSave.showNoShow
-      });
-      
-      await saveDashboardConfig(configToSave, userId);
-      console.log('🟢 useDashboardConfig - Config saved successfully');
-      
-      setHasUnsavedChanges(false);
-      return true;
-    } catch (error: any) {
-      console.error('🔴 useDashboardConfig - Erro ao salvar configurações:', error);
-      
+      const { error } = await supabase
+        .from('dashboard_config')
+        .upsert(newConfig, { onConflict: ['id'] });
+
+      if (error) {
+        console.error("Erro ao salvar configuração do dashboard:", error);
+        throw error;
+      }
+
       toast({
+        title: "Sucesso",
+        description: "Configurações do dashboard salvas com sucesso.",
+      });
+      return true;
+    } catch (error) {
+      console.error("Falha ao salvar a configuração:", error);
+      toast({
+        title: "Erro",
+        description: "Falha ao salvar as configurações do dashboard.",
         variant: "destructive",
-        title: "Erro ao salvar",
-        description: `Não foi possível salvar suas configurações: ${error.message || 'Tente novamente.'}`
       });
       return false;
     } finally {
@@ -97,77 +125,16 @@ export const useDashboardConfig = () => {
     }
   };
 
-  const updateConfig = (newConfig: DashboardConfig) => {
-    console.log('🔵 useDashboardConfig - Config updated, scheduling auto-save');
-    console.log('🔵 useDashboardConfig - New config projection indicators:', {
-      showProjecaoReceita: newConfig.showProjecaoReceita,
-      showProjecaoFaturamento: newConfig.showProjecaoFaturamento,
-      showNoShow: newConfig.showNoShow
-    });
+  const setConfigWithAutoSave = (newConfig: DashboardConfig) => {
     setConfig(newConfig);
     setHasUnsavedChanges(true);
-
-    // Clear existing timeout
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-
-    // Set new timeout for auto-save (save after 1 second of no changes)
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      console.log('🔵 useDashboardConfig - Auto-save timeout triggered');
-      saveConfigToDatabase(newConfig);
-    }, 1000);
   };
-
-  const saveConfig = async (configToSave: DashboardConfig) => {
-    console.log('🔵 useDashboardConfig - Manual save triggered');
-    console.log('🔵 useDashboardConfig - Config to save projection indicators:', {
-      showProjecaoReceita: configToSave.showProjecaoReceita,
-      showProjecaoFaturamento: configToSave.showProjecaoFaturamento,
-      showNoShow: configToSave.showNoShow
-    });
-    
-    // Clear auto-save timeout since we're saving manually
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-
-    const success = await saveConfigToDatabase(configToSave);
-    console.log('🔵 useDashboardConfig - Save result:', success);
-    
-    if (success) {
-      toast({
-        title: "Configurações salvas!",
-        description: "Suas configurações do dashboard foram salvas com sucesso."
-      });
-    }
-    
-    return success;
-  };
-
-  // Load config when userId changes
-  useEffect(() => {
-    console.log('🔵 useDashboardConfig - useEffect triggered, userId:', userId);
-    loadConfig();
-  }, [userId]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return {
     config,
-    setConfig: updateConfig,
+    setConfig: setConfigWithAutoSave,
     saveConfig,
-    loadConfig,
     isLoading,
     hasUnsavedChanges
   };
 };
-
-export type { DashboardConfig };

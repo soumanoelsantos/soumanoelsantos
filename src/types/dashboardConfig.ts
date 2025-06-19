@@ -37,7 +37,11 @@ export interface DashboardConfig {
   showSpecificGoals: boolean;
   selectedGoalIds: string[];
 
-  // Novos gráficos de evolução
+  // Gráficos de evolução
   showRevenueEvolutionChart: boolean;
   showBillingEvolutionChart: boolean;
+  
+  // Novos gráficos de performance dos vendedores
+  showSellerRevenueChart: boolean;
+  showSellerBillingChart: boolean;
 }

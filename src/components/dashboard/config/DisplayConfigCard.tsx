@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { BarChart3 } from 'lucide-react';
-import { DashboardConfig } from '@/types/dashboardConfig';
+import { DashboardConfig } from '@/hooks/useDashboardConfig';
 
 interface DisplayConfigCardProps {
   config: DashboardConfig;
@@ -12,50 +11,30 @@ interface DisplayConfigCardProps {
 }
 
 const DisplayConfigCard: React.FC<DisplayConfigCardProps> = ({ config, onConfigChange }) => {
+  const chartOptions = [
+    { key: 'showRevenueEvolutionChart', label: 'Gráfico de Evolução de Receita' },
+    { key: 'showBillingEvolutionChart', label: 'Gráfico de Evolução de Faturamento' },
+    { key: 'showSellerRevenueChart', label: 'Gráfico de Receita por Vendedor' },
+    { key: 'showSellerBillingChart', label: 'Gráfico de Faturamento por Vendedor' },
+  ];
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          Exibição e Gráficos
-        </CardTitle>
-        <CardDescription>
-          Configure quais gráficos e visualizações serão mostradas no dashboard
-        </CardDescription>
+        <CardTitle>Gráficos e Visualizações</CardTitle>
+        <CardDescription>Configure quais gráficos serão exibidos no dashboard</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="showRevenueEvolutionChart" className="text-sm font-medium">
-            Gráfico de Evolução de Receita
-          </Label>
-          <Switch
-            id="showRevenueEvolutionChart"
-            checked={config.showRevenueEvolutionChart}
-            onCheckedChange={(checked) => onConfigChange('showRevenueEvolutionChart', checked)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <Label htmlFor="showBillingEvolutionChart" className="text-sm font-medium">
-            Gráfico de Evolução de Faturamento
-          </Label>
-          <Switch
-            id="showBillingEvolutionChart"
-            checked={config.showBillingEvolutionChart}
-            onCheckedChange={(checked) => onConfigChange('showBillingEvolutionChart', checked)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <Label htmlFor="showSpecificGoals" className="text-sm font-medium">
-            Mostrar Metas Específicas
-          </Label>
-          <Switch
-            id="showSpecificGoals"
-            checked={config.showSpecificGoals}
-            onCheckedChange={(checked) => onConfigChange('showSpecificGoals', checked)}
-          />
-        </div>
+      <CardContent className="space-y-3">
+        {chartOptions.map((option) => (
+          <div key={option.key} className="flex items-center space-x-2">
+            <Checkbox
+              id={option.key}
+              checked={config[option.key as keyof DashboardConfig] as boolean}
+              onCheckedChange={(checked) => onConfigChange(option.key, checked as boolean)}
+            />
+            <Label htmlFor={option.key} className="text-sm">{option.label}</Label>
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

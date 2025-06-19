@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,7 +52,10 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
     'showNoShow': 'No-Show',
     'specificGoals': 'Metas Específicas',
     'revenueEvolutionChart': 'Gráfico de Evolução de Receita',
-    'billingEvolutionChart': 'Gráfico de Evolução de Faturamento'
+    'billingEvolutionChart': 'Gráfico de Evolução de Faturamento',
+    // Novos gráficos de vendedores
+    'sellerRevenueChart': 'Gráfico de Receita por Vendedor',
+    'sellerBillingChart': 'Gráfico de Faturamento por Vendedor'
   };
 
   // Lista de todas as chaves de métricas possíveis
@@ -96,6 +98,15 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
   
   if (config.showBillingEvolutionChart) {
     enabledMetrics.push({ key: 'billingEvolutionChart', title: metricTitles['billingEvolutionChart'], enabled: true });
+  }
+  
+  // Adicionar novos gráficos de vendedores se habilitados
+  if (config.showSellerRevenueChart) {
+    enabledMetrics.push({ key: 'sellerRevenueChart', title: metricTitles['sellerRevenueChart'], enabled: true });
+  }
+  
+  if (config.showSellerBillingChart) {
+    enabledMetrics.push({ key: 'sellerBillingChart', title: metricTitles['sellerBillingChart'], enabled: true });
   }
 
   // Ordenar métricas com base na ordem salva

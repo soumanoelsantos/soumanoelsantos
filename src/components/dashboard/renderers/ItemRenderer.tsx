@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardConfig } from '@/hooks/useDashboardConfig';
 import { allMetricsCards } from '../data/metrics';
 import { RevenueEvolutionChart, BillingEvolutionChart } from '../charts/EvolutionCharts';
+import { SellerRevenueChart, SellerBillingChart } from '../charts/SellerPerformanceCharts';
 import SpecificGoalsCards from '../goals/SpecificGoalsCards';
 
 interface ItemRendererProps {
@@ -105,6 +106,28 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     }
     console.log('✅ Rendering billing evolution chart');
     return <BillingEvolutionChart />;
+  }
+
+  // Novo gráfico de receita dos vendedores
+  if (itemKey === 'sellerRevenueChart') {
+    console.log('🔍 Seller revenue chart - Config value:', config.showSellerRevenueChart);
+    if (!config.showSellerRevenueChart) {
+      console.log('❌ Seller revenue chart is disabled, not rendering');
+      return null;
+    }
+    console.log('✅ Rendering seller revenue chart');
+    return <SellerRevenueChart />;
+  }
+
+  // Novo gráfico de faturamento dos vendedores
+  if (itemKey === 'sellerBillingChart') {
+    console.log('🔍 Seller billing chart - Config value:', config.showSellerBillingChart);
+    if (!config.showSellerBillingChart) {
+      console.log('❌ Seller billing chart is disabled, not rendering');
+      return null;
+    }
+    console.log('✅ Rendering seller billing chart');
+    return <SellerBillingChart />;
   }
 
   console.log(`❓ No render logic found for key: ${itemKey}`);
