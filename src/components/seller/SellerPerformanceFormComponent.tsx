@@ -66,6 +66,10 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
       }
     } catch (error) {
       console.error('❌ [DEBUG] Erro ao enviar performance do vendedor:', error);
+      toast.error("❌ Erro ao Registrar", {
+        description: "Não foi possível salvar sua performance. Tente novamente.",
+        duration: 4000,
+      });
     }
   };
 

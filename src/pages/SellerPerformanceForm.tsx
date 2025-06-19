@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Seller } from '@/types/sellers';
-import { useSellerPerformance } from '@/hooks/useSellerPerformance';
 import SellerPerformanceHeader from '@/components/seller/SellerPerformanceHeader';
 import SellerPerformanceManager from '@/components/seller/SellerPerformanceManager';
 import SellerPerformanceLoading from '@/components/seller/SellerPerformanceLoading';
@@ -29,9 +28,6 @@ const SellerPerformanceForm = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasError, setHasError] = useState(false);
-
-  // Usar o hook useSellerPerformance para manter consistência
-  const { createOrUpdatePerformance } = useSellerPerformance(seller?.id);
 
   useEffect(() => {
     const fetchSeller = async () => {
@@ -96,26 +92,38 @@ const SellerPerformanceForm = () => {
     setIsSubmitting(true);
     try {
       console.log('📤 [DEBUG] Enviando dados de performance do vendedor:', seller.name);
-      console.log('📤 [DEBUG] Dados:', data);
+      console.log('📤 [DEBUG] Dados completos:', data);
       
-      // Usar o hook para salvar os dados - isso garante consistência
-      const success = await createOrUpdatePerformance({
-        date: data.date,
-        sales_count: data.sales_count,
-        revenue_amount: data.revenue_amount,
-        billing_amount: data.billing_amount,
-        leads_count: 0, // Campo removido
-        meetings_count: data.meetings_count,
-        calls_count: 0, // Campo removido
-        notes: '', // Campo removido
-        submitted_by_seller: true, // Marcado como preenchido pelo vendedor
-      });
+      // Salvar diretamente no banco usando a mesma estrutura do admin
+      const { data: savedData, error } = await supabase
+        .from('seller_daily_performance')
+        .upsert({
+          seller_id: seller.id,
+          date: data.date,
+          sales_count: data.sales_count,
+          revenue_amount: data.revenue_amount,
+          billing_amount: data.billing_amount,
+          leads_count: 0,
+          meetings_count: data.meetings_count,
+          calls_count: 0,
+          notes: '',
+          submitted_by_seller: true,
+        })
+        .select()
+        .single();
 
-      if (!success) {
-        throw new Error('Falha ao salvar performance');
+      if (error) {
+        console.error('❌ [DEBUG] Erro ao salvar:', error);
+        throw error;
       }
 
-      console.log('✅ [DEBUG] Performance salva com sucesso via hook');
+      console.log('✅ [DEBUG] Performance salva com sucesso:', savedData);
+      
+      toast({
+        title: "Sucesso!",
+        description: "Performance registrada com sucesso!",
+      });
+
     } catch (error) {
       console.error('💥 [DEBUG] Erro ao salvar performance:', error);
       toast({
