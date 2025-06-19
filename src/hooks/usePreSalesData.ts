@@ -42,32 +42,32 @@ export const usePreSalesData = () => {
         console.log('🔍 usePreSalesData - Loading pre-sales data from database...');
         
         // Simular delay de carregamento
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Dados mock - substituir por chamada real ao banco
+        // Dados mock com variação para testar mudanças - substituir por chamada real ao banco
         const mockData: PreSalesData = {
-          dailyCalls: 125,
+          dailyCalls: Math.floor(Math.random() * 50) + 100, // 100-150
           dailyCallsTarget: 150,
-          dailySchedulings: 18,
+          dailySchedulings: Math.floor(Math.random() * 15) + 15, // 15-30
           dailySchedulingsTarget: 25,
-          dailyNoShow: 3,
+          dailyNoShow: Math.floor(Math.random() * 5) + 1, // 1-6
           dailyNoShowRate: 16.7,
           totalSDRs: 4,
           averageSchedulingsPerSDR: 4.5,
           sdrPerformance: [
-            { name: 'João', calls: 35, schedulings: 6, noShow: 1, conversionRate: 17.1 },
-            { name: 'Maria', calls: 42, schedulings: 8, noShow: 0, conversionRate: 19.0 },
-            { name: 'Pedro', calls: 28, schedulings: 3, noShow: 1, conversionRate: 10.7 },
-            { name: 'Ana', calls: 38, schedulings: 7, noShow: 1, conversionRate: 18.4 }
+            { name: 'João Silva', calls: 35, schedulings: 6, noShow: 1, conversionRate: 17.1 },
+            { name: 'Maria Santos', calls: 42, schedulings: 8, noShow: 0, conversionRate: 19.0 },
+            { name: 'Pedro Costa', calls: 28, schedulings: 3, noShow: 1, conversionRate: 10.7 },
+            { name: 'Ana Oliveira', calls: 38, schedulings: 7, noShow: 1, conversionRate: 18.4 }
           ],
           weeklyData: [
-            { date: '01/12', calls: 120, schedulings: 15, noShow: 2 },
-            { date: '02/12', calls: 135, schedulings: 22, noShow: 4 },
-            { date: '03/12', calls: 110, schedulings: 18, noShow: 3 },
-            { date: '04/12', calls: 145, schedulings: 28, noShow: 5 },
-            { date: '05/12', calls: 155, schedulings: 31, noShow: 6 },
-            { date: '06/12', calls: 125, schedulings: 19, noShow: 2 },
-            { date: '07/12', calls: 140, schedulings: 24, noShow: 3 }
+            { date: '13/06', calls: 120, schedulings: 15, noShow: 2 },
+            { date: '14/06', calls: 135, schedulings: 22, noShow: 4 },
+            { date: '15/06', calls: 110, schedulings: 18, noShow: 3 },
+            { date: '16/06', calls: 145, schedulings: 28, noShow: 5 },
+            { date: '17/06', calls: 155, schedulings: 31, noShow: 6 },
+            { date: '18/06', calls: 125, schedulings: 19, noShow: 2 },
+            { date: '19/06', calls: 140, schedulings: 24, noShow: 3 }
           ]
         };
         
@@ -90,9 +90,10 @@ export const usePreSalesData = () => {
     isLoading,
     error,
     refetch: () => {
-      // Função para recarregar os dados quando necessário
+      console.log('🔄 usePreSalesData - Refetching data...');
       setIsLoading(true);
       // Re-executar o useEffect
+      loadPreSalesData();
     }
   };
 };

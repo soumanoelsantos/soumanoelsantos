@@ -60,12 +60,12 @@ const PreSalesMetrics = () => {
     return null;
   }
 
-  // Componentes de cards individuais
-  const renderCard = (itemKey: string) => {
+  // Função para renderizar cada componente baseado na ordem configurada
+  const renderComponent = (itemKey: string) => {
     switch (itemKey) {
       case 'showPreSalesCalls':
         return (
-          <Card key="calls">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">
                 Tentativas de Ligação
@@ -86,7 +86,7 @@ const PreSalesMetrics = () => {
 
       case 'showPreSalesSchedulings':
         return (
-          <Card key="schedulings">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">
                 Agendamentos Diários
@@ -107,7 +107,7 @@ const PreSalesMetrics = () => {
 
       case 'showPreSalesNoShow':
         return (
-          <Card key="noshow">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">
                 No-Show Diário
@@ -126,89 +126,60 @@ const PreSalesMetrics = () => {
           </Card>
         );
 
-      default:
-        return null;
-    }
-  };
-
-  // Renderizar gráficos na ordem configurada
-  const renderChart = (itemKey: string) => {
-    switch (itemKey) {
       case 'showPreSalesCallsChart':
-        return <PreSalesCallsChart key="calls-chart" data={preSalesData.weeklyData} />;
+        return <PreSalesCallsChart data={preSalesData.weeklyData} />;
+
       case 'showPreSalesSchedulingChart':
-        return <PreSalesSchedulingChart key="scheduling-chart" data={preSalesData.weeklyData} />;
+        return <PreSalesSchedulingChart data={preSalesData.weeklyData} />;
+
       case 'showPreSalesNoShowChart':
-        return <PreSalesNoShowChart key="noshow-chart" data={preSalesData.weeklyData} />;
+        return <PreSalesNoShowChart data={preSalesData.weeklyData} />;
+
       case 'showPreSalesSDRComparisonChart':
-        return <PreSalesSDRComparisonChart key="sdr-comparison-chart" data={preSalesData.sdrPerformance} />;
+        return <PreSalesSDRComparisonChart data={preSalesData.sdrPerformance} />;
+
+      case 'showPreSalesSDRTable':
+        return <PreSalesSDRTable data={preSalesData.sdrPerformance} />;
+
       default:
         return null;
     }
   };
-
-  // Separar cards, gráficos e tabelas baseado na ordem configurada
-  const cards = orderedItems.filter(item => 
-    ['showPreSalesCalls', 'showPreSalesSchedulings', 'showPreSalesNoShow'].includes(item.key)
-  );
-
-  const charts = orderedItems.filter(item => 
-    ['showPreSalesCallsChart', 'showPreSalesSchedulingChart', 'showPreSalesNoShowChart', 'showPreSalesSDRComparisonChart'].includes(item.key)
-  );
-
-  const tables = orderedItems.filter(item => 
-    item.key === 'showPreSalesSDRTable'
-  );
 
   return (
     <div className="space-y-8">
-      {/* Cards de métricas principais na ordem configurada */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {cards.map(item => renderCard(item.key))}
+      {/* Renderizar componentes na ordem configurada */}
+      {orderedItems.map((item, index) => {
+        const component = renderComponent(item.key);
+        if (!component) return null;
         
-        {/* Card fixo da média por SDR */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Média por SDR
-            </CardTitle>
-            <Users className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{preSalesData.averageSchedulingsPerSDR}</div>
-            <p className="text-xs text-gray-600 mt-1">
-              Agendamentos/SDR
-            </p>
-            <div className="text-xs text-purple-600 mt-2">
-              {preSalesData.totalSDRs} SDRs ativos
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Gráficos na ordem configurada */}
-      {charts.length > 0 && (
-        <div className="space-y-6">
-          {charts.length <= 2 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {charts.map(item => renderChart(item.key))}
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {charts.map(item => (
-                <div key={item.key} className="w-full">
-                  {renderChart(item.key)}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tabelas na ordem configurada */}
-      {tables.map(item => (
-        item.key === 'showPreSalesSDRTable' && <PreSalesSDRTable key="sdr-table" data={preSalesData.sdrPerformance} />
-      ))}
+        console.log(`🔍 PreSalesMetrics - Rendering component ${item.key} at position ${index}`);
+        
+        return (
+          <div key={`${item.key}-${index}`} className="w-full">
+            {component}
+          </div>
+        );
+      })}
+      
+      {/* Card fixo da média por SDR (sempre no final) */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-gray-600">
+            Média por SDR
+          </CardTitle>
+          <Users className="h-4 w-4 text-purple-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{preSalesData.averageSchedulingsPerSDR}</div>
+          <p className="text-xs text-gray-600 mt-1">
+            Agendamentos/SDR
+          </p>
+          <div className="text-xs text-purple-600 mt-2">
+            {preSalesData.totalSDRs} SDRs ativos
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
