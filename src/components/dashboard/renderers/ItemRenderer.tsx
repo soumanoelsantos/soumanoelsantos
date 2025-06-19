@@ -106,10 +106,10 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     );
   }
 
-  // Gráfico de evolução de receita
+  // Gráfico de evolução de receita - verificar configuração específica
   if (itemKey === 'revenueEvolutionChart') {
-    if (!config.showCharts) {
-      console.log('Charts are disabled, not rendering revenue evolution chart');
+    if (!config.showRevenueEvolutionChart) {
+      console.log('Revenue evolution chart is disabled, not rendering');
       return null;
     }
     console.log('Rendering revenue evolution chart');
@@ -120,10 +120,10 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     );
   }
 
-  // Gráfico de evolução de faturamento
+  // Gráfico de evolução de faturamento - verificar configuração específica
   if (itemKey === 'billingEvolutionChart') {
-    if (!config.showCharts) {
-      console.log('Charts are disabled, not rendering billing evolution chart');
+    if (!config.showBillingEvolutionChart) {
+      console.log('Billing evolution chart is disabled, not rendering');
       return null;
     }
     console.log('Rendering billing evolution chart');

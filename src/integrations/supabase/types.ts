@@ -103,6 +103,7 @@ export type Database = {
           id: string
           metrics_order: Json | null
           selected_goal_ids: Json | null
+          show_billing_evolution_chart: boolean | null
           show_cac: boolean | null
           show_calls_diarias: boolean | null
           show_cash_collect: boolean | null
@@ -127,6 +128,7 @@ export type Database = {
           show_quantidade_vendas: boolean | null
           show_receita: boolean | null
           show_revenue: boolean | null
+          show_revenue_evolution_chart: boolean | null
           show_sales: boolean | null
           show_specific_goals: boolean | null
           show_super_meta_faturamento: boolean | null
@@ -144,6 +146,7 @@ export type Database = {
           id?: string
           metrics_order?: Json | null
           selected_goal_ids?: Json | null
+          show_billing_evolution_chart?: boolean | null
           show_cac?: boolean | null
           show_calls_diarias?: boolean | null
           show_cash_collect?: boolean | null
@@ -168,6 +171,7 @@ export type Database = {
           show_quantidade_vendas?: boolean | null
           show_receita?: boolean | null
           show_revenue?: boolean | null
+          show_revenue_evolution_chart?: boolean | null
           show_sales?: boolean | null
           show_specific_goals?: boolean | null
           show_super_meta_faturamento?: boolean | null
@@ -185,6 +189,7 @@ export type Database = {
           id?: string
           metrics_order?: Json | null
           selected_goal_ids?: Json | null
+          show_billing_evolution_chart?: boolean | null
           show_cac?: boolean | null
           show_calls_diarias?: boolean | null
           show_cash_collect?: boolean | null
@@ -209,6 +214,7 @@ export type Database = {
           show_quantidade_vendas?: boolean | null
           show_receita?: boolean | null
           show_revenue?: boolean | null
+          show_revenue_evolution_chart?: boolean | null
           show_sales?: boolean | null
           show_specific_goals?: boolean | null
           show_super_meta_faturamento?: boolean | null
