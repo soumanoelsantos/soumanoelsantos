@@ -14,9 +14,49 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
+// Função para obter o dia atual do mês
+const getCurrentDay = () => {
+  return new Date().getDate();
+};
+
+// Função para calcular projeção baseada na tendência atual
+const calculateProjection = (data: any[], valueKey: string, currentDay: number) => {
+  if (!data || data.length === 0 || currentDay <= 0) return data;
+  
+  // Pegar apenas os dados até o dia atual
+  const actualData = data.slice(0, currentDay);
+  if (actualData.length < 2) return data;
+  
+  // Calcular tendência baseada nos últimos dados
+  const lastValue = actualData[actualData.length - 1][valueKey];
+  const previousValue = actualData[actualData.length - 2][valueKey];
+  const trend = lastValue - previousValue;
+  
+  // Aplicar projeção para os dias restantes
+  return data.map((item, index) => {
+    if (index < currentDay) {
+      return item;
+    } else {
+      const daysAhead = index - currentDay + 1;
+      const projectedValue = lastValue + (trend * daysAhead);
+      return {
+        ...item,
+        [`${valueKey}Projection`]: Math.max(0, projectedValue)
+      };
+    }
+  });
+};
+
 export const RevenueEvolutionChart = () => {
   const { revenueData, isLoading } = useEvolutionData();
   const { config } = useDashboardConfig();
+  
+  const currentDay = getCurrentDay();
+  
+  // Calcular dados com projeção
+  const dataWithProjection = React.useMemo(() => {
+    return calculateProjection(revenueData, 'receita', currentDay);
+  }, [revenueData, currentDay]);
 
   if (isLoading) {
     return (
@@ -38,7 +78,7 @@ export const RevenueEvolutionChart = () => {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={revenueData}>
+          <LineChart data={dataWithProjection}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="day" 
@@ -71,7 +111,7 @@ export const RevenueEvolutionChart = () => {
               dot={false}
             />
             
-            {/* Realizado sempre visível */}
+            {/* Realizado até a data atual */}
             <Line 
               type="monotone" 
               dataKey="receita" 
@@ -79,6 +119,19 @@ export const RevenueEvolutionChart = () => {
               strokeWidth={2}
               name="Receita"
               dot={false}
+              connectNulls={false}
+            />
+            
+            {/* Projeção de receita - linha pontilhada */}
+            <Line 
+              type="monotone" 
+              dataKey="receitaProjection" 
+              stroke="#22c55e" 
+              strokeWidth={2}
+              strokeDasharray="8 4"
+              name="Projeção Receita"
+              dot={false}
+              connectNulls={false}
             />
             
             {/* Super Meta - só aparece se habilitada */}
@@ -116,6 +169,13 @@ export const RevenueEvolutionChart = () => {
 export const BillingEvolutionChart = () => {
   const { billingData, isLoading } = useEvolutionData();
   const { config } = useDashboardConfig();
+  
+  const currentDay = getCurrentDay();
+  
+  // Calcular dados com projeção
+  const dataWithProjection = React.useMemo(() => {
+    return calculateProjection(billingData, 'faturamento', currentDay);
+  }, [billingData, currentDay]);
 
   if (isLoading) {
     return (
@@ -137,7 +197,7 @@ export const BillingEvolutionChart = () => {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={billingData}>
+          <LineChart data={dataWithProjection}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="day" 
@@ -173,7 +233,7 @@ export const BillingEvolutionChart = () => {
               dot={false}
             />
             
-            {/* Realizado sempre visível */}
+            {/* Realizado até a data atual */}
             <Line 
               type="monotone" 
               dataKey="faturamento" 
@@ -181,6 +241,19 @@ export const BillingEvolutionChart = () => {
               strokeWidth={2}
               name="Faturamento"
               dot={false}
+              connectNulls={false}
+            />
+            
+            {/* Projeção de faturamento - linha pontilhada */}
+            <Line 
+              type="monotone" 
+              dataKey="faturamentoProjection" 
+              stroke="#22c55e" 
+              strokeWidth={2}
+              strokeDasharray="8 4"
+              name="Projeção Faturamento"
+              dot={false}
+              connectNulls={false}
             />
             
             {/* Super Meta - só aparece se habilitada */}

@@ -6,11 +6,11 @@ import { useToast } from '@/components/ui/use-toast';
 interface EvolutionDataPoint {
   day: string;
   metaReceita: number;
-  receita: number;
+  receita: number | null;
   superMetaReceita?: number;
   hiperMetaReceita?: number;
   metaFaturamento: number;
-  faturamento: number;
+  faturamento: number | null;
   superMetaFaturamento?: number;
   hiperMetaFaturamento?: number;
 }
@@ -30,6 +30,7 @@ export const useEvolutionData = () => {
       const currentDate = new Date();
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() + 1;
+      const currentDay = currentDate.getDate();
       const startOfMonth = `${year}-${month.toString().padStart(2, '0')}-01`;
       const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
 
@@ -88,8 +89,12 @@ export const useEvolutionData = () => {
         const dateStr = `${year}-${month.toString().padStart(2, '0')}-${dayStr}`;
         
         const dayPerformance = performanceByDay.get(dateStr) || { revenue: 0, billing: 0 };
-        accumulatedRevenue += dayPerformance.revenue;
-        accumulatedBilling += dayPerformance.billing;
+        
+        // Só acumular se for até o dia atual ou antes
+        if (day <= currentDay) {
+          accumulatedRevenue += dayPerformance.revenue;
+          accumulatedBilling += dayPerformance.billing;
+        }
 
         const metaReceitaDiaria = dailyRevenueGoal * day;
         const metaFaturamentoDiaria = dailyBillingGoal * day;
@@ -97,7 +102,7 @@ export const useEvolutionData = () => {
         revenueEvolutionData.push({
           day: dayStr,
           metaReceita: metaReceitaDiaria,
-          receita: accumulatedRevenue,
+          receita: day <= currentDay ? accumulatedRevenue : null,
           superMetaReceita: metaReceitaDiaria * 3, // 3x a meta normal
           hiperMetaReceita: metaReceitaDiaria * 5, // 5x a meta normal
           metaFaturamento: 0,
@@ -107,7 +112,7 @@ export const useEvolutionData = () => {
         billingEvolutionData.push({
           day: dayStr,
           metaFaturamento: metaFaturamentoDiaria,
-          faturamento: accumulatedBilling,
+          faturamento: day <= currentDay ? accumulatedBilling : null,
           superMetaFaturamento: metaFaturamentoDiaria * 2.5, // 2.5x a meta normal
           hiperMetaFaturamento: metaFaturamentoDiaria * 4, // 4x a meta normal
           metaReceita: 0,
@@ -117,7 +122,8 @@ export const useEvolutionData = () => {
 
       console.log('✅ [DEBUG] Dados de evolução processados:', {
         revenueData: revenueEvolutionData.length,
-        billingData: billingEvolutionData.length
+        billingData: billingEvolutionData.length,
+        currentDay
       });
 
       setRevenueData(revenueEvolutionData);
