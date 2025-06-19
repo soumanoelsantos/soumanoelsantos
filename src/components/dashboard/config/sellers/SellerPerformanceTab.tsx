@@ -21,6 +21,9 @@ interface PerformanceFormData {
   revenue_amount: number;
   billing_amount: number;
   meetings_count: number;
+  leads_count: number;
+  calls_count: number;
+  notes: string;
 }
 
 export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sellerId }) => {
@@ -33,22 +36,24 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
       revenue_amount: 0,
       billing_amount: 0,
       meetings_count: 0,
+      leads_count: 0,
+      calls_count: 0,
+      notes: '',
     }
   });
 
-  // Log para debug
+  // Log para debug - mais detalhado
   useEffect(() => {
     console.log('📊 [DEBUG] SellerPerformanceTab - sellerId:', sellerId);
     console.log('📊 [DEBUG] SellerPerformanceTab - performances:', performances);
+    console.log('📊 [DEBUG] SellerPerformanceTab - performances.length:', performances?.length);
     console.log('📊 [DEBUG] SellerPerformanceTab - isLoading:', isLoading);
   }, [sellerId, performances, isLoading]);
 
   const onSubmit = async (data: PerformanceFormData) => {
+    console.log('📊 [DEBUG] SellerPerformanceTab - Submitting data:', data);
     const success = await createOrUpdatePerformance({
       ...data,
-      leads_count: 0,
-      calls_count: 0,
-      notes: '',
       submitted_by_seller: false // Indica que foi preenchido pelo admin
     });
     
@@ -59,7 +64,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   };
 
   const handleRefresh = () => {
-    console.log('🔄 [DEBUG] Refresh manual solicitado');
+    console.log('🔄 [DEBUG] Refresh manual solicitado para sellerId:', sellerId);
     refetch();
   };
 
@@ -71,18 +76,28 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   };
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+    try {
+      return format(new Date(dateString), "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
+    }
   };
 
   if (isLoading) {
-    return <div className="text-center py-4">Carregando lançamentos...</div>;
+    return (
+      <div className="text-center py-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+        Carregando lançamentos...
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h4 className="font-medium text-sm text-gray-700">
-          Lançamentos de Performance ({performances.length} registros)
+          Lançamentos de Performance ({performances?.length || 0} registros)
         </h4>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={handleRefresh}>
@@ -147,13 +162,42 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Reuniões</Label>
+                  <Input
+                    type="number"
+                    {...register('meetings_count', { valueAsNumber: true })}
+                    min="0"
+                    placeholder="Quantidade"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Leads</Label>
+                  <Input
+                    type="number"
+                    {...register('leads_count', { valueAsNumber: true })}
+                    min="0"
+                    placeholder="Quantidade"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label>Reuniões</Label>
+                <Label>Ligações</Label>
                 <Input
                   type="number"
-                  {...register('meetings_count', { valueAsNumber: true })}
+                  {...register('calls_count', { valueAsNumber: true })}
                   min="0"
                   placeholder="Quantidade"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Observações</Label>
+                <Input
+                  {...register('notes')}
+                  placeholder="Observações sobre a performance"
                 />
               </div>
 
@@ -175,7 +219,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
         </Card>
       )}
 
-      {performances.length === 0 ? (
+      {!performances || performances.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
           <p>Nenhum lançamento registrado</p>
@@ -234,6 +278,26 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                     <p className="font-medium">{performance.meetings_count}</p>
                   </div>
                 </div>
+
+                {(performance.leads_count > 0 || performance.calls_count > 0) && (
+                  <div className="grid grid-cols-2 gap-4 text-sm mt-2">
+                    <div>
+                      <span className="text-gray-500">Leads:</span>
+                      <p className="font-medium">{performance.leads_count}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Ligações:</span>
+                      <p className="font-medium">{performance.calls_count}</p>
+                    </div>
+                  </div>
+                )}
+
+                {performance.notes && (
+                  <div className="mt-3 pt-3 border-t">
+                    <span className="text-gray-500 text-sm">Observações:</span>
+                    <p className="text-sm">{performance.notes}</p>
+                  </div>
+                )}
 
                 <div className="mt-3 pt-3 border-t text-xs text-gray-500">
                   Lançado em: {format(new Date(performance.submitted_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}

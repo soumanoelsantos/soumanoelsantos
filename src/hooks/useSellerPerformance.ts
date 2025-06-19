@@ -11,11 +11,13 @@ export const useSellerPerformance = (sellerId?: string) => {
 
   const fetchPerformances = async () => {
     if (!sellerId) {
+      console.log('🔍 [DEBUG] Sem sellerId fornecido, definindo loading como false');
       setIsLoading(false);
       return;
     }
 
     console.log('🔍 [DEBUG] Buscando performances para o vendedor:', sellerId);
+    setIsLoading(true);
 
     try {
       const { data, error } = await supabase
@@ -32,14 +34,16 @@ export const useSellerPerformance = (sellerId?: string) => {
       }
       
       console.log('✅ [DEBUG] Performances encontradas:', data?.length || 0);
+      console.log('📝 [DEBUG] Dados das performances:', data);
       setPerformances(data || []);
     } catch (error) {
-      console.error('Erro ao carregar performances:', error);
+      console.error('💥 [DEBUG] Erro ao carregar performances:', error);
       toast({
         title: "Erro",
         description: "Não foi possível carregar os lançamentos",
         variant: "destructive",
       });
+      setPerformances([]);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +60,10 @@ export const useSellerPerformance = (sellerId?: string) => {
     notes?: string;
     submitted_by_seller?: boolean;
   }) => {
-    if (!sellerId) return false;
+    if (!sellerId) {
+      console.log('❌ [DEBUG] Sem sellerId para criar/atualizar performance');
+      return false;
+    }
 
     try {
       console.log('📤 [DEBUG] Salvando performance para seller_id:', sellerId);
@@ -67,11 +74,11 @@ export const useSellerPerformance = (sellerId?: string) => {
         .upsert({
           seller_id: sellerId,
           date: performanceData.date,
-          sales_count: performanceData.sales_count,
-          revenue_amount: performanceData.revenue_amount,
-          billing_amount: performanceData.billing_amount,
+          sales_count: performanceData.sales_count || 0,
+          revenue_amount: performanceData.revenue_amount || 0,
+          billing_amount: performanceData.billing_amount || 0,
           leads_count: performanceData.leads_count || 0,
-          meetings_count: performanceData.meetings_count,
+          meetings_count: performanceData.meetings_count || 0,
           calls_count: performanceData.calls_count || 0,
           notes: performanceData.notes || '',
           submitted_by_seller: performanceData.submitted_by_seller ?? true,
@@ -95,7 +102,7 @@ export const useSellerPerformance = (sellerId?: string) => {
       });
       return true;
     } catch (error) {
-      console.error('Erro ao salvar lançamento:', error);
+      console.error('💥 [DEBUG] Erro ao salvar lançamento:', error);
       toast({
         title: "Erro",
         description: "Não foi possível salvar o lançamento",
@@ -107,13 +114,20 @@ export const useSellerPerformance = (sellerId?: string) => {
 
   const deletePerformance = async (performanceId: string) => {
     try {
+      console.log('🗑️ [DEBUG] Deletando performance:', performanceId);
+      
       const { error } = await supabase
         .from('seller_daily_performance')
         .delete()
         .eq('id', performanceId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [DEBUG] Erro ao deletar:', error);
+        throw error;
+      }
 
+      console.log('✅ [DEBUG] Performance deletada com sucesso');
+      
       setPerformances(prev => prev.filter(p => p.id !== performanceId));
       toast({
         title: "Sucesso",
@@ -121,7 +135,7 @@ export const useSellerPerformance = (sellerId?: string) => {
       });
       return true;
     } catch (error) {
-      console.error('Erro ao remover lançamento:', error);
+      console.error('💥 [DEBUG] Erro ao remover lançamento:', error);
       toast({
         title: "Erro",
         description: "Não foi possível remover o lançamento",
@@ -132,6 +146,7 @@ export const useSellerPerformance = (sellerId?: string) => {
   };
 
   useEffect(() => {
+    console.log('🔄 [DEBUG] useEffect triggered, sellerId:', sellerId);
     fetchPerformances();
   }, [sellerId]);
 
