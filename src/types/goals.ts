@@ -16,6 +16,8 @@ export interface MonthlyGoal {
   product_id?: string;
   goal_type: 'meta' | 'supermeta';
   target_type: 'quantity' | 'financial';
+  financial_category?: 'faturamento' | 'receita';
+  currency?: 'BRL' | 'USD';
   target_value: number;
   current_value: number;
   created_at: string;
@@ -29,6 +31,8 @@ export interface CreateGoalData {
   product_id?: string;
   goal_type: 'meta' | 'supermeta';
   target_type: 'quantity' | 'financial';
+  financial_category?: 'faturamento' | 'receita';
+  currency?: 'BRL' | 'USD';
   target_value: number;
 }
 

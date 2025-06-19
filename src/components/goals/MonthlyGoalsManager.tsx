@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Edit3 } from 'lucide-react';
+import { Plus, Trash2, DollarSign } from 'lucide-react';
 import { useMonthlyGoals } from '@/hooks/useMonthlyGoals';
 import { useProducts } from '@/hooks/useProducts';
 import { CreateGoalData } from '@/types/goals';
@@ -24,6 +24,8 @@ const MonthlyGoalsManager = () => {
     year: selectedYear,
     goal_type: 'meta',
     target_type: 'financial',
+    financial_category: 'faturamento',
+    currency: 'BRL',
     target_value: 0,
   });
 
@@ -59,6 +61,8 @@ const MonthlyGoalsManager = () => {
         year: selectedYear,
         goal_type: 'meta',
         target_type: 'financial',
+        financial_category: 'faturamento',
+        currency: 'BRL',
         target_value: 0,
       });
       setIsCreating(false);
@@ -71,7 +75,14 @@ const MonthlyGoalsManager = () => {
     }
   };
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number, currency: string = 'BRL') => {
+    if (currency === 'USD') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(value);
+    }
+    
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
@@ -82,8 +93,15 @@ const MonthlyGoalsManager = () => {
     return type === 'meta' ? 'Meta' : 'Super Meta';
   };
 
-  const formatTargetType = (type: string) => {
+  const formatTargetType = (type: string, financialCategory?: string) => {
+    if (type === 'financial' && financialCategory) {
+      return financialCategory === 'faturamento' ? 'Faturamento' : 'Receita';
+    }
     return type === 'financial' ? 'Financeiro' : 'Quantidade';
+  };
+
+  const getCurrencyIcon = (currency: string = 'BRL') => {
+    return currency === 'USD' ? '$' : 'R$';
   };
 
   return (
@@ -91,7 +109,7 @@ const MonthlyGoalsManager = () => {
       <CardHeader>
         <CardTitle>Metas Mensais</CardTitle>
         <CardDescription>
-          Defina e acompanhe suas metas mensais gerais e por produto
+          Defina e acompanhe suas metas mensais gerais e por produto com diferentes moedas
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -142,7 +160,18 @@ const MonthlyGoalsManager = () => {
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{formatGoalType(goal.goal_type)}</span>
                     <span className="text-sm text-gray-500">•</span>
-                    <span className="text-sm text-gray-600">{formatTargetType(goal.target_type)}</span>
+                    <span className="text-sm text-gray-600">
+                      {formatTargetType(goal.target_type, goal.financial_category)}
+                    </span>
+                    {goal.currency && goal.target_type === 'financial' && (
+                      <>
+                        <span className="text-sm text-gray-500">•</span>
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
+                          <DollarSign className="h-3 w-3" />
+                          {goal.currency}
+                        </span>
+                      </>
+                    )}
                     {goal.product && (
                       <>
                         <span className="text-sm text-gray-500">•</span>
@@ -152,13 +181,13 @@ const MonthlyGoalsManager = () => {
                   </div>
                   <div className="text-lg font-bold">
                     {goal.target_type === 'financial' 
-                      ? formatCurrency(goal.target_value)
+                      ? formatCurrency(goal.target_value, goal.currency)
                       : `${goal.target_value} unidades`
                     }
                   </div>
                   <div className="text-sm text-gray-600">
                     Atual: {goal.target_type === 'financial' 
-                      ? formatCurrency(goal.current_value)
+                      ? formatCurrency(goal.current_value, goal.currency)
                       : `${goal.current_value} unidades`
                     }
                   </div>
@@ -216,6 +245,45 @@ const MonthlyGoalsManager = () => {
               </div>
             </div>
 
+            {newGoal.target_type === 'financial' && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Categoria Financeira</Label>
+                  <Select 
+                    value={newGoal.financial_category || 'faturamento'} 
+                    onValueChange={(value: 'faturamento' | 'receita') => 
+                      setNewGoal(prev => ({ ...prev, financial_category: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="faturamento">Faturamento</SelectItem>
+                      <SelectItem value="receita">Receita</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Moeda</Label>
+                  <Select 
+                    value={newGoal.currency || 'BRL'} 
+                    onValueChange={(value: 'BRL' | 'USD') => 
+                      setNewGoal(prev => ({ ...prev, currency: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BRL">Real Brasileiro (R$)</SelectItem>
+                      <SelectItem value="USD">Dólar Americano ($)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
             <div>
               <Label>Produto (opcional)</Label>
               <Select 
@@ -243,7 +311,10 @@ const MonthlyGoalsManager = () => {
 
             <div>
               <Label>
-                Valor da Meta {newGoal.target_type === 'financial' ? '(R$)' : '(Quantidade)'}
+                Valor da Meta {newGoal.target_type === 'financial' 
+                  ? `(${getCurrencyIcon(newGoal.currency)})` 
+                  : '(Quantidade)'
+                }
               </Label>
               <Input
                 type="number"
