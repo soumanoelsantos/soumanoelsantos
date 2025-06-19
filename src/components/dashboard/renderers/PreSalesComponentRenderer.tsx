@@ -36,19 +36,39 @@ const PreSalesComponentRenderer: React.FC<PreSalesComponentRendererProps> = ({
   
   switch (itemKey) {
     case 'showPreSalesCallsChart':
-      return <PreSalesCallsChart key={itemKey} data={weeklyData} />;
+      return (
+        <div className="w-full">
+          <PreSalesCallsChart key={itemKey} data={weeklyData} />
+        </div>
+      );
 
     case 'showPreSalesSchedulingChart':
-      return <PreSalesSchedulingChart key={itemKey} data={weeklyData} />;
+      return (
+        <div className="w-full">
+          <PreSalesSchedulingChart key={itemKey} data={weeklyData} />
+        </div>
+      );
 
     case 'showPreSalesNoShowChart':
-      return <PreSalesNoShowChart key={itemKey} data={weeklyData} />;
+      return (
+        <div className="w-full">
+          <PreSalesNoShowChart key={itemKey} data={weeklyData} />
+        </div>
+      );
 
     case 'showPreSalesSDRComparisonChart':
-      return <PreSalesSDRComparisonChart key={itemKey} data={sdrPerformance} />;
+      return (
+        <div className="w-full">
+          <PreSalesSDRComparisonChart key={itemKey} data={sdrPerformance} />
+        </div>
+      );
 
     case 'showPreSalesSDRTable':
-      return <PreSalesSDRTable key={itemKey} data={sdrPerformance} />;
+      return (
+        <div className="w-full">
+          <PreSalesSDRTable key={itemKey} data={sdrPerformance} />
+        </div>
+      );
 
     default:
       return null;

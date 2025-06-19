@@ -35,20 +35,24 @@ const PreSalesSDRComparisonChart = ({ data }: PreSalesSDRComparisonChartProps) =
   }));
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Performance da SDR - {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px]">
+        <ChartContainer config={chartConfig} className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="sdr" 
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={60}
               />
               <YAxis 
                 fontSize={12}
