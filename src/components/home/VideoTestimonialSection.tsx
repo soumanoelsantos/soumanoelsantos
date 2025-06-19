@@ -33,12 +33,14 @@ const VideoTestimonialSection = () => {
             <p className="text-lg text-gray-300">Assista o depoimento completo e veja os resultados reais</p>
           </div>
           
-          <div className="text-center">
+          <div className="flex justify-center">
             <LeadCaptureForm 
               source="video_testimonial_section"
-              buttonClassName="w-full md:w-auto bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-4 px-8 rounded-full shadow-2xl group flex items-center justify-center gap-3 font-bold transform hover:scale-105 transition-all duration-300"
+              buttonClassName="bg-dark-primary hover:bg-dark-primary/90 text-dark-background text-lg py-4 px-8 rounded-full shadow-2xl group flex items-center justify-center gap-3 font-bold transform hover:scale-105 transition-all duration-300"
               buttonText="QUERO ACELERAR MEU NEGÓCIO"
             />
+          </div>
+          <div className="flex justify-center">
             <p className="mt-3 text-sm text-gray-400">
               Preencha o formulário e participe do programa exclusivo
             </p>
