@@ -6,19 +6,19 @@ import { Seller, SellerMonthlyGoal, SellerDailyPerformance, SellerType } from '@
 import { useToast } from '@/components/ui/use-toast';
 
 export const useSellers = () => {
-  const { user } = useAuth();
+  const { userId } = useAuth();
   const { toast } = useToast();
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchSellers = async () => {
-    if (!user) return;
+    if (!userId) return;
 
     try {
       const { data, error } = await supabase
         .from('sellers')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('name');
 
       if (error) throw error;
@@ -41,14 +41,14 @@ export const useSellers = () => {
     phone?: string;
     seller_type: SellerType;
   }) => {
-    if (!user) return false;
+    if (!userId) return false;
 
     try {
       const { data, error } = await supabase
         .from('sellers')
         .insert({
           ...sellerData,
-          user_id: user.id,
+          user_id: userId,
         })
         .select()
         .single();
@@ -128,7 +128,7 @@ export const useSellers = () => {
 
   useEffect(() => {
     fetchSellers();
-  }, [user]);
+  }, [userId]);
 
   return {
     sellers,
