@@ -64,7 +64,7 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showCashCollect: data.show_cash_collect ?? defaultConfig.showCashCollect,
     showCac: data.show_cac ?? defaultConfig.showCac,
     
-    // Novos indicadores de projeção
+    // Novos indicadores de projeção - mapeamento correto com as colunas do banco
     showProjecaoReceita: data.show_projecao_receita ?? defaultConfig.showProjecaoReceita,
     showProjecaoFaturamento: data.show_projecao_faturamento ?? defaultConfig.showProjecaoFaturamento,
     showNoShow: data.show_no_show ?? defaultConfig.showNoShow,
@@ -80,9 +80,10 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showBillingEvolutionChart: data.show_billing_evolution_chart !== undefined ? data.show_billing_evolution_chart : true,
   };
 
-  console.log('🟢 dashboardConfigMapper - Final mapped config with evolution charts:', {
-    showRevenueEvolutionChart: mappedConfig.showRevenueEvolutionChart,
-    showBillingEvolutionChart: mappedConfig.showBillingEvolutionChart
+  console.log('🟢 dashboardConfigMapper - Final mapped config with projection indicators:', {
+    showProjecaoReceita: mappedConfig.showProjecaoReceita,
+    showProjecaoFaturamento: mappedConfig.showProjecaoFaturamento,
+    showNoShow: mappedConfig.showNoShow
   });
   
   return mappedConfig;
@@ -118,7 +119,7 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_cash_collect: config.showCashCollect,
     show_cac: config.showCac,
     
-    // Novos indicadores de projeção
+    // Novos indicadores de projeção - mapeamento correto para as colunas do banco
     show_projecao_receita: config.showProjecaoReceita,
     show_projecao_faturamento: config.showProjecaoFaturamento,
     show_no_show: config.showNoShow,
@@ -133,6 +134,11 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_billing_evolution_chart: config.showBillingEvolutionChart,
   };
 
-  console.log('🟢 dashboardConfigMapper - Final database data:', databaseData);
+  console.log('🟢 dashboardConfigMapper - Final database data with projection indicators:', {
+    show_projecao_receita: databaseData.show_projecao_receita,
+    show_projecao_faturamento: databaseData.show_projecao_faturamento,
+    show_no_show: databaseData.show_no_show
+  });
+  
   return databaseData;
 };

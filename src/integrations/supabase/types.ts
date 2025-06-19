@@ -125,6 +125,9 @@ export type Database = {
           show_meta_faturamento: boolean | null
           show_meta_receita: boolean | null
           show_monthly_goals: boolean | null
+          show_no_show: boolean | null
+          show_projecao_faturamento: boolean | null
+          show_projecao_receita: boolean | null
           show_quantidade_vendas: boolean | null
           show_receita: boolean | null
           show_revenue: boolean | null
@@ -168,6 +171,9 @@ export type Database = {
           show_meta_faturamento?: boolean | null
           show_meta_receita?: boolean | null
           show_monthly_goals?: boolean | null
+          show_no_show?: boolean | null
+          show_projecao_faturamento?: boolean | null
+          show_projecao_receita?: boolean | null
           show_quantidade_vendas?: boolean | null
           show_receita?: boolean | null
           show_revenue?: boolean | null
@@ -211,6 +217,9 @@ export type Database = {
           show_meta_faturamento?: boolean | null
           show_meta_receita?: boolean | null
           show_monthly_goals?: boolean | null
+          show_no_show?: boolean | null
+          show_projecao_faturamento?: boolean | null
+          show_projecao_receita?: boolean | null
           show_quantidade_vendas?: boolean | null
           show_receita?: boolean | null
           show_revenue?: boolean | null
