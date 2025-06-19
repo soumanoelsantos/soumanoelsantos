@@ -25,17 +25,6 @@ const DisplayConfigCard: React.FC<DisplayConfigCardProps> = ({ config, onConfigC
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
-          <Label htmlFor="showCharts" className="text-sm font-medium">
-            Mostrar Gráficos Gerais
-          </Label>
-          <Switch
-            id="showCharts"
-            checked={config.showCharts}
-            onCheckedChange={(checked) => onConfigChange('showCharts', checked)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
           <Label htmlFor="showRevenueEvolutionChart" className="text-sm font-medium">
             Gráfico de Evolução de Receita
           </Label>

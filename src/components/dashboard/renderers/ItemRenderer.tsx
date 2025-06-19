@@ -81,22 +81,14 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config }) =
     return <SpecificGoalsCards config={config} />;
   }
 
-  // Gráfico de vendas por mês - verificar se está habilitado
+  // Gráfico de vendas por mês - sempre renderizar se solicitado
   if (itemKey === 'salesChart') {
-    if (!config.showCharts) {
-      console.log('❌ Charts are disabled, not rendering sales chart');
-      return null;
-    }
     console.log('✅ Rendering sales chart');
     return <SalesChart />;
   }
 
-  // Gráfico de tendência de crescimento - verificar se está habilitado
+  // Gráfico de tendência de crescimento - sempre renderizar se solicitado
   if (itemKey === 'growthChart') {
-    if (!config.showCharts) {
-      console.log('❌ Charts are disabled, not rendering growth chart');
-      return null;
-    }
     console.log('✅ Rendering growth chart');
     return <GrowthChart />;
   }

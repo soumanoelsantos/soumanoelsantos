@@ -26,7 +26,6 @@ export interface DashboardConfig {
   showCac: boolean;
   
   companyName: string;
-  showCharts: boolean;
   metricsOrder: string[];
   
   // Novas opções para metas específicas

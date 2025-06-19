@@ -27,7 +27,6 @@ export const defaultConfig: DashboardConfig = {
   showCac: false,
   
   companyName: 'Minha Empresa',
-  showCharts: true,
   metricsOrder: [
     'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
     'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
