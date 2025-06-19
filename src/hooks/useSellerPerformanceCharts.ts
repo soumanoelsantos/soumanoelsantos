@@ -2,50 +2,69 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SellerChartDataPoint {
   day: string;
-  seller1: number;
-  seller2: number;
-  seller3: number;
+  [key: string]: string | number; // Para permitir nomes dinâmicos de vendedores
   media: number;
 }
 
 export const useSellerPerformanceCharts = () => {
   const { toast } = useToast();
+  const { userId } = useAuth();
   const [revenueData, setRevenueData] = useState<SellerChartDataPoint[]>([]);
   const [billingData, setBillingData] = useState<SellerChartDataPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sellerNames, setSellerNames] = useState<string[]>([]);
 
   const fetchSellerPerformanceData = async () => {
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       console.log('🔍 [DEBUG] Buscando dados de performance dos vendedores para gráficos');
 
-      // Buscar dados de performance dos vendedores do mês atual
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      const currentDay = currentDate.getDate();
-      const startOfMonth = `${year}-${month.toString().padStart(2, '0')}-01`;
-      const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
-
-      // Buscar vendedores ativos
+      // Buscar vendedores ativos do usuário
       const { data: sellersData, error: sellersError } = await supabase
         .from('sellers')
         .select('id, name')
+        .eq('user_id', userId)
         .eq('is_active', true)
-        .limit(3);
+        .order('name');
 
       if (sellersError) {
         console.error('❌ [DEBUG] Erro ao buscar vendedores:', sellersError);
         throw sellersError;
       }
 
-      // Buscar performances dos vendedores
+      console.log('✅ [DEBUG] Vendedores encontrados:', sellersData);
+
+      // Se não há vendedores, usar dados de exemplo
+      if (!sellersData || sellersData.length === 0) {
+        console.log('⚠️ [DEBUG] Nenhum vendedor encontrado, usando dados de exemplo');
+        generateExampleData();
+        return;
+      }
+
+      // Extrair nomes dos vendedores
+      const names = sellersData.map(seller => seller.name);
+      setSellerNames(names);
+
+      // Buscar dados de performance dos vendedores do mês atual
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      const startOfMonth = `${year}-${month.toString().padStart(2, '0')}-01`;
+      const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
+
       const { data: performanceData, error: performanceError } = await supabase
         .from('seller_daily_performance')
         .select('seller_id, date, revenue_amount, billing_amount')
+        .in('seller_id', sellersData.map(s => s.id))
         .gte('date', startOfMonth)
         .lte('date', endOfMonth)
         .order('date', { ascending: true });
@@ -54,6 +73,8 @@ export const useSellerPerformanceCharts = () => {
         console.error('❌ [DEBUG] Erro ao buscar performance:', performanceError);
         throw performanceError;
       }
+
+      console.log('✅ [DEBUG] Dados de performance encontrados:', performanceData);
 
       // Processar dados para os gráficos
       const daysInMonth = new Date(year, month, 0).getDate();
@@ -74,79 +95,59 @@ export const useSellerPerformanceCharts = () => {
         });
       });
 
+      // Criar mapa de ID para nome do vendedor
+      const sellerIdToName = new Map<string, string>();
+      sellersData.forEach(seller => {
+        sellerIdToName.set(seller.id, seller.name);
+      });
+
       // Calcular acumulados para cada dia
       for (let day = 1; day <= daysInMonth; day++) {
         const dayStr = day.toString().padStart(2, '0');
-        const dateStr = `${year}-${month.toString().padStart(2, '0')}-${dayStr}`;
         
-        // Calcular acumulados até este dia para cada vendedor
-        let seller1Revenue = 0;
-        let seller1Billing = 0;
-        let seller2Revenue = 0;
-        let seller2Billing = 0;
-        let seller3Revenue = 0;
-        let seller3Billing = 0;
+        // Inicializar dados do dia
+        const revenueDataPoint: SellerChartDataPoint = { day: dayStr, media: 0 };
+        const billingDataPoint: SellerChartDataPoint = { day: dayStr, media: 0 };
 
-        // Se temos vendedores cadastrados, usar os dados reais
-        if (sellersData && sellersData.length > 0) {
+        let totalRevenue = 0;
+        let totalBilling = 0;
+
+        // Calcular acumulados até este dia para cada vendedor
+        sellersData.forEach(seller => {
+          let sellerRevenue = 0;
+          let sellerBilling = 0;
+
           for (let d = 1; d <= day; d++) {
             const dayDate = `${year}-${month.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+            const sellerPerf = performanceBySellerAndDate.get(seller.id)?.get(dayDate);
             
-            sellersData.forEach((seller, index) => {
-              const sellerPerf = performanceBySellerAndDate.get(seller.id)?.get(dayDate);
-              if (sellerPerf) {
-                if (index === 0) {
-                  seller1Revenue += sellerPerf.revenue;
-                  seller1Billing += sellerPerf.billing;
-                } else if (index === 1) {
-                  seller2Revenue += sellerPerf.revenue;
-                  seller2Billing += sellerPerf.billing;
-                } else if (index === 2) {
-                  seller3Revenue += sellerPerf.revenue;
-                  seller3Billing += sellerPerf.billing;
-                }
-              }
-            });
+            if (sellerPerf) {
+              sellerRevenue += sellerPerf.revenue;
+              sellerBilling += sellerPerf.billing;
+            }
           }
-        } else {
-          // Dados de exemplo se não há vendedores cadastrados
-          const baseRevenue = 2000;
-          const baseBilling = 8000;
-          
-          seller1Revenue = baseRevenue * day * 1.8; // Michelle - melhor performance
-          seller2Revenue = baseRevenue * day * 1.2; // Fabricio - performance média
-          seller3Revenue = baseRevenue * day * 0.4; // Leandro - menor performance
-          
-          seller1Billing = baseBilling * day * 2.0;
-          seller2Billing = baseBilling * day * 0.8;
-          seller3Billing = baseBilling * day * 0.2;
-        }
+
+          // Usar o nome real do vendedor como chave
+          revenueDataPoint[seller.name] = sellerRevenue;
+          billingDataPoint[seller.name] = sellerBilling;
+
+          totalRevenue += sellerRevenue;
+          totalBilling += sellerBilling;
+        });
 
         // Calcular média
-        const revenueMedia = (seller1Revenue + seller2Revenue + seller3Revenue) / 3;
-        const billingMedia = (seller1Billing + seller2Billing + seller3Billing) / 3;
+        const sellerCount = sellersData.length;
+        revenueDataPoint.media = sellerCount > 0 ? totalRevenue / sellerCount : 0;
+        billingDataPoint.media = sellerCount > 0 ? totalBilling / sellerCount : 0;
 
-        revenueChartData.push({
-          day: dayStr,
-          seller1: seller1Revenue,
-          seller2: seller2Revenue,
-          seller3: seller3Revenue,
-          media: revenueMedia
-        });
-
-        billingChartData.push({
-          day: dayStr,
-          seller1: seller1Billing,
-          seller2: seller2Billing,
-          seller3: seller3Billing,
-          media: billingMedia
-        });
+        revenueChartData.push(revenueDataPoint);
+        billingChartData.push(billingDataPoint);
       }
 
-      console.log('✅ [DEBUG] Dados de gráficos de vendedores processados:', {
+      console.log('✅ [DEBUG] Dados de gráficos processados com nomes reais:', {
         revenueData: revenueChartData.length,
         billingData: billingChartData.length,
-        sellersCount: sellersData?.length || 0
+        sellerNames: names
       });
 
       setRevenueData(revenueChartData);
@@ -159,18 +160,68 @@ export const useSellerPerformanceCharts = () => {
         description: "Não foi possível carregar os dados de performance dos vendedores",
         variant: "destructive",
       });
+      
+      // Em caso de erro, usar dados de exemplo
+      generateExampleData();
     } finally {
       setIsLoading(false);
     }
   };
 
+  const generateExampleData = () => {
+    const currentDate = new Date();
+    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+    const exampleNames = ['Michelle Silva', 'Fabricio Costa', 'Leandro Santos'];
+    setSellerNames(exampleNames);
+
+    const revenueChartData: SellerChartDataPoint[] = [];
+    const billingChartData: SellerChartDataPoint[] = [];
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayStr = day.toString().padStart(2, '0');
+      const baseRevenue = 2000;
+      const baseBilling = 8000;
+      
+      const michelle_revenue = baseRevenue * day * 1.8;
+      const fabricio_revenue = baseRevenue * day * 1.2;
+      const leandro_revenue = baseRevenue * day * 0.4;
+      
+      const michelle_billing = baseBilling * day * 2.0;
+      const fabricio_billing = baseBilling * day * 0.8;
+      const leandro_billing = baseBilling * day * 0.2;
+
+      const revenueMedia = (michelle_revenue + fabricio_revenue + leandro_revenue) / 3;
+      const billingMedia = (michelle_billing + fabricio_billing + leandro_billing) / 3;
+
+      revenueChartData.push({
+        day: dayStr,
+        'Michelle Silva': michelle_revenue,
+        'Fabricio Costa': fabricio_revenue,
+        'Leandro Santos': leandro_revenue,
+        media: revenueMedia
+      });
+
+      billingChartData.push({
+        day: dayStr,
+        'Michelle Silva': michelle_billing,
+        'Fabricio Costa': fabricio_billing,
+        'Leandro Santos': leandro_billing,
+        media: billingMedia
+      });
+    }
+
+    setRevenueData(revenueChartData);
+    setBillingData(billingChartData);
+  };
+
   useEffect(() => {
     fetchSellerPerformanceData();
-  }, []);
+  }, [userId]);
 
   return {
     revenueData,
     billingData,
+    sellerNames,
     isLoading,
     refetch: fetchSellerPerformanceData
   };

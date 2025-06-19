@@ -13,8 +13,11 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
+// Cores para os vendedores
+const sellerColors = ['#fbbf24', '#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
+
 export const SellerRevenueChart = () => {
-  const { revenueData, isLoading } = useSellerPerformanceCharts();
+  const { revenueData, sellerNames, isLoading } = useSellerPerformanceCharts();
 
   if (isLoading) {
     return (
@@ -70,33 +73,18 @@ export const SellerRevenueChart = () => {
               dot={false}
             />
             
-            {/* Linhas dos vendedores - cores diferentes para cada um */}
-            <Line 
-              type="monotone" 
-              dataKey="seller1" 
-              stroke="#fbbf24" 
-              strokeWidth={3}
-              name="Vendedor 1"
-              dot={false}
-            />
-            
-            <Line 
-              type="monotone" 
-              dataKey="seller2" 
-              stroke="#22c55e" 
-              strokeWidth={3}
-              name="Vendedor 2"
-              dot={false}
-            />
-            
-            <Line 
-              type="monotone" 
-              dataKey="seller3" 
-              stroke="#3b82f6" 
-              strokeWidth={3}
-              name="Vendedor 3"
-              dot={false}
-            />
+            {/* Linhas dos vendedores com nomes reais */}
+            {sellerNames.map((sellerName, index) => (
+              <Line 
+                key={sellerName}
+                type="monotone" 
+                dataKey={sellerName}
+                stroke={sellerColors[index % sellerColors.length]}
+                strokeWidth={3}
+                name={sellerName}
+                dot={false}
+              />
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
@@ -105,7 +93,7 @@ export const SellerRevenueChart = () => {
 };
 
 export const SellerBillingChart = () => {
-  const { billingData, isLoading } = useSellerPerformanceCharts();
+  const { billingData, sellerNames, isLoading } = useSellerPerformanceCharts();
 
   if (isLoading) {
     return (
@@ -164,33 +152,18 @@ export const SellerBillingChart = () => {
               dot={false}
             />
             
-            {/* Linhas dos vendedores - cores diferentes para cada um */}
-            <Line 
-              type="monotone" 
-              dataKey="seller1" 
-              stroke="#fbbf24" 
-              strokeWidth={3}
-              name="Vendedor 1"
-              dot={false}
-            />
-            
-            <Line 
-              type="monotone" 
-              dataKey="seller2" 
-              stroke="#22c55e" 
-              strokeWidth={3}
-              name="Vendedor 2"
-              dot={false}
-            />
-            
-            <Line 
-              type="monotone" 
-              dataKey="seller3" 
-              stroke="#3b82f6" 
-              strokeWidth={3}
-              name="Vendedor 3"
-              dot={false}
-            />
+            {/* Linhas dos vendedores com nomes reais */}
+            {sellerNames.map((sellerName, index) => (
+              <Line 
+                key={sellerName}
+                type="monotone" 
+                dataKey={sellerName}
+                stroke={sellerColors[index % sellerColors.length]}
+                strokeWidth={3}
+                name={sellerName}
+                dot={false}
+              />
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
