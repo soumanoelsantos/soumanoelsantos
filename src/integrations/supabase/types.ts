@@ -884,6 +884,148 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_daily_performance: {
+        Row: {
+          billing_amount: number | null
+          calls_count: number | null
+          created_at: string | null
+          date: string
+          id: string
+          leads_count: number | null
+          meetings_count: number | null
+          notes: string | null
+          revenue_amount: number | null
+          sales_count: number | null
+          seller_id: string
+          submitted_at: string | null
+          submitted_by_seller: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          billing_amount?: number | null
+          calls_count?: number | null
+          created_at?: string | null
+          date: string
+          id?: string
+          leads_count?: number | null
+          meetings_count?: number | null
+          notes?: string | null
+          revenue_amount?: number | null
+          sales_count?: number | null
+          seller_id: string
+          submitted_at?: string | null
+          submitted_by_seller?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          billing_amount?: number | null
+          calls_count?: number | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          leads_count?: number | null
+          meetings_count?: number | null
+          notes?: string | null
+          revenue_amount?: number | null
+          sales_count?: number | null
+          seller_id?: string
+          submitted_at?: string | null
+          submitted_by_seller?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_daily_performance_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seller_monthly_goals: {
+        Row: {
+          billing_goal: number | null
+          created_at: string | null
+          id: string
+          month: number
+          revenue_goal: number | null
+          sales_goal: number | null
+          seller_id: string
+          updated_at: string | null
+          year: number
+        }
+        Insert: {
+          billing_goal?: number | null
+          created_at?: string | null
+          id?: string
+          month: number
+          revenue_goal?: number | null
+          sales_goal?: number | null
+          seller_id: string
+          updated_at?: string | null
+          year: number
+        }
+        Update: {
+          billing_goal?: number | null
+          created_at?: string | null
+          id?: string
+          month?: number
+          revenue_goal?: number | null
+          sales_goal?: number | null
+          seller_id?: string
+          updated_at?: string | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_monthly_goals_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sellers: {
+        Row: {
+          access_token: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          phone: string | null
+          seller_type: Database["public"]["Enums"]["seller_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          phone?: string | null
+          seller_type: Database["public"]["Enums"]["seller_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          phone?: string | null
+          seller_type?: Database["public"]["Enums"]["seller_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       team: {
         Row: {
           created_at: string
@@ -1032,7 +1174,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      seller_type: "pap" | "sdr" | "closer" | "vendedor_interno" | "outro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1147,6 +1289,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      seller_type: ["pap", "sdr", "closer", "vendedor_interno", "outro"],
+    },
   },
 } as const

@@ -10,6 +10,7 @@ import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import SpecificGoalsConfigCard from '@/components/dashboard/config/SpecificGoalsConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
+import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Target } from 'lucide-react';
@@ -122,6 +123,8 @@ const DashboardConfig = () => {
               </Button>
             </CardContent>
           </Card>
+
+          <SellersManagementCard />
 
           <MetricsOrderManager 
             config={config}
