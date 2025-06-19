@@ -14,7 +14,7 @@ const HeroSection = () => {
 
       {/* Header bar */}
       <div className="bg-red-600 text-white text-center py-3 text-sm font-medium px-4 relative z-10">
-        EXCLUSIVO PARA DONOS DE EMPRESA DESEJA ALAVANCAR SUAS VENDAS E MELHORAR A GESTÃO DA SUA EMPRESA
+        EXCLUSIVO PARA EMPRESÁRIOS QUE DESEJAM ALAVANCAR SUAS VENDAS E MELHORAR A GESTÃO DA SUA EMPRESA
       </div>
 
       <div className="container mx-auto px-4 relative z-10 pt-12 lg:pt-20">
