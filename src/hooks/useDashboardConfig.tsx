@@ -34,6 +34,17 @@ const defaultConfig: DashboardConfig = {
   showProjecaoFaturamento: false,
   showNoShow: false,
   showClosersPerformanceTable: true,
+  
+  // Configurações de pré-vendas com valores padrão
+  showPreSalesCalls: true,
+  showPreSalesSchedulings: true,
+  showPreSalesNoShow: true,
+  showPreSalesSDRTable: true,
+  showPreSalesCallsChart: true,
+  showPreSalesSchedulingChart: true,
+  showPreSalesNoShowChart: true,
+  showPreSalesSDRComparisonChart: true,
+  
   companyName: '',
   metricsOrder: [],
   showSpecificGoals: false,

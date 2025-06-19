@@ -33,6 +33,16 @@ export interface DashboardConfig {
   // Nova configuração para tabela de performance dos closers
   showClosersPerformanceTable: boolean;
   
+  // Configurações de pré-vendas
+  showPreSalesCalls: boolean;
+  showPreSalesSchedulings: boolean;
+  showPreSalesNoShow: boolean;
+  showPreSalesSDRTable: boolean;
+  showPreSalesCallsChart: boolean;
+  showPreSalesSchedulingChart: boolean;
+  showPreSalesNoShowChart: boolean;
+  showPreSalesSDRComparisonChart: boolean;
+  
   companyName: string;
   metricsOrder: string[];
   
