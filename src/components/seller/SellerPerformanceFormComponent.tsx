@@ -48,10 +48,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
-      // Zerar os campos removidos
-      data.leads_count = 0;
-      data.calls_count = 0;
-      data.notes = '';
+      console.log('📝 [DEBUG] Dados do formulário do vendedor antes do envio:', data);
       
       await onSubmit(data);
       
@@ -68,8 +65,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
         onSuccess();
       }
     } catch (error) {
-      // Mensagem de erro já é tratada no componente pai
-      console.error('Erro ao enviar performance:', error);
+      console.error('❌ [DEBUG] Erro ao enviar performance do vendedor:', error);
     }
   };
 

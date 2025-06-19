@@ -59,14 +59,22 @@ export const useSellerPerformance = (sellerId?: string) => {
     if (!sellerId) return false;
 
     try {
-      console.log('📤 [DEBUG] Salvando performance:', performanceData);
+      console.log('📤 [DEBUG] Salvando performance para seller_id:', sellerId);
+      console.log('📤 [DEBUG] Dados da performance:', performanceData);
       
       const { data, error } = await supabase
         .from('seller_daily_performance')
         .upsert({
           seller_id: sellerId,
+          date: performanceData.date,
+          sales_count: performanceData.sales_count,
+          revenue_amount: performanceData.revenue_amount,
+          billing_amount: performanceData.billing_amount,
+          leads_count: performanceData.leads_count || 0,
+          meetings_count: performanceData.meetings_count,
+          calls_count: performanceData.calls_count || 0,
+          notes: performanceData.notes || '',
           submitted_by_seller: performanceData.submitted_by_seller ?? true,
-          ...performanceData,
         })
         .select()
         .single();
@@ -76,7 +84,7 @@ export const useSellerPerformance = (sellerId?: string) => {
         throw error;
       }
 
-      console.log('✅ [DEBUG] Performance salva:', data);
+      console.log('✅ [DEBUG] Performance salva com sucesso:', data);
 
       // Atualizar a lista local
       await fetchPerformances();

@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Seller } from '@/types/sellers';
+import { useSellerPerformance } from '@/hooks/useSellerPerformance';
 import SellerPerformanceHeader from '@/components/seller/SellerPerformanceHeader';
 import SellerPerformanceManager from '@/components/seller/SellerPerformanceManager';
 import SellerPerformanceLoading from '@/components/seller/SellerPerformanceLoading';
@@ -27,6 +29,9 @@ const SellerPerformanceForm = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  // Usar o hook useSellerPerformance para manter consistência
+  const { createOrUpdatePerformance } = useSellerPerformance(seller?.id);
 
   useEffect(() => {
     const fetchSeller = async () => {
@@ -90,29 +95,27 @@ const SellerPerformanceForm = () => {
 
     setIsSubmitting(true);
     try {
-      console.log('📤 [DEBUG] Enviando dados de performance:', data);
+      console.log('📤 [DEBUG] Enviando dados de performance do vendedor:', seller.name);
+      console.log('📤 [DEBUG] Dados:', data);
       
-      const { error } = await supabase
-        .from('seller_daily_performance')
-        .upsert({
-          seller_id: seller.id,
-          date: data.date,
-          sales_count: data.sales_count,
-          revenue_amount: data.revenue_amount,
-          billing_amount: data.billing_amount,
-          leads_count: data.leads_count,
-          meetings_count: data.meetings_count,
-          calls_count: data.calls_count,
-          notes: data.notes,
-          submitted_by_seller: true,
-        });
+      // Usar o hook para salvar os dados - isso garante consistência
+      const success = await createOrUpdatePerformance({
+        date: data.date,
+        sales_count: data.sales_count,
+        revenue_amount: data.revenue_amount,
+        billing_amount: data.billing_amount,
+        leads_count: 0, // Campo removido
+        meetings_count: data.meetings_count,
+        calls_count: 0, // Campo removido
+        notes: '', // Campo removido
+        submitted_by_seller: true, // Marcado como preenchido pelo vendedor
+      });
 
-      if (error) {
-        console.error('❌ [DEBUG] Erro ao salvar performance:', error);
-        throw error;
+      if (!success) {
+        throw new Error('Falha ao salvar performance');
       }
 
-      console.log('✅ [DEBUG] Performance salva com sucesso');
+      console.log('✅ [DEBUG] Performance salva com sucesso via hook');
     } catch (error) {
       console.error('💥 [DEBUG] Erro ao salvar performance:', error);
       toast({
