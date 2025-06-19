@@ -59,7 +59,7 @@ const PreSalesComponentRenderer: React.FC<PreSalesComponentRendererProps> = ({
     case 'showPreSalesSDRComparisonChart':
       return (
         <div className="w-full">
-          <PreSalesSDRComparisonChart key={itemKey} data={sdrPerformance} />
+          <PreSalesSDRComparisonChart key={itemKey} data={sdrPerformance} weeklyData={weeklyData} />
         </div>
       );
 
