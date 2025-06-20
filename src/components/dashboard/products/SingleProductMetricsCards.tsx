@@ -50,8 +50,6 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
     );
     const quantidadeGoal = productGoals.find(g => g.target_type === 'quantity');
 
-    const remainingDays = calculateRemainingDaysInMonth();
-    
     // Calcular Cash Collect como percentual da diferença entre faturamento e receita
     const cashCollectPercent = currentFaturamento > 0 ? ((currentFaturamento - currentReceita) / currentFaturamento) * 100 : 0;
     
@@ -64,8 +62,6 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
       metaQuantidade: quantidadeGoal?.target_value || 0,
       faltaReceita: Math.max((receitaGoal?.target_value || 0) - currentReceita, 0),
       faltaFaturamento: Math.max((faturamentoGoal?.target_value || 0) - currentFaturamento, 0),
-      diariaReceita: calculateDailyTarget(receitaGoal?.target_value || 0, currentReceita, remainingDays),
-      diariaFaturamento: calculateDailyTarget(faturamentoGoal?.target_value || 0, currentFaturamento, remainingDays),
       ticketReceita: currentVendas > 0 ? currentReceita / currentVendas : 0,
       ticketFaturamento: currentVendas > 0 ? currentFaturamento / currentVendas : 0,
       cashCollect: cashCollectPercent,
@@ -116,8 +112,6 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
         'showProductMetaQuantidadeVendas',
         'showProductFaltaReceita',
         'showProductFaltaFaturamento',
-        'showProductDiariaReceita',
-        'showProductDiariaFaturamento',
         'showProductCashCollect',
         'showProductProjecaoReceita',
         'showProductProjecaoFaturamento'
@@ -239,28 +233,6 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
               'Falta Faturamento',
               formatCurrency(metrics.faltaFaturamento, metrics.currency),
               Target
-            )}
-          </div>
-        );
-        break;
-      case 'showProductDiariaReceita':
-        cards.push(
-          <div key={key}>
-            {renderMetricCard(
-              'Diária Receita',
-              formatCurrency(metrics.diariaReceita, metrics.currency),
-              DollarSign
-            )}
-          </div>
-        );
-        break;
-      case 'showProductDiariaFaturamento':
-        cards.push(
-          <div key={key}>
-            {renderMetricCard(
-              'Diária Faturamento',
-              formatCurrency(metrics.diariaFaturamento, metrics.currency),
-              DollarSign
             )}
           </div>
         );

@@ -1,4 +1,3 @@
-
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { defaultConfig } from '@/config/dashboardDefaults';
 
@@ -265,8 +264,6 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_product_meta_quantidade_vendas: config.showProductMetaQuantidadeVendas,
     show_product_falta_faturamento: config.showProductFaltaFaturamento,
     show_product_falta_receita: config.showProductFaltaReceita,
-    show_product_diaria_receita: config.showProductDiariaReceita,
-    show_product_diaria_faturamento: config.showProductDiariaFaturamento,
     show_product_cash_collect: config.showProductCashCollect,
     show_product_projecao_receita: config.showProductProjecaoReceita,
     show_product_projecao_faturamento: config.showProductProjecaoFaturamento,

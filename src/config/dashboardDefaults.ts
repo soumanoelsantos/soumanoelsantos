@@ -63,8 +63,6 @@ export const defaultConfig: DashboardConfig = {
     'showProductMetaQuantidadeVendas',
     'showProductFaltaReceita',
     'showProductFaltaFaturamento',
-    'showProductDiariaReceita',
-    'showProductDiariaFaturamento',
     'showProductCashCollect',
     'showProductProjecaoReceita',
     'showProductProjecaoFaturamento'
@@ -91,8 +89,6 @@ export const defaultConfig: DashboardConfig = {
   showProductTicketFaturamento: false,
   showProductFaltaFaturamento: false,
   showProductFaltaReceita: false,
-  showProductDiariaReceita: false,
-  showProductDiariaFaturamento: false,
   showProductCashCollect: false,
   showProductProjecaoReceita: false,
   showProductProjecaoFaturamento: false,

@@ -75,12 +75,10 @@ export interface DashboardConfig {
   showProductQuantidadeVendas: boolean;
   showProductMetaFaturamento: boolean;
   showProductMetaReceita: boolean;
-  showProductMetaQuantidadeVendas: boolean; // NOVO
-  showProductTicketFaturamento: boolean; // NOVO
+  showProductMetaQuantidadeVendas: boolean;
+  showProductTicketFaturamento: boolean;
   showProductFaltaFaturamento: boolean;
   showProductFaltaReceita: boolean;
-  showProductDiariaReceita: boolean;
-  showProductDiariaFaturamento: boolean;
   showProductCashCollect: boolean;
   showProductProjecaoReceita: boolean;
   showProductProjecaoFaturamento: boolean;

@@ -38,8 +38,6 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
     { key: 'showProductMetaQuantidadeVendas', label: 'Meta Quantidade de Vendas do Produto' },
     { key: 'showProductFaltaFaturamento', label: 'Falta de Faturamento do Produto' },
     { key: 'showProductFaltaReceita', label: 'Falta de Receita do Produto' },
-    { key: 'showProductDiariaReceita', label: 'Diária de Receita do Produto' },
-    { key: 'showProductDiariaFaturamento', label: 'Diária de Faturamento do Produto' },
     { key: 'showProductCashCollect', label: 'Cash Collect do Produto' },
     { key: 'showProductProjecaoReceita', label: 'Projeção de Receita do Produto' },
     { key: 'showProductProjecaoFaturamento', label: 'Projeção de Faturamento do Produto' },

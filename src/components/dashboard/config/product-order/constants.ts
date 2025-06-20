@@ -10,8 +10,6 @@ export const PRODUCT_METRICS_LABELS: Record<string, string> = {
   showProductMetaQuantidadeVendas: 'Meta Quantidade de Vendas do Produto',
   showProductFaltaReceita: 'Falta de Receita do Produto',
   showProductFaltaFaturamento: 'Falta de Faturamento do Produto',
-  showProductDiariaReceita: 'Diária de Receita do Produto',
-  showProductDiariaFaturamento: 'Diária de Faturamento do Produto',
   showProductCashCollect: 'Cash Collect do Produto',
   showProductProjecaoReceita: 'Projeção de Receita do Produto',
   showProductProjecaoFaturamento: 'Projeção de Faturamento do Produto',
