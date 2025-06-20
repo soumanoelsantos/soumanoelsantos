@@ -19,7 +19,14 @@ const SpecificGoalsCards: React.FC<SpecificGoalsCardsProps> = ({ config }) => {
 
   const selectedGoals = goals.filter(goal => config.selectedGoalIds.includes(goal.id));
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number, currency: string = 'BRL') => {
+    if (currency === 'USD') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(value);
+    }
+    
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
@@ -65,14 +72,14 @@ const SpecificGoalsCards: React.FC<SpecificGoalsCardsProps> = ({ config }) => {
             <CardContent className="flex-1 flex flex-col justify-between p-3">
               <div className="text-lg font-bold">
                 {goal.target_type === 'financial' 
-                  ? formatCurrency(goal.current_value)
+                  ? formatCurrency(goal.current_value, goal.currency)
                   : `${goal.current_value} unidades`
                 }
               </div>
               <div className="mt-auto">
                 <p className="text-xs text-gray-600 mt-1">
                   Meta: {goal.target_type === 'financial' 
-                    ? formatCurrency(goal.target_value)
+                    ? formatCurrency(goal.target_value, goal.currency)
                     : `${goal.target_value} unidades`
                   }
                 </p>

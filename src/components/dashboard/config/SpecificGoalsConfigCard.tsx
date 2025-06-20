@@ -35,7 +35,14 @@ const SpecificGoalsConfigCard: React.FC<SpecificGoalsConfigCardProps> = ({
     return type === 'financial' ? 'Financeiro' : 'Quantidade';
   };
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number, currency: string = 'BRL') => {
+    if (currency === 'USD') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(value);
+    }
+    
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
@@ -93,10 +100,18 @@ const SpecificGoalsConfigCard: React.FC<SpecificGoalsConfigCardProps> = ({
                               <span className="text-blue-600">{goal.product.name}</span>
                             </>
                           )}
+                          {goal.currency && goal.target_type === 'financial' && (
+                            <>
+                              <span className="text-gray-500">•</span>
+                              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                {goal.currency}
+                              </span>
+                            </>
+                          )}
                         </div>
                         <div className="text-sm text-gray-600 mt-1">
                           Valor: {goal.target_type === 'financial' 
-                            ? formatCurrency(goal.target_value)
+                            ? formatCurrency(goal.target_value, goal.currency)
                             : `${goal.target_value} unidades`
                           }
                         </div>
