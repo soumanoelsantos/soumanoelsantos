@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -46,7 +47,10 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
         goal_type: goal.goal_type as 'meta' | 'supermeta',
         target_type: goal.target_type as 'quantity' | 'financial',
         financial_category: goal.financial_category as 'faturamento' | 'receita' | undefined,
-        currency: goal.currency as 'BRL' | 'USD' | undefined
+        currency: goal.currency as 'BRL' | 'USD' | undefined,
+        // Garantir que valores numéricos sejam números
+        target_value: Number(goal.target_value) || 0,
+        current_value: Number(goal.current_value) || 0
       })) as MonthlyGoal[];
       
       console.log('✅ [DEBUG] Metas processadas:', typedGoals);
@@ -75,6 +79,17 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
         user_id: userId,
       });
 
+      // Garantir que target_value seja um número válido
+      const targetValue = Number(goalData.target_value);
+      if (isNaN(targetValue) || targetValue <= 0) {
+        toast({
+          variant: "destructive",
+          title: "Erro de validação",
+          description: "O valor da meta deve ser um número válido maior que zero",
+        });
+        return false;
+      }
+
       const { data, error } = await supabase
         .from('monthly_goals')
         .insert({
@@ -86,7 +101,7 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
           target_type: goalData.target_type,
           financial_category: goalData.financial_category || null,
           currency: goalData.currency || null,
-          target_value: goalData.target_value,
+          target_value: targetValue,
           current_value: 0,
         })
         .select()
@@ -121,9 +136,18 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
 
   const updateGoal = async (goalId: string, updates: Partial<MonthlyGoal>) => {
     try {
+      // Garantir que valores numéricos sejam tratados corretamente
+      const cleanUpdates = { ...updates };
+      if (cleanUpdates.target_value !== undefined) {
+        cleanUpdates.target_value = Number(cleanUpdates.target_value);
+      }
+      if (cleanUpdates.current_value !== undefined) {
+        cleanUpdates.current_value = Number(cleanUpdates.current_value);
+      }
+
       const { error } = await supabase
         .from('monthly_goals')
-        .update(updates)
+        .update(cleanUpdates)
         .eq('id', goalId);
 
       if (error) throw error;
@@ -136,6 +160,7 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
       fetchGoals();
       return true;
     } catch (error: any) {
+      console.error('❌ [DEBUG] Erro ao atualizar meta:', error);
       toast({
         variant: "destructive",
         title: "Erro ao atualizar meta",
