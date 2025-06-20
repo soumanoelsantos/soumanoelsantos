@@ -25,16 +25,10 @@ export const defaultConfig: DashboardConfig = {
   showQuantidadeVendas: false,
   showCashCollect: false,
   showCac: false,
-  
-  // Novos indicadores de projeção com valores padrão corretos
   showProjecaoReceita: false,
   showProjecaoFaturamento: false,
   showNoShow: false,
-  
-  // Nova configuração para tabela de closers
   showClosersPerformanceTable: true,
-  
-  // Configurações de pré-vendas com valores padrão
   showPreSalesCalls: true,
   showPreSalesSchedulings: true,
   showPreSalesNoShow: true,
@@ -43,38 +37,54 @@ export const defaultConfig: DashboardConfig = {
   showPreSalesSchedulingChart: true,
   showPreSalesNoShowChart: true,
   showPreSalesSDRComparisonChart: true,
-  
-  companyName: '',
+  companyName: 'Minha Empresa',
   metricsOrder: [
-    'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
-    'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
-    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
-    'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
-    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
-    'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    // Incluir os novos indicadores na ordem padrão
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
-    // Incluir a tabela de closers na ordem padrão
-    'closersPerformanceTable'
+    'showReceita',
+    'showFaturamento',
+    'showQuantidadeVendas',
+    'showConversion',
+    'showTicketReceita',
+    'showTicketFaturamento',
+    'showMetaReceita',
+    'showMetaFaturamento',
+    'showFaltaReceita',
+    'showFaltaFaturamento',
+    'showDiariaReceita',
+    'showDiariaFaturamento',
+    'showCashCollect',
+    'showCac',
+    'showProjecaoReceita',
+    'showProjecaoFaturamento',
+    'showNoShow'
   ],
   preSalesOrder: [
-    'showPreSalesCalls', 'showPreSalesSchedulings', 'showPreSalesNoShow', 'showPreSalesSDRTable',
-    'showPreSalesCallsChart', 'showPreSalesSchedulingChart', 'showPreSalesNoShowChart', 'showPreSalesSDRComparisonChart'
+    'showPreSalesCalls',
+    'showPreSalesSchedulings',
+    'showPreSalesNoShow'
   ],
-  
   showSpecificGoals: false,
   selectedGoalIds: [],
-
   showRevenueEvolutionChart: true,
   showBillingEvolutionChart: true,
-  // Add the new seller chart properties
   showSellerRevenueChart: true,
   showSellerBillingChart: true,
-  
-  // Add the new temporal chart properties
   showTemporalRevenueChart: true,
   showTemporalBillingChart: true,
+  
+  // Novos campos para indicadores de produtos
+  showProductMetrics: false,
+  selectedProductIds: [],
+  showProductTicketReceita: false,
+  showProductFaturamento: false,
+  showProductReceita: false,
+  showProductQuantidadeVendas: false,
+  showProductMetaFaturamento: false,
+  showProductMetaReceita: false,
+  showProductFaltaFaturamento: false,
+  showProductFaltaReceita: false,
+  showProductDiariaReceita: false,
+  showProductDiariaFaturamento: false,
+  showProductCashCollect: false,
+  showProductProjecaoReceita: false,
+  showProductProjecaoFaturamento: false,
 };
-
-// Also export as dashboardDefaults for backward compatibility
-export const dashboardDefaults = defaultConfig;

@@ -62,4 +62,23 @@ export interface DashboardConfig {
   // Novos gráficos de análise temporal
   showTemporalRevenueChart: boolean;
   showTemporalBillingChart: boolean;
+
+  // Novos indicadores de produtos (atemporais)
+  showProductMetrics: boolean;
+  selectedProductIds: string[];
+  
+  // Indicadores específicos por produto
+  showProductTicketReceita: boolean;
+  showProductFaturamento: boolean;
+  showProductReceita: boolean;
+  showProductQuantidadeVendas: boolean;
+  showProductMetaFaturamento: boolean;
+  showProductMetaReceita: boolean;
+  showProductFaltaFaturamento: boolean;
+  showProductFaltaReceita: boolean;
+  showProductDiariaReceita: boolean;
+  showProductDiariaFaturamento: boolean;
+  showProductCashCollect: boolean;
+  showProductProjecaoReceita: boolean;
+  showProductProjecaoFaturamento: boolean;
 }
