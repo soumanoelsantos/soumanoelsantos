@@ -1102,6 +1102,54 @@ export type Database = {
           },
         ]
       }
+      seller_individual_sales: {
+        Row: {
+          billing_amount: number
+          client_name: string
+          created_at: string
+          id: string
+          performance_id: string
+          revenue_amount: number
+          seller_id: string
+          updated_at: string
+        }
+        Insert: {
+          billing_amount?: number
+          client_name: string
+          created_at?: string
+          id?: string
+          performance_id: string
+          revenue_amount?: number
+          seller_id: string
+          updated_at?: string
+        }
+        Update: {
+          billing_amount?: number
+          client_name?: string
+          created_at?: string
+          id?: string
+          performance_id?: string
+          revenue_amount?: number
+          seller_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_individual_sales_performance_id_fkey"
+            columns: ["performance_id"]
+            isOneToOne: false
+            referencedRelation: "seller_daily_performance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_individual_sales_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seller_monthly_goals: {
         Row: {
           billing_goal: number | null

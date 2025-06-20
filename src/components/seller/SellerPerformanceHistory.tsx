@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Edit, Trash2, Clock, User } from 'lucide-react';
+import { Calendar, Edit, Trash2, Clock, User, ChevronDown, ChevronRight } from 'lucide-react';
 import { Seller } from '@/types/sellers';
 import { useSellerPerformance } from '@/hooks/useSellerPerformance';
+import { useIndividualSales } from '@/hooks/useIndividualSales';
 import { formatDateToBrazilian, formatToBrazilianTimezone } from '@/utils/dateUtils';
 import EditPerformanceDialog from './EditPerformanceDialog';
 
@@ -13,22 +14,11 @@ interface SellerPerformanceHistoryProps {
   seller: Seller;
 }
 
-const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
-  seller
-}) => {
-  const { performances, isLoading, deletePerformance } = useSellerPerformance(seller.id);
-  const [editingPerformance, setEditingPerformance] = useState(null);
+const PerformanceCard = ({ performance, seller, onEdit, onDelete }: any) => {
+  const [showSales, setShowSales] = useState(false);
+  const { sales } = useIndividualSales(performance.id);
   const isSDR = seller.seller_type === 'sdr';
-
-  const handleDelete = async (performanceId: string) => {
-    if (window.confirm('Tem certeza que deseja deletar este lançamento?')) {
-      await deletePerformance(performanceId);
-    }
-  };
-
-  const handleEdit = (performance: any) => {
-    setEditingPerformance(performance);
-  };
+  const isCloser = !isSDR;
 
   const renderSDRMetrics = (performance: any) => (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -52,29 +42,140 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
   );
 
   const renderCloserMetrics = (performance: any) => (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div>
-        <p className="text-sm text-gray-500">Vendas:</p>
-        <p className="text-lg font-semibold">{performance.sales_count}</p>
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div>
+          <p className="text-sm text-gray-500">Vendas:</p>
+          <p className="text-lg font-semibold">{performance.sales_count}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-500">Receita:</p>
+          <p className="text-lg font-semibold">
+            R$ {performance.revenue_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          </p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-500">Faturamento:</p>
+          <p className="text-lg font-semibold">
+            R$ {performance.billing_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          </p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-500">Reuniões:</p>
+          <p className="text-lg font-semibold">{performance.meetings_count}</p>
+        </div>
       </div>
-      <div>
-        <p className="text-sm text-gray-500">Receita:</p>
-        <p className="text-lg font-semibold">
-          R$ {performance.revenue_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-        </p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Faturamento:</p>
-        <p className="text-lg font-semibold">
-          R$ {performance.billing_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-        </p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Reuniões:</p>
-        <p className="text-lg font-semibold">{performance.meetings_count}</p>
-      </div>
+
+      {/* Mostrar vendas individuais se houver */}
+      {sales.length > 0 && (
+        <div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSales(!showSales)}
+            className="p-0 h-auto font-normal text-blue-600 hover:text-blue-700"
+          >
+            {showSales ? <ChevronDown className="h-4 w-4 mr-1" /> : <ChevronRight className="h-4 w-4 mr-1" />}
+            {sales.length} venda{sales.length !== 1 ? 's' : ''} individual{sales.length !== 1 ? 'is' : ''}
+          </Button>
+
+          {showSales && (
+            <div className="mt-3 space-y-2 pl-4 border-l-2 border-gray-200">
+              {sales.map((sale) => (
+                <div key={sale.id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                  <div className="flex items-center gap-2">
+                    <User className="h-3 w-3 text-gray-500" />
+                    <div>
+                      <p className="text-sm font-medium">{sale.client_name}</p>
+                      <div className="flex gap-3 text-xs text-gray-500">
+                        <span>R$ {Number(sale.revenue_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (receita)</span>
+                        <span>R$ {Number(sale.billing_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (faturamento)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
+
+  return (
+    <Card className="relative">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span className="font-medium">
+              {formatDateToBrazilian(performance.date)}
+            </span>
+            <Badge variant={performance.submitted_by_seller ? "default" : "secondary"}>
+              {performance.submitted_by_seller ? "Pelo Vendedor" : "Pelo Admin"}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(performance)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(performance.id)}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        {isSDR ? renderSDRMetrics(performance) : renderCloserMetrics(performance)}
+        
+        {performance.notes && (
+          <div>
+            <p className="text-sm text-gray-500 mb-1">Observações:</p>
+            <p className="text-sm bg-gray-50 p-2 rounded">{performance.notes}</p>
+          </div>
+        )}
+        
+        <div className="flex items-center gap-4 text-xs text-gray-500 pt-2 border-t">
+          <div className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            Lançado em: {formatToBrazilianTimezone(performance.submitted_at)}
+          </div>
+          <div className="flex items-center gap-1">
+            <User className="h-3 w-3" />
+            ID: {performance.id.substring(0, 8)}...
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
+  seller
+}) => {
+  const { performances, isLoading, deletePerformance } = useSellerPerformance(seller.id);
+  const [editingPerformance, setEditingPerformance] = useState(null);
+
+  const handleDelete = async (performanceId: string) => {
+    if (window.confirm('Tem certeza que deseja deletar este lançamento?')) {
+      await deletePerformance(performanceId);
+    }
+  };
+
+  const handleEdit = (performance: any) => {
+    setEditingPerformance(performance);
+  };
 
   if (isLoading) {
     return (
@@ -105,61 +206,13 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
             </div>
           ) : (
             performances.map((performance) => (
-              <Card key={performance.id} className="relative">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span className="font-medium">
-                        {formatDateToBrazilian(performance.date)}
-                      </span>
-                      <Badge variant={performance.submitted_by_seller ? "default" : "secondary"}>
-                        {performance.submitted_by_seller ? "Pelo Vendedor" : "Pelo Admin"}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(performance)}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(performance.id)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  {isSDR ? renderSDRMetrics(performance) : renderCloserMetrics(performance)}
-                  
-                  {performance.notes && (
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Observações:</p>
-                      <p className="text-sm bg-gray-50 p-2 rounded">{performance.notes}</p>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center gap-4 text-xs text-gray-500 pt-2 border-t">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      Lançado em: {formatToBrazilianTimezone(performance.submitted_at)}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <User className="h-3 w-3" />
-                      ID: {performance.id.substring(0, 8)}...
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <PerformanceCard
+                key={performance.id}
+                performance={performance}
+                seller={seller}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
             ))
           )}
         </CardContent>
