@@ -30,6 +30,7 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
   console.log('🔍 DashboardMetrics - Rendering with config:', config);
   console.log('🔍 DashboardMetrics - Ordered items:', orderedItems);
   console.log('🔍 DashboardMetrics - Public view:', isPublicView, 'Shared user:', sharedUserId);
+  console.log('🔍 DashboardMetrics - Selected product ID:', selectedProductId);
 
   // Separar itens que devem ocupar toda a largura dos que ficam no grid
   const fullWidthItems = [
@@ -83,13 +84,20 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
         </div>
       </div>
 
-      {/* Seção dedicada para indicadores de produtos - agora mostra todos os produtos selecionados */}
+      {/* Seção dedicada para indicadores de produtos - agora respeita o filtro de produto */}
       {config.showProductMetrics && config.selectedProductIds.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800">Indicadores de Produtos (Atemporais)</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Indicadores de Produtos (Atemporais)
+            {selectedProductId && (
+              <span className="text-base font-normal text-gray-600 ml-2">
+                - Filtrado por produto selecionado
+              </span>
+            )}
+          </h2>
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-              <ProductMetricsCards config={config} />
+              <ProductMetricsCards config={config} selectedProductId={selectedProductId} />
             </div>
           </div>
         </div>

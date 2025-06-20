@@ -9,9 +9,10 @@ import { formatCurrency, calculateRemainingDaysInMonth, calculateDailyTarget } f
 
 interface ProductMetricsCardsProps {
   config: DashboardConfig;
+  selectedProductId?: string | null;
 }
 
-const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => {
+const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selectedProductId }) => {
   const { products } = useProducts();
   const { goals } = useMonthlyGoals();
   
@@ -19,9 +20,26 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
     return null;
   }
 
-  const selectedProducts = products.filter(product => 
+  // Filtrar produtos baseado no filtro selecionado
+  let selectedProducts = products.filter(product => 
     config.selectedProductIds.includes(product.id)
   );
+
+  // Se há um produto específico selecionado no filtro, mostrar apenas esse
+  if (selectedProductId) {
+    selectedProducts = selectedProducts.filter(product => product.id === selectedProductId);
+  }
+
+  console.log('🔍 ProductMetricsCards - Products after filter:', {
+    allConfiguredProducts: config.selectedProductIds,
+    selectedProductId,
+    filteredProducts: selectedProducts.map(p => ({ id: p.id, name: p.name }))
+  });
+
+  // Se nenhum produto restou após o filtro, não renderizar nada
+  if (selectedProducts.length === 0) {
+    return null;
+  }
 
   const getProductGoals = (productId: string) => {
     return goals.filter(goal => goal.product_id === productId);
@@ -117,13 +135,8 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
   });
 
   console.log('🔍 ProductMetricsCards - Enabled indicators:', enabledIndicators);
-  console.log('🔍 ProductMetricsCards - Config check:', {
-    showProductTicketFaturamento: config.showProductTicketFaturamento,
-    showProductFaturamento: config.showProductFaturamento,
-    showProductReceita: config.showProductReceita
-  });
 
-  // Agora iteramos pelos indicadores habilitados e depois pelos produtos
+  // Agora iteramos pelos indicadores habilitados e depois pelos produtos filtrados
   enabledIndicators.forEach((indicator, indicatorIndex) => {
     selectedProducts.forEach((product, productIndex) => {
       const metrics = calculateProductMetrics(product.id);
