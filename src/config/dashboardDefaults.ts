@@ -75,3 +75,6 @@ export const defaultConfig: DashboardConfig = {
   showTemporalRevenueChart: true,
   showTemporalBillingChart: true,
 };
+
+// Also export as dashboardDefaults for backward compatibility
+export const dashboardDefaults = defaultConfig;

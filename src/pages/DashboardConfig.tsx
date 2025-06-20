@@ -20,7 +20,7 @@ import { Target } from 'lucide-react';
 const DashboardConfig = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { config, setConfig, saveConfig, isLoading, hasUnsavedChanges } = useDashboardConfig();
+  const { config, updateConfig, isLoading } = useDashboardConfig();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -30,57 +30,22 @@ const DashboardConfig = () => {
 
   const handleConfigChange = (key: string, value: boolean | string | string[]) => {
     console.log('🔵 DashboardConfig - Changing config:', key, '=', value);
-    
-    // Create new config with the updated value
-    const newConfig = {
-      ...config,
-      [key]: value
-    };
-    
-    console.log('🔵 DashboardConfig - New config after change:', newConfig);
-    
-    // This will trigger auto-save
-    setConfig(newConfig);
+    updateConfig({ [key]: value });
   };
 
   const handleReorderMetrics = (newOrder: string[]) => {
     console.log('🔵 DashboardConfig - Reordering metrics to:', newOrder);
-    const newConfig = {
-      ...config,
-      metricsOrder: newOrder
-    };
-    console.log('🔵 DashboardConfig - Updated config with new metricsOrder:', newConfig.metricsOrder);
-    setConfig(newConfig);
+    updateConfig({ metricsOrder: newOrder });
   };
 
   const handleReorderPreSales = (newOrder: string[]) => {
     console.log('🔵 DashboardConfig - Reordering pre-sales to:', newOrder);
-    const newConfig = {
-      ...config,
-      preSalesOrder: newOrder
-    };
-    console.log('🔵 DashboardConfig - Updated config with new preSalesOrder:', newConfig.preSalesOrder);
-    setConfig(newConfig);
+    updateConfig({ preSalesOrder: newOrder });
   };
 
   const handleManualSave = async () => {
-    console.log('🔵 DashboardConfig - Manual save requested');
-    console.log('🔵 DashboardConfig - Current config:', config);
-    console.log('🔵 DashboardConfig - Has unsaved changes:', hasUnsavedChanges);
-    
-    try {
-      const success = await saveConfig();
-      console.log('🔵 DashboardConfig - Save result:', success);
-      
-      if (success) {
-        console.log('🟢 DashboardConfig - Save successful, navigating to dashboard');
-        navigate('/dashboard');
-      } else {
-        console.log('🔴 DashboardConfig - Save failed, staying on page');
-      }
-    } catch (error) {
-      console.error('🔴 DashboardConfig - Error during save:', error);
-    }
+    console.log('🔵 DashboardConfig - Manual save requested, navigating to dashboard');
+    navigate('/dashboard');
   };
 
   if (!isAuthenticated) {
@@ -92,7 +57,7 @@ const DashboardConfig = () => {
       <ConfigHeader 
         onSave={handleManualSave} 
         isLoading={isLoading}
-        hasUnsavedChanges={hasUnsavedChanges}
+        hasUnsavedChanges={false}
       />
 
       <main className="container mx-auto px-4 py-8">

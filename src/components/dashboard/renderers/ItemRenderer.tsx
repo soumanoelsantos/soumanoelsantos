@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
-import { MetricsCards } from '../metrics/MetricsCards';
-import { GoalComponents } from '../goals/GoalComponents';
-import { ChartsSection } from '../charts/ChartComponents';
+import MetricsCards from '../metrics/MetricsCards';
+import GoalComponents from '../goals/GoalComponents';
+import ChartsSection from '../charts/ChartComponents';
 
 interface ItemRendererProps {
   itemKey: string;

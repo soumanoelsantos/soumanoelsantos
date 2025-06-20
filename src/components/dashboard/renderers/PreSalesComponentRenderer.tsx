@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { PreSalesCallsChart } from '../charts/PreSalesCallsChart';
-import { PreSalesSchedulingChart } from '../charts/PreSalesSchedulingChart';
-import { PreSalesNoShowChart } from '../charts/PreSalesNoShowChart';
-import { PreSalesSDRComparisonChart } from '../charts/PreSalesSDRComparisonChart';
-import { PreSalesSDRTable } from '../tables/PreSalesSDRTable';
+import PreSalesCallsChart from '../charts/PreSalesCallsChart';
+import PreSalesSchedulingChart from '../charts/PreSalesSchedulingChart';
+import PreSalesNoShowChart from '../charts/PreSalesNoShowChart';
+import PreSalesSDRComparisonChart from '../charts/PreSalesSDRComparisonChart';
+import PreSalesSDRTable from '../tables/PreSalesSDRTable';
 
 interface PreSalesComponentRendererProps {
   itemKey: string;

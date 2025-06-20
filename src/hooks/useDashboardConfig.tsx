@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardConfig } from '@/types/dashboardConfig';
-import { dashboardDefaults } from '@/config/dashboardDefaults';
+import { defaultConfig } from '@/config/dashboardDefaults';
 
 export const useDashboardConfig = (sharedUserId?: string) => {
   const { userId: authUserId } = useAuth();
   const userId = sharedUserId || authUserId;
   
-  const [config, setConfig] = useState<DashboardConfig>(dashboardDefaults);
+  const [config, setConfig] = useState<DashboardConfig>(defaultConfig);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadConfig = async () => {
@@ -32,53 +32,102 @@ export const useDashboardConfig = (sharedUserId?: string) => {
       }
 
       if (data) {
+        // Safely parse arrays from database
+        let metricsOrder = defaultConfig.metricsOrder;
+        if (data.metrics_order) {
+          if (Array.isArray(data.metrics_order)) {
+            metricsOrder = data.metrics_order;
+          } else if (typeof data.metrics_order === 'string') {
+            try {
+              const parsed = JSON.parse(data.metrics_order);
+              if (Array.isArray(parsed)) {
+                metricsOrder = parsed;
+              }
+            } catch (e) {
+              console.warn('Failed to parse metrics_order');
+            }
+          }
+        }
+
+        let preSalesOrder = defaultConfig.preSalesOrder;
+        if (data.pre_sales_order) {
+          if (Array.isArray(data.pre_sales_order)) {
+            preSalesOrder = data.pre_sales_order;
+          } else if (typeof data.pre_sales_order === 'string') {
+            try {
+              const parsed = JSON.parse(data.pre_sales_order);
+              if (Array.isArray(parsed)) {
+                preSalesOrder = parsed;
+              }
+            } catch (e) {
+              console.warn('Failed to parse pre_sales_order');
+            }
+          }
+        }
+
+        let selectedGoalIds = defaultConfig.selectedGoalIds;
+        if (data.selected_goal_ids) {
+          if (Array.isArray(data.selected_goal_ids)) {
+            selectedGoalIds = data.selected_goal_ids;
+          } else if (typeof data.selected_goal_ids === 'string') {
+            try {
+              const parsed = JSON.parse(data.selected_goal_ids);
+              if (Array.isArray(parsed)) {
+                selectedGoalIds = parsed;
+              }
+            } catch (e) {
+              console.warn('Failed to parse selected_goal_ids');
+            }
+          }
+        }
+
         setConfig({
-          showConversion: data.show_conversion,
-          showRevenue: data.show_revenue,
-          showTicketFaturamento: data.show_ticket_faturamento,
-          showTicketReceita: data.show_ticket_receita,
-          showFaltaFaturamento: data.show_falta_faturamento,
-          showFaltaReceita: data.show_falta_receita,
-          showDiariaReceita: data.show_diaria_receita,
-          showDiariaFaturamento: data.show_diaria_faturamento,
-          showSuperMetaFaturamento: data.show_super_meta_faturamento,
-          showSuperMetaReceita: data.show_super_meta_receita,
-          showHiperMetaFaturamento: data.show_hiper_meta_faturamento,
-          showHiperMetaReceita: data.show_hiper_meta_receita,
-          showFaltaReceitaSuper: data.show_falta_receita_super,
-          showFaltaReceitaHiper: data.show_falta_receita_hiper,
-          showFaltaFaturamentoSuper: data.show_falta_faturamento_super,
-          showFaltaFaturamentoHiper: data.show_falta_faturamento_hiper,
-          showMetaFaturamento: data.show_meta_faturamento,
-          showMetaReceita: data.show_meta_receita,
-          showFaturamento: data.show_faturamento,
-          showReceita: data.show_receita,
-          showQuantidadeVendas: data.show_quantidade_vendas,
-          showCashCollect: data.show_cash_collect,
-          showCac: data.show_cac,
-          showProjecaoReceita: data.show_projecao_receita,
-          showProjecaoFaturamento: data.show_projecao_faturamento,
-          showNoShow: data.show_no_show,
-          showClosersPerformanceTable: data.show_closers_performance_table,
-          showPreSalesCalls: data.show_pre_sales_calls,
-          showPreSalesSchedulings: data.show_pre_sales_schedulings,
-          showPreSalesNoShow: data.show_pre_sales_no_show,
-          showPreSalesSDRTable: data.show_pre_sales_sdr_table,
-          showPreSalesCallsChart: data.show_pre_sales_calls_chart,
-          showPreSalesSchedulingChart: data.show_pre_sales_scheduling_chart,
-          showPreSalesNoShowChart: data.show_pre_sales_no_show_chart,
-          showPreSalesSDRComparisonChart: data.show_pre_sales_sdr_comparison_chart,
-          companyName: data.company_name || '',
-          metricsOrder: data.metrics_order || dashboardDefaults.metricsOrder,
-          preSalesOrder: data.pre_sales_order || dashboardDefaults.preSalesOrder,
-          showSpecificGoals: data.show_specific_goals,
-          selectedGoalIds: data.selected_goal_ids || [],
-          showRevenueEvolutionChart: data.show_revenue_evolution_chart,
-          showBillingEvolutionChart: data.show_billing_evolution_chart,
-          showSellerRevenueChart: data.show_seller_revenue_chart,
-          showSellerBillingChart: data.show_seller_billing_chart,
-          showTemporalRevenueChart: data.show_temporal_revenue_chart,
-          showTemporalBillingChart: data.show_temporal_billing_chart,
+          showConversion: data.show_conversion ?? defaultConfig.showConversion,
+          showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
+          showTicketFaturamento: data.show_ticket_faturamento ?? defaultConfig.showTicketFaturamento,
+          showTicketReceita: data.show_ticket_receita ?? defaultConfig.showTicketReceita,
+          showFaltaFaturamento: data.show_falta_faturamento ?? defaultConfig.showFaltaFaturamento,
+          showFaltaReceita: data.show_falta_receita ?? defaultConfig.showFaltaReceita,
+          showDiariaReceita: data.show_diaria_receita ?? defaultConfig.showDiariaReceita,
+          showDiariaFaturamento: data.show_diaria_faturamento ?? defaultConfig.showDiariaFaturamento,
+          showSuperMetaFaturamento: data.show_super_meta_faturamento ?? defaultConfig.showSuperMetaFaturamento,
+          showSuperMetaReceita: data.show_super_meta_receita ?? defaultConfig.showSuperMetaReceita,
+          showHiperMetaFaturamento: data.show_hiper_meta_faturamento ?? defaultConfig.showHiperMetaFaturamento,
+          showHiperMetaReceita: data.show_hiper_meta_receita ?? defaultConfig.showHiperMetaReceita,
+          showFaltaReceitaSuper: data.show_falta_receita_super ?? defaultConfig.showFaltaReceitaSuper,
+          showFaltaReceitaHiper: data.show_falta_receita_hiper ?? defaultConfig.showFaltaReceitaHiper,
+          showFaltaFaturamentoSuper: data.show_falta_faturamento_super ?? defaultConfig.showFaltaFaturamentoSuper,
+          showFaltaFaturamentoHiper: data.show_falta_faturamento_hiper ?? defaultConfig.showFaltaFaturamentoHiper,
+          showMetaFaturamento: data.show_meta_faturamento ?? defaultConfig.showMetaFaturamento,
+          showMetaReceita: data.show_meta_receita ?? defaultConfig.showMetaReceita,
+          showFaturamento: data.show_faturamento ?? defaultConfig.showFaturamento,
+          showReceita: data.show_receita ?? defaultConfig.showReceita,
+          showQuantidadeVendas: data.show_quantidade_vendas ?? defaultConfig.showQuantidadeVendas,
+          showCashCollect: data.show_cash_collect ?? defaultConfig.showCashCollect,
+          showCac: data.show_cac ?? defaultConfig.showCac,
+          showProjecaoReceita: data.show_projecao_receita ?? defaultConfig.showProjecaoReceita,
+          showProjecaoFaturamento: data.show_projecao_faturamento ?? defaultConfig.showProjecaoFaturamento,
+          showNoShow: data.show_no_show ?? defaultConfig.showNoShow,
+          showClosersPerformanceTable: data.show_closers_performance_table ?? defaultConfig.showClosersPerformanceTable,
+          showPreSalesCalls: data.show_pre_sales_calls ?? defaultConfig.showPreSalesCalls,
+          showPreSalesSchedulings: data.show_pre_sales_schedulings ?? defaultConfig.showPreSalesSchedulings,
+          showPreSalesNoShow: data.show_pre_sales_no_show ?? defaultConfig.showPreSalesNoShow,
+          showPreSalesSDRTable: data.show_pre_sales_sdr_table ?? defaultConfig.showPreSalesSDRTable,
+          showPreSalesCallsChart: data.show_pre_sales_calls_chart ?? defaultConfig.showPreSalesCallsChart,
+          showPreSalesSchedulingChart: data.show_pre_sales_scheduling_chart ?? defaultConfig.showPreSalesSchedulingChart,
+          showPreSalesNoShowChart: data.show_pre_sales_no_show_chart ?? defaultConfig.showPreSalesNoShowChart,
+          showPreSalesSDRComparisonChart: data.show_pre_sales_sdr_comparison_chart ?? defaultConfig.showPreSalesSDRComparisonChart,
+          companyName: data.company_name || defaultConfig.companyName,
+          metricsOrder: metricsOrder,
+          preSalesOrder: preSalesOrder,
+          showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
+          selectedGoalIds: selectedGoalIds,
+          showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? defaultConfig.showRevenueEvolutionChart,
+          showBillingEvolutionChart: data.show_billing_evolution_chart ?? defaultConfig.showBillingEvolutionChart,
+          showSellerRevenueChart: data.show_seller_revenue_chart ?? defaultConfig.showSellerRevenueChart,
+          showSellerBillingChart: data.show_seller_billing_chart ?? defaultConfig.showSellerBillingChart,
+          showTemporalRevenueChart: data.show_temporal_revenue_chart ?? defaultConfig.showTemporalRevenueChart,
+          showTemporalBillingChart: data.show_temporal_billing_chart ?? defaultConfig.showTemporalBillingChart,
         });
       }
     } catch (error) {
