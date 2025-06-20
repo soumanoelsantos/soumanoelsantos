@@ -1,3 +1,4 @@
+
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { defaultConfig } from '@/config/dashboardDefaults';
 
@@ -165,8 +166,6 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProductMetaQuantidadeVendas: data.show_product_meta_quantidade_vendas ?? defaultConfig.showProductMetaQuantidadeVendas,
     showProductFaltaFaturamento: data.show_product_falta_faturamento ?? defaultConfig.showProductFaltaFaturamento,
     showProductFaltaReceita: data.show_product_falta_receita ?? defaultConfig.showProductFaltaReceita,
-    showProductDiariaReceita: data.show_product_diaria_receita ?? defaultConfig.showProductDiariaReceita,
-    showProductDiariaFaturamento: data.show_product_diaria_faturamento ?? defaultConfig.showProductDiariaFaturamento,
     showProductCashCollect: data.show_product_cash_collect ?? defaultConfig.showProductCashCollect,
     showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
     showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,

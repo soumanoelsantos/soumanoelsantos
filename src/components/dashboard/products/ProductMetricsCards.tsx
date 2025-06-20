@@ -44,7 +44,8 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
     );
     const quantidadeGoal = productGoals.find(g => g.target_type === 'quantity');
 
-    const remainingDays = calculateRemainingDaysInMonth();
+    // Calcular Cash Collect como percentual da diferença entre faturamento e receita
+    const cashCollectPercent = currentFaturamento > 0 ? ((currentFaturamento - currentReceita) / currentFaturamento) * 100 : 0;
     
     return {
       receita: currentReceita,
@@ -55,10 +56,9 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
       metaQuantidade: quantidadeGoal?.target_value || 0,
       faltaReceita: Math.max((receitaGoal?.target_value || 0) - currentReceita, 0),
       faltaFaturamento: Math.max((faturamentoGoal?.target_value || 0) - currentFaturamento, 0),
-      diariaReceita: calculateDailyTarget(receitaGoal?.target_value || 0, currentReceita, remainingDays),
-      diariaFaturamento: calculateDailyTarget(faturamentoGoal?.target_value || 0, currentFaturamento, remainingDays),
       ticketReceita: currentVendas > 0 ? currentReceita / currentVendas : 0,
-      cashCollect: currentReceita * 0.85, // 85% do que foi vendido
+      ticketFaturamento: currentVendas > 0 ? currentFaturamento / currentVendas : 0,
+      cashCollect: cashCollectPercent,
       projecaoReceita: currentReceita * (30 / new Date().getDate()),
       projecaoFaturamento: currentFaturamento * (30 / new Date().getDate()),
       currency: receitaGoal?.currency || faturamentoGoal?.currency || 'BRL'
@@ -131,6 +131,15 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
       ));
     }
 
+    if (config.showProductTicketFaturamento) {
+      cards.push(renderMetricCard(
+        'Ticket Faturamento',
+        formatCurrency(metrics.ticketFaturamento, metrics.currency),
+        TrendingUp,
+        product.name
+      ));
+    }
+
     if (config.showProductMetaReceita) {
       cards.push(renderMetricCard(
         'Meta Receita',
@@ -144,6 +153,15 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
       cards.push(renderMetricCard(
         'Meta Faturamento',
         formatCurrency(metrics.metaFaturamento, metrics.currency),
+        Target,
+        product.name
+      ));
+    }
+
+    if (config.showProductMetaQuantidadeVendas) {
+      cards.push(renderMetricCard(
+        'Meta Quantidade Vendas',
+        `${metrics.metaQuantidade} vendas`,
         Target,
         product.name
       ));
@@ -167,28 +185,10 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
       ));
     }
 
-    if (config.showProductDiariaReceita) {
-      cards.push(renderMetricCard(
-        'Diária Receita',
-        formatCurrency(metrics.diariaReceita, metrics.currency),
-        DollarSign,
-        product.name
-      ));
-    }
-
-    if (config.showProductDiariaFaturamento) {
-      cards.push(renderMetricCard(
-        'Diária Faturamento',
-        formatCurrency(metrics.diariaFaturamento, metrics.currency),
-        DollarSign,
-        product.name
-      ));
-    }
-
     if (config.showProductCashCollect) {
       cards.push(renderMetricCard(
         'Cash Collect',
-        formatCurrency(metrics.cashCollect, metrics.currency),
+        `${metrics.cashCollect.toFixed(1)}%`,
         DollarSign,
         product.name
       ));
