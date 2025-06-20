@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-import { Seller } from '@/types/sellers';
+import { Seller, SellerType } from '@/types/sellers';
 import SellerPerformanceHeader from '@/components/seller/SellerPerformanceHeader';
 import SellerPerformanceManager from '@/components/seller/SellerPerformanceManager';
 import SellerPerformanceLoading from '@/components/seller/SellerPerformanceLoading';
@@ -75,7 +75,12 @@ const SellerPerformanceForm = () => {
           }
         } else if (data && data.length > 0) {
           console.log('✅ [DEBUG] Vendedor encontrado via RPC:', data[0].name);
-          setSeller(data[0]);
+          // Converter seller_type de string para SellerType
+          const sellerData = {
+            ...data[0],
+            seller_type: data[0].seller_type as SellerType
+          };
+          setSeller(sellerData);
           setHasError(false);
         } else {
           console.log('📝 [DEBUG] Nenhum vendedor encontrado via RPC');
