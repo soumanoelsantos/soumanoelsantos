@@ -13,6 +13,7 @@ import { ptBR } from 'date-fns/locale';
 
 interface SellerPerformanceTabProps {
   sellerId: string;
+  sellerType?: string;
 }
 
 interface PerformanceFormData {
@@ -26,7 +27,7 @@ interface PerformanceFormData {
   notes: string;
 }
 
-export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sellerId }) => {
+export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sellerId, sellerType }) => {
   const { performances, isLoading, createOrUpdatePerformance, deletePerformance, refetch } = useSellerPerformance(sellerId);
   const [showForm, setShowForm] = useState(false);
   const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<PerformanceFormData>({
@@ -42,13 +43,16 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
     }
   });
 
+  const isSDR = sellerType === 'sdr';
+
   // Log para debug - mais detalhado
   useEffect(() => {
     console.log('📊 [DEBUG] SellerPerformanceTab - sellerId:', sellerId);
+    console.log('📊 [DEBUG] SellerPerformanceTab - sellerType:', sellerType);
     console.log('📊 [DEBUG] SellerPerformanceTab - performances:', performances);
     console.log('📊 [DEBUG] SellerPerformanceTab - performances.length:', performances?.length);
     console.log('📊 [DEBUG] SellerPerformanceTab - isLoading:', isLoading);
-  }, [sellerId, performances, isLoading]);
+  }, [sellerId, sellerType, performances, isLoading]);
 
   const onSubmit = async (data: PerformanceFormData) => {
     console.log('📊 [DEBUG] SellerPerformanceTab - Submitting data:', data);
@@ -116,7 +120,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <BarChart3 className="h-4 w-4" />
-              Lançar Performance
+              Lançar Performance {isSDR ? '- SDR' : '- Closer'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -129,69 +133,117 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Vendas Realizadas</Label>
-                <Input
-                  type="number"
-                  {...register('sales_count', { valueAsNumber: true })}
-                  min="0"
-                  placeholder="Quantidade"
-                />
-              </div>
+              {isSDR ? (
+                // Campos específicos para SDR
+                <>
+                  <div className="space-y-2">
+                    <Label>Número de Tentativas</Label>
+                    <Input
+                      type="number"
+                      {...register('calls_count', { valueAsNumber: true })}
+                      min="0"
+                      placeholder="Quantidade de tentativas"
+                    />
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Receita (R$)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    {...register('revenue_amount', { valueAsNumber: true })}
-                    min="0"
-                    placeholder="0,00"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Faturamento (R$)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    {...register('billing_amount', { valueAsNumber: true })}
-                    min="0"
-                    placeholder="0,00"
-                  />
-                </div>
-              </div>
+                  <div className="space-y-2">
+                    <Label>Número de No Show</Label>
+                    <Input
+                      type="number"
+                      {...register('leads_count', { valueAsNumber: true })}
+                      min="0"
+                      placeholder="Quantidade de no show"
+                    />
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Reuniões</Label>
-                  <Input
-                    type="number"
-                    {...register('meetings_count', { valueAsNumber: true })}
-                    min="0"
-                    placeholder="Quantidade"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Leads</Label>
-                  <Input
-                    type="number"
-                    {...register('leads_count', { valueAsNumber: true })}
-                    min="0"
-                    placeholder="Quantidade"
-                  />
-                </div>
-              </div>
+                  <div className="space-y-2">
+                    <Label>Número de Agendamentos</Label>
+                    <Input
+                      type="number"
+                      {...register('meetings_count', { valueAsNumber: true })}
+                      min="0"
+                      placeholder="Quantidade de agendamentos"
+                    />
+                  </div>
 
-              <div className="space-y-2">
-                <Label>Ligações</Label>
-                <Input
-                  type="number"
-                  {...register('calls_count', { valueAsNumber: true })}
-                  min="0"
-                  placeholder="Quantidade"
-                />
-              </div>
+                  <div className="space-y-2">
+                    <Label>Número de Remarcação</Label>
+                    <Input
+                      type="number"
+                      {...register('sales_count', { valueAsNumber: true })}
+                      min="0"
+                      placeholder="Quantidade de remarcações"
+                    />
+                  </div>
+                </>
+              ) : (
+                // Campos para Closers
+                <>
+                  <div className="space-y-2">
+                    <Label>Vendas Realizadas</Label>
+                    <Input
+                      type="number"
+                      {...register('sales_count', { valueAsNumber: true })}
+                      min="0"
+                      placeholder="Quantidade"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Receita (R$)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...register('revenue_amount', { valueAsNumber: true })}
+                        min="0"
+                        placeholder="0,00"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Faturamento (R$)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...register('billing_amount', { valueAsNumber: true })}
+                        min="0"
+                        placeholder="0,00"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Reuniões</Label>
+                      <Input
+                        type="number"
+                        {...register('meetings_count', { valueAsNumber: true })}
+                        min="0"
+                        placeholder="Quantidade"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Leads</Label>
+                      <Input
+                        type="number"
+                        {...register('leads_count', { valueAsNumber: true })}
+                        min="0"
+                        placeholder="Quantidade"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Ligações</Label>
+                    <Input
+                      type="number"
+                      {...register('calls_count', { valueAsNumber: true })}
+                      min="0"
+                      placeholder="Quantidade"
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="space-y-2">
                 <Label>Observações</Label>
@@ -260,34 +312,44 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">Vendas:</span>
-                    <p className="font-medium">{performance.sales_count}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Receita:</span>
-                    <p className="font-medium">{formatCurrency(performance.revenue_amount)}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Faturamento:</span>
-                    <p className="font-medium">{formatCurrency(performance.billing_amount)}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Reuniões:</span>
-                    <p className="font-medium">{performance.meetings_count}</p>
-                  </div>
-                </div>
-
-                {(performance.leads_count > 0 || performance.calls_count > 0) && (
-                  <div className="grid grid-cols-2 gap-4 text-sm mt-2">
+                {isSDR ? (
+                  // Exibição para SDR
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-500">Leads:</span>
+                      <span className="text-gray-500">Tentativas:</span>
+                      <p className="font-medium">{performance.calls_count}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">No Show:</span>
                       <p className="font-medium">{performance.leads_count}</p>
                     </div>
                     <div>
-                      <span className="text-gray-500">Ligações:</span>
-                      <p className="font-medium">{performance.calls_count}</p>
+                      <span className="text-gray-500">Agendamentos:</span>
+                      <p className="font-medium">{performance.meetings_count}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Remarcações:</span>
+                      <p className="font-medium">{performance.sales_count}</p>
+                    </div>
+                  </div>
+                ) : (
+                  // Exibição para Closers
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-500">Vendas:</span>
+                      <p className="font-medium">{performance.sales_count}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Receita:</span>
+                      <p className="font-medium">{formatCurrency(performance.revenue_amount)}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Faturamento:</span>
+                      <p className="font-medium">{formatCurrency(performance.billing_amount)}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Reuniões:</span>
+                      <p className="font-medium">{performance.meetings_count}</p>
                     </div>
                   </div>
                 )}
