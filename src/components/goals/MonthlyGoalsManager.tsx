@@ -49,7 +49,8 @@ const MonthlyGoalsManager = () => {
   const years = Array.from({ length: 10 }, (_, i) => currentDate.getFullYear() + i - 2);
 
   const isGoalTimeless = (goal: MonthlyGoal) => {
-    return goal.product_id && goal.target_type === 'quantity';
+    // Qualquer meta associada a um produto é atemporal
+    return !!goal.product_id;
   };
 
   const getGoalPeriodDisplay = (goal: MonthlyGoal) => {
@@ -151,7 +152,7 @@ const MonthlyGoalsManager = () => {
           <CardTitle>Metas Mensais</CardTitle>
           <CardDescription>
             Defina e acompanhe suas metas mensais gerais e por produto com diferentes moedas. 
-            Metas de quantidade por produto são atemporais e ficam ativas até serem concluídas.
+            Metas associadas a produtos são atemporais e ficam ativas até serem concluídas.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -376,7 +377,7 @@ const MonthlyGoalsManager = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {newGoal.product_id && newGoal.target_type === 'quantity' && (
+                {newGoal.product_id && (
                   <p className="text-xs text-purple-600 mt-1 flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     Esta será uma meta atemporal - ficará ativa até ser concluída

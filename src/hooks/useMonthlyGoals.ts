@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,7 +28,7 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
       // Se month e year foram fornecidos, buscar metas do período específico
       // E TAMBÉM metas atemporais de produtos (que não foram concluídas)
       if (month && year) {
-        query = query.or(`and(month.eq.${month},year.eq.${year}),and(product_id.not.is.null,target_type.eq.quantity,current_value.lt.target_value)`);
+        query = query.or(`and(month.eq.${month},year.eq.${year}),and(product_id.not.is.null,current_value.lt.target_value)`);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -102,7 +101,7 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
 
       toast({
         title: "Meta criada",
-        description: goalData.product_id && goalData.target_type === 'quantity' 
+        description: goalData.product_id 
           ? "Meta atemporal de produto criada com sucesso!" 
           : "Meta criada com sucesso!",
       });
