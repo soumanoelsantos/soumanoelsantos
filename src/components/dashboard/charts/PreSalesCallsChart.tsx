@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { usePreSalesGoals } from '@/hooks/usePreSalesGoals';
 
 interface PreSalesCallsChartProps {
   data: Array<{
@@ -14,13 +15,28 @@ interface PreSalesCallsChartProps {
 }
 
 const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentYear = currentDate.getFullYear();
+  
+  const { preSalesGoals } = usePreSalesGoals(currentMonth, currentYear);
+  
+  // Buscar meta de tentativas de ligação
+  const dailyCallsGoal = preSalesGoals.find(goal => 
+    goal.goal_type?.category === 'pre_vendas' && 
+    goal.goal_type?.unit === 'tentativas' &&
+    goal.goal_type?.name.toLowerCase().includes('tentativas')
+  );
+
+  const dailyTarget = dailyCallsGoal ? Math.ceil((dailyCallsGoal.target_value || 0) / 30) : 40;
+
   const chartConfig = {
     calls: {
       label: "Ligações",
       color: "#3b82f6",
     },
     target: {
-      label: "Meta",
+      label: "Meta Diária",
       color: "#ef4444",
     },
   };
@@ -29,13 +45,20 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
   const chartData = data.map(item => ({
     date: item.date,
     calls: item.calls || 0,
-    target: 40 // Meta diária
+    target: dailyTarget
   }));
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Ligações Diárias</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          <span>Tentativas de Ligação Diárias</span>
+          {dailyCallsGoal && (
+            <span className="text-sm font-normal text-gray-600">
+              Meta: {dailyTarget}/dia ({dailyCallsGoal.target_value}/mês)
+            </span>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[400px] w-full">
@@ -65,7 +88,7 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
                 strokeWidth={3}
                 dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6 }}
-                name="Ligações"
+                name="Tentativas"
               />
               <Line 
                 type="monotone" 
@@ -74,7 +97,7 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 dot={false}
-                name="Meta"
+                name="Meta Diária"
               />
             </LineChart>
           </ResponsiveContainer>
