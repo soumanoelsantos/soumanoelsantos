@@ -56,6 +56,23 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     }
   }
 
+  // Safely parse selected_product_ids with type checking
+  let selectedProductIds = defaultConfig.selectedProductIds;
+  if (data.selected_product_ids) {
+    if (Array.isArray(data.selected_product_ids)) {
+      selectedProductIds = data.selected_product_ids as string[];
+    } else if (typeof data.selected_product_ids === 'string') {
+      try {
+        const parsed = JSON.parse(data.selected_product_ids);
+        if (Array.isArray(parsed)) {
+          selectedProductIds = parsed;
+        }
+      } catch (e) {
+        console.warn('🟡 Failed to parse selected_product_ids, using default');
+      }
+    }
+  }
+
   const mappedConfig = {
     showConversion: data.show_conversion ?? defaultConfig.showConversion,
     showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
@@ -117,6 +134,23 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     // Mapeamento dos novos gráficos de análise temporal
     showTemporalRevenueChart: data.show_temporal_revenue_chart !== undefined ? data.show_temporal_revenue_chart : true,
     showTemporalBillingChart: data.show_temporal_billing_chart !== undefined ? data.show_temporal_billing_chart : true,
+
+    // Product metrics fields
+    showProductMetrics: data.show_product_metrics ?? defaultConfig.showProductMetrics,
+    selectedProductIds: selectedProductIds,
+    showProductTicketReceita: data.show_product_ticket_receita ?? defaultConfig.showProductTicketReceita,
+    showProductFaturamento: data.show_product_faturamento ?? defaultConfig.showProductFaturamento,
+    showProductReceita: data.show_product_receita ?? defaultConfig.showProductReceita,
+    showProductQuantidadeVendas: data.show_product_quantidade_vendas ?? defaultConfig.showProductQuantidadeVendas,
+    showProductMetaFaturamento: data.show_product_meta_faturamento ?? defaultConfig.showProductMetaFaturamento,
+    showProductMetaReceita: data.show_product_meta_receita ?? defaultConfig.showProductMetaReceita,
+    showProductFaltaFaturamento: data.show_product_falta_faturamento ?? defaultConfig.showProductFaltaFaturamento,
+    showProductFaltaReceita: data.show_product_falta_receita ?? defaultConfig.showProductFaltaReceita,
+    showProductDiariaReceita: data.show_product_diaria_receita ?? defaultConfig.showProductDiariaReceita,
+    showProductDiariaFaturamento: data.show_product_diaria_faturamento ?? defaultConfig.showProductDiariaFaturamento,
+    showProductCashCollect: data.show_product_cash_collect ?? defaultConfig.showProductCashCollect,
+    showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
+    showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,
   };
 
   console.log('🟢 dashboardConfigMapper - Final mapped config with projection indicators:', {
@@ -195,6 +229,23 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     // Novos gráficos de análise temporal
     show_temporal_revenue_chart: config.showTemporalRevenueChart,
     show_temporal_billing_chart: config.showTemporalBillingChart,
+
+    // Product metrics mappings
+    show_product_metrics: config.showProductMetrics,
+    selected_product_ids: config.selectedProductIds,
+    show_product_ticket_receita: config.showProductTicketReceita,
+    show_product_faturamento: config.showProductFaturamento,
+    show_product_receita: config.showProductReceita,
+    show_product_quantidade_vendas: config.showProductQuantidadeVendas,
+    show_product_meta_faturamento: config.showProductMetaFaturamento,
+    show_product_meta_receita: config.showProductMetaReceita,
+    show_product_falta_faturamento: config.showProductFaltaFaturamento,
+    show_product_falta_receita: config.showProductFaltaReceita,
+    show_product_diaria_receita: config.showProductDiariaReceita,
+    show_product_diaria_faturamento: config.showProductDiariaFaturamento,
+    show_product_cash_collect: config.showProductCashCollect,
+    show_product_projecao_receita: config.showProductProjecaoReceita,
+    show_product_projecao_faturamento: config.showProductProjecaoFaturamento,
   };
 
   console.log('🟢 dashboardConfigMapper - Final database data with projection indicators:', {

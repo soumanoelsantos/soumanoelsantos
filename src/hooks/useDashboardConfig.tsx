@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -80,6 +81,22 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           }
         }
 
+        let selectedProductIds = defaultConfig.selectedProductIds;
+        if (data.selected_product_ids) {
+          if (Array.isArray(data.selected_product_ids)) {
+            selectedProductIds = data.selected_product_ids.filter((item): item is string => typeof item === 'string');
+          } else if (typeof data.selected_product_ids === 'string') {
+            try {
+              const parsed = JSON.parse(data.selected_product_ids);
+              if (Array.isArray(parsed)) {
+                selectedProductIds = parsed.filter((item): item is string => typeof item === 'string');
+              }
+            } catch (e) {
+              console.warn('Failed to parse selected_product_ids');
+            }
+          }
+        }
+
         setConfig({
           showConversion: data.show_conversion ?? defaultConfig.showConversion,
           showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
@@ -127,6 +144,23 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showSellerBillingChart: data.show_seller_billing_chart ?? defaultConfig.showSellerBillingChart,
           showTemporalRevenueChart: data.show_temporal_revenue_chart ?? defaultConfig.showTemporalRevenueChart,
           showTemporalBillingChart: data.show_temporal_billing_chart ?? defaultConfig.showTemporalBillingChart,
+          
+          // Product metrics fields
+          showProductMetrics: data.show_product_metrics ?? defaultConfig.showProductMetrics,
+          selectedProductIds: selectedProductIds,
+          showProductTicketReceita: data.show_product_ticket_receita ?? defaultConfig.showProductTicketReceita,
+          showProductFaturamento: data.show_product_faturamento ?? defaultConfig.showProductFaturamento,
+          showProductReceita: data.show_product_receita ?? defaultConfig.showProductReceita,
+          showProductQuantidadeVendas: data.show_product_quantidade_vendas ?? defaultConfig.showProductQuantidadeVendas,
+          showProductMetaFaturamento: data.show_product_meta_faturamento ?? defaultConfig.showProductMetaFaturamento,
+          showProductMetaReceita: data.show_product_meta_receita ?? defaultConfig.showProductMetaReceita,
+          showProductFaltaFaturamento: data.show_product_falta_faturamento ?? defaultConfig.showProductFaltaFaturamento,
+          showProductFaltaReceita: data.show_product_falta_receita ?? defaultConfig.showProductFaltaReceita,
+          showProductDiariaReceita: data.show_product_diaria_receita ?? defaultConfig.showProductDiariaReceita,
+          showProductDiariaFaturamento: data.show_product_diaria_faturamento ?? defaultConfig.showProductDiariaFaturamento,
+          showProductCashCollect: data.show_product_cash_collect ?? defaultConfig.showProductCashCollect,
+          showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
+          showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,
         });
       }
     } catch (error) {
@@ -187,6 +221,23 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_seller_billing_chart: updates.showSellerBillingChart,
         show_temporal_revenue_chart: updates.showTemporalRevenueChart,
         show_temporal_billing_chart: updates.showTemporalBillingChart,
+        
+        // Product metrics mappings
+        show_product_metrics: updates.showProductMetrics,
+        selected_product_ids: updates.selectedProductIds,
+        show_product_ticket_receita: updates.showProductTicketReceita,
+        show_product_faturamento: updates.showProductFaturamento,
+        show_product_receita: updates.showProductReceita,
+        show_product_quantidade_vendas: updates.showProductQuantidadeVendas,
+        show_product_meta_faturamento: updates.showProductMetaFaturamento,
+        show_product_meta_receita: updates.showProductMetaReceita,
+        show_product_falta_faturamento: updates.showProductFaltaFaturamento,
+        show_product_falta_receita: updates.showProductFaltaReceita,
+        show_product_diaria_receita: updates.showProductDiariaReceita,
+        show_product_diaria_faturamento: updates.showProductDiariaFaturamento,
+        show_product_cash_collect: updates.showProductCashCollect,
+        show_product_projecao_receita: updates.showProductProjecaoReceita,
+        show_product_projecao_faturamento: updates.showProductProjecaoFaturamento,
       };
 
       // Remove undefined values
