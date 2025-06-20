@@ -60,7 +60,7 @@ export const SellerDetailsDialog: React.FC<SellerDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <DialogTitle>{seller.name}</DialogTitle>
@@ -104,46 +104,71 @@ export const SellerDetailsDialog: React.FC<SellerDetailsDialogProps> = ({
             </div>
           </TabsContent>
 
-          <TabsContent value="access" className="space-y-4">
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500">Token de Acesso</label>
-                <p className="text-sm font-mono bg-gray-100 p-2 rounded">
+          <TabsContent value="access" className="space-y-6">
+            <div className="space-y-6">
+              <div className="bg-gray-50 p-4 rounded-lg border">
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Token de Acesso</label>
+                <div className="bg-white p-3 rounded border font-mono text-sm break-all">
                   {seller.access_token}
-                </p>
+                </div>
               </div>
               
-              <div>
-                <label className="text-sm font-medium text-gray-500 mb-2 block">
-                  Link para Lançamento de Performance
-                </label>
-                <div className="bg-gray-50 p-3 rounded-lg border">
-                  <p className="text-xs text-gray-600 mb-2">
-                    Envie este link para {seller.name} poder lançar sua performance diária:
-                  </p>
-                  <div className="flex items-center gap-2 p-2 bg-white border rounded">
-                    <span className="text-sm font-mono flex-1 truncate">
-                      {performanceUrl}
-                    </span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => copyToClipboard(performanceUrl)}
-                      className="flex-shrink-0"
-                    >
-                      <Copy className="h-4 w-4 mr-1" />
-                      Copiar
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => openInNewTab(performanceUrl)}
-                      className="flex-shrink-0"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-1" />
-                      Abrir
-                    </Button>
+              <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="bg-blue-100 p-2 rounded-lg">
+                    <ExternalLink className="h-5 w-5 text-blue-600" />
                   </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium text-blue-900 mb-1">
+                      Link para Lançamento de Performance
+                    </h3>
+                    <p className="text-sm text-blue-700 mb-3">
+                      Envie este link para <strong>{seller.name}</strong> poder lançar sua performance diária de {sellerTypeLabels[seller.seller_type]}:
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="bg-white border border-blue-300 rounded-lg overflow-hidden">
+                  <div className="p-3 bg-blue-100 border-b border-blue-300">
+                    <span className="text-xs font-medium text-blue-800 uppercase tracking-wide">URL do Formulário</span>
+                  </div>
+                  <div className="p-3">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-mono text-gray-800 break-all">
+                          {performanceUrl}
+                        </span>
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyToClipboard(performanceUrl)}
+                          className="whitespace-nowrap"
+                        >
+                          <Copy className="h-4 w-4 mr-1" />
+                          Copiar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openInNewTab(performanceUrl)}
+                          className="whitespace-nowrap"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Abrir
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 bg-blue-100 rounded border border-blue-300">
+                  <p className="text-xs text-blue-700">
+                    <strong>Instruções:</strong> Compartilhe este link diretamente com {seller.name}. 
+                    Ela poderá acessar e preencher os dados de performance {seller.seller_type === 'sdr' ? '(tentativas, no show, agendamentos, remarcações)' : '(vendas, receita, faturamento, reuniões)'} 
+                    através deste formulário personalizado.
+                  </p>
                 </div>
               </div>
             </div>
