@@ -29,7 +29,7 @@ export const fetchMonthlyGoals = async (userId: string, month?: number, year?: n
   
   console.log('📊 [DEBUG] Dados retornados da query:', data);
   
-  // Se temos month e year, também buscar metas atemporais de produtos
+  // Se temos month e year, também buscar metas atemporais de produtos que não foram concluídas
   if (month && year && data) {
     const { data: timelessGoals, error: timelessError } = await supabase
       .from('monthly_goals')
@@ -39,7 +39,6 @@ export const fetchMonthlyGoals = async (userId: string, month?: number, year?: n
       `)
       .eq('user_id', userId)
       .not('product_id', 'is', null)
-      .lt('current_value', supabase.rpc('to_numeric', { value: 'target_value' }))
       .order('created_at', { ascending: false });
 
     if (timelessError) {
@@ -48,16 +47,19 @@ export const fetchMonthlyGoals = async (userId: string, month?: number, year?: n
       return data || [];
     }
 
+    // Filtrar metas atemporais não concluídas em JavaScript
+    const uncompletedTimelessGoals = timelessGoals?.filter(goal => 
+      Number(goal.current_value) < Number(goal.target_value)
+    ) || [];
+
     // Combinar resultados, evitando duplicatas
     const combinedData = [...(data || [])];
-    if (timelessGoals) {
-      timelessGoals.forEach(timelessGoal => {
-        const exists = combinedData.find(goal => goal.id === timelessGoal.id);
-        if (!exists) {
-          combinedData.push(timelessGoal);
-        }
-      });
-    }
+    uncompletedTimelessGoals.forEach(timelessGoal => {
+      const exists = combinedData.find(goal => goal.id === timelessGoal.id);
+      if (!exists) {
+        combinedData.push(timelessGoal);
+      }
+    });
 
     return combinedData;
   }
