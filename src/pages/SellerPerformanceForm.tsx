@@ -27,75 +27,66 @@ const SellerPerformanceForm = () => {
   const [seller, setSeller] = useState<Seller | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const fetchSeller = async () => {
-      console.log('🔍 [DEBUG] Iniciando busca do vendedor com token:', token);
-      
       if (!token) {
-        console.log('❌ [DEBUG] Token não encontrado na URL');
-        setHasError(true);
+        console.log('❌ Token não encontrado');
         setIsLoading(false);
         return;
       }
 
       try {
-        setIsLoading(true);
-        setHasError(false);
+        console.log('🔍 Buscando vendedor com token:', token.substring(0, 10) + '...');
         
-        console.log('🔄 [DEBUG] Fazendo consulta direta na tabela sellers...');
-        
-        // Consulta direta simples
-        const { data: sellerData, error: sellerError } = await supabase
+        const { data, error } = await supabase
           .from('sellers')
           .select('*')
           .eq('access_token', token)
           .eq('is_active', true)
           .single();
 
-        console.log('📋 [DEBUG] Resultado da consulta direta:', { sellerData, sellerError });
-
-        if (sellerError) {
-          console.error('❌ [DEBUG] Erro na consulta direta:', sellerError);
-          setHasError(true);
-        } else if (sellerData) {
-          console.log('✅ [DEBUG] Vendedor encontrado:', sellerData.name, 'Tipo:', sellerData.seller_type);
-          
-          // Garantir que seller_type é do tipo correto
-          const formattedSeller: Seller = {
-            ...sellerData,
-            seller_type: sellerData.seller_type as SellerType
-          };
-          
-          setSeller(formattedSeller);
-          setHasError(false);
-          console.log('✅ [DEBUG] Seller definido com sucesso');
-        } else {
-          console.log('📝 [DEBUG] Nenhum vendedor encontrado');
-          setHasError(true);
+        if (error) {
+          console.error('❌ Erro ao buscar vendedor:', error);
+          setIsLoading(false);
+          return;
         }
+
+        if (!data) {
+          console.log('❌ Vendedor não encontrado');
+          setIsLoading(false);
+          return;
+        }
+
+        console.log('✅ Vendedor encontrado:', data.name, 'Tipo:', data.seller_type);
+        
+        const sellerData: Seller = {
+          id: data.id,
+          user_id: data.user_id,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          seller_type: data.seller_type as SellerType,
+          is_active: data.is_active,
+          access_token: data.access_token,
+          created_at: data.created_at,
+          updated_at: data.updated_at
+        };
+
+        setSeller(sellerData);
+        setIsLoading(false);
         
       } catch (error) {
-        console.error('💥 [DEBUG] Erro durante a busca:', error);
-        setHasError(true);
-        toast({
-          title: "Erro",
-          description: "Erro ao carregar dados do vendedor",
-          variant: "destructive",
-        });
-      } finally {
+        console.error('💥 Erro na busca:', error);
         setIsLoading(false);
-        console.log('🏁 [DEBUG] Busca finalizada. Loading:', false, 'HasError:', hasError, 'Seller:', seller?.name);
       }
     };
 
     fetchSeller();
-  }, [token, toast]);
+  }, [token]);
 
   const onSubmit = async (data: PerformanceFormData) => {
     if (!seller) {
-      console.log('❌ [DEBUG] Seller não encontrado para submit');
       toast({
         title: "Erro",
         description: "Vendedor não encontrado",
@@ -106,14 +97,8 @@ const SellerPerformanceForm = () => {
 
     setIsSubmitting(true);
     try {
-      console.log('📤 [DEBUG] Enviando dados de performance:', {
-        sellerId: seller.id,
-        sellerName: seller.name,
-        sellerType: seller.seller_type,
-        formData: data
-      });
+      console.log('📤 Enviando performance para:', seller.name);
       
-      // Preparar dados para inserção
       const performanceData = {
         seller_id: seller.id,
         date: data.date,
@@ -127,63 +112,41 @@ const SellerPerformanceForm = () => {
         submitted_by_seller: true,
       };
 
-      console.log('📤 [DEBUG] Dados preparados para inserção:', performanceData);
-      
-      // Usar upsert para criar ou atualizar
-      const { data: savedData, error } = await supabase
+      const { error } = await supabase
         .from('seller_daily_performance')
         .upsert(performanceData, {
           onConflict: 'seller_id,date'
-        })
-        .select()
-        .single();
-
-      console.log('📋 [DEBUG] Resultado da inserção:', { savedData, error });
+        });
 
       if (error) {
-        console.error('❌ [DEBUG] Erro ao salvar:', error);
         throw error;
       }
 
-      console.log('✅ [DEBUG] Performance salva com sucesso:', savedData);
-      
       toast({
         title: "✅ Sucesso!",
         description: "Performance registrada com sucesso!",
       });
 
     } catch (error: any) {
-      console.error('💥 [DEBUG] Erro ao salvar performance:', error);
+      console.error('💥 Erro ao salvar:', error);
       toast({
         title: "❌ Erro",
-        description: `Não foi possível salvar a performance: ${error?.message || 'Erro desconhecido'}`,
+        description: `Erro ao salvar: ${error?.message || 'Erro desconhecido'}`,
         variant: "destructive",
       });
-      throw error;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Debug dos estados
-  console.log('🔍 [DEBUG] Estados atuais:', {
-    isLoading,
-    hasError,
-    seller: seller?.name,
-    sellerType: seller?.seller_type
-  });
-
   if (isLoading) {
-    console.log('🔄 [DEBUG] Renderizando tela de loading...');
     return <SellerPerformanceLoading />;
   }
 
-  if (hasError || !seller) {
-    console.log('❌ [DEBUG] Renderizando tela de acesso negado...');
+  if (!seller) {
     return <SellerPerformanceAccessDenied />;
   }
 
-  console.log('✅ [DEBUG] Renderizando formulário principal para:', seller.name);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-2xl">

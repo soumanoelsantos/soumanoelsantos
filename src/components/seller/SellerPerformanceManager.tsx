@@ -25,17 +25,12 @@ const SellerPerformanceManager: React.FC<SellerPerformanceManagerProps> = ({
   onSubmit,
   isSubmitting
 }) => {
-  console.log('🔍 [DEBUG] SellerPerformanceManager renderizado para:', seller.name);
-  console.log('🔍 [DEBUG] Seller type:', seller.seller_type);
-
   return (
-    <div className="space-y-6">
-      <SellerPerformanceFormComponent
-        seller={seller}
-        onSubmit={onSubmit}
-        isSubmitting={isSubmitting}
-      />
-    </div>
+    <SellerPerformanceFormComponent
+      seller={seller}
+      onSubmit={onSubmit}
+      isSubmitting={isSubmitting}
+    />
   );
 };
 

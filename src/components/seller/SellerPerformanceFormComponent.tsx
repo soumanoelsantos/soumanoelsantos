@@ -33,9 +33,6 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   seller,
   onSuccess
 }) => {
-  console.log('📝 [DEBUG] SellerPerformanceFormComponent renderizado para:', seller.name);
-  console.log('📝 [DEBUG] Seller ID:', seller.id, 'Type:', seller.seller_type);
-
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PerformanceFormData>({
     defaultValues: {
       date: format(new Date(), 'yyyy-MM-dd'),
@@ -51,9 +48,6 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
-      console.log('📝 [DEBUG] Dados do formulário submetidos:', data);
-      console.log('📝 [DEBUG] Vendedor:', seller.name, 'ID:', seller.id);
-      
       await onSubmit(data);
       
       toast.success("✅ Performance Registrada!", {
@@ -67,7 +61,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
         onSuccess();
       }
     } catch (error) {
-      console.error('❌ [DEBUG] Erro ao enviar performance:', error);
+      console.error('❌ Erro ao enviar performance:', error);
       toast.error("❌ Erro ao Registrar", {
         description: `Não foi possível salvar sua performance: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
         duration: 4000,
@@ -75,11 +69,8 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
     }
   };
 
-  // Determinar se é SDR baseado no seller_type
   const isSDR = seller.seller_type === 'sdr';
   const isCloser = !isSDR;
-
-  console.log('🔍 [DEBUG] Tipo do vendedor - isSDR:', isSDR, 'isCloser:', isCloser);
 
   return (
     <Card>
