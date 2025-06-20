@@ -104,6 +104,7 @@ export type Database = {
           is_public: boolean | null
           metrics_order: Json | null
           pre_sales_order: Json | null
+          product_order: Json | null
           selected_goal_ids: Json | null
           selected_product_ids: Json | null
           share_token: string | null
@@ -181,6 +182,7 @@ export type Database = {
           is_public?: boolean | null
           metrics_order?: Json | null
           pre_sales_order?: Json | null
+          product_order?: Json | null
           selected_goal_ids?: Json | null
           selected_product_ids?: Json | null
           share_token?: string | null
@@ -258,6 +260,7 @@ export type Database = {
           is_public?: boolean | null
           metrics_order?: Json | null
           pre_sales_order?: Json | null
+          product_order?: Json | null
           selected_goal_ids?: Json | null
           selected_product_ids?: Json | null
           share_token?: string | null

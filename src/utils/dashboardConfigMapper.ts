@@ -39,6 +39,23 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     }
   }
 
+  // Safely parse product_order with type checking
+  let productOrder = defaultConfig.productOrder;
+  if (data.product_order) {
+    if (Array.isArray(data.product_order)) {
+      productOrder = data.product_order as string[];
+    } else if (typeof data.product_order === 'string') {
+      try {
+        const parsed = JSON.parse(data.product_order);
+        if (Array.isArray(parsed)) {
+          productOrder = parsed;
+        }
+      } catch (e) {
+        console.warn('🟡 Failed to parse product_order, using default');
+      }
+    }
+  }
+
   // Safely parse selected_goal_ids with type checking
   let selectedGoalIds = defaultConfig.selectedGoalIds;
   if (data.selected_goal_ids) {
@@ -119,6 +136,7 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     companyName: data.company_name || defaultConfig.companyName,
     metricsOrder: metricsOrder,
     preSalesOrder: preSalesOrder,
+    productOrder: productOrder,
     
     showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
     selectedGoalIds: selectedGoalIds,
@@ -158,7 +176,8 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProjecaoFaturamento: mappedConfig.showProjecaoFaturamento,
     showNoShow: mappedConfig.showNoShow,
     showClosersPerformanceTable: mappedConfig.showClosersPerformanceTable,
-    preSalesOrder: mappedConfig.preSalesOrder
+    preSalesOrder: mappedConfig.preSalesOrder,
+    productOrder: mappedConfig.productOrder
   });
   
   return mappedConfig;
@@ -214,6 +233,7 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     
     metrics_order: config.metricsOrder,
     pre_sales_order: config.preSalesOrder,
+    product_order: config.productOrder,
     
     show_specific_goals: config.showSpecificGoals,
     selected_goal_ids: config.selectedGoalIds,
@@ -253,7 +273,8 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_projecao_faturamento: databaseData.show_projecao_faturamento,
     show_no_show: databaseData.show_no_show,
     show_closers_performance_table: databaseData.show_closers_performance_table,
-    pre_sales_order: databaseData.pre_sales_order
+    pre_sales_order: databaseData.pre_sales_order,
+    product_order: databaseData.product_order
   });
   
   return databaseData;
