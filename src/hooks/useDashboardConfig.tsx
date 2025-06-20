@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,16 +31,16 @@ export const useDashboardConfig = (sharedUserId?: string) => {
       }
 
       if (data) {
-        // Safely parse arrays from database
+        // Safely parse arrays from database with proper type conversion
         let metricsOrder = defaultConfig.metricsOrder;
         if (data.metrics_order) {
           if (Array.isArray(data.metrics_order)) {
-            metricsOrder = data.metrics_order;
+            metricsOrder = data.metrics_order.filter((item): item is string => typeof item === 'string');
           } else if (typeof data.metrics_order === 'string') {
             try {
               const parsed = JSON.parse(data.metrics_order);
               if (Array.isArray(parsed)) {
-                metricsOrder = parsed;
+                metricsOrder = parsed.filter((item): item is string => typeof item === 'string');
               }
             } catch (e) {
               console.warn('Failed to parse metrics_order');
@@ -52,12 +51,12 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         let preSalesOrder = defaultConfig.preSalesOrder;
         if (data.pre_sales_order) {
           if (Array.isArray(data.pre_sales_order)) {
-            preSalesOrder = data.pre_sales_order;
+            preSalesOrder = data.pre_sales_order.filter((item): item is string => typeof item === 'string');
           } else if (typeof data.pre_sales_order === 'string') {
             try {
               const parsed = JSON.parse(data.pre_sales_order);
               if (Array.isArray(parsed)) {
-                preSalesOrder = parsed;
+                preSalesOrder = parsed.filter((item): item is string => typeof item === 'string');
               }
             } catch (e) {
               console.warn('Failed to parse pre_sales_order');
@@ -68,12 +67,12 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         let selectedGoalIds = defaultConfig.selectedGoalIds;
         if (data.selected_goal_ids) {
           if (Array.isArray(data.selected_goal_ids)) {
-            selectedGoalIds = data.selected_goal_ids;
+            selectedGoalIds = data.selected_goal_ids.filter((item): item is string => typeof item === 'string');
           } else if (typeof data.selected_goal_ids === 'string') {
             try {
               const parsed = JSON.parse(data.selected_goal_ids);
               if (Array.isArray(parsed)) {
-                selectedGoalIds = parsed;
+                selectedGoalIds = parsed.filter((item): item is string => typeof item === 'string');
               }
             } catch (e) {
               console.warn('Failed to parse selected_goal_ids');

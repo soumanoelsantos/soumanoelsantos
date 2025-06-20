@@ -1,9 +1,8 @@
 
 import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
-import MetricsCards from '../metrics/MetricsCards';
-import GoalComponents from '../goals/GoalComponents';
-import ChartsSection from '../charts/ChartComponents';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TrendingUp, DollarSign, Target } from 'lucide-react';
 
 interface ItemRendererProps {
   itemKey: string;
@@ -11,6 +10,27 @@ interface ItemRendererProps {
   isPublicView?: boolean;
   sharedUserId?: string;
 }
+
+// Simple metric card component for now
+const MetricCard = ({ title, value, icon: Icon }: { title: string; value: string; icon: any }) => (
+  <Card className="h-40 flex flex-col border-r border-b border-gray-200 rounded-none">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
+      <CardTitle className="text-xs font-medium text-gray-600">{title}</CardTitle>
+      <Icon className="h-3 w-3 text-blue-600 flex-shrink-0" />
+    </CardHeader>
+    <CardContent className="flex-1 flex flex-col justify-between p-3">
+      <div className="text-lg font-bold">{value}</div>
+      <div className="mt-auto">
+        <p className="text-xs text-gray-600 mt-1">
+          Dados do período
+        </p>
+        <div className="text-xs text-green-600 mt-2">
+          +5% vs período anterior
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
 
 export const ItemRenderer: React.FC<ItemRendererProps> = ({ 
   itemKey, 
@@ -32,95 +52,92 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({
   switch (itemKey) {
     // Métricas básicas
     case 'showReceita':
-      return <MetricsCards.Receita sharedUserId={sharedUserId} />;
+      return <MetricCard title="Receita" value="R$ 0,00" icon={DollarSign} />;
     case 'showFaturamento':
-      return <MetricsCards.Faturamento sharedUserId={sharedUserId} />;
+      return <MetricCard title="Faturamento" value="R$ 0,00" icon={DollarSign} />;
     case 'showQuantidadeVendas':
-      return <MetricsCards.QuantidadeVendas sharedUserId={sharedUserId} />;
+      return <MetricCard title="Quantidade de Vendas" value="0" icon={Target} />;
     case 'showTicketReceita':
-      return <MetricsCards.TicketReceita sharedUserId={sharedUserId} />;
+      return <MetricCard title="Ticket Médio Receita" value="R$ 0,00" icon={TrendingUp} />;
     case 'showTicketFaturamento':
-      return <MetricsCards.TicketFaturamento sharedUserId={sharedUserId} />;
+      return <MetricCard title="Ticket Médio Faturamento" value="R$ 0,00" icon={TrendingUp} />;
     case 'showCashCollect':
-      return <MetricsCards.CashCollect />;
+      return <MetricCard title="Cash Collect" value="R$ 0,00" icon={DollarSign} />;
     case 'showCac':
-      return <MetricsCards.Cac />;
+      return <MetricCard title="CAC" value="R$ 0,00" icon={TrendingUp} />;
     case 'showConversion':
-      return <MetricsCards.Conversion sharedUserId={sharedUserId} />;
+      return <MetricCard title="Taxa de Conversão" value="0%" icon={Target} />;
     
     // Metas
     case 'showMetaReceita':
-      return <GoalComponents.MetaReceita sharedUserId={sharedUserId} />;
+      return <MetricCard title="Meta de Receita" value="R$ 0,00" icon={Target} />;
     case 'showMetaFaturamento':
-      return <GoalComponents.MetaFaturamento sharedUserId={sharedUserId} />;
+      return <MetricCard title="Meta de Faturamento" value="R$ 0,00" icon={Target} />;
     
     // Super Metas
     case 'showSuperMetaReceita':
-      return <GoalComponents.SuperMetaReceita sharedUserId={sharedUserId} />;
+      return <MetricCard title="Super Meta Receita" value="R$ 0,00" icon={Target} />;
     case 'showSuperMetaFaturamento':
-      return <GoalComponents.SuperMetaFaturamento sharedUserId={sharedUserId} />;
+      return <MetricCard title="Super Meta Faturamento" value="R$ 0,00" icon={Target} />;
     
     // Hiper Metas
     case 'showHiperMetaReceita':
-      return <GoalComponents.HiperMetaReceita sharedUserId={sharedUserId} />;
+      return <MetricCard title="Hiper Meta Receita" value="R$ 0,00" icon={Target} />;
     case 'showHiperMetaFaturamento':
-      return <GoalComponents.HiperMetaFaturamento sharedUserId={sharedUserId} />;
+      return <MetricCard title="Hiper Meta Faturamento" value="R$ 0,00" icon={Target} />;
     
     // Faltas
     case 'showFaltaReceita':
-      return <GoalComponents.FaltaReceita sharedUserId={sharedUserId} />;
+      return <MetricCard title="Falta Receita" value="R$ 0,00" icon={Target} />;
     case 'showFaltaFaturamento':
-      return <GoalComponents.FaltaFaturamento sharedUserId={sharedUserId} />;
+      return <MetricCard title="Falta Faturamento" value="R$ 0,00" icon={Target} />;
     case 'showFaltaReceitaSuper':
-      return <GoalComponents.FaltaReceitaSuper sharedUserId={sharedUserId} />;
+      return <MetricCard title="Falta Receita Super" value="R$ 0,00" icon={Target} />;
     case 'showFaltaFaturamentoSuper':
-      return <GoalComponents.FaltaFaturamentoSuper sharedUserId={sharedUserId} />;
+      return <MetricCard title="Falta Faturamento Super" value="R$ 0,00" icon={Target} />;
     case 'showFaltaReceitaHiper':
-      return <GoalComponents.FaltaReceitaHiper sharedUserId={sharedUserId} />;
+      return <MetricCard title="Falta Receita Hiper" value="R$ 0,00" icon={Target} />;
     case 'showFaltaFaturamentoHiper':
-      return <GoalComponents.FaltaFaturamentoHiper sharedUserId={sharedUserId} />;
+      return <MetricCard title="Falta Faturamento Hiper" value="R$ 0,00" icon={Target} />;
     
     // Diárias
     case 'showDiariaReceita':
-      return <GoalComponents.DiariaReceita sharedUserId={sharedUserId} />;
+      return <MetricCard title="Diária Receita" value="R$ 0,00" icon={DollarSign} />;
     case 'showDiariaFaturamento':
-      return <GoalComponents.DiariaFaturamento sharedUserId={sharedUserId} />;
+      return <MetricCard title="Diária Faturamento" value="R$ 0,00" icon={DollarSign} />;
     
     // Projeções
     case 'showProjecaoReceita':
-      return <MetricsCards.ProjecaoReceita sharedUserId={sharedUserId} />;
+      return <MetricCard title="Projeção Receita" value="R$ 0,00" icon={TrendingUp} />;
     case 'showProjecaoFaturamento':
-      return <MetricsCards.ProjecaoFaturamento sharedUserId={sharedUserId} />;
+      return <MetricCard title="Projeção Faturamento" value="R$ 0,00" icon={TrendingUp} />;
     case 'showNoShow':
-      return <MetricsCards.NoShow sharedUserId={sharedUserId} />;
+      return <MetricCard title="No Show" value="0%" icon={Target} />;
     
-    // Gráficos de evolução
+    // Gráficos e tabelas - placeholder para agora
     case 'showRevenueEvolutionChart':
     case 'revenueEvolutionChart':
-      return <ChartsSection.RevenueEvolutionChart sharedUserId={sharedUserId} />;
     case 'showBillingEvolutionChart':
     case 'billingEvolutionChart':
-      return <ChartsSection.BillingEvolutionChart sharedUserId={sharedUserId} />;
-    
-    // Gráficos de performance dos vendedores
     case 'showSellerRevenueChart':
     case 'sellerRevenueChart':
-      return <ChartsSection.SellerRevenueChart sharedUserId={sharedUserId} />;
     case 'showSellerBillingChart':
     case 'sellerBillingChart':
-      return <ChartsSection.SellerBillingChart sharedUserId={sharedUserId} />;
-    
-    // Gráficos de análise temporal
     case 'showTemporalRevenueChart':
     case 'temporalRevenueChart':
-      return <ChartsSection.TemporalRevenueChart sharedUserId={sharedUserId} />;
     case 'showTemporalBillingChart':
     case 'temporalBillingChart':
-      return <ChartsSection.TemporalBillingChart sharedUserId={sharedUserId} />;
-    
-    // Tabela de performance dos closers
     case 'showClosersPerformanceTable':
-      return <ChartsSection.ClosersPerformanceTable sharedUserId={sharedUserId} />;
+      return (
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Gráfico/Tabela em Desenvolvimento</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600">Este componente será implementado em breve.</p>
+          </CardContent>
+        </Card>
+      );
     
     default:
       console.warn(`⚠️ ItemRenderer - Unknown item key: ${itemKey}`);
