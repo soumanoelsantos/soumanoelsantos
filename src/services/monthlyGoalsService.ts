@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { CreateGoalData, MonthlyGoal } from '@/types/goals';
 
@@ -79,6 +78,28 @@ export const createMonthlyGoal = async (userId: string, goalData: CreateGoalData
     throw new Error("O valor da meta deve ser um número válido maior que zero");
   }
 
+  // Verificar se já existe uma meta similar antes de tentar criar
+  const { data: existingGoal, error: checkError } = await supabase
+    .from('monthly_goals')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('month', goalData.month)
+    .eq('year', goalData.year)
+    .eq('goal_type', goalData.goal_type)
+    .eq('target_type', goalData.target_type)
+    .eq('product_id', goalData.product_id || null)
+    .eq('financial_category', goalData.financial_category || null)
+    .maybeSingle();
+
+  if (checkError) {
+    console.error('❌ [DEBUG] Erro ao verificar meta existente:', checkError);
+    throw new Error("Erro ao verificar metas existentes");
+  }
+
+  if (existingGoal) {
+    throw new Error("Já existe uma meta com essas características para este período");
+  }
+
   const { data, error } = await supabase
     .from('monthly_goals')
     .insert({
@@ -98,7 +119,13 @@ export const createMonthlyGoal = async (userId: string, goalData: CreateGoalData
 
   if (error) {
     console.error('❌ [DEBUG] Erro detalhado na inserção:', error);
-    throw error;
+    
+    // Tratar erros específicos de constraint
+    if (error.code === '23505') {
+      throw new Error("Já existe uma meta com essas características para este período");
+    }
+    
+    throw new Error(error.message || "Erro desconhecido ao criar meta");
   }
 
   console.log('✅ [DEBUG] Meta criada com sucesso:', data);

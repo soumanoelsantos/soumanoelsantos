@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -68,10 +67,20 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
       return true;
     } catch (error: any) {
       console.error('💥 [DEBUG] Erro completo ao criar meta:', error);
+      
+      // Melhor tratamento de mensagens de erro
+      let errorMessage = 'Erro desconhecido ao criar meta';
+      
+      if (error.message.includes('Já existe uma meta')) {
+        errorMessage = 'Já existe uma meta com essas características para este período. Tente com configurações diferentes.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Erro ao criar meta",
-        description: error.message || 'Erro desconhecido ao criar meta',
+        description: errorMessage,
       });
       return false;
     }
