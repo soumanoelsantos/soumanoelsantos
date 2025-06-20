@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, BarChart3, Trash2, Edit, Calendar, RefreshCw } from 'lucide-react';
@@ -10,6 +8,7 @@ import { useSellerPerformance } from '@/hooks/useSellerPerformance';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import PerformanceFormFields from '@/components/seller/PerformanceFormFields';
 
 interface SellerPerformanceTabProps {
   sellerId: string;
@@ -30,7 +29,7 @@ interface PerformanceFormData {
 export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sellerId, sellerType }) => {
   const { performances, isLoading, createOrUpdatePerformance, deletePerformance, refetch } = useSellerPerformance(sellerId);
   const [showForm, setShowForm] = useState(false);
-  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<PerformanceFormData>({
+  const { register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<PerformanceFormData>({
     defaultValues: {
       date: format(new Date(), 'yyyy-MM-dd'),
       sales_count: 0,
@@ -49,10 +48,11 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   useEffect(() => {
     console.log('📊 [DEBUG] SellerPerformanceTab - sellerId:', sellerId);
     console.log('📊 [DEBUG] SellerPerformanceTab - sellerType:', sellerType);
+    console.log('📊 [DEBUG] SellerPerformanceTab - isSDR:', isSDR);
     console.log('📊 [DEBUG] SellerPerformanceTab - performances:', performances);
     console.log('📊 [DEBUG] SellerPerformanceTab - performances.length:', performances?.length);
     console.log('📊 [DEBUG] SellerPerformanceTab - isLoading:', isLoading);
-  }, [sellerId, sellerType, performances, isLoading]);
+  }, [sellerId, sellerType, isSDR, performances, isLoading]);
 
   const onSubmit = async (data: PerformanceFormData) => {
     console.log('📊 [DEBUG] SellerPerformanceTab - Submitting data:', data);
@@ -125,133 +125,11 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Data</Label>
-                <Input
-                  type="date"
-                  {...register('date', { required: true })}
-                />
-              </div>
-
-              {isSDR ? (
-                // Campos específicos para SDR
-                <>
-                  <div className="space-y-2">
-                    <Label>Número de Tentativas</Label>
-                    <Input
-                      type="number"
-                      {...register('calls_count', { valueAsNumber: true })}
-                      min="0"
-                      placeholder="Quantidade de tentativas"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Número de No Show</Label>
-                    <Input
-                      type="number"
-                      {...register('leads_count', { valueAsNumber: true })}
-                      min="0"
-                      placeholder="Quantidade de no show"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Número de Agendamentos</Label>
-                    <Input
-                      type="number"
-                      {...register('meetings_count', { valueAsNumber: true })}
-                      min="0"
-                      placeholder="Quantidade de agendamentos"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Número de Remarcação</Label>
-                    <Input
-                      type="number"
-                      {...register('sales_count', { valueAsNumber: true })}
-                      min="0"
-                      placeholder="Quantidade de remarcações"
-                    />
-                  </div>
-                </>
-              ) : (
-                // Campos para Closers
-                <>
-                  <div className="space-y-2">
-                    <Label>Vendas Realizadas</Label>
-                    <Input
-                      type="number"
-                      {...register('sales_count', { valueAsNumber: true })}
-                      min="0"
-                      placeholder="Quantidade"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Receita (R$)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...register('revenue_amount', { valueAsNumber: true })}
-                        min="0"
-                        placeholder="0,00"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Faturamento (R$)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...register('billing_amount', { valueAsNumber: true })}
-                        min="0"
-                        placeholder="0,00"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Reuniões</Label>
-                      <Input
-                        type="number"
-                        {...register('meetings_count', { valueAsNumber: true })}
-                        min="0"
-                        placeholder="Quantidade"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Leads</Label>
-                      <Input
-                        type="number"
-                        {...register('leads_count', { valueAsNumber: true })}
-                        min="0"
-                        placeholder="Quantidade"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Ligações</Label>
-                    <Input
-                      type="number"
-                      {...register('calls_count', { valueAsNumber: true })}
-                      min="0"
-                      placeholder="Quantidade"
-                    />
-                  </div>
-                </>
-              )}
-
-              <div className="space-y-2">
-                <Label>Observações</Label>
-                <Input
-                  {...register('notes')}
-                  placeholder="Observações sobre a performance"
-                />
-              </div>
+              <PerformanceFormFields 
+                register={register}
+                errors={errors}
+                isCloser={!isSDR}
+              />
 
               <div className="flex justify-end gap-2">
                 <Button
@@ -277,7 +155,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
           <p>Nenhum lançamento registrado</p>
           <p className="text-sm">Clique em "Novo Lançamento" para começar</p>
           <p className="text-xs mt-2 text-gray-400">
-            Vendedor ID: {sellerId}
+            Vendedor ID: {sellerId} | Tipo: {sellerType || 'não definido'}
           </p>
         </div>
       ) : (
