@@ -111,15 +111,23 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
 
   const cards: JSX.Element[] = [];
 
-  selectedProducts.forEach(product => {
-    const metrics = calculateProductMetrics(product.id);
-    
-    // Processar apenas os indicadores que estão habilitados E na ordem configurada
-    productOrder.forEach((indicator, index) => {
-      // Verificar se o indicador está habilitado na configuração
-      if (!config[indicator as keyof DashboardConfig]) return;
+  // Primeiro, vamos filtrar apenas os indicadores que estão habilitados
+  const enabledIndicators = productOrder.filter(indicator => {
+    return config[indicator as keyof DashboardConfig] === true;
+  });
 
-      const key = `${product.id}-${indicator}-${index}`;
+  console.log('🔍 ProductMetricsCards - Enabled indicators:', enabledIndicators);
+  console.log('🔍 ProductMetricsCards - Config check:', {
+    showProductTicketFaturamento: config.showProductTicketFaturamento,
+    showProductFaturamento: config.showProductFaturamento,
+    showProductReceita: config.showProductReceita
+  });
+
+  // Agora iteramos pelos indicadores habilitados e depois pelos produtos
+  enabledIndicators.forEach((indicator, indicatorIndex) => {
+    selectedProducts.forEach((product, productIndex) => {
+      const metrics = calculateProductMetrics(product.id);
+      const key = `${indicator}-${product.id}-${indicatorIndex}-${productIndex}`;
 
       switch (indicator) {
         case 'showProductReceita':
@@ -281,6 +289,8 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config }) => 
       }
     });
   });
+
+  console.log('🔍 ProductMetricsCards - Total cards generated:', cards.length);
 
   return <>{cards}</>;
 };
