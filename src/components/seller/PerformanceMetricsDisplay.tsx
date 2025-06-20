@@ -1,17 +1,16 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Edit, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Trash2, Calendar, User, Clock } from 'lucide-react';
 import { SellerDailyPerformance } from '@/types/sellers';
+import { formatToBrazilianTimezone, formatDateToBrazilian } from '@/utils/dateUtils';
 
 interface PerformanceMetricsDisplayProps {
   performances: SellerDailyPerformance[];
   isSDR: boolean;
-  onDelete: (performanceId: string) => void;
+  onDelete: (performanceId: string) => Promise<boolean>;
 }
 
 const PerformanceMetricsDisplay: React.FC<PerformanceMetricsDisplayProps> = ({
@@ -19,107 +18,107 @@ const PerformanceMetricsDisplay: React.FC<PerformanceMetricsDisplayProps> = ({
   isSDR,
   onDelete
 }) => {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return format(new Date(dateString), "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-    } catch (error) {
-      console.error('Error formatting date:', error);
-      return dateString;
+  const handleDelete = async (performanceId: string) => {
+    if (window.confirm('Tem certeza que deseja deletar este lançamento?')) {
+      await onDelete(performanceId);
     }
   };
 
+  const renderSDRMetrics = (performance: SellerDailyPerformance) => (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div>
+        <p className="text-sm text-gray-500">Tentativas:</p>
+        <p className="text-lg font-semibold">{performance.calls_count}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">No Show:</p>
+        <p className="text-lg font-semibold">{performance.leads_count}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Agendamentos:</p>
+        <p className="text-lg font-semibold">{performance.meetings_count}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Remarcações:</p>
+        <p className="text-lg font-semibold">{performance.sales_count}</p>
+      </div>
+    </div>
+  );
+
+  const renderCloserMetrics = (performance: SellerDailyPerformance) => (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div>
+        <p className="text-sm text-gray-500">Vendas:</p>
+        <p className="text-lg font-semibold">{performance.sales_count}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Receita:</p>
+        <p className="text-lg font-semibold">
+          R$ {performance.revenue_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        </p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Faturamento:</p>
+        <p className="text-lg font-semibold">
+          R$ {performance.billing_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        </p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Reuniões:</p>
+        <p className="text-lg font-semibold">{performance.meetings_count}</p>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">
+        Lançamentos de Performance ({performances.length} registros)
+      </h3>
+      
       {performances.map((performance) => (
-        <Card key={performance.id}>
-          <CardContent className="p-4">
-            <div className="flex justify-between items-start mb-3">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-500" />
-                <h5 className="font-medium">{formatDate(performance.date)}</h5>
+        <Card key={performance.id} className="relative">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Calendar className="h-4 w-4" />
+                {formatDateToBrazilian(performance.date)}
                 <Badge variant={performance.submitted_by_seller ? "default" : "secondary"}>
-                  {performance.submitted_by_seller ? 'Pelo Vendedor' : 'Pelo Admin'}
+                  {performance.submitted_by_seller ? "Pelo Vendedor" : "Pelo Admin"}
                 </Badge>
-              </div>
-              <div className="flex gap-1">
+              </CardTitle>
+              <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-blue-600 hover:text-blue-700"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(performance.id)}
-                  className="text-red-600 hover:text-red-700"
+                  onClick={() => handleDelete(performance.id)}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-
-            {isSDR ? (
-              // Exibição para SDR
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-500">Tentativas:</span>
-                  <p className="font-medium">{performance.calls_count}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">No Show:</span>
-                  <p className="font-medium">{performance.leads_count}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Agendamentos:</span>
-                  <p className="font-medium">{performance.meetings_count}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Remarcações:</span>
-                  <p className="font-medium">{performance.sales_count}</p>
-                </div>
-              </div>
-            ) : (
-              // Exibição para Closers
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-500">Vendas:</span>
-                  <p className="font-medium">{performance.sales_count}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Receita:</span>
-                  <p className="font-medium">{formatCurrency(performance.revenue_amount)}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Faturamento:</span>
-                  <p className="font-medium">{formatCurrency(performance.billing_amount)}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Reuniões:</span>
-                  <p className="font-medium">{performance.meetings_count}</p>
-                </div>
-              </div>
-            )}
-
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {isSDR ? renderSDRMetrics(performance) : renderCloserMetrics(performance)}
+            
             {performance.notes && (
-              <div className="mt-3 pt-3 border-t">
-                <span className="text-gray-500 text-sm">Observações:</span>
-                <p className="text-sm">{performance.notes}</p>
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Observações:</p>
+                <p className="text-sm bg-gray-50 p-2 rounded">{performance.notes}</p>
               </div>
             )}
-
-            <div className="mt-3 pt-3 border-t text-xs text-gray-500">
-              Lançado em: {format(new Date(performance.submitted_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-              <br />
-              ID: {performance.id}
+            
+            <div className="flex items-center gap-4 text-xs text-gray-500 pt-2 border-t">
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                Lançado em: {formatToBrazilianTimezone(performance.submitted_at)}
+              </div>
+              <div className="flex items-center gap-1">
+                <User className="h-3 w-3" />
+                ID: {performance.id.substring(0, 8)}...
+              </div>
             </div>
           </CardContent>
         </Card>

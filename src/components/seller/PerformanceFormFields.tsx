@@ -4,6 +4,7 @@ import { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { getBrazilianDate, convertISOToBrazilianDate } from '@/utils/dateUtils';
 
 interface PerformanceFormData {
   date: string;
@@ -35,7 +36,7 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
     return (
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="date">Data *</Label>
+          <Label htmlFor="date">Data * (Fuso horário brasileiro)</Label>
           <Input
             id="date"
             type="date"
@@ -44,6 +45,9 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
           {errors.date && (
             <p className="text-sm text-red-600">{errors.date.message}</p>
           )}
+          <p className="text-xs text-gray-500">
+            Todas as datas são registradas no fuso horário brasileiro (UTC-3)
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -138,7 +142,7 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="date">Data *</Label>
+        <Label htmlFor="date">Data * (Fuso horário brasileiro)</Label>
         <Input
           id="date"
           type="date"
@@ -147,6 +151,9 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
         {errors.date && (
           <p className="text-sm text-red-600">{errors.date.message}</p>
         )}
+        <p className="text-xs text-gray-500">
+          Todas as datas são registradas no fuso horário brasileiro (UTC-3)
+        </p>
       </div>
 
       <div className="space-y-2">

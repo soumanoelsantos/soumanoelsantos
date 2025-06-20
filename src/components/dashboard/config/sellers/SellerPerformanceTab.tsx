@@ -7,6 +7,7 @@ import PerformanceTabHeader from '@/components/seller/PerformanceTabHeader';
 import PerformanceFormCard from '@/components/seller/PerformanceFormCard';
 import EmptyPerformanceState from '@/components/seller/EmptyPerformanceState';
 import PerformanceMetricsDisplay from '@/components/seller/PerformanceMetricsDisplay';
+import { getBrazilianDate } from '@/utils/dateUtils';
 
 interface SellerPerformanceTabProps {
   sellerId: string;
@@ -27,9 +28,23 @@ interface PerformanceFormData {
 export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sellerId, sellerType }) => {
   const { performances, isLoading, createOrUpdatePerformance, deletePerformance, refetch } = useSellerPerformance(sellerId);
   const [showForm, setShowForm] = useState(false);
+
+  // Obter data atual no fuso brasileiro
+  const today = new Date();
+  const brazilianDateString = today.toLocaleDateString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  
+  // Converter para formato ISO para o input date
+  const [day, month, year] = brazilianDateString.split('/');
+  const defaultDate = `${year}-${month}-${day}`;
+
   const { register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<PerformanceFormData>({
     defaultValues: {
-      date: format(new Date(), 'yyyy-MM-dd'),
+      date: defaultDate,
       sales_count: 0,
       revenue_amount: 0,
       billing_amount: 0,
@@ -50,17 +65,27 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
     console.log('📊 [DEBUG] SellerPerformanceTab - performances:', performances);
     console.log('📊 [DEBUG] SellerPerformanceTab - performances.length:', performances?.length);
     console.log('📊 [DEBUG] SellerPerformanceTab - isLoading:', isLoading);
-  }, [sellerId, sellerType, isSDR, performances, isLoading]);
+    console.log('📊 [DEBUG] SellerPerformanceTab - data padrão (fuso brasileiro):', defaultDate);
+  }, [sellerId, sellerType, isSDR, performances, isLoading, defaultDate]);
 
   const onSubmit = async (data: PerformanceFormData) => {
-    console.log('📊 [DEBUG] SellerPerformanceTab - Submitting data:', data);
+    console.log('📊 [DEBUG] SellerPerformanceTab - Submitting data com fuso brasileiro:', data);
     const success = await createOrUpdatePerformance({
       ...data,
       submitted_by_seller: false // Indica que foi preenchido pelo admin
     });
     
     if (success) {
-      reset();
+      reset({
+        date: defaultDate,
+        sales_count: 0,
+        revenue_amount: 0,
+        billing_amount: 0,
+        meetings_count: 0,
+        leads_count: 0,
+        calls_count: 0,
+        notes: '',
+      });
       setShowForm(false);
     }
   };

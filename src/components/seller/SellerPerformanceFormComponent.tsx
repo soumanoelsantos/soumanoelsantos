@@ -8,6 +8,7 @@ import { Seller } from '@/types/sellers';
 import { toast } from 'sonner';
 import PerformanceFormFields from './PerformanceFormFields';
 import PerformanceFormSubmit from './PerformanceFormSubmit';
+import { getBrazilianDate } from '@/utils/dateUtils';
 
 interface PerformanceFormData {
   date: string;
@@ -33,9 +34,22 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   seller,
   onSuccess
 }) => {
+  // Obter data atual no fuso brasileiro para o valor padrão
+  const today = new Date();
+  const brazilianDateString = today.toLocaleDateString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  
+  // Converter para formato ISO para o input date
+  const [day, month, year] = brazilianDateString.split('/');
+  const defaultDate = `${year}-${month}-${day}`;
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PerformanceFormData>({
     defaultValues: {
-      date: format(new Date(), 'yyyy-MM-dd'),
+      date: defaultDate,
       sales_count: 0,
       revenue_amount: 0,
       billing_amount: 0,
@@ -48,14 +62,24 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
+      console.log('📤 [DEBUG] Enviando dados com fuso brasileiro:', data);
       await onSubmit(data);
       
       toast.success("✅ Performance Registrada!", {
-        description: "Sua performance foi enviada com sucesso!",
+        description: `Sua performance foi registrada com sucesso no fuso horário brasileiro!`,
         duration: 4000,
       });
       
-      reset();
+      reset({
+        date: defaultDate,
+        sales_count: 0,
+        revenue_amount: 0,
+        billing_amount: 0,
+        leads_count: 0,
+        meetings_count: 0,
+        calls_count: 0,
+        notes: '',
+      });
       
       if (onSuccess) {
         onSuccess();
@@ -81,6 +105,10 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
         </CardTitle>
         <CardDescription>
           Preencha os dados da sua performance do dia - {isSDR ? 'SDR (Pré-vendas)' : 'Closer (Comercial)'}
+          <br />
+          <span className="text-xs text-blue-600">
+            ⏰ Todas as datas são registradas no fuso horário brasileiro (UTC-3)
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent>
