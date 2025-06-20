@@ -3,8 +3,10 @@ import React from 'react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardOrder } from '@/hooks/useDashboardOrder';
 import { useDashboardFilters } from '@/hooks/useDashboardFilters';
+import { useProductFilter } from '@/hooks/useProductFilter';
 import CommercialDashboardFilters from './filters/CommercialDashboardFilters';
-import ProductMetricsCards from './products/ProductMetricsCards';
+import ProductFilter from './filters/ProductFilter';
+import SingleProductMetricsCards from './products/SingleProductMetricsCards';
 import { ItemRenderer } from './renderers/ItemRenderer';
 
 interface DashboardMetricsProps {
@@ -21,6 +23,7 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
     updateSalespeople, 
     resetFilters 
   } = useDashboardFilters();
+  const { selectedProductId, updateSelectedProduct } = useProductFilter();
 
   const orderedItems = getOrderedItems();
   
@@ -56,6 +59,14 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
           onReset={resetFilters}
         />
       )}
+
+      {/* Filtro de Produto */}
+      {config.showProductMetrics && config.selectedProductIds.length > 0 && !isPublicView && (
+        <ProductFilter
+          selectedProductId={selectedProductId}
+          onProductChange={updateSelectedProduct}
+        />
+      )}
       
       {/* Grid para métricas comerciais sem espaçamento */}
       <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -73,12 +84,12 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
       </div>
 
       {/* Seção dedicada para indicadores de produtos */}
-      {config.showProductMetrics && config.selectedProductIds.length > 0 && (
+      {config.showProductMetrics && config.selectedProductIds.length > 0 && selectedProductId && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-gray-800">Indicadores de Produtos (Atemporais)</h2>
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-              <ProductMetricsCards config={config} />
+              <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />
             </div>
           </div>
         </div>
