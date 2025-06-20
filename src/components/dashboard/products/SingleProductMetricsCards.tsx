@@ -98,120 +98,177 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
 
   const metrics = calculateProductMetrics(selectedProductId);
 
-  // Usar a ordem configurada dos produtos
-  const productOrder = config.productOrder || [];
-  const orderedIndicators = productOrder.length > 0 ? productOrder : [
-    'showProductReceita',
-    'showProductFaturamento',
-    'showProductQuantidadeVendas',
-    'showProductTicketReceita',
-    'showProductMetaReceita',
-    'showProductMetaFaturamento',
-    'showProductFaltaReceita',
-    'showProductFaltaFaturamento',
-    'showProductDiariaReceita',
-    'showProductDiariaFaturamento',
-    'showProductCashCollect',
-    'showProductProjecaoReceita',
-    'showProductProjecaoFaturamento'
-  ];
+  // Usar a ordem configurada dos produtos ou ordem padrão se não configurada
+  const productOrder = config.productOrder && config.productOrder.length > 0 
+    ? config.productOrder 
+    : [
+        'showProductReceita',
+        'showProductFaturamento', 
+        'showProductQuantidadeVendas',
+        'showProductTicketReceita',
+        'showProductMetaReceita',
+        'showProductMetaFaturamento',
+        'showProductFaltaReceita',
+        'showProductFaltaFaturamento',
+        'showProductDiariaReceita',
+        'showProductDiariaFaturamento',
+        'showProductCashCollect',
+        'showProductProjecaoReceita',
+        'showProductProjecaoFaturamento'
+      ];
 
   const cards: JSX.Element[] = [];
 
-  orderedIndicators.forEach(indicator => {
+  // Processar apenas os indicadores que estão habilitados E na ordem configurada
+  productOrder.forEach((indicator, index) => {
+    // Verificar se o indicador está habilitado na configuração
     if (!config[indicator as keyof DashboardConfig]) return;
+
+    const key = `${indicator}-${index}`;
 
     switch (indicator) {
       case 'showProductReceita':
-        cards.push(renderMetricCard(
-          'Receita do Produto',
-          formatCurrency(metrics.receita, metrics.currency),
-          DollarSign
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Receita do Produto',
+              formatCurrency(metrics.receita, metrics.currency),
+              DollarSign
+            )}
+          </div>
+        );
         break;
       case 'showProductFaturamento':
-        cards.push(renderMetricCard(
-          'Faturamento do Produto',
-          formatCurrency(metrics.faturamento, metrics.currency),
-          DollarSign
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Faturamento do Produto',
+              formatCurrency(metrics.faturamento, metrics.currency),
+              DollarSign
+            )}
+          </div>
+        );
         break;
       case 'showProductQuantidadeVendas':
-        cards.push(renderMetricCard(
-          'Quantidade de Vendas',
-          `${metrics.vendas} vendas`,
-          Target
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Quantidade de Vendas',
+              `${metrics.vendas} vendas`,
+              Target
+            )}
+          </div>
+        );
         break;
       case 'showProductTicketReceita':
-        cards.push(renderMetricCard(
-          'Ticket Receita',
-          formatCurrency(metrics.ticketReceita, metrics.currency),
-          TrendingUp
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Ticket Receita',
+              formatCurrency(metrics.ticketReceita, metrics.currency),
+              TrendingUp
+            )}
+          </div>
+        );
         break;
       case 'showProductMetaReceita':
-        cards.push(renderMetricCard(
-          'Meta Receita',
-          formatCurrency(metrics.metaReceita, metrics.currency),
-          Target
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Meta Receita',
+              formatCurrency(metrics.metaReceita, metrics.currency),
+              Target
+            )}
+          </div>
+        );
         break;
       case 'showProductMetaFaturamento':
-        cards.push(renderMetricCard(
-          'Meta Faturamento',
-          formatCurrency(metrics.metaFaturamento, metrics.currency),
-          Target
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Meta Faturamento',
+              formatCurrency(metrics.metaFaturamento, metrics.currency),
+              Target
+            )}
+          </div>
+        );
         break;
       case 'showProductFaltaReceita':
-        cards.push(renderMetricCard(
-          'Falta Receita',
-          formatCurrency(metrics.faltaReceita, metrics.currency),
-          Target
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Falta Receita',
+              formatCurrency(metrics.faltaReceita, metrics.currency),
+              Target
+            )}
+          </div>
+        );
         break;
       case 'showProductFaltaFaturamento':
-        cards.push(renderMetricCard(
-          'Falta Faturamento',
-          formatCurrency(metrics.faltaFaturamento, metrics.currency),
-          Target
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Falta Faturamento',
+              formatCurrency(metrics.faltaFaturamento, metrics.currency),
+              Target
+            )}
+          </div>
+        );
         break;
       case 'showProductDiariaReceita':
-        cards.push(renderMetricCard(
-          'Diária Receita',
-          formatCurrency(metrics.diariaReceita, metrics.currency),
-          DollarSign
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Diária Receita',
+              formatCurrency(metrics.diariaReceita, metrics.currency),
+              DollarSign
+            )}
+          </div>
+        );
         break;
       case 'showProductDiariaFaturamento':
-        cards.push(renderMetricCard(
-          'Diária Faturamento',
-          formatCurrency(metrics.diariaFaturamento, metrics.currency),
-          DollarSign
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Diária Faturamento',
+              formatCurrency(metrics.diariaFaturamento, metrics.currency),
+              DollarSign
+            )}
+          </div>
+        );
         break;
       case 'showProductCashCollect':
-        cards.push(renderMetricCard(
-          'Cash Collect',
-          formatCurrency(metrics.cashCollect, metrics.currency),
-          DollarSign
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Cash Collect',
+              formatCurrency(metrics.cashCollect, metrics.currency),
+              DollarSign
+            )}
+          </div>
+        );
         break;
       case 'showProductProjecaoReceita':
-        cards.push(renderMetricCard(
-          'Projeção Receita',
-          formatCurrency(metrics.projecaoReceita, metrics.currency),
-          TrendingUp
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Projeção Receita',
+              formatCurrency(metrics.projecaoReceita, metrics.currency),
+              TrendingUp
+            )}
+          </div>
+        );
         break;
       case 'showProductProjecaoFaturamento':
-        cards.push(renderMetricCard(
-          'Projeção Faturamento',
-          formatCurrency(metrics.projecaoFaturamento, metrics.currency),
-          TrendingUp
-        ));
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Projeção Faturamento',
+              formatCurrency(metrics.projecaoFaturamento, metrics.currency),
+              TrendingUp
+            )}
+          </div>
+        );
         break;
     }
   });
