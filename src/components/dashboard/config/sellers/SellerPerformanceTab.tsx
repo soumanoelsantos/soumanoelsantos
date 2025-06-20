@@ -1,14 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Plus, BarChart3, Trash2, Edit, Calendar, RefreshCw } from 'lucide-react';
 import { useSellerPerformance } from '@/hooks/useSellerPerformance';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import PerformanceFormFields from '@/components/seller/PerformanceFormFields';
+import PerformanceTabHeader from '@/components/seller/PerformanceTabHeader';
+import PerformanceFormCard from '@/components/seller/PerformanceFormCard';
+import EmptyPerformanceState from '@/components/seller/EmptyPerformanceState';
+import PerformanceMetricsDisplay from '@/components/seller/PerformanceMetricsDisplay';
 
 interface SellerPerformanceTabProps {
   sellerId: string;
@@ -72,22 +70,6 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
     refetch();
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return format(new Date(dateString), "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-    } catch (error) {
-      console.error('Error formatting date:', error);
-      return dateString;
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="text-center py-4">
@@ -99,155 +81,35 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h4 className="font-medium text-sm text-gray-700">
-          Lançamentos de Performance ({performances?.length || 0} registros)
-        </h4>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={handleRefresh}>
-            <RefreshCw className="h-4 w-4 mr-1" />
-            Atualizar
-          </Button>
-          <Button size="sm" onClick={() => setShowForm(!showForm)}>
-            <Plus className="h-4 w-4 mr-1" />
-            Novo Lançamento
-          </Button>
-        </div>
-      </div>
+      <PerformanceTabHeader
+        performanceCount={performances?.length || 0}
+        onRefresh={handleRefresh}
+        onToggleForm={() => setShowForm(!showForm)}
+      />
 
       {showForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <BarChart3 className="h-4 w-4" />
-              Lançar Performance {isSDR ? '- SDR' : '- Closer'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <PerformanceFormFields 
-                register={register}
-                errors={errors}
-                isCloser={!isSDR}
-              />
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowForm(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Salvando...' : 'Salvar Lançamento'}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+        <PerformanceFormCard
+          isSDR={isSDR}
+          register={register}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          isSubmitting={isSubmitting}
+          onSubmit={onSubmit}
+          onCancel={() => setShowForm(false)}
+        />
       )}
 
       {!performances || performances.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-          <p>Nenhum lançamento registrado</p>
-          <p className="text-sm">Clique em "Novo Lançamento" para começar</p>
-          <p className="text-xs mt-2 text-gray-400">
-            Vendedor ID: {sellerId} | Tipo: {sellerType || 'não definido'}
-          </p>
-        </div>
+        <EmptyPerformanceState 
+          sellerId={sellerId}
+          sellerType={sellerType}
+        />
       ) : (
-        <div className="space-y-3">
-          {performances.map((performance) => (
-            <Card key={performance.id}>
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <h5 className="font-medium">{formatDate(performance.date)}</h5>
-                    <Badge variant={performance.submitted_by_seller ? "default" : "secondary"}>
-                      {performance.submitted_by_seller ? 'Pelo Vendedor' : 'Pelo Admin'}
-                    </Badge>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-blue-600 hover:text-blue-700"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deletePerformance(performance.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {isSDR ? (
-                  // Exibição para SDR
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-500">Tentativas:</span>
-                      <p className="font-medium">{performance.calls_count}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">No Show:</span>
-                      <p className="font-medium">{performance.leads_count}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Agendamentos:</span>
-                      <p className="font-medium">{performance.meetings_count}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Remarcações:</span>
-                      <p className="font-medium">{performance.sales_count}</p>
-                    </div>
-                  </div>
-                ) : (
-                  // Exibição para Closers
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-500">Vendas:</span>
-                      <p className="font-medium">{performance.sales_count}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Receita:</span>
-                      <p className="font-medium">{formatCurrency(performance.revenue_amount)}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Faturamento:</span>
-                      <p className="font-medium">{formatCurrency(performance.billing_amount)}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Reuniões:</span>
-                      <p className="font-medium">{performance.meetings_count}</p>
-                    </div>
-                  </div>
-                )}
-
-                {performance.notes && (
-                  <div className="mt-3 pt-3 border-t">
-                    <span className="text-gray-500 text-sm">Observações:</span>
-                    <p className="text-sm">{performance.notes}</p>
-                  </div>
-                )}
-
-                <div className="mt-3 pt-3 border-t text-xs text-gray-500">
-                  Lançado em: {format(new Date(performance.submitted_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                  <br />
-                  ID: {performance.id}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <PerformanceMetricsDisplay
+          performances={performances}
+          isSDR={isSDR}
+          onDelete={deletePerformance}
+        />
       )}
     </div>
   );
