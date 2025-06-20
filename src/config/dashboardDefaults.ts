@@ -37,29 +37,19 @@ export const defaultConfig: DashboardConfig = {
   showPreSalesSchedulingChart: true,
   showPreSalesNoShowChart: true,
   showPreSalesSDRComparisonChart: true,
-  companyName: 'Minha Empresa',
+  companyName: '',
   metricsOrder: [
-    'showReceita',
-    'showFaturamento',
-    'showQuantidadeVendas',
-    'showConversion',
-    'showTicketReceita',
-    'showTicketFaturamento',
-    'showMetaReceita',
-    'showMetaFaturamento',
-    'showFaltaReceita',
-    'showFaltaFaturamento',
-    'showDiariaReceita',
-    'showDiariaFaturamento',
-    'showCashCollect',
-    'showCac',
-    'showProjecaoReceita',
-    'showProjecaoFaturamento',
-    'showNoShow'
+    'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
+    'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
+    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
+    'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
+    'showQuantidadeVendas', 'showCashCollect', 'showCac',
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ],
   preSalesOrder: [
     'showPreSalesCalls',
-    'showPreSalesSchedulings',
+    'showPreSalesSchedulings', 
     'showPreSalesNoShow'
   ],
   productOrder: [
@@ -67,8 +57,10 @@ export const defaultConfig: DashboardConfig = {
     'showProductFaturamento',
     'showProductQuantidadeVendas',
     'showProductTicketReceita',
+    'showProductTicketFaturamento',
     'showProductMetaReceita',
     'showProductMetaFaturamento',
+    'showProductMetaQuantidadeVendas',
     'showProductFaltaReceita',
     'showProductFaltaFaturamento',
     'showProductDiariaReceita',
@@ -86,7 +78,7 @@ export const defaultConfig: DashboardConfig = {
   showTemporalRevenueChart: true,
   showTemporalBillingChart: true,
   
-  // Novos campos para indicadores de produtos
+  // Product metrics defaults
   showProductMetrics: false,
   selectedProductIds: [],
   showProductTicketReceita: false,
@@ -95,6 +87,8 @@ export const defaultConfig: DashboardConfig = {
   showProductQuantidadeVendas: false,
   showProductMetaFaturamento: false,
   showProductMetaReceita: false,
+  showProductMetaQuantidadeVendas: false,
+  showProductTicketFaturamento: false,
   showProductFaltaFaturamento: false,
   showProductFaltaReceita: false,
   showProductDiariaReceita: false,

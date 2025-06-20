@@ -1,3 +1,4 @@
+
 export interface DashboardConfig {
   showConversion: boolean;
   showRevenue: boolean;
@@ -74,6 +75,8 @@ export interface DashboardConfig {
   showProductQuantidadeVendas: boolean;
   showProductMetaFaturamento: boolean;
   showProductMetaReceita: boolean;
+  showProductMetaQuantidadeVendas: boolean; // NOVO
+  showProductTicketFaturamento: boolean; // NOVO
   showProductFaltaFaturamento: boolean;
   showProductFaltaReceita: boolean;
   showProductDiariaReceita: boolean;

@@ -147,12 +147,14 @@ export type Database = {
           show_product_falta_receita: boolean | null
           show_product_faturamento: boolean | null
           show_product_meta_faturamento: boolean | null
+          show_product_meta_quantidade_vendas: boolean | null
           show_product_meta_receita: boolean | null
           show_product_metrics: boolean | null
           show_product_projecao_faturamento: boolean | null
           show_product_projecao_receita: boolean | null
           show_product_quantidade_vendas: boolean | null
           show_product_receita: boolean | null
+          show_product_ticket_faturamento: boolean | null
           show_product_ticket_receita: boolean | null
           show_projecao_faturamento: boolean | null
           show_projecao_receita: boolean | null
@@ -225,12 +227,14 @@ export type Database = {
           show_product_falta_receita?: boolean | null
           show_product_faturamento?: boolean | null
           show_product_meta_faturamento?: boolean | null
+          show_product_meta_quantidade_vendas?: boolean | null
           show_product_meta_receita?: boolean | null
           show_product_metrics?: boolean | null
           show_product_projecao_faturamento?: boolean | null
           show_product_projecao_receita?: boolean | null
           show_product_quantidade_vendas?: boolean | null
           show_product_receita?: boolean | null
+          show_product_ticket_faturamento?: boolean | null
           show_product_ticket_receita?: boolean | null
           show_projecao_faturamento?: boolean | null
           show_projecao_receita?: boolean | null
@@ -303,12 +307,14 @@ export type Database = {
           show_product_falta_receita?: boolean | null
           show_product_faturamento?: boolean | null
           show_product_meta_faturamento?: boolean | null
+          show_product_meta_quantidade_vendas?: boolean | null
           show_product_meta_receita?: boolean | null
           show_product_metrics?: boolean | null
           show_product_projecao_faturamento?: boolean | null
           show_product_projecao_receita?: boolean | null
           show_product_quantidade_vendas?: boolean | null
           show_product_receita?: boolean | null
+          show_product_ticket_faturamento?: boolean | null
           show_product_ticket_receita?: boolean | null
           show_projecao_faturamento?: boolean | null
           show_projecao_receita?: boolean | null

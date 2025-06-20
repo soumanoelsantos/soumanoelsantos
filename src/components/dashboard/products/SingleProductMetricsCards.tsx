@@ -52,6 +52,9 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
 
     const remainingDays = calculateRemainingDaysInMonth();
     
+    // Calcular Cash Collect como percentual da diferença entre faturamento e receita
+    const cashCollectPercent = currentFaturamento > 0 ? ((currentFaturamento - currentReceita) / currentFaturamento) * 100 : 0;
+    
     return {
       receita: currentReceita,
       faturamento: currentFaturamento,
@@ -64,7 +67,8 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
       diariaReceita: calculateDailyTarget(receitaGoal?.target_value || 0, currentReceita, remainingDays),
       diariaFaturamento: calculateDailyTarget(faturamentoGoal?.target_value || 0, currentFaturamento, remainingDays),
       ticketReceita: currentVendas > 0 ? currentReceita / currentVendas : 0,
-      cashCollect: currentReceita * 0.85, // 85% do que foi vendido
+      ticketFaturamento: currentVendas > 0 ? currentFaturamento / currentVendas : 0,
+      cashCollect: cashCollectPercent,
       projecaoReceita: currentReceita * (30 / new Date().getDate()),
       projecaoFaturamento: currentFaturamento * (30 / new Date().getDate()),
       currency: receitaGoal?.currency || faturamentoGoal?.currency || 'BRL'
@@ -106,8 +110,10 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
         'showProductFaturamento', 
         'showProductQuantidadeVendas',
         'showProductTicketReceita',
+        'showProductTicketFaturamento',
         'showProductMetaReceita',
         'showProductMetaFaturamento',
+        'showProductMetaQuantidadeVendas',
         'showProductFaltaReceita',
         'showProductFaltaFaturamento',
         'showProductDiariaReceita',
@@ -171,6 +177,17 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
           </div>
         );
         break;
+      case 'showProductTicketFaturamento':
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Ticket Faturamento',
+              formatCurrency(metrics.ticketFaturamento, metrics.currency),
+              TrendingUp
+            )}
+          </div>
+        );
+        break;
       case 'showProductMetaReceita':
         cards.push(
           <div key={key}>
@@ -188,6 +205,17 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
             {renderMetricCard(
               'Meta Faturamento',
               formatCurrency(metrics.metaFaturamento, metrics.currency),
+              Target
+            )}
+          </div>
+        );
+        break;
+      case 'showProductMetaQuantidadeVendas':
+        cards.push(
+          <div key={key}>
+            {renderMetricCard(
+              'Meta Quantidade Vendas',
+              `${metrics.metaQuantidade} vendas`,
               Target
             )}
           </div>
@@ -242,7 +270,7 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
           <div key={key}>
             {renderMetricCard(
               'Cash Collect',
-              formatCurrency(metrics.cashCollect, metrics.currency),
+              `${metrics.cashCollect.toFixed(1)}%`,
               DollarSign
             )}
           </div>
