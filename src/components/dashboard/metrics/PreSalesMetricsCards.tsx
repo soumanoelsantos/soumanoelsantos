@@ -107,19 +107,13 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
               <div className="flex justify-between items-center">
                 <span className="text-sm text-blue-700">Meta diária:</span>
                 <span className="text-sm font-semibold text-blue-800">
-                  {Math.ceil((dailyCallsGoal.target_value || 0) / 30)} tentativas
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-blue-700">Meta mensal:</span>
-                <span className="text-sm font-semibold text-blue-800">
                   {dailyCallsGoal.target_value} tentativas
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-blue-700">Progresso:</span>
                 <span className="text-sm font-semibold text-blue-800">
-                  {Math.round(((preSalesData.dailyCalls) / Math.ceil((dailyCallsGoal.target_value || 0) / 30)) * 100)}%
+                  {Math.round(((preSalesData.dailyCalls) / (dailyCallsGoal.target_value || 1)) * 100)}%
                 </span>
               </div>
               {dailyCallsGoal.seller && (
