@@ -3,7 +3,7 @@ import React from 'react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardOrder } from '@/hooks/useDashboardOrder';
 import { useDashboardFilters } from '@/hooks/useDashboardFilters';
-import DashboardFilters from './filters/DashboardFilters';
+import CommercialDashboardFilters from './filters/CommercialDashboardFilters';
 import { ItemRenderer } from './renderers/ItemRenderer';
 
 const DashboardMetrics = () => {
@@ -39,7 +39,7 @@ const DashboardMetrics = () => {
 
   return (
     <div className="space-y-8">
-      <DashboardFilters
+      <CommercialDashboardFilters
         startDate={filters.startDate}
         endDate={filters.endDate}
         selectedSalespeople={filters.selectedSalespeople}
