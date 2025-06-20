@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, DollarSign } from 'lucide-react';
+import { Plus, Trash2, DollarSign, Edit } from 'lucide-react';
 import { useMonthlyGoals } from '@/hooks/useMonthlyGoals';
 import { useProducts } from '@/hooks/useProducts';
-import { CreateGoalData } from '@/types/goals';
+import { CreateGoalData, MonthlyGoal } from '@/types/goals';
+import EditMonthlyGoalDialog from './EditMonthlyGoalDialog';
 
 const MonthlyGoalsManager = () => {
   const currentDate = new Date();
@@ -18,6 +19,8 @@ const MonthlyGoalsManager = () => {
   const { products } = useProducts();
   
   const [isCreating, setIsCreating] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<MonthlyGoal | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [newGoal, setNewGoal] = useState<CreateGoalData>({
     month: selectedMonth,
     year: selectedYear,
@@ -86,6 +89,19 @@ const MonthlyGoalsManager = () => {
     }
   };
 
+  const handleEditGoal = (goal: MonthlyGoal) => {
+    setEditingGoal(goal);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEditGoal = async (goalId: string, updates: Partial<MonthlyGoal>) => {
+    const success = await updateGoal(goalId, updates);
+    if (success) {
+      setEditingGoal(null);
+      setIsEditDialogOpen(false);
+    }
+  };
+
   const formatCurrency = (value: number, currency: string = 'BRL') => {
     if (currency === 'USD') {
       return new Intl.NumberFormat('en-US', {
@@ -116,260 +132,279 @@ const MonthlyGoalsManager = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Metas Mensais</CardTitle>
-        <CardDescription>
-          Defina e acompanhe suas metas mensais gerais e por produto com diferentes moedas
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Seletor de mês e ano */}
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <Label>Mês</Label>
-            <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(parseInt(value))}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {months.map((month) => (
-                  <SelectItem key={month.value} value={month.value.toString()}>
-                    {month.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex-1">
-            <Label>Ano</Label>
-            <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Lista de metas */}
-        <div className="space-y-2">
-          {isLoading ? (
-            <p className="text-gray-500">Carregando metas...</p>
-          ) : goals.length === 0 ? (
-            <p className="text-gray-500">Nenhuma meta definida para este período</p>
-          ) : (
-            goals.map((goal) => (
-              <div key={goal.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{formatGoalType(goal.goal_type)}</span>
-                    <span className="text-sm text-gray-500">•</span>
-                    <span className="text-sm text-gray-600">
-                      {formatTargetType(goal.target_type, goal.financial_category)}
-                    </span>
-                    {goal.currency && goal.target_type === 'financial' && (
-                      <>
-                        <span className="text-sm text-gray-500">•</span>
-                        <span className="text-xs bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
-                          <DollarSign className="h-3 w-3" />
-                          {goal.currency}
-                        </span>
-                      </>
-                    )}
-                    {goal.product && (
-                      <>
-                        <span className="text-sm text-gray-500">•</span>
-                        <span className="text-sm font-medium text-blue-600">{goal.product.name}</span>
-                      </>
-                    )}
-                  </div>
-                  <div className="text-lg font-bold">
-                    {goal.target_type === 'financial' 
-                      ? formatCurrency(goal.target_value, goal.currency)
-                      : `${goal.target_value} unidades`
-                    }
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    Atual: {goal.target_type === 'financial' 
-                      ? formatCurrency(goal.current_value, goal.currency)
-                      : `${goal.current_value} unidades`
-                    }
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDeleteGoal(goal.id)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Formulário para criar meta */}
-        {isCreating ? (
-          <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Tipo de Meta</Label>
-                <Select 
-                  value={newGoal.goal_type} 
-                  onValueChange={(value: 'meta' | 'supermeta') => {
-                    console.log('🎯 [DEBUG] Alterando tipo de meta para:', value);
-                    setNewGoal(prev => ({ ...prev, goal_type: value }));
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="meta">Meta</SelectItem>
-                    <SelectItem value="supermeta">Super Meta</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Tipo de Alvo</Label>
-                <Select 
-                  value={newGoal.target_type} 
-                  onValueChange={(value: 'financial' | 'quantity') => {
-                    console.log('🎯 [DEBUG] Alterando tipo de alvo para:', value);
-                    setNewGoal(prev => ({ ...prev, target_type: value }));
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="financial">Financeiro</SelectItem>
-                    <SelectItem value="quantity">Quantidade</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {newGoal.target_type === 'financial' && (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Categoria Financeira</Label>
-                  <Select 
-                    value={newGoal.financial_category || 'faturamento'} 
-                    onValueChange={(value: 'faturamento' | 'receita') => {
-                      console.log('🎯 [DEBUG] Alterando categoria financeira para:', value);
-                      setNewGoal(prev => ({ ...prev, financial_category: value }));
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="faturamento">Faturamento</SelectItem>
-                      <SelectItem value="receita">Receita</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Moeda</Label>
-                  <Select 
-                    value={newGoal.currency || 'BRL'} 
-                    onValueChange={(value: 'BRL' | 'USD') => {
-                      console.log('🎯 [DEBUG] Alterando moeda para:', value);
-                      setNewGoal(prev => ({ ...prev, currency: value }));
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="BRL">Real Brasileiro (R$)</SelectItem>
-                      <SelectItem value="USD">Dólar Americano ($)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
-
-            <div>
-              <Label>Produto (opcional)</Label>
-              <Select 
-                value={newGoal.product_id || 'general'} 
-                onValueChange={(value) => {
-                  console.log('🎯 [DEBUG] Alterando produto para:', value);
-                  setNewGoal(prev => ({ 
-                    ...prev, 
-                    product_id: value === 'general' ? undefined : value 
-                  }));
-                }}
-              >
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Metas Mensais</CardTitle>
+          <CardDescription>
+            Defina e acompanhe suas metas mensais gerais e por produto com diferentes moedas
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Seletor de mês e ano */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <Label>Mês</Label>
+              <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(parseInt(value))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="general">Meta Geral</SelectItem>
-                  {products.map((product) => (
-                    <SelectItem key={product.id} value={product.id}>
-                      {product.name}
+                  {months.map((month) => (
+                    <SelectItem key={month.value} value={month.value.toString()}>
+                      {month.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
-              <Label>
-                Valor da Meta {newGoal.target_type === 'financial' 
-                  ? `(${getCurrencyIcon(newGoal.currency)})` 
-                  : '(Quantidade)'
-                }
-              </Label>
-              <Input
-                type="number"
-                value={newGoal.target_value}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  console.log('🎯 [DEBUG] Alterando valor da meta para:', value);
-                  setNewGoal(prev => ({ 
-                    ...prev, 
-                    target_value: value
-                  }));
-                }}
-                placeholder={newGoal.target_type === 'financial' ? '0,00' : '0'}
-                min="0"
-                step={newGoal.target_type === 'financial' ? '0.01' : '1'}
-              />
-            </div>
-
-            <div className="flex gap-2">
-              <Button 
-                onClick={handleCreateGoal} 
-                disabled={newGoal.target_value <= 0}
-                className="flex-1"
-              >
-                Criar Meta
-              </Button>
-              <Button variant="outline" onClick={() => setIsCreating(false)}>
-                Cancelar
-              </Button>
+            <div className="flex-1">
+              <Label>Ano</Label>
+              <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((year) => (
+                    <SelectItem key={year} value={year.toString()}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        ) : (
-          <Button onClick={() => setIsCreating(true)} className="w-full">
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Meta
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+
+          {/* Lista de metas */}
+          <div className="space-y-2">
+            {isLoading ? (
+              <p className="text-gray-500">Carregando metas...</p>
+            ) : goals.length === 0 ? (
+              <p className="text-gray-500">Nenhuma meta definida para este período</p>
+            ) : (
+              goals.map((goal) => (
+                <div key={goal.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{formatGoalType(goal.goal_type)}</span>
+                      <span className="text-sm text-gray-500">•</span>
+                      <span className="text-sm text-gray-600">
+                        {formatTargetType(goal.target_type, goal.financial_category)}
+                      </span>
+                      {goal.currency && goal.target_type === 'financial' && (
+                        <>
+                          <span className="text-sm text-gray-500">•</span>
+                          <span className="text-xs bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" />
+                            {goal.currency}
+                          </span>
+                        </>
+                      )}
+                      {goal.product && (
+                        <>
+                          <span className="text-sm text-gray-500">•</span>
+                          <span className="text-sm font-medium text-blue-600">{goal.product.name}</span>
+                        </>
+                      )}
+                    </div>
+                    <div className="text-lg font-bold">
+                      {goal.target_type === 'financial' 
+                        ? formatCurrency(goal.target_value, goal.currency)
+                        : `${goal.target_value} unidades`
+                      }
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Atual: {goal.target_type === 'financial' 
+                        ? formatCurrency(goal.current_value, goal.currency)
+                        : `${goal.current_value} unidades`
+                      }
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditGoal(goal)}
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteGoal(goal.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Formulário para criar meta */}
+          {isCreating ? (
+            <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Tipo de Meta</Label>
+                  <Select 
+                    value={newGoal.goal_type} 
+                    onValueChange={(value: 'meta' | 'supermeta') => {
+                      console.log('🎯 [DEBUG] Alterando tipo de meta para:', value);
+                      setNewGoal(prev => ({ ...prev, goal_type: value }));
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="meta">Meta</SelectItem>
+                      <SelectItem value="supermeta">Super Meta</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Tipo de Alvo</Label>
+                  <Select 
+                    value={newGoal.target_type} 
+                    onValueChange={(value: 'financial' | 'quantity') => {
+                      console.log('🎯 [DEBUG] Alterando tipo de alvo para:', value);
+                      setNewGoal(prev => ({ ...prev, target_type: value }));
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="financial">Financeiro</SelectItem>
+                      <SelectItem value="quantity">Quantidade</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {newGoal.target_type === 'financial' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Categoria Financeira</Label>
+                    <Select 
+                      value={newGoal.financial_category || 'faturamento'} 
+                      onValueChange={(value: 'faturamento' | 'receita') => {
+                        console.log('🎯 [DEBUG] Alterando categoria financeira para:', value);
+                        setNewGoal(prev => ({ ...prev, financial_category: value }));
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="faturamento">Faturamento</SelectItem>
+                        <SelectItem value="receita">Receita</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Moeda</Label>
+                    <Select 
+                      value={newGoal.currency || 'BRL'} 
+                      onValueChange={(value: 'BRL' | 'USD') => {
+                        console.log('🎯 [DEBUG] Alterando moeda para:', value);
+                        setNewGoal(prev => ({ ...prev, currency: value }));
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="BRL">Real Brasileiro (R$)</SelectItem>
+                        <SelectItem value="USD">Dólar Americano ($)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <Label>Produto (opcional)</Label>
+                <Select 
+                  value={newGoal.product_id || 'general'} 
+                  onValueChange={(value) => {
+                    console.log('🎯 [DEBUG] Alterando produto para:', value);
+                    setNewGoal(prev => ({ 
+                      ...prev, 
+                      product_id: value === 'general' ? undefined : value 
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="general">Meta Geral</SelectItem>
+                    {products.map((product) => (
+                      <SelectItem key={product.id} value={product.id}>
+                        {product.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>
+                  Valor da Meta {newGoal.target_type === 'financial' 
+                    ? `(${getCurrencyIcon(newGoal.currency)})` 
+                    : '(Quantidade)'
+                  }
+                </Label>
+                <Input
+                  type="number"
+                  value={newGoal.target_value}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value) || 0;
+                    console.log('🎯 [DEBUG] Alterando valor da meta para:', value);
+                    setNewGoal(prev => ({ 
+                      ...prev, 
+                      target_value: value
+                    }));
+                  }}
+                  placeholder={newGoal.target_type === 'financial' ? '0,00' : '0'}
+                  min="0"
+                  step={newGoal.target_type === 'financial' ? '0.01' : '1'}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleCreateGoal} 
+                  disabled={newGoal.target_value <= 0}
+                  className="flex-1"
+                >
+                  Criar Meta
+                </Button>
+                <Button variant="outline" onClick={() => setIsCreating(false)}>
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button onClick={() => setIsCreating(true)} className="w-full">
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Meta
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      <EditMonthlyGoalDialog
+        goal={editingGoal}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSave={handleSaveEditGoal}
+      />
+    </>
   );
 };
 
