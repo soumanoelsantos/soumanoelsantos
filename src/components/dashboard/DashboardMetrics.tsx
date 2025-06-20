@@ -60,7 +60,13 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
         />
       )}
 
-      {/* Filtro de Produto - removido pois agora mostramos todos os produtos selecionados */}
+      {/* Filtro de Produto */}
+      {!isPublicView && (
+        <ProductFilter
+          selectedProductId={selectedProductId}
+          onProductChange={updateSelectedProduct}
+        />
+      )}
       
       {/* Grid para métricas comerciais sem espaçamento */}
       <div className="border border-gray-200 rounded-lg overflow-hidden">
