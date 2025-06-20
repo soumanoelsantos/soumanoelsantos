@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import MemberArea from "./pages/MemberArea";
 import Dashboard from "./pages/Dashboard";
 import DashboardConfig from "./pages/DashboardConfig";
+import SharedDashboard from "./pages/SharedDashboard";
 import GoalsManagement from "./pages/GoalsManagement";
 import AdminPage from "./pages/AdminPage";
 import DiagnosticoTest from "./pages/DiagnosticoTest";
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/area-membro" element={<MemberArea />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/configurar" element={<DashboardConfig />} />
+            <Route path="/dashboard/compartilhado/:shareToken" element={<SharedDashboard />} />
             <Route path="/metas" element={<GoalsManagement />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/diagnostico" element={<DiagnosticoTest />} />
