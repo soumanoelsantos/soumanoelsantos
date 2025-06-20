@@ -3,12 +3,14 @@ import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, DollarSign, Target } from 'lucide-react';
+import ProductMetricsCards from '../products/ProductMetricsCards';
 
 interface ItemRendererProps {
   itemKey: string;
   config: DashboardConfig;
   isPublicView?: boolean;
   sharedUserId?: string;
+  selectedProductId?: string | null;
 }
 
 // Simple metric card component for now
@@ -36,7 +38,8 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({
   itemKey, 
   config, 
   isPublicView = false, 
-  sharedUserId 
+  sharedUserId,
+  selectedProductId
 }) => {
   // Verificar se o item está habilitado na configuração
   const isEnabled = config[itemKey as keyof DashboardConfig];
@@ -46,7 +49,12 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({
     return null;
   }
 
-  console.log(`🎯 ItemRenderer - Rendering item: ${itemKey}`, { isPublicView, sharedUserId });
+  console.log(`🎯 ItemRenderer - Rendering item: ${itemKey}`, { isPublicView, sharedUserId, selectedProductId });
+
+  // Para indicadores de produtos, usar o componente específico
+  if (itemKey === 'productMetrics') {
+    return <ProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+  }
 
   // Renderizar o componente apropriado baseado na chave
   switch (itemKey) {

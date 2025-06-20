@@ -77,7 +77,12 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
             
             return (
               <div key={`${key}-${index}`}>
-                <ItemRenderer itemKey={key} config={config} isPublicView={isPublicView} sharedUserId={sharedUserId} />
+                <ItemRenderer 
+                  itemKey={key} 
+                  config={config} 
+                  isPublicView={isPublicView} 
+                  sharedUserId={sharedUserId}
+                />
               </div>
             );
           })}
