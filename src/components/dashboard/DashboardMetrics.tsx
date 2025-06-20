@@ -61,15 +61,15 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
         />
       )}
 
-      {/* Filtro de Produto */}
-      {!isPublicView && (
+      {/* Filtro de Produto - só aparece se há indicadores de produtos habilitados */}
+      {!isPublicView && config.showProductMetrics && config.selectedProductIds.length > 0 && (
         <ProductFilter
           selectedProductId={selectedProductId}
           onProductChange={updateSelectedProduct}
         />
       )}
       
-      {/* Grid para métricas comerciais sem espaçamento */}
+      {/* Grid para métricas comerciais sem espaçamento - NÃO é afetado pelo filtro de produto */}
       <div className="border border-gray-200 rounded-lg overflow-hidden">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {gridItems.map((key, index) => {
@@ -84,7 +84,7 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
         </div>
       </div>
 
-      {/* Seção dedicada para indicadores de produtos - agora respeita o filtro de produto */}
+      {/* Seção dedicada para indicadores de produtos - ESTA SIM é afetada pelo filtro de produto */}
       {config.showProductMetrics && config.selectedProductIds.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-gray-800">
