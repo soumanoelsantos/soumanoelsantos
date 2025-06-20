@@ -3,6 +3,9 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Copy, ExternalLink } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { Seller } from '@/types/sellers';
 import { SellerGoalsTab } from './SellerGoalsTab';
 import { SellerPerformanceTab } from './SellerPerformanceTab';
@@ -18,6 +21,8 @@ export const SellerDetailsDialog: React.FC<SellerDetailsDialogProps> = ({
   open,
   onOpenChange
 }) => {
+  const { toast } = useToast();
+
   if (!seller) return null;
 
   const sellerTypeLabels = {
@@ -26,6 +31,28 @@ export const SellerDetailsDialog: React.FC<SellerDetailsDialogProps> = ({
     pap: 'Porta a Porta',
     vendedor_interno: 'Vendedor Interno',
     outro: 'Outro'
+  };
+
+  const performanceUrl = `${window.location.origin}/seller-performance/${seller.access_token}`;
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "✅ Link copiado!",
+        description: "O link foi copiado para a área de transferência.",
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Erro",
+        description: "Não foi possível copiar o link.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const openInNewTab = (url: string) => {
+    window.open(url, '_blank');
   };
 
   console.log('🔍 [DEBUG] SellerDetailsDialog - seller:', seller);
@@ -78,11 +105,47 @@ export const SellerDetailsDialog: React.FC<SellerDetailsDialogProps> = ({
           </TabsContent>
 
           <TabsContent value="access" className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Token de Acesso</label>
-              <p className="text-sm font-mono bg-gray-100 p-2 rounded">
-                {seller.access_token}
-              </p>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">Token de Acesso</label>
+                <p className="text-sm font-mono bg-gray-100 p-2 rounded">
+                  {seller.access_token}
+                </p>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-500 mb-2 block">
+                  Link para Lançamento de Performance
+                </label>
+                <div className="bg-gray-50 p-3 rounded-lg border">
+                  <p className="text-xs text-gray-600 mb-2">
+                    Envie este link para {seller.name} poder lançar sua performance diária:
+                  </p>
+                  <div className="flex items-center gap-2 p-2 bg-white border rounded">
+                    <span className="text-sm font-mono flex-1 truncate">
+                      {performanceUrl}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => copyToClipboard(performanceUrl)}
+                      className="flex-shrink-0"
+                    >
+                      <Copy className="h-4 w-4 mr-1" />
+                      Copiar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openInNewTab(performanceUrl)}
+                      className="flex-shrink-0"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-1" />
+                      Abrir
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
