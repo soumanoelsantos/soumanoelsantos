@@ -184,7 +184,7 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
                     </p>
                   )}
                 </CardContent>
-              </CardContent>
+              </Card>
             );
           })}
         </div>
