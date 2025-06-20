@@ -62,8 +62,10 @@ const App = () => (
             <Route path="/crm" element={<CrmPage />} />
             <Route path="/dev-ai" element={<DevAI />} />
             <Route path="/mind-map-editor" element={<MindMapEditor />} />
-            <Route path="/shared-mind-map/:shareToken" element={<SharedMindMap />} />
             <Route path="/mapa-mental" element={<MapaMental />} />
+            <Route path="/mapa-mental/:id" element={<MindMapEditor />} />
+            <Route path="/mapa-mental/compartilhado/:shareToken" element={<SharedMindMap />} />
+            <Route path="/shared-mind-map/:shareToken" element={<SharedMindMap />} />
             <Route path="/diagnostico-landing" element={<DiagnosticoLanding />} />
             <Route path="/diagnostico-landing-v2" element={<DiagnosticoLandingV2 />} />
             <Route path="/seller-performance/:token" element={<SellerPerformanceForm />} />
