@@ -101,9 +101,11 @@ export type Database = {
           company_name: string | null
           created_at: string
           id: string
+          is_public: boolean | null
           metrics_order: Json | null
           pre_sales_order: Json | null
           selected_goal_ids: Json | null
+          share_token: string | null
           show_billing_evolution_chart: boolean | null
           show_cac: boolean | null
           show_calls_diarias: boolean | null
@@ -161,9 +163,11 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           id?: string
+          is_public?: boolean | null
           metrics_order?: Json | null
           pre_sales_order?: Json | null
           selected_goal_ids?: Json | null
+          share_token?: string | null
           show_billing_evolution_chart?: boolean | null
           show_cac?: boolean | null
           show_calls_diarias?: boolean | null
@@ -221,9 +225,11 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           id?: string
+          is_public?: boolean | null
           metrics_order?: Json | null
           pre_sales_order?: Json | null
           selected_goal_ids?: Json | null
+          share_token?: string | null
           show_billing_evolution_chart?: boolean | null
           show_cac?: boolean | null
           show_calls_diarias?: boolean | null

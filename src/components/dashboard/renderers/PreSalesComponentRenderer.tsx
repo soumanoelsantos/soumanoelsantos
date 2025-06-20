@@ -1,76 +1,52 @@
 
 import React from 'react';
-import PreSalesCallsChart from '../charts/PreSalesCallsChart';
-import PreSalesSchedulingChart from '../charts/PreSalesSchedulingChart';
-import PreSalesNoShowChart from '../charts/PreSalesNoShowChart';
-import PreSalesSDRComparisonChart from '../charts/PreSalesSDRComparisonChart';
-import PreSalesSDRTable from '../tables/PreSalesSDRTable';
-
-interface WeeklyData {
-  date: string;
-  calls: number;
-  schedulings: number;
-  noShow: number;
-}
-
-interface SDRPerformance {
-  name: string;
-  calls: number;
-  schedulings: number;
-  noShow: number;
-  conversionRate: number;
-}
+import { PreSalesCallsChart } from '../charts/PreSalesCallsChart';
+import { PreSalesSchedulingChart } from '../charts/PreSalesSchedulingChart';
+import { PreSalesNoShowChart } from '../charts/PreSalesNoShowChart';
+import { PreSalesSDRComparisonChart } from '../charts/PreSalesSDRComparisonChart';
+import { PreSalesSDRTable } from '../tables/PreSalesSDRTable';
 
 interface PreSalesComponentRendererProps {
   itemKey: string;
-  weeklyData: WeeklyData[];
-  sdrPerformance: SDRPerformance[];
+  weeklyData: Array<{
+    date: string;
+    calls: number;
+    schedulings: number;
+    noShow: number;
+  }>;
+  sdrPerformance: Array<{
+    name: string;
+    calls: number;
+    schedulings: number;
+    noShow: number;
+    conversionRate: number;
+  }>;
+  isPublicView?: boolean;
+  sharedUserId?: string;
 }
 
-const PreSalesComponentRenderer: React.FC<PreSalesComponentRendererProps> = ({ 
-  itemKey, 
-  weeklyData, 
-  sdrPerformance 
+const PreSalesComponentRenderer: React.FC<PreSalesComponentRendererProps> = ({
+  itemKey,
+  weeklyData,
+  sdrPerformance,
+  isPublicView = false,
+  sharedUserId
 }) => {
-  console.log('🔍 PreSalesComponentRenderer - Rendering component:', itemKey);
-  
+  console.log(`🎯 PreSalesComponentRenderer - Rendering: ${itemKey}`, { isPublicView, sharedUserId });
+
   switch (itemKey) {
     case 'showPreSalesCallsChart':
-      return (
-        <div className="w-full">
-          <PreSalesCallsChart key={itemKey} data={weeklyData} />
-        </div>
-      );
-
+      return <PreSalesCallsChart data={weeklyData} />;
     case 'showPreSalesSchedulingChart':
-      return (
-        <div className="w-full">
-          <PreSalesSchedulingChart key={itemKey} data={weeklyData} />
-        </div>
-      );
-
+      return <PreSalesSchedulingChart data={weeklyData} />;
     case 'showPreSalesNoShowChart':
-      return (
-        <div className="w-full">
-          <PreSalesNoShowChart key={itemKey} data={weeklyData} />
-        </div>
-      );
-
+      return <PreSalesNoShowChart data={weeklyData} />;
     case 'showPreSalesSDRComparisonChart':
-      return (
-        <div className="w-full">
-          <PreSalesSDRComparisonChart key={itemKey} data={sdrPerformance} weeklyData={weeklyData} />
-        </div>
-      );
-
+      return <PreSalesSDRComparisonChart data={sdrPerformance} />;
     case 'showPreSalesSDRTable':
-      return (
-        <div className="w-full">
-          <PreSalesSDRTable key={itemKey} data={sdrPerformance} />
-        </div>
-      );
-
+      return <PreSalesSDRTable data={sdrPerformance} />;
     default:
+      console.warn(`⚠️ PreSalesComponentRenderer - Unknown component: ${itemKey}`);
       return null;
   }
 };

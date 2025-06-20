@@ -10,10 +10,15 @@ import PreSalesMetricsLoading from './loading/PreSalesMetricsLoading';
 import PreSalesMetricsError from './error/PreSalesMetricsError';
 import PreSalesDashboardFilters from './filters/PreSalesDashboardFilters';
 
-const PreSalesMetrics = () => {
-  const { config } = useDashboardConfig();
+interface PreSalesMetricsProps {
+  isPublicView?: boolean;
+  sharedUserId?: string;
+}
+
+const PreSalesMetrics = ({ isPublicView = false, sharedUserId }: PreSalesMetricsProps) => {
+  const { config } = useDashboardConfig(sharedUserId);
   const { getOrderedPreSalesItems } = usePreSalesOrder(config);
-  const { data: preSalesData, isLoading, error } = usePreSalesData();
+  const { data: preSalesData, isLoading, error } = usePreSalesData(sharedUserId);
   const { 
     filters, 
     updateDateRange, 
@@ -23,6 +28,7 @@ const PreSalesMetrics = () => {
   
   console.log('🔍 PreSalesMetrics - Rendering pre-sales dashboard with config:', config);
   console.log('🔍 PreSalesMetrics - Pre-sales data:', preSalesData);
+  console.log('🔍 PreSalesMetrics - Public view:', isPublicView, 'Shared user:', sharedUserId);
 
   if (isLoading) {
     return <PreSalesMetricsLoading />;
@@ -43,15 +49,17 @@ const PreSalesMetrics = () => {
 
   return (
     <div className="space-y-8">
-      {/* Filtros específicos para pré-vendas */}
-      <PreSalesDashboardFilters
-        startDate={filters.startDate}
-        endDate={filters.endDate}
-        selectedSalespeople={filters.selectedSalespeople}
-        onDateChange={updateDateRange}
-        onSalespeopleChange={updateSalespeople}
-        onReset={resetFilters}
-      />
+      {/* Filtros específicos para pré-vendas - somente se não for visualização pública */}
+      {!isPublicView && (
+        <PreSalesDashboardFilters
+          startDate={filters.startDate}
+          endDate={filters.endDate}
+          selectedSalespeople={filters.selectedSalespeople}
+          onDateChange={updateDateRange}
+          onSalespeopleChange={updateSalespeople}
+          onReset={resetFilters}
+        />
+      )}
 
       {/* Cards de métricas no mesmo estilo do comercial */}
       <PreSalesMetricsCards config={config} preSalesData={preSalesData} />
@@ -64,6 +72,8 @@ const PreSalesMetrics = () => {
             itemKey={item.key}
             weeklyData={preSalesData.weeklyData}
             sdrPerformance={preSalesData.sdrPerformance}
+            isPublicView={isPublicView}
+            sharedUserId={sharedUserId}
           />
         );
         

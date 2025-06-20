@@ -6,8 +6,13 @@ import { useDashboardFilters } from '@/hooks/useDashboardFilters';
 import CommercialDashboardFilters from './filters/CommercialDashboardFilters';
 import { ItemRenderer } from './renderers/ItemRenderer';
 
-const DashboardMetrics = () => {
-  const { config } = useDashboardConfig();
+interface DashboardMetricsProps {
+  isPublicView?: boolean;
+  sharedUserId?: string;
+}
+
+const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetricsProps) => {
+  const { config } = useDashboardConfig(sharedUserId);
   const { getOrderedItems } = useDashboardOrder(config);
   const { 
     filters, 
@@ -20,6 +25,7 @@ const DashboardMetrics = () => {
   
   console.log('🔍 DashboardMetrics - Rendering with config:', config);
   console.log('🔍 DashboardMetrics - Ordered items:', orderedItems);
+  console.log('🔍 DashboardMetrics - Public view:', isPublicView, 'Shared user:', sharedUserId);
 
   // Separar itens que devem ocupar toda a largura dos que ficam no grid
   const fullWidthItems = [
@@ -39,14 +45,16 @@ const DashboardMetrics = () => {
 
   return (
     <div className="space-y-8">
-      <CommercialDashboardFilters
-        startDate={filters.startDate}
-        endDate={filters.endDate}
-        selectedSalespeople={filters.selectedSalespeople}
-        onDateChange={updateDateRange}
-        onSalespeopleChange={updateSalespeople}
-        onReset={resetFilters}
-      />
+      {!isPublicView && (
+        <CommercialDashboardFilters
+          startDate={filters.startDate}
+          endDate={filters.endDate}
+          selectedSalespeople={filters.selectedSalespeople}
+          onDateChange={updateDateRange}
+          onSalespeopleChange={updateSalespeople}
+          onReset={resetFilters}
+        />
+      )}
       
       {/* Grid para métricas sem espaçamento */}
       <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -56,7 +64,7 @@ const DashboardMetrics = () => {
             
             return (
               <div key={`${key}-${index}`}>
-                <ItemRenderer itemKey={key} config={config} />
+                <ItemRenderer itemKey={key} config={config} isPublicView={isPublicView} sharedUserId={sharedUserId} />
               </div>
             );
           })}
@@ -69,7 +77,7 @@ const DashboardMetrics = () => {
           <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução, Análise Temporal e Tabelas de Performance</h2>
           {evolutionCharts.map((key, index) => {
             console.log(`🔍 DashboardMetrics - Rendering evolution chart/table: ${key}`);
-            const component = <ItemRenderer itemKey={key} config={config} />;
+            const component = <ItemRenderer itemKey={key} config={config} isPublicView={isPublicView} sharedUserId={sharedUserId} />;
             if (!component) {
               console.log(`❌ DashboardMetrics - No component returned for evolution chart/table: ${key}`);
               return null;

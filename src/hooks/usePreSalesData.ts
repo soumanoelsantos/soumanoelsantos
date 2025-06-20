@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,8 +26,10 @@ interface PreSalesData {
   }>;
 }
 
-export const usePreSalesData = () => {
-  const { userId } = useAuth();
+export const usePreSalesData = (sharedUserId?: string) => {
+  const { userId: authUserId } = useAuth();
+  const userId = sharedUserId || authUserId;
+  
   const [data, setData] = useState<PreSalesData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export const usePreSalesData = () => {
     setError(null);
     
     try {
-      console.log('🔍 usePreSalesData - Loading pre-sales data from database...');
+      console.log('🔍 usePreSalesData - Loading pre-sales data from database for user:', userId);
       
       // Buscar SDRs do usuário
       const { data: sdrData, error: sdrError } = await supabase
