@@ -62,6 +62,21 @@ export const defaultConfig: DashboardConfig = {
     'showPreSalesSchedulings',
     'showPreSalesNoShow'
   ],
+  productOrder: [
+    'showProductReceita',
+    'showProductFaturamento',
+    'showProductQuantidadeVendas',
+    'showProductTicketReceita',
+    'showProductMetaReceita',
+    'showProductMetaFaturamento',
+    'showProductFaltaReceita',
+    'showProductFaltaFaturamento',
+    'showProductDiariaReceita',
+    'showProductDiariaFaturamento',
+    'showProductCashCollect',
+    'showProductProjecaoReceita',
+    'showProductProjecaoFaturamento'
+  ],
   showSpecificGoals: false,
   selectedGoalIds: [],
   showRevenueEvolutionChart: true,

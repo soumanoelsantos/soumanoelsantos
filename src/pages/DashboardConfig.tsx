@@ -13,6 +13,7 @@ import ProductMetricsConfigCard from '@/components/dashboard/config/ProductMetri
 import PreSalesConfigCard from '@/components/dashboard/config/PreSalesConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
 import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
+import ProductOrderManager from '@/components/dashboard/config/product-order/ProductOrderManager';
 import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,11 @@ const DashboardConfig = () => {
   const handleReorderPreSales = (newOrder: string[]) => {
     console.log('🔵 DashboardConfig - Reordering pre-sales to:', newOrder);
     updateConfig({ preSalesOrder: newOrder });
+  };
+
+  const handleReorderProducts = (newOrder: string[]) => {
+    console.log('🔵 DashboardConfig - Reordering products to:', newOrder);
+    updateConfig({ productOrder: newOrder });
   };
 
   const handleManualSave = async () => {
@@ -126,6 +132,12 @@ const DashboardConfig = () => {
             config={config}
             preSalesOrder={config.preSalesOrder}
             onReorderPreSales={handleReorderPreSales}
+          />
+
+          <ProductOrderManager 
+            config={config}
+            productOrder={config.productOrder || []}
+            onReorderProducts={handleReorderProducts}
           />
         </div>
       </main>

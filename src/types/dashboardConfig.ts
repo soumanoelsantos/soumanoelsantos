@@ -1,4 +1,3 @@
-
 export interface DashboardConfig {
   showConversion: boolean;
   showRevenue: boolean;
@@ -46,6 +45,7 @@ export interface DashboardConfig {
   companyName: string;
   metricsOrder: string[];
   preSalesOrder: string[];
+  productOrder: string[];
   
   // Novas opções para metas específicas
   showSpecificGoals: boolean;

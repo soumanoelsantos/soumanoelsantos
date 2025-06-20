@@ -64,6 +64,22 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           }
         }
 
+        let productOrder = defaultConfig.productOrder;
+        if (data.product_order) {
+          if (Array.isArray(data.product_order)) {
+            productOrder = data.product_order.filter((item): item is string => typeof item === 'string');
+          } else if (typeof data.product_order === 'string') {
+            try {
+              const parsed = JSON.parse(data.product_order);
+              if (Array.isArray(parsed)) {
+                productOrder = parsed.filter((item): item is string => typeof item === 'string');
+              }
+            } catch (e) {
+              console.warn('Failed to parse product_order');
+            }
+          }
+        }
+
         let selectedGoalIds = defaultConfig.selectedGoalIds;
         if (data.selected_goal_ids) {
           if (Array.isArray(data.selected_goal_ids)) {
@@ -135,6 +151,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           companyName: data.company_name || defaultConfig.companyName,
           metricsOrder: metricsOrder,
           preSalesOrder: preSalesOrder,
+          productOrder: productOrder,
           showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
           selectedGoalIds: selectedGoalIds,
           showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? defaultConfig.showRevenueEvolutionChart,
@@ -174,6 +191,9 @@ export const useDashboardConfig = (sharedUserId?: string) => {
 
     try {
       const mappedUpdates = {
+        metrics_order: updates.metricsOrder,
+        pre_sales_order: updates.preSalesOrder,
+        product_order: updates.productOrder,
         show_conversion: updates.showConversion,
         show_revenue: updates.showRevenue,
         show_ticket_faturamento: updates.showTicketFaturamento,
@@ -210,8 +230,6 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_pre_sales_no_show_chart: updates.showPreSalesNoShowChart,
         show_pre_sales_sdr_comparison_chart: updates.showPreSalesSDRComparisonChart,
         company_name: updates.companyName,
-        metrics_order: updates.metricsOrder,
-        pre_sales_order: updates.preSalesOrder,
         show_specific_goals: updates.showSpecificGoals,
         selected_goal_ids: updates.selectedGoalIds,
         show_revenue_evolution_chart: updates.showRevenueEvolutionChart,

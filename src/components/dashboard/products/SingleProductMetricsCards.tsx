@@ -97,111 +97,124 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
   );
 
   const metrics = calculateProductMetrics(selectedProductId);
+
+  // Usar a ordem configurada dos produtos
+  const productOrder = config.productOrder || [];
+  const orderedIndicators = productOrder.length > 0 ? productOrder : [
+    'showProductReceita',
+    'showProductFaturamento',
+    'showProductQuantidadeVendas',
+    'showProductTicketReceita',
+    'showProductMetaReceita',
+    'showProductMetaFaturamento',
+    'showProductFaltaReceita',
+    'showProductFaltaFaturamento',
+    'showProductDiariaReceita',
+    'showProductDiariaFaturamento',
+    'showProductCashCollect',
+    'showProductProjecaoReceita',
+    'showProductProjecaoFaturamento'
+  ];
+
   const cards: JSX.Element[] = [];
 
-  if (config.showProductReceita) {
-    cards.push(renderMetricCard(
-      'Receita do Produto',
-      formatCurrency(metrics.receita, metrics.currency),
-      DollarSign
-    ));
-  }
+  orderedIndicators.forEach(indicator => {
+    if (!config[indicator as keyof DashboardConfig]) return;
 
-  if (config.showProductFaturamento) {
-    cards.push(renderMetricCard(
-      'Faturamento do Produto',
-      formatCurrency(metrics.faturamento, metrics.currency),
-      DollarSign
-    ));
-  }
-
-  if (config.showProductQuantidadeVendas) {
-    cards.push(renderMetricCard(
-      'Quantidade de Vendas',
-      `${metrics.vendas} vendas`,
-      Target
-    ));
-  }
-
-  if (config.showProductTicketReceita) {
-    cards.push(renderMetricCard(
-      'Ticket Receita',
-      formatCurrency(metrics.ticketReceita, metrics.currency),
-      TrendingUp
-    ));
-  }
-
-  if (config.showProductMetaReceita) {
-    cards.push(renderMetricCard(
-      'Meta Receita',
-      formatCurrency(metrics.metaReceita, metrics.currency),
-      Target
-    ));
-  }
-
-  if (config.showProductMetaFaturamento) {
-    cards.push(renderMetricCard(
-      'Meta Faturamento',
-      formatCurrency(metrics.metaFaturamento, metrics.currency),
-      Target
-    ));
-  }
-
-  if (config.showProductFaltaReceita) {
-    cards.push(renderMetricCard(
-      'Falta Receita',
-      formatCurrency(metrics.faltaReceita, metrics.currency),
-      Target
-    ));
-  }
-
-  if (config.showProductFaltaFaturamento) {
-    cards.push(renderMetricCard(
-      'Falta Faturamento',
-      formatCurrency(metrics.faltaFaturamento, metrics.currency),
-      Target
-    ));
-  }
-
-  if (config.showProductDiariaReceita) {
-    cards.push(renderMetricCard(
-      'Diária Receita',
-      formatCurrency(metrics.diariaReceita, metrics.currency),
-      DollarSign
-    ));
-  }
-
-  if (config.showProductDiariaFaturamento) {
-    cards.push(renderMetricCard(
-      'Diária Faturamento',
-      formatCurrency(metrics.diariaFaturamento, metrics.currency),
-      DollarSign
-    ));
-  }
-
-  if (config.showProductCashCollect) {
-    cards.push(renderMetricCard(
-      'Cash Collect',
-      formatCurrency(metrics.cashCollect, metrics.currency),
-      DollarSign
-    ));
-  }
-
-  if (config.showProductProjecaoReceita) {
-    cards.push(renderMetricCard(
-      'Projeção Receita',
-      formatCurrency(metrics.projecaoReceita, metrics.currency),
-      TrendingUp
-    ));
-  }
-
-  if (config.showProductProjecaoFaturamento) {
-    cards.push(renderMetricCard(
-      'Projeção Faturamento',
-      formatCurrency(metrics.projecaoFaturamento, metrics.currency),
-      TrendingUp
-    ));
-  }
+    switch (indicator) {
+      case 'showProductReceita':
+        cards.push(renderMetricCard(
+          'Receita do Produto',
+          formatCurrency(metrics.receita, metrics.currency),
+          DollarSign
+        ));
+        break;
+      case 'showProductFaturamento':
+        cards.push(renderMetricCard(
+          'Faturamento do Produto',
+          formatCurrency(metrics.faturamento, metrics.currency),
+          DollarSign
+        ));
+        break;
+      case 'showProductQuantidadeVendas':
+        cards.push(renderMetricCard(
+          'Quantidade de Vendas',
+          `${metrics.vendas} vendas`,
+          Target
+        ));
+        break;
+      case 'showProductTicketReceita':
+        cards.push(renderMetricCard(
+          'Ticket Receita',
+          formatCurrency(metrics.ticketReceita, metrics.currency),
+          TrendingUp
+        ));
+        break;
+      case 'showProductMetaReceita':
+        cards.push(renderMetricCard(
+          'Meta Receita',
+          formatCurrency(metrics.metaReceita, metrics.currency),
+          Target
+        ));
+        break;
+      case 'showProductMetaFaturamento':
+        cards.push(renderMetricCard(
+          'Meta Faturamento',
+          formatCurrency(metrics.metaFaturamento, metrics.currency),
+          Target
+        ));
+        break;
+      case 'showProductFaltaReceita':
+        cards.push(renderMetricCard(
+          'Falta Receita',
+          formatCurrency(metrics.faltaReceita, metrics.currency),
+          Target
+        ));
+        break;
+      case 'showProductFaltaFaturamento':
+        cards.push(renderMetricCard(
+          'Falta Faturamento',
+          formatCurrency(metrics.faltaFaturamento, metrics.currency),
+          Target
+        ));
+        break;
+      case 'showProductDiariaReceita':
+        cards.push(renderMetricCard(
+          'Diária Receita',
+          formatCurrency(metrics.diariaReceita, metrics.currency),
+          DollarSign
+        ));
+        break;
+      case 'showProductDiariaFaturamento':
+        cards.push(renderMetricCard(
+          'Diária Faturamento',
+          formatCurrency(metrics.diariaFaturamento, metrics.currency),
+          DollarSign
+        ));
+        break;
+      case 'showProductCashCollect':
+        cards.push(renderMetricCard(
+          'Cash Collect',
+          formatCurrency(metrics.cashCollect, metrics.currency),
+          DollarSign
+        ));
+        break;
+      case 'showProductProjecaoReceita':
+        cards.push(renderMetricCard(
+          'Projeção Receita',
+          formatCurrency(metrics.projecaoReceita, metrics.currency),
+          TrendingUp
+        ));
+        break;
+      case 'showProductProjecaoFaturamento':
+        cards.push(renderMetricCard(
+          'Projeção Faturamento',
+          formatCurrency(metrics.projecaoFaturamento, metrics.currency),
+          TrendingUp
+        ));
+        break;
+    }
+  });
 
   return <>{cards}</>;
 };
