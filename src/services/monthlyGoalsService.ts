@@ -13,10 +13,11 @@ export const fetchMonthlyGoals = async (userId: string, month?: number, year?: n
     `)
     .eq('user_id', userId);
 
-  // Se month e year foram fornecidos, buscar metas do período específico
-  // E TAMBÉM metas atemporais de produtos (que não foram concluídas)
+  // Se month e year foram fornecidos, buscar apenas metas do período específico
   if (month && year) {
-    query = query.or(`and(month.eq.${month},year.eq.${year}),and(product_id.not.is.null,current_value.lt.target_value)`);
+    query = query
+      .eq('month', month)
+      .eq('year', year);
   }
 
   const { data, error } = await query.order('created_at', { ascending: false });
@@ -27,6 +28,40 @@ export const fetchMonthlyGoals = async (userId: string, month?: number, year?: n
   }
   
   console.log('📊 [DEBUG] Dados retornados da query:', data);
+  
+  // Se temos month e year, também buscar metas atemporais de produtos
+  if (month && year && data) {
+    const { data: timelessGoals, error: timelessError } = await supabase
+      .from('monthly_goals')
+      .select(`
+        *,
+        product:products(*)
+      `)
+      .eq('user_id', userId)
+      .not('product_id', 'is', null)
+      .lt('current_value', supabase.rpc('to_numeric', { value: 'target_value' }))
+      .order('created_at', { ascending: false });
+
+    if (timelessError) {
+      console.error('❌ [DEBUG] Erro ao buscar metas atemporais:', timelessError);
+      // Continuar sem as metas atemporais se houver erro
+      return data || [];
+    }
+
+    // Combinar resultados, evitando duplicatas
+    const combinedData = [...(data || [])];
+    if (timelessGoals) {
+      timelessGoals.forEach(timelessGoal => {
+        const exists = combinedData.find(goal => goal.id === timelessGoal.id);
+        if (!exists) {
+          combinedData.push(timelessGoal);
+        }
+      });
+    }
+
+    return combinedData;
+  }
+  
   return data || [];
 };
 
