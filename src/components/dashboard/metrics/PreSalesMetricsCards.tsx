@@ -43,10 +43,10 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
   
   console.log('🔍 PreSalesMetricsCards - Goals loaded:', preSalesGoals);
   
-  // Buscar meta de tentativas de ligação diárias - lógica mais flexível
+  // Buscar meta de tentativas de ligação - corrigida para buscar pela unidade "Tentativas"
   const dailyCallsGoal = preSalesGoals.find(goal => 
     goal.goal_type?.category === 'pre_vendas' && 
-    goal.goal_type?.unit === 'tentativas'
+    (goal.goal_type?.unit === 'Tentativas' || goal.goal_type?.unit === 'tentativas')
   );
 
   console.log('🔍 PreSalesMetricsCards - Daily calls goal found:', dailyCallsGoal);
