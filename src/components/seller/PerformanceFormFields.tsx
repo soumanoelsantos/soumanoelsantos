@@ -3,6 +3,7 @@ import React from 'react';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface PerformanceFormData {
   date: string;
@@ -26,10 +27,13 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
   errors,
   isCloser
 }) => {
-  // Se for SDR, mostrar apenas os campos específicos para pré-vendas
+  console.log('📝 [DEBUG] PerformanceFormFields - isCloser:', isCloser);
+  console.log('📝 [DEBUG] PerformanceFormFields - renderizando campos para:', isCloser ? 'Closer' : 'SDR');
+
+  // Se for SDR (isCloser = false), mostrar apenas os campos específicos para pré-vendas
   if (!isCloser) {
     return (
-      <>
+      <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="date">Data *</Label>
           <Input
@@ -113,13 +117,26 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
             <p className="text-sm text-red-600">{errors.sales_count.message}</p>
           )}
         </div>
-      </>
+
+        <div className="space-y-2">
+          <Label htmlFor="notes">Observações</Label>
+          <Textarea
+            id="notes"
+            {...register('notes')}
+            placeholder="Observações sobre a performance do dia..."
+            rows={3}
+          />
+          {errors.notes && (
+            <p className="text-sm text-red-600">{errors.notes.message}</p>
+          )}
+        </div>
+      </div>
     );
   }
 
   // Para closers, manter os campos originais
   return (
-    <>
+    <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="date">Data *</Label>
         <Input
@@ -207,7 +224,20 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
           <p className="text-sm text-red-600">{errors.meetings_count.message}</p>
         )}
       </div>
-    </>
+
+      <div className="space-y-2">
+        <Label htmlFor="notes">Observações</Label>
+        <Textarea
+          id="notes"
+          {...register('notes')}
+          placeholder="Observações sobre a performance do dia..."
+          rows={3}
+        />
+        {errors.notes && (
+          <p className="text-sm text-red-600">{errors.notes.message}</p>
+        )}
+      </div>
+    </div>
   );
 };
 

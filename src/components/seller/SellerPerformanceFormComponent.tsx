@@ -50,6 +50,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
     try {
       console.log('📝 [DEBUG] Dados do formulário do vendedor antes do envio:', data);
       console.log('📝 [DEBUG] Vendedor:', seller.name, 'ID:', seller.id);
+      console.log('📝 [DEBUG] Tipo do vendedor:', seller.seller_type);
       
       await onSubmit(data);
       
@@ -74,7 +75,13 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
     }
   };
 
-  const isCloser = seller.seller_type === 'closer';
+  // Determinar se é SDR baseado no seller_type
+  const isSDR = seller.seller_type === 'sdr';
+  const isCloser = !isSDR;
+
+  console.log('🔍 [DEBUG] SellerPerformanceFormComponent - seller:', seller);
+  console.log('🔍 [DEBUG] SellerPerformanceFormComponent - isSDR:', isSDR);
+  console.log('🔍 [DEBUG] SellerPerformanceFormComponent - isCloser:', isCloser);
 
   return (
     <Card>
@@ -84,7 +91,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
           Dados de Performance - {seller.name}
         </CardTitle>
         <CardDescription>
-          Preencha os dados da sua performance do dia (ID: {seller.id})
+          Preencha os dados da sua performance do dia - {isSDR ? 'SDR (Pré-vendas)' : 'Closer (Comercial)'} (ID: {seller.id})
         </CardDescription>
       </CardHeader>
       <CardContent>
