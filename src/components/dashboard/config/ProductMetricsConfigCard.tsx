@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { useProducts } from '@/hooks/useProducts';
+import { Package } from 'lucide-react';
 
 interface ProductMetricsConfigCardProps {
   config: DashboardConfig;
@@ -45,9 +46,12 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Indicadores de Produtos</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Package className="h-5 w-5" />
+          Indicadores de Produtos (Atemporais)
+        </CardTitle>
         <CardDescription>
-          Configure quais indicadores de produtos aparecerão no dashboard (atemporais)
+          Configure quais indicadores de produtos aparecerão no dashboard. Estes indicadores são atemporais e mostram dados consolidados dos produtos.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -57,27 +61,39 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
             checked={config.showProductMetrics}
             onCheckedChange={(checked) => onConfigChange('showProductMetrics', checked)}
           />
-          <Label htmlFor="showProductMetrics">Exibir Indicadores de Produtos</Label>
+          <Label htmlFor="showProductMetrics" className="font-medium">
+            Exibir Indicadores de Produtos
+          </Label>
         </div>
 
         {config.showProductMetrics && (
-          <div className="space-y-4">
+          <div className="space-y-4 pl-4 border-l-2 border-gray-200">
             {/* Seleção de produtos */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium">Selecione os produtos:</Label>
+              <Label className="text-sm font-medium text-gray-700">
+                Selecione os produtos para acompanhar:
+              </Label>
               {isLoading ? (
-                <p className="text-sm text-gray-500">Carregando produtos...</p>
+                <div className="flex items-center justify-center p-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  <span className="ml-2 text-sm text-gray-500">Carregando produtos...</span>
+                </div>
               ) : products.length === 0 ? (
-                <p className="text-sm text-gray-500">
-                  Nenhum produto encontrado. 
-                  <a href="/dashboard/metas" className="text-blue-600 hover:underline ml-1">
-                    Criar produtos
-                  </a>
-                </p>
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    Nenhum produto encontrado. 
+                    <a 
+                      href="/dashboard/metas" 
+                      className="text-blue-600 hover:underline ml-1 font-medium"
+                    >
+                      Criar produtos primeiro
+                    </a>
+                  </p>
+                </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-2 max-h-48 overflow-y-auto">
                   {products.map((product) => (
-                    <div key={product.id} className="flex items-start space-x-2 p-2 border rounded-lg">
+                    <div key={product.id} className="flex items-start space-x-2 p-3 border rounded-lg hover:bg-gray-50">
                       <Checkbox
                         id={product.id}
                         checked={config.selectedProductIds.includes(product.id)}
@@ -85,7 +101,7 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
                       />
                       <div className="flex-1">
                         <Label htmlFor={product.id} className="text-sm cursor-pointer">
-                          <div className="font-medium">{product.name}</div>
+                          <div className="font-medium text-gray-900">{product.name}</div>
                           {product.description && (
                             <div className="text-sm text-gray-600 mt-1">
                               {product.description}
@@ -102,19 +118,34 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
             {/* Seleção de indicadores específicos */}
             {config.selectedProductIds.length > 0 && (
               <div className="space-y-3">
-                <Label className="text-sm font-medium">Indicadores a exibir:</Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <Label className="text-sm font-medium text-gray-700">
+                  Indicadores a exibir para os produtos selecionados:
+                </Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {productMetricsOptions.map((option) => (
-                    <div key={option.key} className="flex items-center space-x-2">
+                    <div key={option.key} className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50">
                       <Checkbox
                         id={option.key}
                         checked={config[option.key as keyof DashboardConfig] as boolean}
                         onCheckedChange={(checked) => onConfigChange(option.key, checked as boolean)}
                       />
-                      <Label htmlFor={option.key} className="text-sm">{option.label}</Label>
+                      <Label htmlFor={option.key} className="text-sm cursor-pointer flex-1">
+                        {option.label}
+                      </Label>
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {config.selectedProductIds.length > 0 && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Produtos selecionados:</strong> {config.selectedProductIds.length}
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Os indicadores serão exibidos para cada produto selecionado no dashboard principal.
+                </p>
               </div>
             )}
           </div>
