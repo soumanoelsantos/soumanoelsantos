@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Phone, Calendar, UserX, Users, Target } from 'lucide-react';
+import { Phone, Calendar, UserX, Users } from 'lucide-react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { usePreSalesGoals } from '@/hooks/usePreSalesGoals';
 
@@ -90,72 +90,10 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
 
   return (
     <div className="space-y-4">
-      {/* Meta de Tentativas Diárias - Card destacado - SEMPRE VISÍVEL quando configurado */}
-      {dailyCallsGoal && config.showPreSalesCalls && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-800">
-              🎯 Meta de Tentativas Diárias
-            </CardTitle>
-            <Target className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-blue-900">
-              {preSalesData.dailyCalls}
-            </div>
-            <div className="space-y-2 mt-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-blue-700">Meta diária:</span>
-                <span className="text-sm font-semibold text-blue-800">
-                  {dailyCallsGoal.target_value} tentativas
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-blue-700">Progresso:</span>
-                <span className="text-sm font-semibold text-blue-800">
-                  {Math.round(((preSalesData.dailyCalls) / (dailyCallsGoal.target_value || 1)) * 100)}%
-                </span>
-              </div>
-              {dailyCallsGoal.seller && (
-                <div className="mt-2">
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded inline-block">
-                    SDR: {dailyCallsGoal.seller.name}
-                  </span>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Mensagem quando não há metas configuradas */}
-      {!dailyCallsGoal && config.showPreSalesCalls && (
-        <Card className="border-yellow-200 bg-yellow-50">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-yellow-800 flex items-center gap-2">
-              <Target className="h-4 w-4" />
-              Meta de Tentativas não configurada
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-yellow-700">
-              Configure uma meta de tentativas de ligação em{' '}
-              <span className="font-semibold">Gerenciar Metas</span> para visualizar 
-              o indicador de desempenho.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Cards de métricas normais */}
       {visibleCards.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {visibleCards.map((card) => {
-            // Pular o card de tentativas se já foi mostrado acima
-            if (card.key === 'showPreSalesCalls' && dailyCallsGoal) {
-              return null;
-            }
-            
             const Icon = card.icon;
             const percentage = card.target ? Math.round((card.value / card.target) * 100) : null;
             
