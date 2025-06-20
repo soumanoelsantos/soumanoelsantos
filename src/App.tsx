@@ -51,6 +51,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/configurar" element={<DashboardConfig />} />
             <Route path="/dashboard/compartilhado/:shareToken" element={<SharedDashboard />} />
+            <Route path="/dashboard/metas" element={<GoalsManagement />} />
             <Route path="/metas" element={<GoalsManagement />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/diagnostico" element={<DiagnosticoTest />} />
