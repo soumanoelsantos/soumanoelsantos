@@ -31,7 +31,7 @@ const SellerPerformanceForm = () => {
 
   useEffect(() => {
     const fetchSeller = async () => {
-      console.log('🔍 [DEBUG] Buscando vendedor com token:', token);
+      console.log('🔍 [DEBUG] Iniciando busca do vendedor com token:', token);
       
       if (!token) {
         console.log('❌ [DEBUG] Token não encontrado na URL');
@@ -41,49 +41,38 @@ const SellerPerformanceForm = () => {
       }
 
       try {
-        console.log('🔄 [DEBUG] Usando nova função get_seller_by_access_token...');
+        setIsLoading(true);
+        setHasError(false);
         
-        // Usar a nova função do banco de dados
-        const { data, error } = await supabase.rpc('get_seller_by_access_token', {
-          token_param: token
-        });
+        console.log('🔄 [DEBUG] Fazendo consulta direta na tabela sellers...');
+        
+        // Consulta direta simples
+        const { data: sellerData, error: sellerError } = await supabase
+          .from('sellers')
+          .select('*')
+          .eq('access_token', token)
+          .eq('is_active', true)
+          .single();
 
-        console.log('📋 [DEBUG] Resultado da função RPC:', { data, error });
+        console.log('📋 [DEBUG] Resultado da consulta direta:', { sellerData, sellerError });
 
-        if (error) {
-          console.error('❌ [DEBUG] Erro na função RPC:', error);
+        if (sellerError) {
+          console.error('❌ [DEBUG] Erro na consulta direta:', sellerError);
+          setHasError(true);
+        } else if (sellerData) {
+          console.log('✅ [DEBUG] Vendedor encontrado:', sellerData.name, 'Tipo:', sellerData.seller_type);
           
-          // Fallback: tentar consulta direta
-          console.log('🔄 [DEBUG] Tentando consulta direta como fallback...');
-          const { data: directData, error: directError } = await supabase
-            .from('sellers')
-            .select('*')
-            .eq('access_token', token)
-            .eq('is_active', true)
-            .single();
-
-          if (directError) {
-            console.error('❌ [DEBUG] Erro na consulta direta:', directError);
-            setHasError(true);
-          } else if (directData) {
-            console.log('✅ [DEBUG] Vendedor encontrado via consulta direta:', directData.name);
-            setSeller(directData);
-            setHasError(false);
-          } else {
-            console.log('📝 [DEBUG] Nenhum vendedor encontrado');
-            setHasError(true);
-          }
-        } else if (data && data.length > 0) {
-          console.log('✅ [DEBUG] Vendedor encontrado via RPC:', data[0].name);
-          // Converter seller_type de string para SellerType
-          const sellerData = {
-            ...data[0],
-            seller_type: data[0].seller_type as SellerType
+          // Garantir que seller_type é do tipo correto
+          const formattedSeller: Seller = {
+            ...sellerData,
+            seller_type: sellerData.seller_type as SellerType
           };
-          setSeller(sellerData);
+          
+          setSeller(formattedSeller);
           setHasError(false);
+          console.log('✅ [DEBUG] Seller definido com sucesso');
         } else {
-          console.log('📝 [DEBUG] Nenhum vendedor encontrado via RPC');
+          console.log('📝 [DEBUG] Nenhum vendedor encontrado');
           setHasError(true);
         }
         
@@ -97,6 +86,7 @@ const SellerPerformanceForm = () => {
         });
       } finally {
         setIsLoading(false);
+        console.log('🏁 [DEBUG] Busca finalizada. Loading:', false, 'HasError:', hasError, 'Seller:', seller?.name);
       }
     };
 
@@ -105,7 +95,7 @@ const SellerPerformanceForm = () => {
 
   const onSubmit = async (data: PerformanceFormData) => {
     if (!seller) {
-      console.log('❌ [DEBUG] Seller não encontrado');
+      console.log('❌ [DEBUG] Seller não encontrado para submit');
       toast({
         title: "Erro",
         description: "Vendedor não encontrado",
@@ -116,10 +106,12 @@ const SellerPerformanceForm = () => {
 
     setIsSubmitting(true);
     try {
-      console.log('📤 [DEBUG] Enviando dados de performance do vendedor:', seller.name);
-      console.log('📤 [DEBUG] Seller ID:', seller.id);
-      console.log('📤 [DEBUG] Seller Type:', seller.seller_type);
-      console.log('📤 [DEBUG] Dados do formulário:', data);
+      console.log('📤 [DEBUG] Enviando dados de performance:', {
+        sellerId: seller.id,
+        sellerName: seller.name,
+        sellerType: seller.seller_type,
+        formData: data
+      });
       
       // Preparar dados para inserção
       const performanceData = {
@@ -149,12 +141,7 @@ const SellerPerformanceForm = () => {
       console.log('📋 [DEBUG] Resultado da inserção:', { savedData, error });
 
       if (error) {
-        console.error('❌ [DEBUG] Erro detalhado ao salvar:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
+        console.error('❌ [DEBUG] Erro ao salvar:', error);
         throw error;
       }
 
@@ -166,12 +153,7 @@ const SellerPerformanceForm = () => {
       });
 
     } catch (error: any) {
-      console.error('💥 [DEBUG] Erro completo ao salvar performance:', {
-        error,
-        message: error?.message,
-        details: error?.details,
-        stack: error?.stack
-      });
+      console.error('💥 [DEBUG] Erro ao salvar performance:', error);
       toast({
         title: "❌ Erro",
         description: `Não foi possível salvar a performance: ${error?.message || 'Erro desconhecido'}`,
@@ -183,14 +165,25 @@ const SellerPerformanceForm = () => {
     }
   };
 
+  // Debug dos estados
+  console.log('🔍 [DEBUG] Estados atuais:', {
+    isLoading,
+    hasError,
+    seller: seller?.name,
+    sellerType: seller?.seller_type
+  });
+
   if (isLoading) {
+    console.log('🔄 [DEBUG] Renderizando tela de loading...');
     return <SellerPerformanceLoading />;
   }
 
   if (hasError || !seller) {
+    console.log('❌ [DEBUG] Renderizando tela de acesso negado...');
     return <SellerPerformanceAccessDenied />;
   }
 
+  console.log('✅ [DEBUG] Renderizando formulário principal para:', seller.name);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-2xl">

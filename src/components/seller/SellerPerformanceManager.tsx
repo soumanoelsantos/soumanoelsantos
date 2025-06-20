@@ -25,8 +25,8 @@ const SellerPerformanceManager: React.FC<SellerPerformanceManagerProps> = ({
   onSubmit,
   isSubmitting
 }) => {
-  console.log('🔍 [DEBUG] SellerPerformanceManager - seller:', seller);
-  console.log('🔍 [DEBUG] SellerPerformanceManager - seller.seller_type:', seller.seller_type);
+  console.log('🔍 [DEBUG] SellerPerformanceManager renderizado para:', seller.name);
+  console.log('🔍 [DEBUG] Seller type:', seller.seller_type);
 
   return (
     <div className="space-y-6">
