@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { BarChart3, User } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { User, Calendar } from 'lucide-react';
 import { Seller } from '@/types/sellers';
 
 interface SellerPerformanceHeaderProps {
@@ -10,61 +9,45 @@ interface SellerPerformanceHeaderProps {
 }
 
 const SellerPerformanceHeader: React.FC<SellerPerformanceHeaderProps> = ({ seller }) => {
-  const getSellerTypeLabel = (type: string) => {
-    const labels = {
-      pap: 'Porta a Porta (PAP)',
-      sdr: 'SDR',
-      closer: 'Closer',
-      vendedor_interno: 'Vendedor Interno',
-      outro: 'Outro'
-    };
-    return labels[type as keyof typeof labels] || type;
+  const sellerTypeLabels = {
+    sdr: 'SDR (Pré-vendas)',
+    closer: 'Closer (Comercial)',
+    pap: 'Porta a Porta',
+    vendedor_interno: 'Vendedor Interno',
+    outro: 'Outro'
   };
 
-  const getSellerTypeColor = (type: string) => {
-    const colors = {
-      pap: 'bg-blue-100 text-blue-800',
-      sdr: 'bg-green-100 text-green-800',
-      closer: 'bg-purple-100 text-purple-800',
-      vendedor_interno: 'bg-orange-100 text-orange-800',
-      outro: 'bg-gray-100 text-gray-800'
-    };
-    return colors[type as keyof typeof colors] || colors.outro;
-  };
+  console.log('📋 [DEBUG] SellerPerformanceHeader - seller:', seller);
+  console.log('📋 [DEBUG] SellerPerformanceHeader - seller.seller_type:', seller.seller_type);
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="bg-blue-600 p-2 rounded-lg">
-          <BarChart3 className="h-6 w-6 text-white" />
+    <Card className="mb-6">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <User className="h-5 w-5" />
+          Bem-vindo, {seller.name}!
+        </CardTitle>
+        <CardDescription className="flex items-center gap-2">
+          <Calendar className="h-4 w-4" />
+          Registre sua performance como {sellerTypeLabels[seller.seller_type] || 'Vendedor'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-sm text-gray-600">
+          <p>Preencha os dados da sua performance diária para manter seus registros atualizados.</p>
+          {seller.seller_type === 'sdr' && (
+            <p className="mt-2 text-blue-600">
+              Como SDR, você deve registrar: tentativas de ligação, no show, agendamentos e remarcações.
+            </p>
+          )}
+          {seller.seller_type === 'closer' && (
+            <p className="mt-2 text-green-600">
+              Como Closer, você deve registrar: vendas, receita, faturamento e reuniões.
+            </p>
+          )}
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Lançamento de Performance
-          </h1>
-          <p className="text-gray-600">
-            Registre sua performance diária
-          </p>
-        </div>
-      </div>
-
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-gray-500" />
-              <div>
-                <p className="font-medium text-gray-900">{seller.name}</p>
-                <p className="text-sm text-gray-500">Vendedor</p>
-              </div>
-            </div>
-            <Badge className={getSellerTypeColor(seller.seller_type)}>
-              {getSellerTypeLabel(seller.seller_type)}
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

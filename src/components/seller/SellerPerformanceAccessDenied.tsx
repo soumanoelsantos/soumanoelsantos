@@ -1,24 +1,26 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 
 const SellerPerformanceAccessDenied: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <Card className="w-full max-w-md">
-        <CardContent className="p-6 text-center">
-          <div className="text-red-500 mb-4">
-            <AlertTriangle className="h-12 w-12 mx-auto" />
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 p-3 bg-red-100 rounded-full">
+            <AlertTriangle className="h-8 w-8 text-red-600" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Acesso Negado
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Token de acesso inválido ou vendedor não encontrado.
+          <CardTitle className="text-red-800">Acesso Negado</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center space-y-4">
+          <p className="text-sm text-gray-600">
+            O link de acesso é inválido ou expirou. Entre em contato com o administrador para obter um novo link.
           </p>
-          <div className="text-sm text-gray-500">
-            <p>Verifique se o link está correto ou entre em contato com o administrador.</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p className="text-xs text-yellow-800">
+              <strong>Dica:</strong> Verifique se você está usando o link mais recente enviado pelo administrador.
+            </p>
           </div>
         </CardContent>
       </Card>
