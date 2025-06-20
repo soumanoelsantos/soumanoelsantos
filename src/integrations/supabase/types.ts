@@ -105,6 +105,7 @@ export type Database = {
           metrics_order: Json | null
           pre_sales_order: Json | null
           selected_goal_ids: Json | null
+          selected_product_ids: Json | null
           share_token: string | null
           show_billing_evolution_chart: boolean | null
           show_cac: boolean | null
@@ -138,6 +139,20 @@ export type Database = {
           show_pre_sales_schedulings: boolean | null
           show_pre_sales_sdr_comparison_chart: boolean | null
           show_pre_sales_sdr_table: boolean | null
+          show_product_cash_collect: boolean | null
+          show_product_diaria_faturamento: boolean | null
+          show_product_diaria_receita: boolean | null
+          show_product_falta_faturamento: boolean | null
+          show_product_falta_receita: boolean | null
+          show_product_faturamento: boolean | null
+          show_product_meta_faturamento: boolean | null
+          show_product_meta_receita: boolean | null
+          show_product_metrics: boolean | null
+          show_product_projecao_faturamento: boolean | null
+          show_product_projecao_receita: boolean | null
+          show_product_quantidade_vendas: boolean | null
+          show_product_receita: boolean | null
+          show_product_ticket_receita: boolean | null
           show_projecao_faturamento: boolean | null
           show_projecao_receita: boolean | null
           show_quantidade_vendas: boolean | null
@@ -167,6 +182,7 @@ export type Database = {
           metrics_order?: Json | null
           pre_sales_order?: Json | null
           selected_goal_ids?: Json | null
+          selected_product_ids?: Json | null
           share_token?: string | null
           show_billing_evolution_chart?: boolean | null
           show_cac?: boolean | null
@@ -200,6 +216,20 @@ export type Database = {
           show_pre_sales_schedulings?: boolean | null
           show_pre_sales_sdr_comparison_chart?: boolean | null
           show_pre_sales_sdr_table?: boolean | null
+          show_product_cash_collect?: boolean | null
+          show_product_diaria_faturamento?: boolean | null
+          show_product_diaria_receita?: boolean | null
+          show_product_falta_faturamento?: boolean | null
+          show_product_falta_receita?: boolean | null
+          show_product_faturamento?: boolean | null
+          show_product_meta_faturamento?: boolean | null
+          show_product_meta_receita?: boolean | null
+          show_product_metrics?: boolean | null
+          show_product_projecao_faturamento?: boolean | null
+          show_product_projecao_receita?: boolean | null
+          show_product_quantidade_vendas?: boolean | null
+          show_product_receita?: boolean | null
+          show_product_ticket_receita?: boolean | null
           show_projecao_faturamento?: boolean | null
           show_projecao_receita?: boolean | null
           show_quantidade_vendas?: boolean | null
@@ -229,6 +259,7 @@ export type Database = {
           metrics_order?: Json | null
           pre_sales_order?: Json | null
           selected_goal_ids?: Json | null
+          selected_product_ids?: Json | null
           share_token?: string | null
           show_billing_evolution_chart?: boolean | null
           show_cac?: boolean | null
@@ -262,6 +293,20 @@ export type Database = {
           show_pre_sales_schedulings?: boolean | null
           show_pre_sales_sdr_comparison_chart?: boolean | null
           show_pre_sales_sdr_table?: boolean | null
+          show_product_cash_collect?: boolean | null
+          show_product_diaria_faturamento?: boolean | null
+          show_product_diaria_receita?: boolean | null
+          show_product_falta_faturamento?: boolean | null
+          show_product_falta_receita?: boolean | null
+          show_product_faturamento?: boolean | null
+          show_product_meta_faturamento?: boolean | null
+          show_product_meta_receita?: boolean | null
+          show_product_metrics?: boolean | null
+          show_product_projecao_faturamento?: boolean | null
+          show_product_projecao_receita?: boolean | null
+          show_product_quantidade_vendas?: boolean | null
+          show_product_receita?: boolean | null
+          show_product_ticket_receita?: boolean | null
           show_projecao_faturamento?: boolean | null
           show_projecao_receita?: boolean | null
           show_quantidade_vendas?: boolean | null
