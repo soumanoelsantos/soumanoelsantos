@@ -1317,6 +1317,21 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      get_seller_by_access_token: {
+        Args: { token_param: string }
+        Returns: {
+          id: string
+          user_id: string
+          name: string
+          email: string
+          phone: string
+          seller_type: string
+          is_active: boolean
+          access_token: string
+          created_at: string
+          updated_at: string
+        }[]
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean

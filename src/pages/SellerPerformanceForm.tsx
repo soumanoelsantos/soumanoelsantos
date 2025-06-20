@@ -41,25 +41,44 @@ const SellerPerformanceForm = () => {
       }
 
       try {
-        console.log('🔄 [DEBUG] Fazendo consulta direta ao banco...');
+        console.log('🔄 [DEBUG] Usando nova função get_seller_by_access_token...');
         
-        const { data, error } = await supabase
-          .from('sellers')
-          .select('*')
-          .eq('access_token', token)
-          .single();
+        // Usar a nova função do banco de dados
+        const { data, error } = await supabase.rpc('get_seller_by_access_token', {
+          token_param: token
+        });
 
-        console.log('📋 [DEBUG] Resultado da consulta:', { data, error });
+        console.log('📋 [DEBUG] Resultado da função RPC:', { data, error });
 
         if (error) {
-          console.error('❌ [DEBUG] Erro na consulta:', error);
-          setHasError(true);
-        } else if (data) {
-          console.log('✅ [DEBUG] Vendedor encontrado:', data.name);
-          setSeller(data);
+          console.error('❌ [DEBUG] Erro na função RPC:', error);
+          
+          // Fallback: tentar consulta direta
+          console.log('🔄 [DEBUG] Tentando consulta direta como fallback...');
+          const { data: directData, error: directError } = await supabase
+            .from('sellers')
+            .select('*')
+            .eq('access_token', token)
+            .eq('is_active', true)
+            .single();
+
+          if (directError) {
+            console.error('❌ [DEBUG] Erro na consulta direta:', directError);
+            setHasError(true);
+          } else if (directData) {
+            console.log('✅ [DEBUG] Vendedor encontrado via consulta direta:', directData.name);
+            setSeller(directData);
+            setHasError(false);
+          } else {
+            console.log('📝 [DEBUG] Nenhum vendedor encontrado');
+            setHasError(true);
+          }
+        } else if (data && data.length > 0) {
+          console.log('✅ [DEBUG] Vendedor encontrado via RPC:', data[0].name);
+          setSeller(data[0]);
           setHasError(false);
         } else {
-          console.log('📝 [DEBUG] Nenhum vendedor encontrado');
+          console.log('📝 [DEBUG] Nenhum vendedor encontrado via RPC');
           setHasError(true);
         }
         
@@ -94,9 +113,10 @@ const SellerPerformanceForm = () => {
     try {
       console.log('📤 [DEBUG] Enviando dados de performance do vendedor:', seller.name);
       console.log('📤 [DEBUG] Seller ID:', seller.id);
+      console.log('📤 [DEBUG] Seller Type:', seller.seller_type);
       console.log('📤 [DEBUG] Dados do formulário:', data);
       
-      // Usar a mesma estrutura exata que o hook useSellerPerformance usa
+      // Preparar dados para inserção
       const performanceData = {
         seller_id: seller.id,
         date: data.date,
@@ -112,10 +132,12 @@ const SellerPerformanceForm = () => {
 
       console.log('📤 [DEBUG] Dados preparados para inserção:', performanceData);
       
-      // Usar upsert igual ao hook useSellerPerformance
+      // Usar upsert para criar ou atualizar
       const { data: savedData, error } = await supabase
         .from('seller_daily_performance')
-        .upsert(performanceData)
+        .upsert(performanceData, {
+          onConflict: 'seller_id,date'
+        })
         .select()
         .single();
 
