@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { useDashboardOrder } from '@/hooks/useDashboardOrder';
@@ -40,7 +39,14 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
     'sellerBillingChart',
     'temporalRevenueChart',
     'temporalBillingChart',
-    'showClosersPerformanceTable'
+    'showClosersPerformanceTable',
+    // Adicionar os novos gráficos de produtos
+    'showProductRevenueEvolutionChart',
+    'showProductBillingEvolutionChart',
+    'showProductSalesEvolutionChart',
+    'showProductPerformanceChart',
+    'showProductComparisonChart',
+    'showProductTemporalChart'
   ];
   const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
   const evolutionCharts = orderedItems.filter(item => fullWidthItems.includes(item));
@@ -114,7 +120,7 @@ const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetri
           <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução, Análise Temporal e Tabelas de Performance</h2>
           {evolutionCharts.map((key, index) => {
             console.log(`🔍 DashboardMetrics - Rendering evolution chart/table: ${key}`);
-            const component = <ItemRenderer itemKey={key} config={config} isPublicView={isPublicView} sharedUserId={sharedUserId} />;
+            const component = <ItemRenderer itemKey={key} config={config} isPublicView={isPublicView} sharedUserId={sharedUserId} selectedProductId={selectedProductId} />;
             if (!component) {
               console.log(`❌ DashboardMetrics - No component returned for evolution chart/table: ${key}`);
               return null;

@@ -13,4 +13,10 @@ export const PRODUCT_METRICS_LABELS: Record<string, string> = {
   showProductCashCollect: 'Cash Collect do Produto',
   showProductProjecaoReceita: 'Projeção de Receita do Produto',
   showProductProjecaoFaturamento: 'Projeção de Faturamento do Produto',
+  showProductRevenueEvolutionChart: 'Gráfico de Evolução de Receita por Produto',
+  showProductBillingEvolutionChart: 'Gráfico de Evolução de Faturamento por Produto',
+  showProductSalesEvolutionChart: 'Gráfico de Evolução de Vendas por Produto',
+  showProductPerformanceChart: 'Gráfico de Performance dos Produtos',
+  showProductComparisonChart: 'Gráfico de Comparação entre Produtos',
+  showProductTemporalChart: 'Gráfico de Análise Temporal dos Produtos',
 };

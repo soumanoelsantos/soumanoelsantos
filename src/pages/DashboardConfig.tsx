@@ -8,6 +8,7 @@ import ConfigHeader from '@/components/dashboard/config/ConfigHeader';
 import GeneralConfigCard from '@/components/dashboard/config/GeneralConfigCard';
 import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
+import ProductChartsConfigCard from '@/components/dashboard/config/ProductChartsConfigCard';
 import SpecificGoalsConfigCard from '@/components/dashboard/config/SpecificGoalsConfigCard';
 import ProductMetricsConfigCard from '@/components/dashboard/config/ProductMetricsConfigCard';
 import PreSalesConfigCard from '@/components/dashboard/config/PreSalesConfigCard';
@@ -85,6 +86,11 @@ const DashboardConfig = () => {
           />
 
           <DisplayConfigCard 
+            config={config} 
+            onConfigChange={handleConfigChange} 
+          />
+
+          <ProductChartsConfigCard 
             config={config} 
             onConfigChange={handleConfigChange} 
           />

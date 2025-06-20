@@ -122,7 +122,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({
     case 'showNoShow':
       return <MetricCard title="No Show" value="0%" icon={Target} />;
     
-    // Gráficos e tabelas - placeholder para agora
+    // Gráficos comerciais e tabelas - placeholder para agora
     case 'showRevenueEvolutionChart':
     case 'revenueEvolutionChart':
     case 'showBillingEvolutionChart':
@@ -139,10 +139,28 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({
       return (
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Gráfico/Tabela em Desenvolvimento</CardTitle>
+            <CardTitle>Gráfico/Tabela Comercial em Desenvolvimento</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600">Este componente será implementado em breve.</p>
+          </CardContent>
+        </Card>
+      );
+
+    // Novos gráficos de produtos
+    case 'showProductRevenueEvolutionChart':
+    case 'showProductBillingEvolutionChart':
+    case 'showProductSalesEvolutionChart':
+    case 'showProductPerformanceChart':
+    case 'showProductComparisonChart':
+    case 'showProductTemporalChart':
+      return (
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Gráfico de Produto em Desenvolvimento</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600">Este gráfico de produto será implementado em breve.</p>
           </CardContent>
         </Card>
       );

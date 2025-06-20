@@ -65,7 +65,13 @@ export const defaultConfig: DashboardConfig = {
     'showProductFaltaFaturamento',
     'showProductCashCollect',
     'showProductProjecaoReceita',
-    'showProductProjecaoFaturamento'
+    'showProductProjecaoFaturamento',
+    'showProductRevenueEvolutionChart',
+    'showProductBillingEvolutionChart',
+    'showProductSalesEvolutionChart',
+    'showProductPerformanceChart',
+    'showProductComparisonChart',
+    'showProductTemporalChart'
   ],
   showSpecificGoals: false,
   selectedGoalIds: [],
@@ -92,4 +98,12 @@ export const defaultConfig: DashboardConfig = {
   showProductCashCollect: false,
   showProductProjecaoReceita: false,
   showProductProjecaoFaturamento: false,
+
+  // Product charts defaults
+  showProductRevenueEvolutionChart: false,
+  showProductBillingEvolutionChart: false,
+  showProductSalesEvolutionChart: false,
+  showProductPerformanceChart: false,
+  showProductComparisonChart: false,
+  showProductTemporalChart: false,
 };

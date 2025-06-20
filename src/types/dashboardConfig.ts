@@ -82,4 +82,12 @@ export interface DashboardConfig {
   showProductCashCollect: boolean;
   showProductProjecaoReceita: boolean;
   showProductProjecaoFaturamento: boolean;
+
+  // Novos gráficos e visualizações de produtos
+  showProductRevenueEvolutionChart: boolean;
+  showProductBillingEvolutionChart: boolean;
+  showProductSalesEvolutionChart: boolean;
+  showProductPerformanceChart: boolean;
+  showProductComparisonChart: boolean;
+  showProductTemporalChart: boolean;
 }
