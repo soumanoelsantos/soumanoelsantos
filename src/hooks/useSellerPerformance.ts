@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { SellerDailyPerformance } from '@/types/sellers';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 export const useSellerPerformance = (sellerId?: string) => {
   const { toast } = useToast();
@@ -82,6 +82,9 @@ export const useSellerPerformance = (sellerId?: string) => {
           calls_count: performanceData.calls_count || 0,
           notes: performanceData.notes || '',
           submitted_by_seller: performanceData.submitted_by_seller ?? true,
+        }, {
+          onConflict: 'seller_id,date',
+          ignoreDuplicates: false
         })
         .select()
         .single();
