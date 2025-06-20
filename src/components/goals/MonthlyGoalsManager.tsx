@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, DollarSign, Edit } from 'lucide-react';
+import { Plus, Trash2, DollarSign, Edit, Clock } from 'lucide-react';
 import { useMonthlyGoals } from '@/hooks/useMonthlyGoals';
 import { useProducts } from '@/hooks/useProducts';
 import { CreateGoalData, MonthlyGoal } from '@/types/goals';
@@ -47,6 +47,19 @@ const MonthlyGoalsManager = () => {
   ];
 
   const years = Array.from({ length: 10 }, (_, i) => currentDate.getFullYear() + i - 2);
+
+  const isGoalTimeless = (goal: MonthlyGoal) => {
+    return goal.product_id && goal.target_type === 'quantity';
+  };
+
+  const getGoalPeriodDisplay = (goal: MonthlyGoal) => {
+    if (isGoalTimeless(goal)) {
+      return "Meta Atemporal";
+    }
+    
+    const monthName = months.find(m => m.value === goal.month)?.label || goal.month;
+    return `${monthName}/${goal.year}`;
+  };
 
   const handleCreateGoal = async () => {
     console.log('🎯 [DEBUG] Iniciando criação de meta');
@@ -137,7 +150,8 @@ const MonthlyGoalsManager = () => {
         <CardHeader>
           <CardTitle>Metas Mensais</CardTitle>
           <CardDescription>
-            Defina e acompanhe suas metas mensais gerais e por produto com diferentes moedas
+            Defina e acompanhe suas metas mensais gerais e por produto com diferentes moedas. 
+            Metas de quantidade por produto são atemporais e ficam ativas até serem concluídas.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -206,6 +220,15 @@ const MonthlyGoalsManager = () => {
                           <span className="text-sm font-medium text-blue-600">{goal.product.name}</span>
                         </>
                       )}
+                      {isGoalTimeless(goal) && (
+                        <>
+                          <span className="text-sm text-gray-500">•</span>
+                          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            Atemporal
+                          </span>
+                        </>
+                      )}
                     </div>
                     <div className="text-lg font-bold">
                       {goal.target_type === 'financial' 
@@ -218,6 +241,9 @@ const MonthlyGoalsManager = () => {
                         ? formatCurrency(goal.current_value, goal.currency)
                         : `${goal.current_value} unidades`
                       }
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {getGoalPeriodDisplay(goal)}
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -350,6 +376,12 @@ const MonthlyGoalsManager = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                {newGoal.product_id && newGoal.target_type === 'quantity' && (
+                  <p className="text-xs text-purple-600 mt-1 flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    Esta será uma meta atemporal - ficará ativa até ser concluída
+                  </p>
+                )}
               </div>
 
               <div>

@@ -26,8 +26,10 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
         `)
         .eq('user_id', userId);
 
+      // Se month e year foram fornecidos, buscar metas do período específico
+      // E TAMBÉM metas atemporais de produtos (que não foram concluídas)
       if (month && year) {
-        query = query.eq('month', month).eq('year', year);
+        query = query.or(`and(month.eq.${month},year.eq.${year}),and(product_id.not.is.null,target_type.eq.quantity,current_value.lt.target_value)`);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -100,7 +102,9 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
 
       toast({
         title: "Meta criada",
-        description: "Meta criada com sucesso!",
+        description: goalData.product_id && goalData.target_type === 'quantity' 
+          ? "Meta atemporal de produto criada com sucesso!" 
+          : "Meta criada com sucesso!",
       });
 
       fetchGoals();
