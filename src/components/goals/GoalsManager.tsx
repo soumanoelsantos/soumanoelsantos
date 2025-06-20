@@ -16,17 +16,13 @@ const GoalsManager = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="goals" className="w-full">
+      <Tabs defaultValue="presales" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="goals">Metas Mensais</TabsTrigger>
           <TabsTrigger value="presales">Pré-vendas</TabsTrigger>
           <TabsTrigger value="goaltypes">Tipos de Metas</TabsTrigger>
+          <TabsTrigger value="goals">Metas Mensais</TabsTrigger>
           <TabsTrigger value="products">Produtos</TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="goals" className="space-y-4">
-          <MonthlyGoalsManager />
-        </TabsContent>
         
         <TabsContent value="presales" className="space-y-4">
           <PreSalesGoalsManager />
@@ -34,6 +30,10 @@ const GoalsManager = () => {
         
         <TabsContent value="goaltypes" className="space-y-4">
           <GoalTypesManager />
+        </TabsContent>
+        
+        <TabsContent value="goals" className="space-y-4">
+          <MonthlyGoalsManager />
         </TabsContent>
         
         <TabsContent value="products" className="space-y-4">
