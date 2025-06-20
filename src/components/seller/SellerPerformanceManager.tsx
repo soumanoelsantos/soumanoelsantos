@@ -1,6 +1,8 @@
 
 import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SellerPerformanceFormComponent from './SellerPerformanceFormComponent';
+import SellerPerformanceHistory from './SellerPerformanceHistory';
 import { Seller } from '@/types/sellers';
 
 interface PerformanceFormData {
@@ -26,11 +28,24 @@ const SellerPerformanceManager: React.FC<SellerPerformanceManagerProps> = ({
   isSubmitting
 }) => {
   return (
-    <SellerPerformanceFormComponent
-      seller={seller}
-      onSubmit={onSubmit}
-      isSubmitting={isSubmitting}
-    />
+    <Tabs defaultValue="form" className="w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="form">Novo Lançamento</TabsTrigger>
+        <TabsTrigger value="history">Histórico</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="form">
+        <SellerPerformanceFormComponent
+          seller={seller}
+          onSubmit={onSubmit}
+          isSubmitting={isSubmitting}
+        />
+      </TabsContent>
+      
+      <TabsContent value="history">
+        <SellerPerformanceHistory seller={seller} />
+      </TabsContent>
+    </Tabs>
   );
 };
 
