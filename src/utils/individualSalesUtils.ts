@@ -13,9 +13,7 @@ export const transformSupabaseResponseToSale = (sale: SupabaseIndividualSaleResp
     product_id: sale.product_id,
     created_at: sale.created_at,
     updated_at: sale.updated_at,
-    products: (sale.products && typeof sale.products === 'object' && !('error' in sale.products) && sale.products.id && sale.products.name) 
-      ? { id: sale.products.id, name: sale.products.name }
-      : null
+    products: sale.products
   };
 };
 
