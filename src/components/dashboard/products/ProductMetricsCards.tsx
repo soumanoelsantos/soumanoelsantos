@@ -3,9 +3,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Target, TrendingUp, Package } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
-import { useMonthlyGoals } from '@/hooks/useMonthlyGoals';
+import { useProductGoals } from '@/hooks/useProductGoals';
 import { DashboardConfig } from '@/types/dashboardConfig';
-import { formatCurrency, calculateRemainingDaysInMonth, calculateDailyTarget } from '@/utils/goalCalculations';
+import { formatCurrency } from '@/utils/goalCalculations';
 
 interface ProductMetricsCardsProps {
   config: DashboardConfig;
@@ -14,8 +14,7 @@ interface ProductMetricsCardsProps {
 
 const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selectedProductId }) => {
   const { products } = useProducts();
-  const currentDate = new Date();
-  const { goals } = useMonthlyGoals(currentDate.getMonth() + 1, currentDate.getFullYear());
+  const { productGoals } = useProductGoals();
   
   if (!config.showProductMetrics || config.selectedProductIds.length === 0) {
     return null;
@@ -42,12 +41,9 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selec
     return null;
   }
 
-  const getProductGoals = (productId: string) => {
-    return goals.filter(goal => goal.product_id === productId);
-  };
-
   const calculateProductMetrics = (productId: string) => {
-    const productGoals = getProductGoals(productId);
+    // Buscar meta real do produto na tabela product_goals
+    const productGoal = productGoals.find(goal => goal.product_id === productId && goal.is_active);
     
     // Simular dados de performance do produto
     // Em uma implementação real, esses dados viriam de uma API
@@ -55,13 +51,11 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selec
     const currentFaturamento = Math.random() * 150000;
     const currentVendas = Math.floor(Math.random() * 50);
     
-    const receitaGoal = productGoals.find(g => 
-      g.target_type === 'financial' && g.financial_category === 'receita'
-    );
-    const faturamentoGoal = productGoals.find(g => 
-      g.target_type === 'financial' && g.financial_category === 'faturamento'
-    );
-    const quantidadeGoal = productGoals.find(g => g.target_type === 'quantity');
+    // Usar metas reais da tabela product_goals se existirem
+    const metaReceita = productGoal?.revenue_goal || 0;
+    const metaFaturamento = productGoal?.billing_goal || 0;
+    const metaQuantidade = productGoal?.quantity_goal || 0;
+    const currency = (productGoal?.currency || 'BRL') as 'BRL' | 'USD';
 
     // Calcular Cash Collect como percentual da diferença entre faturamento e receita
     const cashCollectPercent = currentFaturamento > 0 ? ((currentFaturamento - currentReceita) / currentFaturamento) * 100 : 0;
@@ -70,17 +64,17 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selec
       receita: currentReceita,
       faturamento: currentFaturamento,
       vendas: currentVendas,
-      metaReceita: receitaGoal?.target_value || 0,
-      metaFaturamento: faturamentoGoal?.target_value || 0,
-      metaQuantidade: quantidadeGoal?.target_value || 0,
-      faltaReceita: Math.max((receitaGoal?.target_value || 0) - currentReceita, 0),
-      faltaFaturamento: Math.max((faturamentoGoal?.target_value || 0) - currentFaturamento, 0),
+      metaReceita,
+      metaFaturamento,
+      metaQuantidade,
+      faltaReceita: Math.max(metaReceita - currentReceita, 0),
+      faltaFaturamento: Math.max(metaFaturamento - currentFaturamento, 0),
       ticketReceita: currentVendas > 0 ? currentReceita / currentVendas : 0,
       ticketFaturamento: currentVendas > 0 ? currentFaturamento / currentVendas : 0,
       cashCollect: cashCollectPercent,
       projecaoReceita: currentReceita * (30 / new Date().getDate()),
       projecaoFaturamento: currentFaturamento * (30 / new Date().getDate()),
-      currency: receitaGoal?.currency || faturamentoGoal?.currency || 'BRL'
+      currency
     };
   };
 
