@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/hooks/useProducts';
 import { IndividualSaleFormData } from '@/types/individualSales';
+import { useSellerToken } from '@/hooks/useSellerToken';
 
 interface IndividualSaleFormProps {
   onSubmit: (data: IndividualSaleFormData) => Promise<boolean>;
@@ -21,7 +22,13 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   isSubmitting,
   sellerId
 }) => {
-  const { products, isLoading: productsLoading } = useProducts();
+  // Buscar o seller para obter o user_id do dono do dashboard
+  const { seller } = useSellerToken();
+  const targetUserId = seller?.user_id;
+  
+  console.log('🔍 [DEBUG] IndividualSaleForm - targetUserId:', targetUserId);
+  
+  const { products, isLoading: productsLoading } = useProducts(targetUserId);
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -29,6 +36,8 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     billing_amount: 0,
     product_id: null,
   });
+
+  console.log('📋 [DEBUG] IndividualSaleForm - produtos carregados:', products);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,16 +106,16 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                   ))
                 ) : (
                   <SelectItem value="no-products" disabled>
-                    Nenhum produto cadastrado - Configure produtos no Dashboard
+                    Nenhum produto cadastrado
                   </SelectItem>
                 )}
               </SelectContent>
             </Select>
             
-            {products.length === 0 && !productsLoading && (
+            {(!products || products.length === 0) && !productsLoading && (
               <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded">
-                ⚠️ <strong>Nenhum produto encontrado.</strong> Para adicionar produtos que apareçam neste formulário, 
-                acesse Dashboard → Configurações → Produtos para Formulários de Vendas.
+                ℹ️ <strong>Produtos não encontrados.</strong> Verifique se há produtos cadastrados 
+                em Dashboard → Configurações → Produtos para Formulários de Vendas.
               </div>
             )}
           </div>
