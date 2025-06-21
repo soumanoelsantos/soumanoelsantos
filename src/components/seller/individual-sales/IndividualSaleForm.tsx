@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,22 +5,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/hooks/useProducts';
+import { useSellers } from '@/hooks/useSellers';
 import { IndividualSaleFormData } from '@/types/individualSales';
 
 interface IndividualSaleFormProps {
   onSubmit: (data: IndividualSaleFormData) => Promise<boolean>;
   onCancel: () => void;
   isSubmitting: boolean;
+  sellerId: string;
 }
 
 const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   onSubmit,
   onCancel,
-  isSubmitting
+  isSubmitting,
+  sellerId
 }) => {
   console.log('🔍 [DEBUG] IndividualSaleForm renderizado');
   
-  const { products } = useProducts();
+  // Buscar o vendedor para obter o user_id do admin
+  const { sellers } = useSellers();
+  const seller = sellers.find(s => s.id === sellerId);
+  const adminUserId = seller?.user_id;
+  
+  // Buscar produtos do admin que criou o vendedor
+  const { products } = useProducts(adminUserId);
+  
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
     revenue_amount: 0,
@@ -31,6 +40,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
 
   console.log('📋 [DEBUG] Produtos carregados:', products);
   console.log('📝 [DEBUG] FormData atual:', formData);
+  console.log('👤 [DEBUG] Admin User ID:', adminUserId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,14 +96,14 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="product_id">Produto</Label>
             <Select
-              value={formData.product_id || "general"}
-              onValueChange={(value) => handleInputChange('product_id', value === "general" ? null : value)}
+              value={formData.product_id || ""}
+              onValueChange={(value) => handleInputChange('product_id', value || null)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um produto ou deixe em branco para venda geral" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="general">Venda Geral (sem produto específico)</SelectItem>
+                <SelectItem value="">Venda Geral (sem produto específico)</SelectItem>
                 {products && products.length > 0 ? (
                   products.map((product) => (
                     <SelectItem key={product.id} value={product.id}>

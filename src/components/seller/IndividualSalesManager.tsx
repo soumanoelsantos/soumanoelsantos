@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -124,6 +123,7 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
               onSubmit={handleSubmit}
               onCancel={handleCancelForm}
               isSubmitting={false}
+              sellerId={sellerId}
             />
           </div>
         )}

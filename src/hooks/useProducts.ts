@@ -5,21 +5,24 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Product, CreateProductData } from '@/types/goals';
 
-export const useProducts = () => {
+export const useProducts = (targetUserId?: string) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { userId } = useAuth();
   const { toast } = useToast();
 
+  // Use o targetUserId se fornecido, senão use o userId atual
+  const effectiveUserId = targetUserId || userId;
+
   const fetchProducts = async () => {
-    if (!userId) return;
+    if (!effectiveUserId) return;
 
     setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', effectiveUserId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -93,7 +96,7 @@ export const useProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [userId]);
+  }, [effectiveUserId]);
 
   return {
     products,
