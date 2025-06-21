@@ -7,8 +7,38 @@ export const useMetricsOrder = (config: DashboardConfig) => {
   const getEnabledMetrics = (): MetricItem[] => {
     const enabledMetrics: MetricItem[] = [];
 
-    // Adicionar apenas métricas de cards habilitadas
-    ALL_METRIC_KEYS.forEach(key => {
+    // Lista específica de métricas comerciais com suas chaves exatas
+    const commercialMetrics = [
+      'showConversion',
+      'showTicketFaturamento', 
+      'showTicketReceita',
+      'showFaturamento',
+      'showReceita', 
+      'showQuantidadeVendas',
+      'showMetaFaturamento',
+      'showMetaReceita',
+      'showSuperMetaFaturamento',
+      'showSuperMetaReceita', 
+      'showHiperMetaFaturamento',
+      'showHiperMetaReceita',
+      'showFaltaFaturamento',
+      'showFaltaReceita',
+      'showFaltaFaturamentoSuper',
+      'showFaltaFaturamentoHiper',
+      'showFaltaReceitaSuper', 
+      'showFaltaReceitaHiper',
+      'showDiariaReceita',
+      'showDiariaFaturamento',
+      'showCashCollect',
+      'showCac',
+      'showProjecaoReceita',
+      'showProjecaoFaturamento', 
+      'showNoShow',
+      'showClosersPerformanceTable'
+    ];
+
+    // Verificar apenas métricas comerciais específicas
+    commercialMetrics.forEach(key => {
       const configValue = config[key as keyof DashboardConfig];
       if (configValue === true) {
         enabledMetrics.push({
@@ -70,6 +100,7 @@ export const useMetricsOrder = (config: DashboardConfig) => {
       });
     }
 
+    console.log('🔍 [DEBUG] Enabled metrics found:', enabledMetrics.length, enabledMetrics.map(m => m.key));
     return enabledMetrics;
   };
 
@@ -78,6 +109,7 @@ export const useMetricsOrder = (config: DashboardConfig) => {
     
     // Se não há métricas habilitadas, retornar array vazio
     if (enabledMetrics.length === 0) {
+      console.log('🔍 [DEBUG] No enabled metrics, returning empty array');
       return [];
     }
     
@@ -91,7 +123,10 @@ export const useMetricsOrder = (config: DashboardConfig) => {
       metric => !metricsOrder.includes(metric.key)
     );
     
-    return [...orderedEnabledMetrics, ...unorderedEnabledMetrics];
+    const finalOrder = [...orderedEnabledMetrics, ...unorderedEnabledMetrics];
+    console.log('🔍 [DEBUG] Final ordered metrics:', finalOrder.length, finalOrder.map(m => m.key));
+    
+    return finalOrder;
   };
 
   return {
