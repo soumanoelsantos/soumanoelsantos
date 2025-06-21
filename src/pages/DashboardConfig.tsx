@@ -12,6 +12,7 @@ import ProductMetricsConfigCard from '@/components/dashboard/config/ProductMetri
 import SpecificGoalsConfigCard from '@/components/dashboard/config/SpecificGoalsConfigCard';
 import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
 import ProductsManagementCard from '@/components/dashboard/config/ProductsManagementCard';
+import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 
 const DashboardConfig = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -58,6 +59,10 @@ const DashboardConfig = () => {
               onConfigChange={handleConfigChange} 
             />
             <SpecificGoalsConfigCard 
+              config={config} 
+              onConfigChange={handleConfigChange} 
+            />
+            <DisplayConfigCard 
               config={config} 
               onConfigChange={handleConfigChange} 
             />
