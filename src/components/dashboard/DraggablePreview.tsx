@@ -6,7 +6,7 @@ import { GripVertical } from 'lucide-react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 
 interface MetricItem {
-  key: keyof DashboardConfig | 'charts' | 'specificGoals' | 'revenueEvolutionChart' | 'billingEvolutionChart';
+  key: keyof DashboardConfig | 'charts' | 'revenueEvolutionChart' | 'billingEvolutionChart';
   title: string;
   enabled: boolean;
   isChart?: boolean;
@@ -73,11 +73,6 @@ const DraggablePreview: React.FC<DraggablePreviewProps> = ({
       });
     }
   });
-
-  // Metas específicas se habilitadas
-  if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
-    allMetrics.push({ key: 'specificGoals', title: 'Metas Específicas', enabled: true });
-  }
 
   // Gráficos de evolução se habilitados
   if (config.showRevenueEvolutionChart) {

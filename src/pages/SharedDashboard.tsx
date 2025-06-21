@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -90,22 +91,6 @@ const SharedDashboard = () => {
           }
         }
 
-        let selectedGoalIds = defaultConfig.selectedGoalIds;
-        if (data.selected_goal_ids) {
-          if (Array.isArray(data.selected_goal_ids)) {
-            selectedGoalIds = data.selected_goal_ids.filter((item): item is string => typeof item === 'string');
-          } else if (typeof data.selected_goal_ids === 'string') {
-            try {
-              const parsed = JSON.parse(data.selected_goal_ids);
-              if (Array.isArray(parsed)) {
-                selectedGoalIds = parsed.filter((item): item is string => typeof item === 'string');
-              }
-            } catch (e) {
-              console.warn('Failed to parse selected_goal_ids');
-            }
-          }
-        }
-
         let selectedProductIds = defaultConfig.selectedProductIds;
         if (data.selected_product_ids) {
           if (Array.isArray(data.selected_product_ids)) {
@@ -162,8 +147,6 @@ const SharedDashboard = () => {
           metricsOrder: metricsOrder,
           preSalesOrder: preSalesOrder,
           productOrder: productOrder,
-          showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
-          selectedGoalIds: selectedGoalIds,
           showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? defaultConfig.showRevenueEvolutionChart,
           showBillingEvolutionChart: data.show_billing_evolution_chart ?? defaultConfig.showBillingEvolutionChart,
           showSellerRevenueChart: data.show_seller_revenue_chart ?? defaultConfig.showSellerRevenueChart,

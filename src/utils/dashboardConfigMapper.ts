@@ -56,23 +56,6 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     }
   }
 
-  // Safely parse selected_goal_ids with type checking
-  let selectedGoalIds = defaultConfig.selectedGoalIds;
-  if (data.selected_goal_ids) {
-    if (Array.isArray(data.selected_goal_ids)) {
-      selectedGoalIds = data.selected_goal_ids as string[];
-    } else if (typeof data.selected_goal_ids === 'string') {
-      try {
-        const parsed = JSON.parse(data.selected_goal_ids);
-        if (Array.isArray(parsed)) {
-          selectedGoalIds = parsed;
-        }
-      } catch (e) {
-        console.warn('🟡 Failed to parse selected_goal_ids, using default');
-      }
-    }
-  }
-
   // Safely parse selected_product_ids with type checking
   let selectedProductIds = defaultConfig.selectedProductIds;
   if (data.selected_product_ids) {
@@ -137,9 +120,6 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     metricsOrder: metricsOrder,
     preSalesOrder: preSalesOrder,
     productOrder: productOrder,
-    
-    showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
-    selectedGoalIds: selectedGoalIds,
 
     // Mapeamento explícito dos gráficos de evolução com fallback para true
     showRevenueEvolutionChart: data.show_revenue_evolution_chart !== undefined ? data.show_revenue_evolution_chart : true,
@@ -242,9 +222,6 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     metrics_order: config.metricsOrder,
     pre_sales_order: config.preSalesOrder,
     product_order: config.productOrder,
-    
-    show_specific_goals: config.showSpecificGoals,
-    selected_goal_ids: config.selectedGoalIds,
 
     // Novos gráficos de evolução
     show_revenue_evolution_chart: config.showRevenueEvolutionChart,

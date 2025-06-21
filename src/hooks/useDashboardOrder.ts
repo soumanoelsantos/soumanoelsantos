@@ -101,11 +101,6 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
     ];
 
-    // Adicionar metas específicas se habilitadas
-    if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
-      defaultOrder.push('specificGoals');
-    }
-
     // Adicionar tabela de performance dos closers se habilitada - usando a chave consistente
     if (config.showClosersPerformanceTable) {
       defaultOrder.push('showClosersPerformanceTable');

@@ -18,15 +18,6 @@ export const useMetricsOrder = (config: DashboardConfig) => {
       }
     });
 
-    // Adicionar metas específicas se habilitadas
-    if (config.showSpecificGoals && config.selectedGoalIds.length > 0) {
-      enabledMetrics.push({ 
-        key: 'specificGoals', 
-        title: METRIC_TITLES['specificGoals'], 
-        enabled: true 
-      });
-    }
-
     // Adicionar gráficos de evolução se habilitados
     if (config.showRevenueEvolutionChart) {
       enabledMetrics.push({ 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -80,22 +81,6 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           }
         }
 
-        let selectedGoalIds = defaultConfig.selectedGoalIds;
-        if (data.selected_goal_ids) {
-          if (Array.isArray(data.selected_goal_ids)) {
-            selectedGoalIds = data.selected_goal_ids.filter((item): item is string => typeof item === 'string');
-          } else if (typeof data.selected_goal_ids === 'string') {
-            try {
-              const parsed = JSON.parse(data.selected_goal_ids);
-              if (Array.isArray(parsed)) {
-                selectedGoalIds = parsed.filter((item): item is string => typeof item === 'string');
-              }
-            } catch (e) {
-              console.warn('Failed to parse selected_goal_ids');
-            }
-          }
-        }
-
         let selectedProductIds = defaultConfig.selectedProductIds;
         if (data.selected_product_ids) {
           if (Array.isArray(data.selected_product_ids)) {
@@ -152,8 +137,6 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           metricsOrder: metricsOrder,
           preSalesOrder: preSalesOrder,
           productOrder: productOrder,
-          showSpecificGoals: data.show_specific_goals ?? true, // ✅ Padrão true
-          selectedGoalIds: selectedGoalIds,
           showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? defaultConfig.showRevenueEvolutionChart,
           showBillingEvolutionChart: data.show_billing_evolution_chart ?? defaultConfig.showBillingEvolutionChart,
           showSellerRevenueChart: data.show_seller_revenue_chart ?? defaultConfig.showSellerRevenueChart,
@@ -186,9 +169,6 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
           showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
         });
-      } else {
-        // Se não existe configuração, usar padrão com metas específicas habilitadas
-        setConfig(prev => ({ ...prev, showSpecificGoals: true }));
       }
     } catch (error) {
       console.error('Error in loadConfig:', error);
@@ -243,8 +223,6 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_pre_sales_no_show_chart: updates.showPreSalesNoShowChart,
         show_pre_sales_sdr_comparison_chart: updates.showPreSalesSDRComparisonChart,
         company_name: updates.companyName,
-        show_specific_goals: updates.showSpecificGoals,
-        selected_goal_ids: updates.selectedGoalIds,
         show_revenue_evolution_chart: updates.showRevenueEvolutionChart,
         show_billing_evolution_chart: updates.showBillingEvolutionChart,
         show_seller_revenue_chart: updates.showSellerRevenueChart,
