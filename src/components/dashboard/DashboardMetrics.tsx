@@ -1,139 +1,65 @@
+
 import React from 'react';
-import { useDashboardConfig } from '@/hooks/useDashboardConfig';
-import { useDashboardOrder } from '@/hooks/useDashboardOrder';
-import { useDashboardFilters } from '@/hooks/useDashboardFilters';
-import { useProductFilter } from '@/hooks/useProductFilter';
-import CommercialDashboardFilters from './filters/CommercialDashboardFilters';
-import ProductFilter from './filters/ProductFilter';
-import ProductMetricsCards from './products/ProductMetricsCards';
+import { DashboardConfig } from '@/types/dashboardConfig';
 import { ItemRenderer } from './renderers/ItemRenderer';
+import SpecificGoalsCards from './goals/SpecificGoalsCards';
 
 interface DashboardMetricsProps {
-  isPublicView?: boolean;
-  sharedUserId?: string;
+  config: DashboardConfig;
+  selectedProductId?: string | null;
 }
 
-const DashboardMetrics = ({ isPublicView = false, sharedUserId }: DashboardMetricsProps) => {
-  const { config } = useDashboardConfig(sharedUserId);
-  const { getOrderedItems } = useDashboardOrder(config);
-  const { 
-    filters, 
-    updateDateRange, 
-    updateSalespeople, 
-    resetFilters 
-  } = useDashboardFilters();
-  const { selectedProductId, updateSelectedProduct } = useProductFilter();
+const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ config, selectedProductId }) => {
+  console.log('📊 [DEBUG] DashboardMetrics - Config:', {
+    showSpecificGoals: config.showSpecificGoals,
+    selectedGoalIds: config.selectedGoalIds,
+    metricsOrder: config.metricsOrder
+  });
 
-  const orderedItems = getOrderedItems();
-  
-  console.log('🔍 DashboardMetrics - Rendering with config:', config);
-  console.log('🔍 DashboardMetrics - Ordered items:', orderedItems);
-  console.log('🔍 DashboardMetrics - Public view:', isPublicView, 'Shared user:', sharedUserId);
-  console.log('🔍 DashboardMetrics - Selected product ID:', selectedProductId);
+  const renderMetrics = () => {
+    const components: JSX.Element[] = [];
 
-  // Separar itens que devem ocupar toda a largura dos que ficam no grid
-  const fullWidthItems = [
-    'revenueEvolutionChart', 
-    'billingEvolutionChart', 
-    'sellerRevenueChart', 
-    'sellerBillingChart',
-    'temporalRevenueChart',
-    'temporalBillingChart',
-    'showClosersPerformanceTable',
-    // Adicionar os novos gráficos de produtos
-    'showProductRevenueEvolutionChart',
-    'showProductBillingEvolutionChart',
-    'showProductSalesEvolutionChart',
-    'showProductPerformanceChart',
-    'showProductComparisonChart',
-    'showProductTemporalChart'
-  ];
-  const gridItems = orderedItems.filter(item => !fullWidthItems.includes(item));
-  const evolutionCharts = orderedItems.filter(item => fullWidthItems.includes(item));
+    // Renderizar itens na ordem configurada
+    config.metricsOrder.forEach((itemKey, index) => {
+      console.log('📊 [DEBUG] Processing metric:', itemKey);
 
-  console.log('🔍 DashboardMetrics - Grid items:', gridItems);
-  console.log('🔍 DashboardMetrics - Evolution charts and tables found:', evolutionCharts);
-
-  return (
-    <div className="space-y-8">
-      {!isPublicView && (
-        <CommercialDashboardFilters
-          startDate={filters.startDate}
-          endDate={filters.endDate}
-          selectedSalespeople={filters.selectedSalespeople}
-          onDateChange={updateDateRange}
-          onSalespeopleChange={updateSalespeople}
-          onReset={resetFilters}
-        />
-      )}
-
-      {/* Filtro de Produto - só aparece se há indicadores de produtos habilitados */}
-      {!isPublicView && config.showProductMetrics && config.selectedProductIds.length > 0 && (
-        <ProductFilter
-          selectedProductId={selectedProductId}
-          onProductChange={updateSelectedProduct}
-        />
-      )}
-      
-      {/* Grid para métricas comerciais sem espaçamento - NÃO é afetado pelo filtro de produto */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-          {gridItems.map((key, index) => {
-            console.log(`🔍 DashboardMetrics - Rendering grid item: ${key} (enabled: ${config[key as keyof typeof config]})`);
-            
-            return (
-              <div key={`${key}-${index}`}>
-                <ItemRenderer 
-                  itemKey={key} 
-                  config={config} 
-                  isPublicView={isPublicView} 
-                  sharedUserId={sharedUserId}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Seção dedicada para indicadores de produtos - ESTA SIM é afetada pelo filtro de produto */}
-      {config.showProductMetrics && config.selectedProductIds.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800">
-            Indicadores de Produtos (Atemporais)
-            {selectedProductId && (
-              <span className="text-base font-normal text-gray-600 ml-2">
-                - Filtrado por produto selecionado
-              </span>
-            )}
-          </h2>
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-              <ProductMetricsCards config={config} selectedProductId={selectedProductId} />
+      // Tratar metas específicas
+      if (itemKey === 'specificGoals' && config.showSpecificGoals) {
+        console.log('🎯 [DEBUG] Renderizando metas específicas');
+        components.push(
+          <div key={`specificGoals-${index}`} className="w-full">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Metas Específicas</h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+              <SpecificGoalsCards config={config} />
             </div>
           </div>
-        </div>
-      )}
+        );
+        return;
+      }
 
-      {/* Seção dedicada para gráficos de evolução, análise temporal e tabelas */}
-      {evolutionCharts.length > 0 && (
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-gray-800">Gráficos de Evolução, Análise Temporal e Tabelas de Performance</h2>
-          {evolutionCharts.map((key, index) => {
-            console.log(`🔍 DashboardMetrics - Rendering evolution chart/table: ${key}`);
-            const component = <ItemRenderer itemKey={key} config={config} isPublicView={isPublicView} sharedUserId={sharedUserId} selectedProductId={selectedProductId} />;
-            if (!component) {
-              console.log(`❌ DashboardMetrics - No component returned for evolution chart/table: ${key}`);
-              return null;
-            }
-            
-            return (
-              <div key={`evolution-${key}-${index}`} className="w-full">
-                {component}
-              </div>
-            );
-          })}
-        </div>
-      )}
+      // Renderizar outros componentes através do ItemRenderer
+      const renderedComponent = (
+        <ItemRenderer 
+          key={`${itemKey}-${index}`}
+          itemKey={itemKey} 
+          config={config} 
+          selectedProductId={selectedProductId} 
+        />
+      );
+
+      if (renderedComponent) {
+        components.push(renderedComponent);
+      }
+    });
+
+    return components;
+  };
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+      {renderMetrics()}
     </div>
   );
 };
