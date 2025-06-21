@@ -17,7 +17,22 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
   config, 
   onConfigChange 
 }) => {
-  const { products, isLoading } = useProducts();
+  const { products, isLoading, refetch } = useProducts();
+
+  // Log para debug
+  console.log('🔍 [DEBUG] ProductMetricsConfigCard - produtos carregados:', products);
+  console.log('🔍 [DEBUG] ProductMetricsConfigCard - isLoading:', isLoading);
+  console.log('🔍 [DEBUG] ProductMetricsConfigCard - selectedProductIds:', config.selectedProductIds);
+
+  // Forçar refresh dos produtos a cada 5 segundos para garantir sincronização
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('🔄 [DEBUG] ProductMetricsConfigCard - Atualizando produtos...');
+      refetch();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [refetch]);
 
   const handleProductToggle = (productId: string, checked: boolean) => {
     const updatedProductIds = checked
@@ -70,9 +85,20 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
           <div className="space-y-4 pl-4 border-l-2 border-gray-200">
             {/* Seleção de produtos */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-gray-700">
-                Selecione os produtos para acompanhar:
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-gray-700">
+                  Selecione os produtos para acompanhar:
+                </Label>
+                <button
+                  onClick={() => {
+                    console.log('🔄 [DEBUG] Refresh manual dos produtos');
+                    refetch();
+                  }}
+                  className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  Atualizar lista
+                </button>
+              </div>
               {isLoading ? (
                 <div className="flex items-center justify-center p-4">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
