@@ -15,6 +15,51 @@ interface ItemRendererProps {
 export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, selectedProductId }) => {
   console.log('🔍 [DEBUG] ItemRenderer - Rendering item:', itemKey);
 
+  // Lista de indicadores de produtos
+  const productIndicators = [
+    'showProductReceita',
+    'showProductFaturamento',
+    'showProductQuantidadeVendas',
+    'showProductTicketReceita',
+    'showProductTicketFaturamento',
+    'showProductMetaReceita',
+    'showProductMetaFaturamento',
+    'showProductMetaQuantidadeVendas',
+    'showProductFaltaReceita',
+    'showProductFaltaFaturamento',
+    'showProductCashCollect',
+    'showProductProjecaoReceita',
+    'showProductProjecaoFaturamento'
+  ];
+
+  // Lista de gráficos de produtos
+  const productCharts = [
+    'showProductRevenueEvolutionChart',
+    'showProductBillingEvolutionChart',
+    'showProductSalesEvolutionChart',
+    'showProductPerformanceChart',
+    'showProductComparisonChart',
+    'showProductTemporalChart'
+  ];
+
+  // Se é um indicador de produto, renderizar componentes de produtos
+  if (productIndicators.includes(itemKey)) {
+    console.log('🔍 [DEBUG] ItemRenderer - Detected product indicator:', itemKey);
+    if (selectedProductId) {
+      return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+    }
+    return <ProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+  }
+
+  // Se é um gráfico de produto, renderizar componentes de produtos
+  if (productCharts.includes(itemKey)) {
+    console.log('🔍 [DEBUG] ItemRenderer - Detected product chart:', itemKey);
+    if (selectedProductId) {
+      return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+    }
+    return <ProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+  }
+
   switch (itemKey) {
     case 'productMetrics':
       if (selectedProductId) {

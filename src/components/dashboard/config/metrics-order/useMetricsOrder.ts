@@ -37,7 +37,24 @@ export const useMetricsOrder = (config: DashboardConfig) => {
       'showClosersPerformanceTable'
     ];
 
-    // Verificar apenas métricas comerciais específicas
+    // Lista de indicadores de produtos
+    const productMetrics = [
+      'showProductReceita',
+      'showProductFaturamento',
+      'showProductQuantidadeVendas',
+      'showProductTicketReceita',
+      'showProductTicketFaturamento',
+      'showProductMetaReceita',
+      'showProductMetaFaturamento',
+      'showProductMetaQuantidadeVendas',
+      'showProductFaltaReceita',
+      'showProductFaltaFaturamento',
+      'showProductCashCollect',
+      'showProductProjecaoReceita',
+      'showProductProjecaoFaturamento'
+    ];
+
+    // Verificar métricas comerciais específicas
     commercialMetrics.forEach(key => {
       const configValue = config[key as keyof DashboardConfig];
       if (configValue === true) {
@@ -48,6 +65,20 @@ export const useMetricsOrder = (config: DashboardConfig) => {
         });
       }
     });
+
+    // Verificar indicadores de produtos se showProductMetrics está habilitado
+    if (config.showProductMetrics && config.selectedProductIds.length > 0) {
+      productMetrics.forEach(key => {
+        const configValue = config[key as keyof DashboardConfig];
+        if (configValue === true) {
+          enabledMetrics.push({
+            key,
+            title: METRIC_TITLES[key] || key,
+            enabled: true
+          });
+        }
+      });
+    }
 
     // Adicionar gráficos de evolução se habilitados
     if (config.showRevenueEvolutionChart) {
@@ -96,6 +127,55 @@ export const useMetricsOrder = (config: DashboardConfig) => {
       enabledMetrics.push({ 
         key: 'temporalBillingChart', 
         title: METRIC_TITLES['temporalBillingChart'], 
+        enabled: true 
+      });
+    }
+
+    // Adicionar gráficos de produtos se habilitados
+    if (config.showProductRevenueEvolutionChart) {
+      enabledMetrics.push({ 
+        key: 'showProductRevenueEvolutionChart', 
+        title: METRIC_TITLES['showProductRevenueEvolutionChart'] || 'Gráfico de Evolução de Receita por Produto', 
+        enabled: true 
+      });
+    }
+    
+    if (config.showProductBillingEvolutionChart) {
+      enabledMetrics.push({ 
+        key: 'showProductBillingEvolutionChart', 
+        title: METRIC_TITLES['showProductBillingEvolutionChart'] || 'Gráfico de Evolução de Faturamento por Produto', 
+        enabled: true 
+      });
+    }
+
+    if (config.showProductSalesEvolutionChart) {
+      enabledMetrics.push({ 
+        key: 'showProductSalesEvolutionChart', 
+        title: METRIC_TITLES['showProductSalesEvolutionChart'] || 'Gráfico de Evolução de Vendas por Produto', 
+        enabled: true 
+      });
+    }
+
+    if (config.showProductPerformanceChart) {
+      enabledMetrics.push({ 
+        key: 'showProductPerformanceChart', 
+        title: METRIC_TITLES['showProductPerformanceChart'] || 'Gráfico de Performance dos Produtos', 
+        enabled: true 
+      });
+    }
+
+    if (config.showProductComparisonChart) {
+      enabledMetrics.push({ 
+        key: 'showProductComparisonChart', 
+        title: METRIC_TITLES['showProductComparisonChart'] || 'Gráfico de Comparação entre Produtos', 
+        enabled: true 
+      });
+    }
+
+    if (config.showProductTemporalChart) {
+      enabledMetrics.push({ 
+        key: 'showProductTemporalChart', 
+        title: METRIC_TITLES['showProductTemporalChart'] || 'Gráfico de Análise Temporal dos Produtos', 
         enabled: true 
       });
     }

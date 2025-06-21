@@ -11,6 +11,29 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       
       let finalOrder = [...config.metricsOrder];
       
+      // Garantir que os indicadores de produtos estejam incluídos se habilitados
+      const productIndicators = [
+        'showProductReceita',
+        'showProductFaturamento',
+        'showProductQuantidadeVendas',
+        'showProductTicketReceita',
+        'showProductTicketFaturamento',
+        'showProductMetaReceita',
+        'showProductMetaFaturamento',
+        'showProductMetaQuantidadeVendas',
+        'showProductFaltaReceita',
+        'showProductFaltaFaturamento',
+        'showProductCashCollect',
+        'showProductProjecaoReceita',
+        'showProductProjecaoFaturamento'
+      ];
+
+      productIndicators.forEach(indicator => {
+        if (config[indicator as keyof DashboardConfig] && !finalOrder.includes(indicator)) {
+          finalOrder.push(indicator);
+        }
+      });
+
       // Garantir que os novos indicadores de projeção estejam incluídos se habilitados
       if (config.showProjecaoReceita && !finalOrder.includes('showProjecaoReceita')) {
         finalOrder.push('showProjecaoReceita');
@@ -101,6 +124,29 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
     ];
 
+    // Adicionar indicadores de produtos se habilitados
+    const productIndicators = [
+      'showProductReceita',
+      'showProductFaturamento',
+      'showProductQuantidadeVendas',
+      'showProductTicketReceita',
+      'showProductTicketFaturamento',
+      'showProductMetaReceita',
+      'showProductMetaFaturamento',
+      'showProductMetaQuantidadeVendas',
+      'showProductFaltaReceita',
+      'showProductFaltaFaturamento',
+      'showProductCashCollect',
+      'showProductProjecaoReceita',
+      'showProductProjecaoFaturamento'
+    ];
+
+    productIndicators.forEach(indicator => {
+      if (config[indicator as keyof DashboardConfig]) {
+        defaultOrder.push(indicator);
+      }
+    });
+
     // Adicionar tabela de performance dos closers se habilitada - usando a chave consistente
     if (config.showClosersPerformanceTable) {
       defaultOrder.push('showClosersPerformanceTable');
@@ -158,7 +204,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       defaultOrder.push('showProductTemporalChart');
     }
 
-    console.log('🔍 useDashboardOrder - Using default order with product charts:', defaultOrder);
+    console.log('🔍 useDashboardOrder - Using default order with product indicators:', defaultOrder);
     return defaultOrder;
   };
 
