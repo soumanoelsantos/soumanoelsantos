@@ -4,8 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
 import { IndividualSaleFormData } from '@/types/individualSales';
 
 interface IndividualSaleFormProps {
@@ -15,84 +13,29 @@ interface IndividualSaleFormProps {
   sellerId: string;
 }
 
-interface Product {
-  id: string;
-  name: string;
-  description?: string;
-  user_id: string;
-}
-
 const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting,
   sellerId
 }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(false);
-  
   const [formData, setFormData] = useState<IndividualSaleFormData>({
-    client_name: '',
     revenue_amount: 0,
     billing_amount: 0,
-    product_id: null,
   });
 
   console.log('🔍 [DEBUG] IndividualSaleForm - sellerId:', sellerId);
 
-  // Buscar todos os produtos disponíveis
-  React.useEffect(() => {
-    const fetchProducts = async () => {
-      console.log('📋 [DEBUG] Iniciando busca de produtos...');
-      setProductsLoading(true);
-      
-      try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('id, name, description, user_id')
-          .order('name', { ascending: true });
-
-        console.log('📝 [DEBUG] Resultado da busca de produtos:', { data, error });
-
-        if (error) {
-          console.error('❌ [DEBUG] Erro ao buscar produtos:', error);
-          setProducts([]);
-        } else {
-          // Remover produtos duplicados baseado no ID
-          const uniqueProducts = data?.filter((product, index, array) => 
-            array.findIndex(p => p.id === product.id) === index
-          ) || [];
-          
-          console.log('✅ [DEBUG] Produtos únicos carregados:', uniqueProducts.length);
-          setProducts(uniqueProducts);
-        }
-      } catch (error) {
-        console.error('💥 [DEBUG] Erro na busca de produtos:', error);
-        setProducts([]);
-      } finally {
-        setProductsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.client_name.trim()) {
-      return;
-    }
 
     try {
       const success = await onSubmit(formData);
       
       if (success) {
         setFormData({
-          client_name: '',
           revenue_amount: 0,
           billing_amount: 0,
-          product_id: null,
         });
         onCancel();
       }
@@ -112,58 +55,6 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="client_name">Nome do Cliente *</Label>
-            <Input
-              id="client_name"
-              value={formData.client_name}
-              onChange={(e) => handleInputChange('client_name', e.target.value)}
-              placeholder="Digite o nome do cliente"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="product_id">Produto</Label>
-            <Select
-              value={formData.product_id || "none"}
-              onValueChange={(value) => handleInputChange('product_id', value === "none" ? null : value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione um produto ou deixe em branco para venda geral" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Venda Geral (sem produto específico)</SelectItem>
-                {productsLoading ? (
-                  <SelectItem value="loading" disabled>Carregando produtos...</SelectItem>
-                ) : products && products.length > 0 ? (
-                  products.map((product) => (
-                    <SelectItem key={product.id} value={product.id}>
-                      {product.name}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="no-products" disabled>
-                    Nenhum produto encontrado no sistema
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-            
-            {(!products || products.length === 0) && !productsLoading && (
-              <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded">
-                ℹ️ <strong>Produtos não encontrados.</strong> Para adicionar produtos, vá em:
-                <br />Dashboard → Configurações → Produtos para Formulários de Vendas
-              </div>
-            )}
-
-            {products && products.length > 0 && (
-              <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
-                ✅ <strong>{products.length} produto(s) disponível(eis)</strong> para seleção
-              </div>
-            )}
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="revenue_amount">Receita (R$) *</Label>

@@ -16,8 +16,6 @@ export interface IndividualSale {
 }
 
 export interface IndividualSaleFormData {
-  client_name: string;
   revenue_amount: number;
   billing_amount: number;
-  product_id?: string | null;
 }
