@@ -29,8 +29,11 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   const seller = sellers.find(s => s.id === sellerId);
   const adminUserId = seller?.user_id;
   
+  console.log('🔍 [DEBUG] Seller encontrado:', seller);
+  console.log('🔍 [DEBUG] Admin User ID extraído:', adminUserId);
+  
   // Buscar produtos do admin que criou o vendedor
-  const { products } = useProducts(adminUserId);
+  const { products, isLoading: productsLoading } = useProducts(adminUserId);
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -40,6 +43,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   });
 
   console.log('📋 [DEBUG] Produtos carregados:', products);
+  console.log('📋 [DEBUG] Products loading:', productsLoading);
   console.log('📝 [DEBUG] FormData atual:', formData);
   console.log('👤 [DEBUG] Admin User ID:', adminUserId);
 
@@ -105,7 +109,9 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Venda Geral (sem produto específico)</SelectItem>
-                {products && products.length > 0 ? (
+                {productsLoading ? (
+                  <SelectItem value="loading" disabled>Carregando produtos...</SelectItem>
+                ) : products && products.length > 0 ? (
                   products.map((product) => (
                     <SelectItem key={product.id} value={product.id}>
                       {product.name}
@@ -116,6 +122,11 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                 )}
               </SelectContent>
             </Select>
+            {/* Debug info - remover em produção */}
+            <div className="text-xs text-gray-500">
+              Debug: {products?.length || 0} produtos encontrados
+              {adminUserId ? ` para admin ${adminUserId}` : ' (sem admin ID)'}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
