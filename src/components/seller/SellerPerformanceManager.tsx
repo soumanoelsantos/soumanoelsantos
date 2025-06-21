@@ -19,11 +19,9 @@ const SellerPerformanceManager: React.FC<SellerPerformanceManagerProps> = ({
   isSubmitting
 }) => {
   const {
-    currentPerformance,
     performances,
     isLoading,
-    createPerformance,
-    updatePerformance,
+    createOrUpdatePerformance,
     deletePerformance
   } = useSellerPerformance(seller.id);
 
@@ -34,15 +32,25 @@ const SellerPerformanceManager: React.FC<SellerPerformanceManagerProps> = ({
   });
 
   console.log('🔍 [DEBUG] SellerPerformanceManager - seller:', seller);
-  console.log('📋 [DEBUG] currentPerformance:', currentPerformance);
+  console.log('📋 [DEBUG] performances:', performances);
+
+  // Get the most recent performance for today
+  const today = new Date().toISOString().split('T')[0];
+  const currentPerformance = performances.find(p => p.date === today);
 
   const handleSubmit = async (data: PerformanceFormData) => {
     try {
-      if (currentPerformance?.id) {
-        await updatePerformance(currentPerformance.id, data);
-      } else {
-        await createPerformance(data);
-      }
+      await createOrUpdatePerformance({
+        date: data.date,
+        sales_count: data.sales_count,
+        revenue_amount: data.revenue_amount,
+        billing_amount: data.billing_amount,
+        leads_count: data.leads_count,
+        meetings_count: data.meetings_count,
+        calls_count: data.calls_count,
+        notes: data.notes,
+        submitted_by_seller: true
+      });
       await onSubmit(data);
     } catch (error) {
       console.error('Erro ao salvar performance:', error);
@@ -56,25 +64,15 @@ const SellerPerformanceManager: React.FC<SellerPerformanceManagerProps> = ({
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      <PerformanceFormCard
-        seller={seller}
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-        currentPerformance={currentPerformance}
-        individualSalesTotals={individualSalesTotals}
-      />
-
       <IndividualSalesManager
         sellerId={seller.id}
         performanceId={currentPerformance?.id || 'temp-id'}
-        ownerUserId={seller.user_id} // Passar o user_id do vendedor como ownerUserId
+        ownerUserId={seller.user_id}
         onTotalsChange={handleIndividualSalesTotalsChange}
       />
 
       <SellerPerformanceHistory
-        performances={performances}
-        isLoading={isLoading}
-        onDelete={deletePerformance}
+        seller={seller}
       />
     </div>
   );
