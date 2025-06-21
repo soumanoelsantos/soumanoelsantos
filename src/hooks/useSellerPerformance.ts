@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { SellerDailyPerformance } from '@/types/sellers';
 import { useToast } from '@/hooks/use-toast';
+import { ProductSale } from '@/components/seller/ProductSalesSection';
 
 export const useSellerPerformance = (sellerId?: string) => {
   const { toast } = useToast();
@@ -59,6 +59,7 @@ export const useSellerPerformance = (sellerId?: string) => {
     calls_count: number;
     notes?: string;
     submitted_by_seller?: boolean;
+    product_sales?: ProductSale[];
   }) => {
     if (!sellerId) {
       console.log('❌ [DEBUG] Sem sellerId para criar/atualizar performance');
@@ -69,7 +70,8 @@ export const useSellerPerformance = (sellerId?: string) => {
       console.log('📤 [DEBUG] Salvando performance para seller_id:', sellerId);
       console.log('📤 [DEBUG] Dados da performance:', performanceData);
       
-      const { data, error } = await supabase
+      // Salvar a performance principal
+      const { data: performanceResult, error: performanceError } = await supabase
         .from('seller_daily_performance')
         .upsert({
           seller_id: sellerId,
@@ -89,19 +91,56 @@ export const useSellerPerformance = (sellerId?: string) => {
         .select()
         .single();
 
-      if (error) {
-        console.error('❌ [DEBUG] Erro ao salvar:', error);
-        throw error;
+      if (performanceError) {
+        console.error('❌ [DEBUG] Erro ao salvar performance:', performanceError);
+        throw performanceError;
       }
 
-      console.log('✅ [DEBUG] Performance salva com sucesso:', data);
+      console.log('✅ [DEBUG] Performance salva com sucesso:', performanceResult);
+
+      // Se há vendas por produto, salvar elas também
+      if (performanceData.product_sales && performanceData.product_sales.length > 0) {
+        console.log('📤 [DEBUG] Salvando vendas por produto:', performanceData.product_sales);
+
+        // Primeiro, deletar vendas existentes para essa performance/data
+        const { error: deleteError } = await supabase
+          .from('seller_individual_sales')
+          .delete()
+          .eq('seller_id', sellerId)
+          .eq('performance_id', performanceResult.id);
+
+        if (deleteError) {
+          console.error('❌ [DEBUG] Erro ao deletar vendas antigas:', deleteError);
+        }
+
+        // Inserir as novas vendas
+        const salesData = performanceData.product_sales.map(sale => ({
+          seller_id: sellerId,
+          performance_id: performanceResult.id,
+          product_id: sale.product_id,
+          client_name: sale.client_name,
+          revenue_amount: sale.revenue_amount,
+          billing_amount: sale.billing_amount
+        }));
+
+        const { error: salesError } = await supabase
+          .from('seller_individual_sales')
+          .insert(salesData);
+
+        if (salesError) {
+          console.error('❌ [DEBUG] Erro ao salvar vendas por produto:', salesError);
+          throw salesError;
+        }
+
+        console.log('✅ [DEBUG] Vendas por produto salvas com sucesso');
+      }
 
       // Atualizar a lista local
       await fetchPerformances();
 
       toast({
         title: "Sucesso",
-        description: "Lançamento salvo com sucesso",
+        description: `Lançamento salvo com sucesso${performanceData.product_sales?.length ? ` com ${performanceData.product_sales.length} vendas por produto` : ''}`,
       });
       return true;
     } catch (error) {
@@ -119,13 +158,24 @@ export const useSellerPerformance = (sellerId?: string) => {
     try {
       console.log('🗑️ [DEBUG] Deletando performance:', performanceId);
       
+      // Primeiro deletar as vendas individuais relacionadas
+      const { error: salesError } = await supabase
+        .from('seller_individual_sales')
+        .delete()
+        .eq('performance_id', performanceId);
+
+      if (salesError) {
+        console.error('❌ [DEBUG] Erro ao deletar vendas individuais:', salesError);
+      }
+
+      // Depois deletar a performance
       const { error } = await supabase
         .from('seller_daily_performance')
         .delete()
         .eq('id', performanceId);
 
       if (error) {
-        console.error('❌ [DEBUG] Erro ao deletar:', error);
+        console.error('❌ [DEBUG] Erro ao deletar performance:', error);
         throw error;
       }
 
