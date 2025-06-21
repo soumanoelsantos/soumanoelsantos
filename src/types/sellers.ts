@@ -43,17 +43,6 @@ export interface SellerDailyPerformance {
   updated_at: string;
 }
 
-export interface PerformanceFormData {
-  date: string;
-  sales_count: number;
-  revenue_amount: number;
-  billing_amount: number;
-  leads_count: number;
-  meetings_count: number;
-  calls_count: number;
-  notes: string;
-}
-
 export interface SellerWithGoals extends Seller {
   monthly_goals?: SellerMonthlyGoal[];
   daily_performance?: SellerDailyPerformance[];
