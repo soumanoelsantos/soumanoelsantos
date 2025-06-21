@@ -3,10 +3,9 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Edit, Trash2, Clock, User, ChevronDown, ChevronRight, Package } from 'lucide-react';
+import { Calendar, Edit, Trash2, Clock, User } from 'lucide-react';
 import { Seller } from '@/types/sellers';
 import { useSellerPerformance } from '@/hooks/useSellerPerformance';
-import { useIndividualSales } from '@/hooks/useIndividualSales';
 import { formatDateToBrazilian, formatToBrazilianTimezone } from '@/utils/dateUtils';
 import EditPerformanceDialog from './EditPerformanceDialog';
 
@@ -15,13 +14,8 @@ interface SellerPerformanceHistoryProps {
 }
 
 const PerformanceCard = ({ performance, seller, onEdit, onDelete }: any) => {
-  const [showSales, setShowSales] = useState(false);
-  const { sales } = useIndividualSales(performance.id);
   const isSDR = seller.seller_type === 'sdr';
   const isCloser = !isSDR;
-
-  console.log('🔍 [DEBUG] PerformanceCard - performance.id:', performance.id);
-  console.log('🔍 [DEBUG] PerformanceCard - sales:', sales);
 
   const renderSDRMetrics = (performance: any) => (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -45,75 +39,27 @@ const PerformanceCard = ({ performance, seller, onEdit, onDelete }: any) => {
   );
 
   const renderCloserMetrics = (performance: any) => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div>
-          <p className="text-sm text-gray-500">Vendas:</p>
-          <p className="text-lg font-semibold">{performance.sales_count}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Receita:</p>
-          <p className="text-lg font-semibold">
-            R$ {performance.revenue_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          </p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Faturamento:</p>
-          <p className="text-lg font-semibold">
-            R$ {performance.billing_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          </p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Reuniões:</p>
-          <p className="text-lg font-semibold">{performance.meetings_count}</p>
-        </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div>
+        <p className="text-sm text-gray-500">Vendas:</p>
+        <p className="text-lg font-semibold">{performance.sales_count}</p>
       </div>
-
-      {/* Mostrar vendas individuais se houver */}
-      {sales.length > 0 && (
-        <div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowSales(!showSales)}
-            className="p-0 h-auto font-normal text-blue-600 hover:text-blue-700"
-          >
-            {showSales ? <ChevronDown className="h-4 w-4 mr-1" /> : <ChevronRight className="h-4 w-4 mr-1" />}
-            {sales.length} venda{sales.length !== 1 ? 's' : ''} individual{sales.length !== 1 ? 'is' : ''}
-          </Button>
-
-          {showSales && (
-            <div className="mt-3 space-y-2 pl-4 border-l-2 border-gray-200">
-              {sales.map((sale) => {
-                const productName = sale.products?.name || (sale.product_id ? 'Produto não encontrado' : 'Venda Geral');
-                
-                return (
-                  <div key={sale.id} className="flex items-center justify-between bg-gray-50 p-3 rounded">
-                    <div className="flex items-center gap-3">
-                      <User className="h-4 w-4 text-gray-500" />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium">{sale.client_name}</p>
-                          <div className="flex items-center gap-1">
-                            <Package className="h-3 w-3 text-gray-400" />
-                            <Badge variant="secondary" className="text-xs">
-                              {productName}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="flex gap-3 text-xs text-gray-500">
-                          <span>Receita: R$ {Number(sale.revenue_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                          <span>Faturamento: R$ {Number(sale.billing_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+      <div>
+        <p className="text-sm text-gray-500">Receita:</p>
+        <p className="text-lg font-semibold">
+          R$ {performance.revenue_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        </p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Faturamento:</p>
+        <p className="text-lg font-semibold">
+          R$ {performance.billing_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        </p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Reuniões:</p>
+        <p className="text-lg font-semibold">{performance.meetings_count}</p>
+      </div>
     </div>
   );
 
