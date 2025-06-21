@@ -117,4 +117,9 @@ export const defaultConfig: DashboardConfig = {
   showProductPerformanceChart: false,
   showProductComparisonChart: false,
   showProductTemporalChart: false,
+
+  // CONFIGURAÇÕES PADRÃO DAS ABAS
+  enableCommercialTab: true,
+  enableProductTab: true,
+  enablePreSalesTab: true,
 };

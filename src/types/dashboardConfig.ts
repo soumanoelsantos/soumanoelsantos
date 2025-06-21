@@ -86,4 +86,9 @@ export interface DashboardConfig {
   showProductPerformanceChart: boolean;
   showProductComparisonChart: boolean;
   showProductTemporalChart: boolean;
+
+  // NOVAS CONFIGURAÇÕES DE CONTROLE DE ABAS
+  enableCommercialTab: boolean;
+  enableProductTab: boolean;
+  enablePreSalesTab: boolean;
 }

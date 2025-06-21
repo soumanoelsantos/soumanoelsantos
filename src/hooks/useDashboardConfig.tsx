@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -168,6 +167,11 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductPerformanceChart: data.show_product_performance_chart ?? defaultConfig.showProductPerformanceChart,
           showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
           showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
+
+          // NOVOS CAMPOS DE CONTROLE DE ABAS
+          enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
+          enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
+          enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
         });
       }
     } catch (error) {
@@ -254,6 +258,11 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_product_performance_chart: updates.showProductPerformanceChart,
         show_product_comparison_chart: updates.showProductComparisonChart,
         show_product_temporal_chart: updates.showProductTemporalChart,
+
+        // NOVOS MAPEAMENTOS DE CONTROLE DE ABAS
+        enable_commercial_tab: updates.enableCommercialTab,
+        enable_product_tab: updates.enableProductTab,
+        enable_pre_sales_tab: updates.enablePreSalesTab,
       };
 
       // Remove undefined values

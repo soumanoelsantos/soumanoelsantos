@@ -17,6 +17,7 @@ import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
 import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
 import ProductOrderManager from '@/components/dashboard/config/product-order/ProductOrderManager';
+import TabControlCard from '@/components/dashboard/config/TabControlCard';
 import { saveDashboardConfig } from '@/services/dashboardConfigService';
 import { toast } from 'sonner';
 
@@ -102,6 +103,12 @@ const DashboardConfig = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Coluna da esquerda - Comercial */}
               <div className="space-y-6">
+                <TabControlCard
+                  title="Comercial"
+                  description="Controla se a aba Dashboard Comercial aparece no dashboard principal"
+                  isEnabled={config.enableCommercialTab}
+                  onToggle={(enabled) => handleConfigChange('enableCommercialTab', enabled)}
+                />
                 <GeneralConfigCard 
                   config={config} 
                   onConfigChange={handleConfigChange} 
@@ -132,6 +139,12 @@ const DashboardConfig = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Coluna da esquerda - Pré-vendas */}
               <div className="space-y-6">
+                <TabControlCard
+                  title="Pré-vendas"
+                  description="Controla se a aba Dashboard Pré-vendas aparece no dashboard principal"
+                  isEnabled={config.enablePreSalesTab}
+                  onToggle={(enabled) => handleConfigChange('enablePreSalesTab', enabled)}
+                />
                 <PreSalesConfigCard 
                   config={config} 
                   onConfigChange={handleConfigChange} 
@@ -153,6 +166,12 @@ const DashboardConfig = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Coluna da esquerda - Produto */}
               <div className="space-y-6">
+                <TabControlCard
+                  title="Produtos"
+                  description="Controla se a aba Dashboard Produtos aparece no dashboard principal"
+                  isEnabled={config.enableProductTab}
+                  onToggle={(enabled) => handleConfigChange('enableProductTab', enabled)}
+                />
                 <ProductsManagementCard />
                 <ProductMetricsConfigCard 
                   config={config} 
