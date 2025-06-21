@@ -197,6 +197,8 @@ export const useDashboardConfig = (sharedUserId?: string) => {
   const updateConfig = async (updates: Partial<DashboardConfig>) => {
     if (!authUserId || sharedUserId) return; // Não permitir updates em visualização compartilhada
 
+    console.log('🔄 [DEBUG] Atualizando configuração:', updates);
+
     try {
       const mappedUpdates = {
         metrics_order: updates.metricsOrder,
@@ -247,7 +249,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_temporal_revenue_chart: updates.showTemporalRevenueChart,
         show_temporal_billing_chart: updates.showTemporalBillingChart,
         
-        // Product metrics mappings
+        // Product metrics mappings - CORRIGIDO
         show_product_metrics: updates.showProductMetrics,
         selected_product_ids: updates.selectedProductIds,
         show_product_ticket_receita: updates.showProductTicketReceita,
@@ -264,7 +266,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_product_projecao_receita: updates.showProductProjecaoReceita,
         show_product_projecao_faturamento: updates.showProductProjecaoFaturamento,
         
-        // Product charts mappings
+        // Product charts mappings - CORRIGIDO
         show_product_revenue_evolution_chart: updates.showProductRevenueEvolutionChart,
         show_product_billing_evolution_chart: updates.showProductBillingEvolutionChart,
         show_product_sales_evolution_chart: updates.showProductSalesEvolutionChart,
@@ -278,6 +280,8 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         Object.entries(mappedUpdates).filter(([_, v]) => v !== undefined)
       );
 
+      console.log('🚀 [DEBUG] Dados limpos para salvar:', cleanUpdates);
+
       const { error } = await supabase
         .from('dashboard_configs')
         .upsert({
@@ -288,13 +292,14 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         });
 
       if (error) {
-        console.error('Error updating dashboard config:', error);
+        console.error('❌ [DEBUG] Erro ao atualizar configuração:', error);
         return;
       }
 
+      console.log('✅ [DEBUG] Configuração atualizada com sucesso!');
       setConfig(prev => ({ ...prev, ...updates }));
     } catch (error) {
-      console.error('Error in updateConfig:', error);
+      console.error('💥 [DEBUG] Erro inesperado em updateConfig:', error);
     }
   };
 

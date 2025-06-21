@@ -34,22 +34,27 @@ const DashboardConfig = () => {
   }
 
   const handleConfigChange = (key: string, value: any) => {
+    console.log('🔧 [DEBUG] handleConfigChange chamado:', { key, value });
     updateConfig({ [key]: value });
   };
 
   const handleSave = async () => {
+    console.log('💾 [DEBUG] handleSave chamado - configuração salva automaticamente');
     // Config is automatically saved by useDashboardConfig
   };
 
   const handleReorderMetrics = (newOrder: string[]) => {
+    console.log('🔄 [DEBUG] handleReorderMetrics:', newOrder);
     updateConfig({ metricsOrder: newOrder });
   };
 
   const handleReorderPreSales = (newOrder: string[]) => {
+    console.log('🔄 [DEBUG] handleReorderPreSales:', newOrder);
     updateConfig({ preSalesOrder: newOrder });
   };
 
   const handleReorderProducts = (newOrder: string[]) => {
+    console.log('🔄 [DEBUG] handleReorderProducts:', newOrder);
     updateConfig({ productOrder: newOrder });
   };
 
