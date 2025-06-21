@@ -100,6 +100,9 @@ export type Database = {
         Row: {
           company_name: string | null
           created_at: string
+          enable_commercial_tab: boolean | null
+          enable_pre_sales_tab: boolean | null
+          enable_product_tab: boolean | null
           id: string
           is_public: boolean | null
           metrics_order: Json | null
@@ -186,6 +189,9 @@ export type Database = {
         Insert: {
           company_name?: string | null
           created_at?: string
+          enable_commercial_tab?: boolean | null
+          enable_pre_sales_tab?: boolean | null
+          enable_product_tab?: boolean | null
           id?: string
           is_public?: boolean | null
           metrics_order?: Json | null
@@ -272,6 +278,9 @@ export type Database = {
         Update: {
           company_name?: string | null
           created_at?: string
+          enable_commercial_tab?: boolean | null
+          enable_pre_sales_tab?: boolean | null
+          enable_product_tab?: boolean | null
           id?: string
           is_public?: boolean | null
           metrics_order?: Json | null

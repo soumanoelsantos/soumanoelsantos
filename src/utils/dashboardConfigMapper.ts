@@ -157,6 +157,11 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProductPerformanceChart: data.show_product_performance_chart ?? defaultConfig.showProductPerformanceChart,
     showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
     showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
+
+    // NOVOS MAPEAMENTOS DE CONTROLE DE ABAS
+    enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
+    enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
+    enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
   };
 
   console.log('🟢 dashboardConfigMapper - Final mapped config with projection indicators:', {
@@ -165,7 +170,10 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showNoShow: mappedConfig.showNoShow,
     showClosersPerformanceTable: mappedConfig.showClosersPerformanceTable,
     preSalesOrder: mappedConfig.preSalesOrder,
-    productOrder: mappedConfig.productOrder
+    productOrder: mappedConfig.productOrder,
+    enableCommercialTab: mappedConfig.enableCommercialTab,
+    enableProductTab: mappedConfig.enableProductTab,
+    enablePreSalesTab: mappedConfig.enablePreSalesTab
   });
   
   return mappedConfig;
@@ -259,6 +267,11 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_product_performance_chart: config.showProductPerformanceChart,
     show_product_comparison_chart: config.showProductComparisonChart,
     show_product_temporal_chart: config.showProductTemporalChart,
+
+    // NOVOS MAPEAMENTOS DE CONTROLE DE ABAS
+    enable_commercial_tab: config.enableCommercialTab,
+    enable_product_tab: config.enableProductTab,
+    enable_pre_sales_tab: config.enablePreSalesTab,
   };
 
   console.log('🟢 dashboardConfigMapper - Final database data with projection indicators:', {
@@ -267,7 +280,10 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_no_show: databaseData.show_no_show,
     show_closers_performance_table: databaseData.show_closers_performance_table,
     pre_sales_order: databaseData.pre_sales_order,
-    product_order: databaseData.product_order
+    product_order: databaseData.product_order,
+    enable_commercial_tab: databaseData.enable_commercial_tab,
+    enable_product_tab: databaseData.enable_product_tab,
+    enable_pre_sales_tab: databaseData.enable_pre_sales_tab
   });
   
   return databaseData;

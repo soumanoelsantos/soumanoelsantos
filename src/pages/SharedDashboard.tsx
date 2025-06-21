@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -174,6 +173,11 @@ const SharedDashboard = () => {
           showProductPerformanceChart: data.show_product_performance_chart ?? defaultConfig.showProductPerformanceChart,
           showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
           showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
+
+          // NOVOS CAMPOS DE CONTROLE DE ABAS
+          enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
+          enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
+          enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
         });
 
         setCompanyName(data.company_name || 'Dashboard Compartilhado');
