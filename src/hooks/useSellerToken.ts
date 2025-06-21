@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Seller } from '@/types/sellers';
+import { Seller, SellerType } from '@/types/sellers';
 import { useSellerPerformance } from './useSellerPerformance';
 import { ProductSale } from '@/components/seller/ProductSalesSection';
 
@@ -28,7 +28,12 @@ export const useSellerToken = (token?: string) => {
           setSeller(null);
         } else if (data && data.length > 0) {
           console.log('✅ [DEBUG] Vendedor encontrado:', data[0]);
-          setSeller(data[0]);
+          // Converter o seller_type string para SellerType
+          const sellerData = {
+            ...data[0],
+            seller_type: data[0].seller_type as SellerType
+          };
+          setSeller(sellerData);
         } else {
           console.log('❌ [DEBUG] Nenhum vendedor encontrado para o token');
           setSeller(null);
