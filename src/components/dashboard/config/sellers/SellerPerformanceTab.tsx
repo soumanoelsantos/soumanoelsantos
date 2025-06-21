@@ -42,7 +42,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   const [day, month, year] = brazilianDateString.split('/');
   const defaultDate = `${year}-${month}-${day}`;
 
-  const { register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<PerformanceFormData>({
+  const { register, handleSubmit, reset, setValue, formState: { isSubmitting, errors } } = useForm<PerformanceFormData>({
     defaultValues: {
       date: defaultDate,
       sales_count: 0,
@@ -121,6 +121,8 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onCancel={() => setShowForm(false)}
+          sellerId={sellerId}
+          setValue={setValue}
         />
       )}
 
