@@ -1,46 +1,32 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import DashboardMetrics from '@/components/dashboard/DashboardMetrics';
-import PreSalesMetrics from '@/components/dashboard/PreSalesMetrics';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Dashboard = () => {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('comercial');
+  const { isAuthenticated, isLoading } = useAuth();
+  const { config, isLoading: configLoading } = useDashboardConfig();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
+  if (isLoading || configLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Carregando...</div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader />
       <main className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="comercial">Comercial</TabsTrigger>
-            <TabsTrigger value="pre-vendas">Pré-vendas</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="comercial">
-            <DashboardMetrics />
-          </TabsContent>
-          
-          <TabsContent value="pre-vendas">
-            <PreSalesMetrics />
-          </TabsContent>
-        </Tabs>
+        <DashboardMetrics config={config} />
       </main>
     </div>
   );
