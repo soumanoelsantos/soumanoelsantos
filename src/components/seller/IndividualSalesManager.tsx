@@ -13,7 +13,7 @@ import IndividualSalesSummary from './individual-sales/IndividualSalesSummary';
 interface IndividualSalesManagerProps {
   sellerId: string;
   performanceId: string;
-  ownerUserId?: string; // Novo prop para o ID do usuário proprietário
+  ownerUserId?: string;
   onTotalsChange: (totals: { salesCount: number; revenueTotal: number; billingTotal: number }) => void;
 }
 
@@ -56,11 +56,10 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
       return false;
     }
     
-    // Se não temos performanceId válido, criar uma venda sem associação
+    // Se não temos performanceId válido, mostrar alerta
     if (!actualPerformanceId) {
-      console.warn('⚠️ [DEBUG] Criando venda sem performanceId válido');
-      // Criar uma performance temporária primeiro
-      return false; // Por enquanto não permitir vendas sem performance
+      alert('Por favor, salve primeiro a performance do dia antes de adicionar vendas individuais.');
+      return false;
     }
     
     return await addSale(sellerId, actualPerformanceId, saleData);
@@ -68,6 +67,13 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
 
   const handleAddSaleClick = () => {
     console.log('➕ [DEBUG] Botão Adicionar Venda clicado');
+    
+    // Se não tem performanceId válido, mostrar alerta
+    if (!actualPerformanceId) {
+      alert('Para adicionar vendas individuais, você precisa primeiro salvar a performance do dia usando o formulário acima.');
+      return;
+    }
+    
     setShowForm(!showForm);
   };
 
@@ -75,25 +81,6 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
     console.log('❌ [DEBUG] Formulário cancelado');
     setShowForm(false);
   };
-
-  // Se não temos performanceId válido, mostrar aviso
-  if (!actualPerformanceId) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Vendas Individuais
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-gray-600">
-            Salve a performance primeiro para adicionar vendas individuais.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card>
@@ -118,9 +105,16 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {!actualPerformanceId && (
+          <div className="text-sm text-orange-600 bg-orange-50 p-3 rounded-lg border border-orange-200">
+            <p className="font-medium">⚠️ Performance do dia não salva</p>
+            <p>Para adicionar vendas individuais, primeiro salve a performance do dia usando o formulário acima.</p>
+          </div>
+        )}
+
         <IndividualSalesSummary totals={totals} />
 
-        {showForm && (
+        {showForm && actualPerformanceId && (
           <div>
             <IndividualSaleForm
               onSubmit={handleSubmit}
