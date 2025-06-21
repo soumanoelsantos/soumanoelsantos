@@ -28,7 +28,7 @@ const ProductsManagementCard: React.FC = () => {
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (confirm('Tem certeza que deseja remover este produto? Ele será removido de todos os formulários de vendas.')) {
+    if (confirm('Tem certeza que deseja remover este produto? Ele será removido de todas as funcionalidades do sistema.')) {
       await deleteProduct(productId);
     }
   };
@@ -39,7 +39,7 @@ const ProductsManagementCard: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
-            Produtos para Formulários de Vendas
+            Gerenciar Produtos
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -56,10 +56,10 @@ const ProductsManagementCard: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Package className="h-5 w-5" />
-          Produtos para Formulários de Vendas
+          Gerenciar Produtos
         </CardTitle>
         <CardDescription>
-          Gerencie os produtos que aparecerão nos formulários de vendas dos seus vendedores
+          Gerencie todos os produtos do sistema. Eles serão utilizados em metas, relatórios, formulários de vendas e dashboards
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -75,7 +75,7 @@ const ProductsManagementCard: React.FC = () => {
           <div className="text-center py-8 text-gray-500">
             <Package className="h-12 w-12 mx-auto mb-4 text-gray-300" />
             <p>Nenhum produto cadastrado</p>
-            <p className="text-sm">Adicione produtos para que apareçam nos formulários de vendas</p>
+            <p className="text-sm">Adicione produtos para usar em todo o sistema</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -145,8 +145,8 @@ const ProductsManagementCard: React.FC = () => {
 
         {/* Info sobre uso */}
         <div className="text-xs text-blue-600 bg-blue-50 p-3 rounded">
-          💡 <strong>Dica:</strong> Os produtos cadastrados aqui aparecerão automaticamente nos formulários 
-          de vendas individuais dos seus vendedores (closers).
+          💡 <strong>Dica:</strong> Os produtos cadastrados aqui serão utilizados em metas específicas, 
+          relatórios de desempenho, formulários de vendas e dashboards de produtos.
         </div>
       </CardContent>
     </Card>
