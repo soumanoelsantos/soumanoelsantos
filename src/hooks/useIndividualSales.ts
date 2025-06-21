@@ -4,23 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { IndividualSale, IndividualSaleFormData } from '@/types/individualSales';
 import { useToast } from '@/hooks/use-toast';
 
-// Type for the raw response from Supabase
-interface SupabaseIndividualSaleResponse {
-  id: string;
-  seller_id: string;
-  performance_id: string;
-  client_name: string;
-  revenue_amount: number;
-  billing_amount: number;
-  product_id?: string | null;
-  created_at: string;
-  updated_at: string;
-  products?: {
-    id: string;
-    name: string;
-  } | null;
-}
-
 export const useIndividualSales = (performanceId?: string) => {
   const { toast } = useToast();
   const [sales, setSales] = useState<IndividualSale[]>([]);
@@ -63,7 +46,7 @@ export const useIndividualSales = (performanceId?: string) => {
         console.log('📊 [DEBUG] Dados das vendas:', data);
         
         // Transform the response to match our IndividualSale type
-        const transformedSales: IndividualSale[] = (data || []).map((sale: SupabaseIndividualSaleResponse) => ({
+        const transformedSales: IndividualSale[] = (data || []).map((sale: any) => ({
           id: sale.id,
           seller_id: sale.seller_id,
           performance_id: sale.performance_id,
@@ -73,8 +56,8 @@ export const useIndividualSales = (performanceId?: string) => {
           product_id: sale.product_id,
           created_at: sale.created_at,
           updated_at: sale.updated_at,
-          products: (sale.products && typeof sale.products === 'object' && 'id' in sale.products) 
-            ? sale.products 
+          products: (sale.products && typeof sale.products === 'object' && !sale.products.error && sale.products.id && sale.products.name) 
+            ? { id: sale.products.id, name: sale.products.name }
             : null
         }));
         setSales(transformedSales);
@@ -130,7 +113,7 @@ export const useIndividualSales = (performanceId?: string) => {
         product_id: data.product_id,
         created_at: data.created_at,
         updated_at: data.updated_at,
-        products: (data.products && typeof data.products === 'object' && 'id' in data.products && 'name' in data.products) 
+        products: (data.products && typeof data.products === 'object' && !data.products.error && data.products.id && data.products.name) 
           ? { id: data.products.id, name: data.products.name }
           : null
       };
