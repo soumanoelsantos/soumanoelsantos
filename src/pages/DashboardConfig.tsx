@@ -12,7 +12,6 @@ import ProductChartsConfigCard from '@/components/dashboard/config/ProductCharts
 import ProductMetricsConfigCard from '@/components/dashboard/config/ProductMetricsConfigCard';
 import SpecificGoalsConfigCard from '@/components/dashboard/config/SpecificGoalsConfigCard';
 import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
-import ProductsManagementCard from '@/components/dashboard/config/ProductsManagementCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
 import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
@@ -129,7 +128,6 @@ const DashboardConfig = () => {
                   config={config} 
                   onConfigChange={handleConfigChange} 
                 />
-                <ProductsManagementCard />
               </div>
               
               {/* Coluna da direita - Produto */}
