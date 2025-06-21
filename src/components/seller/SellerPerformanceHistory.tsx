@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Edit, Trash2, Clock, User, ChevronDown, ChevronRight } from 'lucide-react';
+import { Calendar, Edit, Trash2, Clock, User, ChevronDown, ChevronRight, Package } from 'lucide-react';
 import { Seller } from '@/types/sellers';
 import { useSellerPerformance } from '@/hooks/useSellerPerformance';
 import { useIndividualSales } from '@/hooks/useIndividualSales';
@@ -19,6 +19,9 @@ const PerformanceCard = ({ performance, seller, onEdit, onDelete }: any) => {
   const { sales } = useIndividualSales(performance.id);
   const isSDR = seller.seller_type === 'sdr';
   const isCloser = !isSDR;
+
+  console.log('🔍 [DEBUG] PerformanceCard - performance.id:', performance.id);
+  console.log('🔍 [DEBUG] PerformanceCard - sales:', sales);
 
   const renderSDRMetrics = (performance: any) => (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -81,20 +84,32 @@ const PerformanceCard = ({ performance, seller, onEdit, onDelete }: any) => {
 
           {showSales && (
             <div className="mt-3 space-y-2 pl-4 border-l-2 border-gray-200">
-              {sales.map((sale) => (
-                <div key={sale.id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                  <div className="flex items-center gap-2">
-                    <User className="h-3 w-3 text-gray-500" />
-                    <div>
-                      <p className="text-sm font-medium">{sale.client_name}</p>
-                      <div className="flex gap-3 text-xs text-gray-500">
-                        <span>R$ {Number(sale.revenue_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (receita)</span>
-                        <span>R$ {Number(sale.billing_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (faturamento)</span>
+              {sales.map((sale) => {
+                const productName = sale.products?.name || (sale.product_id ? 'Produto não encontrado' : 'Venda Geral');
+                
+                return (
+                  <div key={sale.id} className="flex items-center justify-between bg-gray-50 p-3 rounded">
+                    <div className="flex items-center gap-3">
+                      <User className="h-4 w-4 text-gray-500" />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium">{sale.client_name}</p>
+                          <div className="flex items-center gap-1">
+                            <Package className="h-3 w-3 text-gray-400" />
+                            <Badge variant="secondary" className="text-xs">
+                              {productName}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 text-xs text-gray-500">
+                          <span>Receita: R$ {Number(sale.revenue_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                          <span>Faturamento: R$ {Number(sale.billing_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

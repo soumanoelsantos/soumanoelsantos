@@ -28,7 +28,10 @@ export const useIndividualSales = (performanceId?: string) => {
         .from('seller_individual_sales')
         .select(`
           *,
-          products(name)
+          products(
+            id,
+            name
+          )
         `)
         .eq('performance_id', performanceId)
         .order('created_at', { ascending: false });
@@ -37,10 +40,10 @@ export const useIndividualSales = (performanceId?: string) => {
 
       if (error) {
         console.error('❌ [DEBUG] Erro na consulta:', error);
-        // Não mostrar toast para erros de consulta, apenas logar
         setSales([]);
       } else {
         console.log('✅ [DEBUG] Vendas carregadas:', data?.length || 0);
+        console.log('📊 [DEBUG] Dados das vendas:', data);
         setSales(data || []);
       }
     } catch (error) {
@@ -67,7 +70,10 @@ export const useIndividualSales = (performanceId?: string) => {
         })
         .select(`
           *,
-          products(name)
+          products(
+            id,
+            name
+          )
         `)
         .single();
 
