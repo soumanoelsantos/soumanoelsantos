@@ -7,15 +7,21 @@ import { useDashboardOrder } from '@/hooks/useDashboardOrder';
 interface DashboardMetricsProps {
   config: DashboardConfig;
   selectedProductId?: string | null;
+  dashboardType?: 'comercial' | 'produtos' | 'pre-vendas';
 }
 
-const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ config, selectedProductId }) => {
+const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ 
+  config, 
+  selectedProductId,
+  dashboardType = 'comercial'
+}) => {
   const { getOrderedItems } = useDashboardOrder(config);
   
   console.log('📊 [DEBUG] DashboardMetrics - Config:', {
     metricsOrder: config.metricsOrder,
     selectedProductIds: config.selectedProductIds,
-    showProductMetrics: config.showProductMetrics
+    showProductMetrics: config.showProductMetrics,
+    dashboardType
   });
 
   const renderMetrics = () => {
@@ -24,8 +30,64 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ config, selectedPro
 
     console.log('📊 [DEBUG] DashboardMetrics - Ordered items:', orderedItems);
 
+    // Lista de indicadores de produtos
+    const productIndicators = [
+      'showProductReceita',
+      'showProductFaturamento',
+      'showProductQuantidadeVendas',
+      'showProductTicketReceita',
+      'showProductTicketFaturamento',
+      'showProductMetaReceita',
+      'showProductMetaFaturamento',
+      'showProductMetaQuantidadeVendas',
+      'showProductFaltaReceita',
+      'showProductFaltaFaturamento',
+      'showProductCashCollect',
+      'showProductProjecaoReceita',
+      'showProductProjecaoFaturamento'
+    ];
+
+    // Lista de gráficos de produtos
+    const productCharts = [
+      'showProductRevenueEvolutionChart',
+      'showProductBillingEvolutionChart',
+      'showProductSalesEvolutionChart',
+      'showProductPerformanceChart',
+      'showProductComparisonChart',
+      'showProductTemporalChart'
+    ];
+
+    // Lista de indicadores comerciais
+    const commercialIndicators = [
+      'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
+      'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
+      'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
+      'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+      'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
+      'showQuantidadeVendas', 'showCashCollect', 'showCac',
+      'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
+      'showClosersPerformanceTable', 'showRevenueEvolutionChart', 'showBillingEvolutionChart',
+      'showSellerRevenueChart', 'showSellerBillingChart', 'showTemporalRevenueChart', 'showTemporalBillingChart'
+    ];
+
     orderedItems.forEach((itemKey, index) => {
-      console.log('📊 [DEBUG] Processing metric:', itemKey);
+      console.log('📊 [DEBUG] Processing metric:', itemKey, 'Dashboard type:', dashboardType);
+
+      // Filtrar por tipo de dashboard
+      let shouldRender = true;
+      
+      if (dashboardType === 'produtos') {
+        // No dashboard de produtos, mostrar apenas indicadores e gráficos de produtos
+        shouldRender = productIndicators.includes(itemKey) || productCharts.includes(itemKey);
+      } else if (dashboardType === 'comercial') {
+        // No dashboard comercial, mostrar apenas indicadores comerciais
+        shouldRender = commercialIndicators.includes(itemKey);
+      }
+
+      if (!shouldRender) {
+        console.log('📊 [DEBUG] Skipping metric for dashboard type:', itemKey, dashboardType);
+        return;
+      }
 
       // Renderizar componentes através do ItemRenderer
       const renderedComponent = (

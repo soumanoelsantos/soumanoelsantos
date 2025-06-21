@@ -51,19 +51,21 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showProductTemporalChart'
     ];
 
-    // Adicionar indicadores de produtos se habilitados e não estão na lista
-    if (config.showProductMetrics && config.selectedProductIds.length > 0) {
+    // SEMPRE adicionar indicadores de produtos se habilitados, independente de selectedProductIds
+    if (config.showProductMetrics) {
       productIndicators.forEach(indicator => {
         if (config[indicator as keyof DashboardConfig] && !finalOrder.includes(indicator)) {
           finalOrder.push(indicator);
+          console.log('🔍 useDashboardOrder - Adding product indicator:', indicator);
         }
       });
     }
 
-    // Adicionar gráficos de produtos se habilitados e não estão na lista
+    // SEMPRE adicionar gráficos de produtos se habilitados
     productCharts.forEach(chart => {
       if (config[chart as keyof DashboardConfig] && !finalOrder.includes(chart)) {
         finalOrder.push(chart);
+        console.log('🔍 useDashboardOrder - Adding product chart:', chart);
       }
     });
 
