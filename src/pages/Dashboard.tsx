@@ -46,44 +46,69 @@ const Dashboard = () => {
     weeklyData: []
   };
 
+  // Verificar se há indicadores comerciais ativos
+  const hasCommercialIndicators = 
+    config.showConversion || config.showRevenue || config.showTicketFaturamento || 
+    config.showTicketReceita || config.showFaltaFaturamento || config.showFaltaReceita ||
+    config.showDiariaReceita || config.showDiariaFaturamento || config.showSuperMetaFaturamento ||
+    config.showSuperMetaReceita || config.showHiperMetaFaturamento || config.showHiperMetaReceita ||
+    config.showFaltaReceitaSuper || config.showFaltaReceitaHiper || config.showFaltaFaturamentoSuper ||
+    config.showFaltaFaturamentoHiper || config.showMetaFaturamento || config.showMetaReceita ||
+    config.showFaturamento || config.showReceita || config.showQuantidadeVendas ||
+    config.showCashCollect || config.showCac || config.showProjecaoReceita ||
+    config.showProjecaoFaturamento || config.showNoShow || config.showClosersPerformanceTable ||
+    config.showRevenueEvolutionChart || config.showBillingEvolutionChart ||
+    config.showSellerRevenueChart || config.showSellerBillingChart ||
+    config.showTemporalRevenueChart || config.showTemporalBillingChart;
+
+  // Determinar a aba padrão baseada nos indicadores disponíveis
+  const getDefaultTab = () => {
+    if (config.showProductMetrics && config.selectedProductIds.length > 0) {
+      return "produtos";
+    }
+    if (hasCommercialIndicators) {
+      return "comercial";
+    }
+    return "pre-vendas";
+  };
+
+  // Contar quantas abas estão ativas
+  const activeTabsCount = [
+    hasCommercialIndicators,
+    true, // pré-vendas sempre ativa
+    config.showProductMetrics && config.selectedProductIds.length > 0
+  ].filter(Boolean).length;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader />
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="comercial" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="comercial">Dashboard Comercial</TabsTrigger>
-            <TabsTrigger value="pre-vendas">Dashboard Pré-vendas</TabsTrigger>
+        <Tabs defaultValue={getDefaultTab()} className="w-full">
+          <TabsList className={`grid w-full ${activeTabsCount === 2 ? 'grid-cols-2' : 'grid-cols-3'} mb-6`}>
+            {hasCommercialIndicators && (
+              <TabsTrigger value="comercial">Dashboard Comercial</TabsTrigger>
+            )}
             <TabsTrigger value="produtos">Dashboard Produtos</TabsTrigger>
+            <TabsTrigger value="pre-vendas">Dashboard Pré-vendas</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="comercial" className="space-y-6">
-            <CommercialDashboardFilters
-              startDate={filters.startDate}
-              endDate={filters.endDate}
-              selectedSalespeople={filters.selectedSalespeople}
-              onDateChange={updateDateRange}
-              onSalespeopleChange={updateSalespeople}
-              onReset={resetFilters}
-            />
-            <DashboardMetrics 
-              config={config} 
-              selectedProductId={null}
-              dashboardType="comercial"
-            />
-          </TabsContent>
-
-          <TabsContent value="pre-vendas" className="space-y-6">
-            <PreSalesDashboardFilters
-              startDate={filters.startDate}
-              endDate={filters.endDate}
-              selectedSalespeople={filters.selectedSalespeople}
-              onDateChange={updateDateRange}
-              onSalespeopleChange={updateSalespeople}
-              onReset={resetFilters}
-            />
-            <PreSalesMetrics config={config} preSalesData={mockPreSalesData} />
-          </TabsContent>
+          {hasCommercialIndicators && (
+            <TabsContent value="comercial" className="space-y-6">
+              <CommercialDashboardFilters
+                startDate={filters.startDate}
+                endDate={filters.endDate}
+                selectedSalespeople={filters.selectedSalespeople}
+                onDateChange={updateDateRange}
+                onSalespeopleChange={updateSalespeople}
+                onReset={resetFilters}
+              />
+              <DashboardMetrics 
+                config={config} 
+                selectedProductId={null}
+                dashboardType="comercial"
+              />
+            </TabsContent>
+          )}
 
           <TabsContent value="produtos" className="space-y-6">
             <DashboardFilters
@@ -103,6 +128,18 @@ const Dashboard = () => {
               selectedProductId={selectedProductId}
               dashboardType="produtos"
             />
+          </TabsContent>
+
+          <TabsContent value="pre-vendas" className="space-y-6">
+            <PreSalesDashboardFilters
+              startDate={filters.startDate}
+              endDate={filters.endDate}
+              selectedSalespeople={filters.selectedSalespeople}
+              onDateChange={updateDateRange}
+              onSalespeopleChange={updateSalespeople}
+              onReset={resetFilters}
+            />
+            <PreSalesMetrics config={config} preSalesData={mockPreSalesData} />
           </TabsContent>
         </Tabs>
       </main>
