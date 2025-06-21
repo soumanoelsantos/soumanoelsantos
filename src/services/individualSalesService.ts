@@ -37,7 +37,7 @@ export const fetchIndividualSales = async (performanceId: string) => {
       product_id: item.product_id,
       created_at: item.created_at,
       updated_at: item.updated_at,
-      products: (products && typeof products === 'object' && 'id' in products && 'name' in products)
+      products: (products !== null && typeof products === 'object' && 'id' in products && 'name' in products)
         ? { id: products.id, name: products.name }
         : null
     };
@@ -87,7 +87,7 @@ export const createIndividualSale = async ({ sellerId, performanceId, saleData }
     product_id: data.product_id,
     created_at: data.created_at,
     updated_at: data.updated_at,
-    products: (products && typeof products === 'object' && 'id' in products && 'name' in products)
+    products: (products !== null && typeof products === 'object' && 'id' in products && 'name' in products)
       ? { id: products.id, name: products.name }
       : null
   };
