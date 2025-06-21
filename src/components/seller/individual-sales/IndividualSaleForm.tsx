@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useProducts } from '@/hooks/useProducts';
+import { useProductsForSeller } from '@/hooks/useProductsForSeller';
 import { useSellers } from '@/hooks/useSellers';
 import { IndividualSaleFormData } from '@/types/individualSales';
 
@@ -32,8 +31,8 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   console.log('🔍 [DEBUG] Seller encontrado:', seller);
   console.log('🔍 [DEBUG] Admin User ID extraído:', adminUserId);
   
-  // Buscar produtos do admin que criou o vendedor
-  const { products, isLoading: productsLoading } = useProducts(adminUserId);
+  // Usar o novo hook específico para vendedores
+  const { products, isLoading: productsLoading } = useProductsForSeller(adminUserId);
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -122,10 +121,15 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                 )}
               </SelectContent>
             </Select>
-            {/* Debug info - remover em produção */}
-            <div className="text-xs text-gray-500">
-              Debug: {products?.length || 0} produtos encontrados
-              {adminUserId ? ` para admin ${adminUserId}` : ' (sem admin ID)'}
+            {/* Debug info melhorado */}
+            <div className="text-xs text-gray-500 space-y-1">
+              <div>Debug: {products?.length || 0} produtos encontrados</div>
+              <div>Admin ID: {adminUserId || 'não encontrado'}</div>
+              <div>Seller ID: {sellerId}</div>
+              <div>Loading: {productsLoading ? 'sim' : 'não'}</div>
+              {products?.length > 0 && (
+                <div>Produtos: {products.map(p => p.name).join(', ')}</div>
+              )}
             </div>
           </div>
 

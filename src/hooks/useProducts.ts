@@ -17,22 +17,48 @@ export const useProducts = (targetUserId?: string) => {
   const fetchProducts = async () => {
     if (!effectiveUserId) return;
 
+    console.log('🔍 [DEBUG] useProducts - Buscando produtos para userId:', effectiveUserId);
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      // Primeiro, tenta buscar produtos do usuário específico
+      let { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('user_id', effectiveUserId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('📋 [DEBUG] useProducts - Resultado da busca:', { data, error, effectiveUserId });
+
+      if (error) {
+        console.error('❌ [DEBUG] useProducts - Erro na consulta:', error);
+        // Se der erro, tenta buscar todos os produtos (para debug)
+        const { data: allData, error: allError } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        console.log('📋 [DEBUG] useProducts - Tentativa de buscar todos os produtos:', { allData, allError });
+        
+        if (!allError && allData) {
+          // Filtra manualmente os produtos do usuário
+          const userProducts = allData.filter(product => product.user_id === effectiveUserId);
+          console.log('📋 [DEBUG] useProducts - Produtos filtrados manualmente:', userProducts);
+          data = userProducts;
+        } else {
+          throw error;
+        }
+      }
+      
+      console.log('✅ [DEBUG] useProducts - Produtos carregados:', data?.length || 0);
       setProducts(data || []);
     } catch (error: any) {
+      console.error('💥 [DEBUG] useProducts - Erro ao carregar produtos:', error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar produtos",
         description: error.message,
       });
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
@@ -95,6 +121,7 @@ export const useProducts = (targetUserId?: string) => {
   };
 
   useEffect(() => {
+    console.log('🔄 [DEBUG] useProducts - useEffect triggered, effectiveUserId:', effectiveUserId);
     fetchProducts();
   }, [effectiveUserId]);
 
