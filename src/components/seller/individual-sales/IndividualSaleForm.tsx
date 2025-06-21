@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -96,14 +97,14 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="product_id">Produto</Label>
             <Select
-              value={formData.product_id || ""}
-              onValueChange={(value) => handleInputChange('product_id', value || null)}
+              value={formData.product_id || "none"}
+              onValueChange={(value) => handleInputChange('product_id', value === "none" ? null : value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um produto ou deixe em branco para venda geral" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Venda Geral (sem produto específico)</SelectItem>
+                <SelectItem value="none">Venda Geral (sem produto específico)</SelectItem>
                 {products && products.length > 0 ? (
                   products.map((product) => (
                     <SelectItem key={product.id} value={product.id}>
