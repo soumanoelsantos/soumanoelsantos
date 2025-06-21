@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -10,6 +9,7 @@ import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
 import PreSalesConfigCard from '@/components/dashboard/config/PreSalesConfigCard';
 import ProductChartsConfigCard from '@/components/dashboard/config/ProductChartsConfigCard';
 import ProductMetricsConfigCard from '@/components/dashboard/config/ProductMetricsConfigCard';
+import ProductsManagementCard from '@/components/dashboard/config/ProductsManagementCard';
 import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
@@ -124,6 +124,7 @@ const DashboardConfig = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Coluna da esquerda - Produto */}
               <div className="space-y-6">
+                <ProductsManagementCard />
                 <ProductMetricsConfigCard 
                   config={config} 
                   onConfigChange={handleConfigChange} 
