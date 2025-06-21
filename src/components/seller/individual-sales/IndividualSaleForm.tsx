@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,16 +23,14 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
 }) => {
   console.log('🔍 [DEBUG] IndividualSaleForm renderizado');
   
-  // Buscar o vendedor para obter o user_id do admin
+  // Buscar o vendedor para debug
   const { sellers } = useSellers();
   const seller = sellers.find(s => s.id === sellerId);
-  const adminUserId = seller?.user_id;
   
   console.log('🔍 [DEBUG] Seller encontrado:', seller);
-  console.log('🔍 [DEBUG] Admin User ID extraído:', adminUserId);
   
-  // Usar o hook useProducts passando o adminUserId como targetUserId
-  const { products, isLoading: productsLoading } = useProducts(adminUserId);
+  // Usar o hook useProducts exatamente como o ProductFilter faz (sem parâmetros)
+  const { products, isLoading: productsLoading } = useProducts();
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -42,10 +39,9 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     product_id: null,
   });
 
-  console.log('📋 [DEBUG] Produtos carregados via useProducts:', products);
+  console.log('📋 [DEBUG] Produtos carregados (método ProductFilter):', products);
   console.log('📋 [DEBUG] Products loading:', productsLoading);
   console.log('📝 [DEBUG] FormData atual:', formData);
-  console.log('👤 [DEBUG] Admin User ID:', adminUserId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,11 +119,10 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
               </SelectContent>
             </Select>
             
-            {/* Debug info simplificado */}
+            {/* Debug info usando método do ProductFilter */}
             <div className="text-xs text-gray-500 space-y-1 p-2 bg-gray-50 rounded">
-              <div><strong>Debug Info (usando useProducts):</strong></div>
+              <div><strong>Debug Info (método ProductFilter):</strong></div>
               <div>Produtos encontrados: {products?.length || 0}</div>
-              <div>Admin ID: {adminUserId || 'não encontrado'}</div>
               <div>Seller ID: {sellerId}</div>
               <div>Loading: {productsLoading ? 'sim' : 'não'}</div>
               {products?.length > 0 && (
