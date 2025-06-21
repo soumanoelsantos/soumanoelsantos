@@ -10,6 +10,7 @@ import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
 import PreSalesConfigCard from '@/components/dashboard/config/PreSalesConfigCard';
 import ProductChartsConfigCard from '@/components/dashboard/config/ProductChartsConfigCard';
 import ProductMetricsConfigCard from '@/components/dashboard/config/ProductMetricsConfigCard';
+import ProductGoalsConfigCard from '@/components/dashboard/config/ProductGoalsConfigCard';
 import ProductsManagementCard from '@/components/dashboard/config/ProductsManagementCard';
 import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
@@ -157,6 +158,7 @@ const DashboardConfig = () => {
                   config={config} 
                   onConfigChange={handleConfigChange} 
                 />
+                <ProductGoalsConfigCard />
               </div>
               
               {/* Coluna da direita - Produto */}
