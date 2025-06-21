@@ -131,21 +131,24 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="leads_count">Leads</Label>
-          <Input
-            id="leads_count"
-            type="number"
-            min="0"
-            {...register('leads_count', { 
-              valueAsNumber: true,
-              min: { value: 0, message: 'Deve ser maior ou igual a 0' }
-            })}
-          />
-          {errors.leads_count && (
-            <p className="text-sm text-red-600">{errors.leads_count.message}</p>
-          )}
-        </div>
+        {/* Só mostrar Leads para SDRs, não para Closers */}
+        {!isCloser && (
+          <div className="space-y-2">
+            <Label htmlFor="leads_count">Leads</Label>
+            <Input
+              id="leads_count"
+              type="number"
+              min="0"
+              {...register('leads_count', { 
+                valueAsNumber: true,
+                min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+              })}
+            />
+            {errors.leads_count && (
+              <p className="text-sm text-red-600">{errors.leads_count.message}</p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -165,21 +168,24 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="calls_count">Ligações</Label>
-          <Input
-            id="calls_count"
-            type="number"
-            min="0"
-            {...register('calls_count', { 
-              valueAsNumber: true,
-              min: { value: 0, message: 'Deve ser maior ou igual a 0' }
-            })}
-          />
-          {errors.calls_count && (
-            <p className="text-sm text-red-600">{errors.calls_count.message}</p>
-          )}
-        </div>
+        {/* Só mostrar Ligações para SDRs, não para Closers */}
+        {!isCloser && (
+          <div className="space-y-2">
+            <Label htmlFor="calls_count">Ligações</Label>
+            <Input
+              id="calls_count"
+              type="number"
+              min="0"
+              {...register('calls_count', { 
+                valueAsNumber: true,
+                min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+              })}
+            />
+            {errors.calls_count && (
+              <p className="text-sm text-red-600">{errors.calls_count.message}</p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">

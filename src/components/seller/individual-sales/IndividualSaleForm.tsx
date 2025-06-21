@@ -86,14 +86,14 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="product_id">Produto</Label>
             <Select
-              value={formData.product_id || ""}
-              onValueChange={(value) => handleInputChange('product_id', value || null)}
+              value={formData.product_id || "general"}
+              onValueChange={(value) => handleInputChange('product_id', value === "general" ? null : value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um produto ou deixe em branco para venda geral" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Venda Geral (sem produto específico)</SelectItem>
+                <SelectItem value="general">Venda Geral (sem produto específico)</SelectItem>
                 {products && products.length > 0 ? (
                   products.map((product) => (
                     <SelectItem key={product.id} value={product.id}>
@@ -101,7 +101,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                     </SelectItem>
                   ))
                 ) : (
-                  <SelectItem value="" disabled>Nenhum produto disponível</SelectItem>
+                  <SelectItem value="no-products" disabled>Nenhum produto disponível</SelectItem>
                 )}
               </SelectContent>
             </Select>
