@@ -32,6 +32,20 @@ const Dashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
+  // Criar dados simulados para pré-vendas
+  const mockPreSalesData = {
+    dailyCalls: 0,
+    dailyCallsTarget: 40,
+    dailySchedulings: 0,
+    dailySchedulingsTarget: 8,
+    dailyNoShow: 0,
+    dailyNoShowRate: 0,
+    totalSDRs: 0,
+    averageSchedulingsPerSDR: 0,
+    sdrPerformance: [],
+    weeklyData: []
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader />
@@ -68,7 +82,7 @@ const Dashboard = () => {
               onSalespeopleChange={updateSalespeople}
               onReset={resetFilters}
             />
-            <PreSalesMetrics config={config} />
+            <PreSalesMetrics config={config} preSalesData={mockPreSalesData} />
           </TabsContent>
 
           <TabsContent value="produtos" className="space-y-6">

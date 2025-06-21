@@ -130,18 +130,15 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selec
 
   const cards: JSX.Element[] = [];
 
-  // Primeiro, vamos filtrar apenas os indicadores que estão habilitados
-  const enabledIndicators = productOrder.filter(indicator => {
-    return config[indicator as keyof DashboardConfig] === true;
-  });
+  // NOVA LÓGICA: Agrupar por produto e depois por indicador para evitar repetições
+  selectedProducts.forEach((product) => {
+    const metrics = calculateProductMetrics(product.id);
 
-  console.log('🔍 ProductMetricsCards - Enabled indicators:', enabledIndicators);
+    productOrder.forEach((indicator, index) => {
+      // Verificar se o indicador está habilitado na configuração
+      if (!config[indicator as keyof DashboardConfig]) return;
 
-  // Agora iteramos pelos indicadores habilitados e depois pelos produtos filtrados
-  enabledIndicators.forEach((indicator, indicatorIndex) => {
-    selectedProducts.forEach((product, productIndex) => {
-      const metrics = calculateProductMetrics(product.id);
-      const key = `${indicator}-${product.id}-${indicatorIndex}-${productIndex}`;
+      const key = `${product.id}-${indicator}-${index}`;
 
       switch (indicator) {
         case 'showProductReceita':
