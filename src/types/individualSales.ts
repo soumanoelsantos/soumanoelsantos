@@ -6,6 +6,7 @@ export interface IndividualSale {
   client_name: string;
   revenue_amount: number;
   billing_amount: number;
+  product_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -14,4 +15,5 @@ export interface IndividualSaleFormData {
   client_name: string;
   revenue_amount: number;
   billing_amount: number;
+  product_id?: string | null;
 }

@@ -19,7 +19,10 @@ export const useIndividualSales = (performanceId?: string) => {
     try {
       const { data, error } = await supabase
         .from('seller_individual_sales')
-        .select('*')
+        .select(`
+          *,
+          products(name)
+        `)
         .eq('performance_id', performanceId)
         .order('created_at', { ascending: false });
 
@@ -47,8 +50,12 @@ export const useIndividualSales = (performanceId?: string) => {
           client_name: saleData.client_name,
           revenue_amount: saleData.revenue_amount,
           billing_amount: saleData.billing_amount,
+          product_id: saleData.product_id || null,
         })
-        .select()
+        .select(`
+          *,
+          products(name)
+        `)
         .single();
 
       if (error) throw error;

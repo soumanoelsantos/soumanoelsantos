@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, User, DollarSign } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Trash2, Plus, User, DollarSign, Package } from 'lucide-react';
 import { useIndividualSales } from '@/hooks/useIndividualSales';
+import { useProducts } from '@/hooks/useProducts';
 import { IndividualSaleFormData } from '@/types/individualSales';
 
 interface IndividualSalesManagerProps {
@@ -21,11 +23,13 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
   onTotalsChange
 }) => {
   const { sales, isLoading, addSale, deleteSale } = useIndividualSales(performanceId);
+  const { products } = useProducts();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
     revenue_amount: 0,
     billing_amount: 0,
+    product_id: null,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,6 +62,7 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
         client_name: '',
         revenue_amount: 0,
         billing_amount: 0,
+        product_id: null,
       });
       setShowForm(false);
     }
@@ -69,6 +74,17 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
     if (window.confirm('Tem certeza que deseja remover esta venda?')) {
       await deleteSale(saleId);
     }
+  };
+
+  const getProductName = (sale: any) => {
+    if (sale.products?.name) {
+      return sale.products.name;
+    }
+    if (sale.product_id) {
+      const product = products.find(p => p.id === sale.product_id);
+      return product?.name || 'Produto não encontrado';
+    }
+    return 'Venda Geral';
   };
 
   return (
@@ -133,6 +149,26 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
                   />
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="product_id">Produto</Label>
+                  <Select
+                    value={formData.product_id || ""}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, product_id: value || null }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um produto ou deixe em branco para venda geral" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Venda Geral (sem produto específico)</SelectItem>
+                      {products.map((product) => (
+                        <SelectItem key={product.id} value={product.id}>
+                          {product.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="revenue_amount">Receita (R$) *</Label>
@@ -194,7 +230,15 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
                   <div className="flex items-center gap-3">
                     <User className="h-4 w-4 text-gray-500" />
                     <div>
-                      <p className="font-medium">{sale.client_name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{sale.client_name}</p>
+                        <div className="flex items-center gap-1">
+                          <Package className="h-3 w-3 text-gray-400" />
+                          <Badge variant="secondary" className="text-xs">
+                            {getProductName(sale)}
+                          </Badge>
+                        </div>
+                      </div>
                       <div className="flex gap-4 text-sm text-gray-500">
                         <span>Receita: R$ {Number(sale.revenue_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                         <span>Faturamento: R$ {Number(sale.billing_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
