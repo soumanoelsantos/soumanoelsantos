@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useProducts } from '@/hooks/useProducts';
+import { supabase } from '@/integrations/supabase/client';
 import { IndividualSaleFormData } from '@/types/individualSales';
 import { useSellerToken } from '@/hooks/useSellerToken';
 
@@ -16,19 +16,21 @@ interface IndividualSaleFormProps {
   sellerId: string;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting,
   sellerId
 }) => {
-  // Buscar o seller para obter o user_id do dono do dashboard
   const { seller } = useSellerToken();
-  const targetUserId = seller?.user_id;
-  
-  console.log('🔍 [DEBUG] IndividualSaleForm - targetUserId:', targetUserId);
-  
-  const { products, isLoading: productsLoading } = useProducts(targetUserId);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -37,7 +39,45 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     product_id: null,
   });
 
-  console.log('📋 [DEBUG] IndividualSaleForm - produtos carregados:', products);
+  console.log('🔍 [DEBUG] IndividualSaleForm - seller:', seller);
+
+  // Buscar produtos diretamente do Supabase usando o user_id do seller
+  React.useEffect(() => {
+    const fetchProducts = async () => {
+      if (!seller?.user_id) {
+        console.log('⚠️ [DEBUG] Sem user_id do seller para buscar produtos');
+        return;
+      }
+
+      console.log('📋 [DEBUG] Buscando produtos para user_id:', seller.user_id);
+      setProductsLoading(true);
+      
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('id, name, description')
+          .eq('user_id', seller.user_id)
+          .order('created_at', { ascending: false });
+
+        console.log('📝 [DEBUG] Resultado da busca de produtos:', { data, error });
+
+        if (error) {
+          console.error('❌ [DEBUG] Erro ao buscar produtos:', error);
+          setProducts([]);
+        } else {
+          console.log('✅ [DEBUG] Produtos carregados:', data?.length || 0);
+          setProducts(data || []);
+        }
+      } catch (error) {
+        console.error('💥 [DEBUG] Erro na busca de produtos:', error);
+        setProducts([]);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [seller?.user_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
