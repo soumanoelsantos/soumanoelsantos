@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { IndividualSaleFormData } from '@/types/individualSales';
-import { useAuth } from '@/hooks/useAuth';
 
 interface IndividualSaleFormProps {
   onSubmit: (data: IndividualSaleFormData) => Promise<boolean>;
@@ -29,7 +28,6 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   isSubmitting,
   sellerId
 }) => {
-  const { userId } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   
@@ -42,33 +40,31 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
 
   console.log('🔍 [DEBUG] IndividualSaleForm - sellerId:', sellerId);
 
-  // Buscar produtos do usuário atual
+  // Buscar todos os produtos disponíveis
   React.useEffect(() => {
     const fetchProducts = async () => {
-      if (!userId) {
-        console.log('⚠️ [DEBUG] Usuário não logado, não buscando produtos');
-        setProducts([]);
-        return;
-      }
-
-      console.log('📋 [DEBUG] Iniciando busca de produtos para userId:', userId);
+      console.log('📋 [DEBUG] Iniciando busca de produtos...');
       setProductsLoading(true);
       
       try {
         const { data, error } = await supabase
           .from('products')
           .select('id, name, description, user_id')
-          .eq('user_id', userId)
           .order('name', { ascending: true });
 
-        console.log('📝 [DEBUG] Resultado da busca de produtos:', { data, error, userId });
+        console.log('📝 [DEBUG] Resultado da busca de produtos:', { data, error });
 
         if (error) {
           console.error('❌ [DEBUG] Erro ao buscar produtos:', error);
           setProducts([]);
         } else {
-          console.log('✅ [DEBUG] Produtos carregados:', data?.length || 0);
-          setProducts(data || []);
+          // Remover produtos duplicados baseado no ID
+          const uniqueProducts = data?.filter((product, index, array) => 
+            array.findIndex(p => p.id === product.id) === index
+          ) || [];
+          
+          console.log('✅ [DEBUG] Produtos únicos carregados:', uniqueProducts.length);
+          setProducts(uniqueProducts);
         }
       } catch (error) {
         console.error('💥 [DEBUG] Erro na busca de produtos:', error);
@@ -79,7 +75,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     };
 
     fetchProducts();
-  }, [userId]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,7 +144,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                   ))
                 ) : (
                   <SelectItem value="no-products" disabled>
-                    Nenhum produto encontrado
+                    Nenhum produto encontrado no sistema
                   </SelectItem>
                 )}
               </SelectContent>
@@ -157,7 +153,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
             {(!products || products.length === 0) && !productsLoading && (
               <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded">
                 ℹ️ <strong>Produtos não encontrados.</strong> Para adicionar produtos, vá em:
-                <br />Dashboard → Metas → Produtos
+                <br />Dashboard → Configurações → Produtos para Formulários de Vendas
               </div>
             )}
 
