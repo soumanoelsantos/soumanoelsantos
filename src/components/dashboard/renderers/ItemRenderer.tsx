@@ -54,6 +54,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
   // Se é um gráfico de produto, renderizar componentes de produtos
   if (productCharts.includes(itemKey)) {
     console.log('🔍 [DEBUG] ItemRenderer - Detected product chart:', itemKey);
+    // TODO: Implementar renderização de gráficos de produtos quando necessário
     if (selectedProductId) {
       return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
     }

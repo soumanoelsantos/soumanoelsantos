@@ -2,6 +2,7 @@
 import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { ItemRenderer } from './renderers/ItemRenderer';
+import { useDashboardOrder } from '@/hooks/useDashboardOrder';
 
 interface DashboardMetricsProps {
   config: DashboardConfig;
@@ -9,15 +10,21 @@ interface DashboardMetricsProps {
 }
 
 const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ config, selectedProductId }) => {
+  const { getOrderedItems } = useDashboardOrder(config);
+  
   console.log('📊 [DEBUG] DashboardMetrics - Config:', {
-    metricsOrder: config.metricsOrder
+    metricsOrder: config.metricsOrder,
+    selectedProductIds: config.selectedProductIds,
+    showProductMetrics: config.showProductMetrics
   });
 
   const renderMetrics = () => {
     const components: JSX.Element[] = [];
+    const orderedItems = getOrderedItems();
 
-    // Renderizar itens na ordem configurada
-    config.metricsOrder.forEach((itemKey, index) => {
+    console.log('📊 [DEBUG] DashboardMetrics - Ordered items:', orderedItems);
+
+    orderedItems.forEach((itemKey, index) => {
       console.log('📊 [DEBUG] Processing metric:', itemKey);
 
       // Renderizar componentes através do ItemRenderer

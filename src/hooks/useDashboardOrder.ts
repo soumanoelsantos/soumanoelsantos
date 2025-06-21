@@ -5,126 +5,26 @@ export const useDashboardOrder = (config: DashboardConfig) => {
   const getOrderedItems = () => {
     console.log('🔍 useDashboardOrder - Getting ordered items with config:', config);
     
-    // Se existe uma ordem personalizada, usar ela
+    let finalOrder: string[] = [];
+
+    // Se existe uma ordem personalizada, usar ela como base
     if (config.metricsOrder && config.metricsOrder.length > 0) {
       console.log('🔍 useDashboardOrder - Using custom order:', config.metricsOrder);
-      
-      let finalOrder = [...config.metricsOrder];
-      
-      // Garantir que os indicadores de produtos estejam incluídos se habilitados
-      const productIndicators = [
-        'showProductReceita',
-        'showProductFaturamento',
-        'showProductQuantidadeVendas',
-        'showProductTicketReceita',
-        'showProductTicketFaturamento',
-        'showProductMetaReceita',
-        'showProductMetaFaturamento',
-        'showProductMetaQuantidadeVendas',
-        'showProductFaltaReceita',
-        'showProductFaltaFaturamento',
-        'showProductCashCollect',
-        'showProductProjecaoReceita',
-        'showProductProjecaoFaturamento'
+      finalOrder = [...config.metricsOrder];
+    } else {
+      // Ordem padrão com todos os itens incluindo os novos indicadores de projeção
+      finalOrder = [
+        'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
+        'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
+        'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
+        'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+        'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
+        'showQuantidadeVendas', 'showCashCollect', 'showCac',
+        'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
       ];
-
-      productIndicators.forEach(indicator => {
-        if (config[indicator as keyof DashboardConfig] && !finalOrder.includes(indicator)) {
-          finalOrder.push(indicator);
-        }
-      });
-
-      // Garantir que os novos indicadores de projeção estejam incluídos se habilitados
-      if (config.showProjecaoReceita && !finalOrder.includes('showProjecaoReceita')) {
-        finalOrder.push('showProjecaoReceita');
-      }
-      
-      if (config.showProjecaoFaturamento && !finalOrder.includes('showProjecaoFaturamento')) {
-        finalOrder.push('showProjecaoFaturamento');
-      }
-      
-      if (config.showNoShow && !finalOrder.includes('showNoShow')) {
-        finalOrder.push('showNoShow');
-      }
-      
-      // Garantir que os gráficos de evolução estejam incluídos se habilitados
-      if (config.showRevenueEvolutionChart && !finalOrder.includes('revenueEvolutionChart')) {
-        finalOrder.push('revenueEvolutionChart');
-      }
-      
-      if (config.showBillingEvolutionChart && !finalOrder.includes('billingEvolutionChart')) {
-        finalOrder.push('billingEvolutionChart');
-      }
-      
-      // Garantir que os gráficos de vendedores estejam incluídos se habilitados
-      if (config.showSellerRevenueChart && !finalOrder.includes('sellerRevenueChart')) {
-        finalOrder.push('sellerRevenueChart');
-      }
-      
-      if (config.showSellerBillingChart && !finalOrder.includes('sellerBillingChart')) {
-        finalOrder.push('sellerBillingChart');
-      }
-      
-      // Garantir que os novos gráficos de análise temporal estejam incluídos se habilitados
-      if (config.showTemporalRevenueChart && !finalOrder.includes('temporalRevenueChart')) {
-        finalOrder.push('temporalRevenueChart');
-      }
-      
-      if (config.showTemporalBillingChart && !finalOrder.includes('temporalBillingChart')) {
-        finalOrder.push('temporalBillingChart');
-      }
-      
-      // Garantir que a tabela de closers esteja incluída se habilitada - usar sempre a mesma chave
-      if (config.showClosersPerformanceTable && !finalOrder.includes('showClosersPerformanceTable')) {
-        finalOrder.push('showClosersPerformanceTable');
-      }
-      
-      // Adicionar gráficos de produtos se habilitados
-      if (config.showProductRevenueEvolutionChart && !finalOrder.includes('showProductRevenueEvolutionChart')) {
-        finalOrder.push('showProductRevenueEvolutionChart');
-      }
-      
-      if (config.showProductBillingEvolutionChart && !finalOrder.includes('showProductBillingEvolutionChart')) {
-        finalOrder.push('showProductBillingEvolutionChart');
-      }
-      
-      if (config.showProductSalesEvolutionChart && !finalOrder.includes('showProductSalesEvolutionChart')) {
-        finalOrder.push('showProductSalesEvolutionChart');
-      }
-      
-      if (config.showProductPerformanceChart && !finalOrder.includes('showProductPerformanceChart')) {
-        finalOrder.push('showProductPerformanceChart');
-      }
-      
-      if (config.showProductComparisonChart && !finalOrder.includes('showProductComparisonChart')) {
-        finalOrder.push('showProductComparisonChart');
-      }
-      
-      if (config.showProductTemporalChart && !finalOrder.includes('showProductTemporalChart')) {
-        finalOrder.push('showProductTemporalChart');
-      }
-      
-      // Converter closersPerformanceTable para showClosersPerformanceTable para consistência
-      finalOrder = finalOrder.map(item => 
-        item === 'closersPerformanceTable' ? 'showClosersPerformanceTable' : item
-      );
-      
-      console.log('🔍 useDashboardOrder - Final custom order with all items:', finalOrder);
-      return finalOrder;
     }
 
-    // Ordem padrão com todos os itens incluindo os novos indicadores de projeção
-    const defaultOrder = [
-      'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
-      'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
-      'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
-      'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
-      'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
-      'showQuantidadeVendas', 'showCashCollect', 'showCac',
-      'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
-    ];
-
-    // Adicionar indicadores de produtos se habilitados
+    // Lista de indicadores de produtos
     const productIndicators = [
       'showProductReceita',
       'showProductFaturamento',
@@ -141,71 +41,84 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showProductProjecaoFaturamento'
     ];
 
-    productIndicators.forEach(indicator => {
-      if (config[indicator as keyof DashboardConfig]) {
-        defaultOrder.push(indicator);
+    // Lista de gráficos de produtos
+    const productCharts = [
+      'showProductRevenueEvolutionChart',
+      'showProductBillingEvolutionChart',
+      'showProductSalesEvolutionChart',
+      'showProductPerformanceChart',
+      'showProductComparisonChart',
+      'showProductTemporalChart'
+    ];
+
+    // Adicionar indicadores de produtos se habilitados e não estão na lista
+    if (config.showProductMetrics && config.selectedProductIds.length > 0) {
+      productIndicators.forEach(indicator => {
+        if (config[indicator as keyof DashboardConfig] && !finalOrder.includes(indicator)) {
+          finalOrder.push(indicator);
+        }
+      });
+    }
+
+    // Adicionar gráficos de produtos se habilitados e não estão na lista
+    productCharts.forEach(chart => {
+      if (config[chart as keyof DashboardConfig] && !finalOrder.includes(chart)) {
+        finalOrder.push(chart);
       }
     });
 
-    // Adicionar tabela de performance dos closers se habilitada - usando a chave consistente
-    if (config.showClosersPerformanceTable) {
-      defaultOrder.push('showClosersPerformanceTable');
-    }
-
-    // Adicionar gráficos de evolução se habilitados
-    if (config.showRevenueEvolutionChart) {
-      defaultOrder.push('revenueEvolutionChart');
+    // Garantir que os novos indicadores de projeção estejam incluídos se habilitados
+    if (config.showProjecaoReceita && !finalOrder.includes('showProjecaoReceita')) {
+      finalOrder.push('showProjecaoReceita');
     }
     
-    if (config.showBillingEvolutionChart) {
-      defaultOrder.push('billingEvolutionChart');
+    if (config.showProjecaoFaturamento && !finalOrder.includes('showProjecaoFaturamento')) {
+      finalOrder.push('showProjecaoFaturamento');
     }
     
-    // Adicionar gráficos de vendedores se habilitados
-    if (config.showSellerRevenueChart) {
-      defaultOrder.push('sellerRevenueChart');
+    if (config.showNoShow && !finalOrder.includes('showNoShow')) {
+      finalOrder.push('showNoShow');
     }
     
-    if (config.showSellerBillingChart) {
-      defaultOrder.push('sellerBillingChart');
+    // Garantir que os gráficos de evolução estejam incluídos se habilitados
+    if (config.showRevenueEvolutionChart && !finalOrder.includes('revenueEvolutionChart')) {
+      finalOrder.push('revenueEvolutionChart');
     }
     
-    // Adicionar novos gráficos de análise temporal se habilitados
-    if (config.showTemporalRevenueChart) {
-      defaultOrder.push('temporalRevenueChart');
+    if (config.showBillingEvolutionChart && !finalOrder.includes('billingEvolutionChart')) {
+      finalOrder.push('billingEvolutionChart');
     }
     
-    if (config.showTemporalBillingChart) {
-      defaultOrder.push('temporalBillingChart');
-    }
-
-    // Adicionar gráficos de produtos se habilitados
-    if (config.showProductRevenueEvolutionChart) {
-      defaultOrder.push('showProductRevenueEvolutionChart');
+    // Garantir que os gráficos de vendedores estejam incluídos se habilitados
+    if (config.showSellerRevenueChart && !finalOrder.includes('sellerRevenueChart')) {
+      finalOrder.push('sellerRevenueChart');
     }
     
-    if (config.showProductBillingEvolutionChart) {
-      defaultOrder.push('showProductBillingEvolutionChart');
+    if (config.showSellerBillingChart && !finalOrder.includes('sellerBillingChart')) {
+      finalOrder.push('sellerBillingChart');
     }
     
-    if (config.showProductSalesEvolutionChart) {
-      defaultOrder.push('showProductSalesEvolutionChart');
+    // Garantir que os novos gráficos de análise temporal estejam incluídos se habilitados
+    if (config.showTemporalRevenueChart && !finalOrder.includes('temporalRevenueChart')) {
+      finalOrder.push('temporalRevenueChart');
     }
     
-    if (config.showProductPerformanceChart) {
-      defaultOrder.push('showProductPerformanceChart');
+    if (config.showTemporalBillingChart && !finalOrder.includes('temporalBillingChart')) {
+      finalOrder.push('temporalBillingChart');
     }
     
-    if (config.showProductComparisonChart) {
-      defaultOrder.push('showProductComparisonChart');
+    // Garantir que a tabela de closers esteja incluída se habilitada - usar sempre a mesma chave
+    if (config.showClosersPerformanceTable && !finalOrder.includes('showClosersPerformanceTable')) {
+      finalOrder.push('showClosersPerformanceTable');
     }
     
-    if (config.showProductTemporalChart) {
-      defaultOrder.push('showProductTemporalChart');
-    }
-
-    console.log('🔍 useDashboardOrder - Using default order with product indicators:', defaultOrder);
-    return defaultOrder;
+    // Converter closersPerformanceTable para showClosersPerformanceTable para consistência
+    finalOrder = finalOrder.map(item => 
+      item === 'closersPerformanceTable' ? 'showClosersPerformanceTable' : item
+    );
+    
+    console.log('🔍 useDashboardOrder - Final order with all items:', finalOrder);
+    return finalOrder;
   };
 
   return {
