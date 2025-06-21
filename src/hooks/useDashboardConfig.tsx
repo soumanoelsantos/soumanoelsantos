@@ -152,7 +152,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           metricsOrder: metricsOrder,
           preSalesOrder: preSalesOrder,
           productOrder: productOrder,
-          showSpecificGoals: data.show_specific_goals ?? defaultConfig.showSpecificGoals,
+          showSpecificGoals: data.show_specific_goals ?? true, // ✅ Padrão true
           selectedGoalIds: selectedGoalIds,
           showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? defaultConfig.showRevenueEvolutionChart,
           showBillingEvolutionChart: data.show_billing_evolution_chart ?? defaultConfig.showBillingEvolutionChart,
@@ -186,6 +186,9 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
           showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
         });
+      } else {
+        // Se não existe configuração, usar padrão com metas específicas habilitadas
+        setConfig(prev => ({ ...prev, showSpecificGoals: true }));
       }
     } catch (error) {
       console.error('Error in loadConfig:', error);

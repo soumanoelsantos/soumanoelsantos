@@ -1,135 +1,137 @@
+
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
 import { MonthlyGoal, CreateGoalData } from '@/types/goals';
-import { 
-  fetchMonthlyGoals, 
-  createMonthlyGoal, 
-  updateMonthlyGoal, 
-  deleteMonthlyGoal 
-} from '@/services/monthlyGoalsService';
-import { processGoalsData, validateTargetValue } from '@/utils/monthlyGoalsUtils';
 
-export const useMonthlyGoals = (month?: number, year?: number) => {
-  const [goals, setGoals] = useState<MonthlyGoal[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+export const useMonthlyGoals = (month: number, year: number) => {
   const { userId } = useAuth();
-  const { toast } = useToast();
+  const [goals, setGoals] = useState<MonthlyGoal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchGoals = async () => {
-    if (!userId) return;
+  const loadGoals = async () => {
+    if (!userId) {
+      console.log('🔍 [DEBUG] Usuário não autenticado, não carregando metas');
+      setIsLoading(false);
+      return;
+    }
 
-    setIsLoading(true);
+    console.log('🔍 [DEBUG] Buscando metas para usuário:', userId);
+    console.log('🔍 [DEBUG] Mês/Ano:', { month, year });
+
     try {
-      const data = await fetchMonthlyGoals(userId, month, year);
-      const typedGoals = processGoalsData(data);
+      const { data, error } = await supabase
+        .from('monthly_goals')
+        .select(`
+          *,
+          product:products(*)
+        `)
+        .eq('user_id', userId)
+        .eq('month', month)
+        .eq('year', year)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('❌ [DEBUG] Erro ao buscar metas:', error);
+        setGoals([]);
+        return;
+      }
+
+      console.log('📊 [DEBUG] Dados retornados da query:', data);
       
-      console.log('✅ [DEBUG] Metas processadas:', typedGoals);
-      setGoals(typedGoals);
-    } catch (error: any) {
-      console.error('❌ [DEBUG] Erro ao carregar metas:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao carregar metas",
-        description: error.message,
-      });
+      const processedGoals = data || [];
+      console.log('✅ [DEBUG] Metas processadas:', processedGoals);
+      
+      setGoals(processedGoals);
+    } catch (error) {
+      console.error('💥 [DEBUG] Erro inesperado ao carregar metas:', error);
+      setGoals([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const createGoal = async (goalData: CreateGoalData) => {
-    if (!userId) {
-      console.log('❌ [DEBUG] Sem userId para criar meta');
-      return false;
-    }
+  const createGoal = async (goalData: CreateGoalData): Promise<boolean> => {
+    if (!userId) return false;
 
-    if (!validateTargetValue(goalData.target_value)) {
-      toast({
-        variant: "destructive",
-        title: "Erro de validação",
-        description: "O valor da meta deve ser um número válido maior que zero",
-      });
-      return false;
-    }
+    console.log('📝 [DEBUG] Criando nova meta:', goalData);
 
     try {
-      await createMonthlyGoal(userId, goalData);
+      const { error } = await supabase
+        .from('monthly_goals')
+        .insert({
+          user_id: userId,
+          ...goalData
+        });
 
-      toast({
-        title: "Meta criada",
-        description: goalData.product_id 
-          ? "Meta atemporal de produto criada com sucesso!" 
-          : "Meta criada com sucesso!",
-      });
-
-      fetchGoals();
-      return true;
-    } catch (error: any) {
-      console.error('💥 [DEBUG] Erro completo ao criar meta:', error);
-      
-      // Melhor tratamento de mensagens de erro
-      let errorMessage = 'Erro desconhecido ao criar meta';
-      
-      if (error.message.includes('Já existe uma meta')) {
-        errorMessage = 'Já existe uma meta com essas características para este período. Tente com configurações diferentes.';
-      } else if (error.message) {
-        errorMessage = error.message;
+      if (error) {
+        console.error('❌ [DEBUG] Erro ao criar meta:', error);
+        return false;
       }
-      
-      toast({
-        variant: "destructive",
-        title: "Erro ao criar meta",
-        description: errorMessage,
-      });
+
+      console.log('✅ [DEBUG] Meta criada com sucesso!');
+      await loadGoals(); // Recarregar as metas
+      return true;
+    } catch (error) {
+      console.error('💥 [DEBUG] Erro inesperado ao criar meta:', error);
       return false;
     }
   };
 
-  const updateGoal = async (goalId: string, updates: Partial<MonthlyGoal>) => {
+  const updateGoal = async (goalId: string, updates: Partial<MonthlyGoal>): Promise<boolean> => {
+    if (!userId) return false;
+
+    console.log('📝 [DEBUG] Atualizando meta:', { goalId, updates });
+
     try {
-      await updateMonthlyGoal(goalId, updates);
+      const { error } = await supabase
+        .from('monthly_goals')
+        .update(updates)
+        .eq('id', goalId)
+        .eq('user_id', userId);
 
-      toast({
-        title: "Meta atualizada",
-        description: "Meta atualizada com sucesso!",
-      });
+      if (error) {
+        console.error('❌ [DEBUG] Erro ao atualizar meta:', error);
+        return false;
+      }
 
-      fetchGoals();
+      console.log('✅ [DEBUG] Meta atualizada com sucesso!');
+      await loadGoals(); // Recarregar as metas
       return true;
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao atualizar meta",
-        description: error.message,
-      });
+    } catch (error) {
+      console.error('💥 [DEBUG] Erro inesperado ao atualizar meta:', error);
       return false;
     }
   };
 
-  const deleteGoal = async (goalId: string) => {
+  const deleteGoal = async (goalId: string): Promise<boolean> => {
+    if (!userId) return false;
+
+    console.log('🗑️ [DEBUG] Deletando meta:', goalId);
+
     try {
-      await deleteMonthlyGoal(goalId);
+      const { error } = await supabase
+        .from('monthly_goals')
+        .delete()
+        .eq('id', goalId)
+        .eq('user_id', userId);
 
-      toast({
-        title: "Meta removida",
-        description: "Meta removida com sucesso!",
-      });
+      if (error) {
+        console.error('❌ [DEBUG] Erro ao deletar meta:', error);
+        return false;
+      }
 
-      fetchGoals();
+      console.log('✅ [DEBUG] Meta deletada com sucesso!');
+      await loadGoals(); // Recarregar as metas
       return true;
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao remover meta",
-        description: error.message,
-      });
+    } catch (error) {
+      console.error('💥 [DEBUG] Erro inesperado ao deletar meta:', error);
       return false;
     }
   };
 
   useEffect(() => {
-    fetchGoals();
+    loadGoals();
   }, [userId, month, year]);
 
   return {
@@ -138,6 +140,7 @@ export const useMonthlyGoals = (month?: number, year?: number) => {
     createGoal,
     updateGoal,
     deleteGoal,
-    refetch: fetchGoals,
+    refetch: loadGoals
   };
 };
+
