@@ -169,6 +169,14 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProductCashCollect: data.show_product_cash_collect ?? defaultConfig.showProductCashCollect,
     showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
     showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,
+
+    // Product charts fields
+    showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
+    showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
+    showProductSalesEvolutionChart: data.show_product_sales_evolution_chart ?? defaultConfig.showProductSalesEvolutionChart,
+    showProductPerformanceChart: data.show_product_performance_chart ?? defaultConfig.showProductPerformanceChart,
+    showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
+    showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
   };
 
   console.log('🟢 dashboardConfigMapper - Final mapped config with projection indicators:', {
@@ -266,6 +274,14 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_product_cash_collect: config.showProductCashCollect,
     show_product_projecao_receita: config.showProductProjecaoReceita,
     show_product_projecao_faturamento: config.showProductProjecaoFaturamento,
+
+    // Product charts mappings
+    show_product_revenue_evolution_chart: config.showProductRevenueEvolutionChart,
+    show_product_billing_evolution_chart: config.showProductBillingEvolutionChart,
+    show_product_sales_evolution_chart: config.showProductSalesEvolutionChart,
+    show_product_performance_chart: config.showProductPerformanceChart,
+    show_product_comparison_chart: config.showProductComparisonChart,
+    show_product_temporal_chart: config.showProductTemporalChart,
   };
 
   console.log('🟢 dashboardConfigMapper - Final database data with projection indicators:', {
