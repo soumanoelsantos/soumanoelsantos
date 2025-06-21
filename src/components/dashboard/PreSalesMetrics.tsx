@@ -4,12 +4,10 @@ import { DashboardConfig } from '@/types/dashboardConfig';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { usePreSalesOrder } from './config/pre-sales-order/usePreSalesOrder';
 import { usePreSalesData } from '@/hooks/usePreSalesData';
-import { useDashboardFilters } from '@/hooks/useDashboardFilters';
 import PreSalesMetricsCards from './metrics/PreSalesMetricsCards';
 import PreSalesComponentRenderer from './renderers/PreSalesComponentRenderer';
 import PreSalesMetricsLoading from './loading/PreSalesMetricsLoading';
 import PreSalesMetricsError from './error/PreSalesMetricsError';
-import PreSalesDashboardFilters from './filters/PreSalesDashboardFilters';
 
 interface PreSalesData {
   dailyCalls: number;
@@ -46,12 +44,6 @@ const PreSalesMetrics = ({ config, preSalesData, isPublicView = false, sharedUse
   const { config: dashboardConfig } = useDashboardConfig(sharedUserId);
   const { getOrderedPreSalesItems } = usePreSalesOrder(config || dashboardConfig);
   const { data: realPreSalesData, isLoading, error } = usePreSalesData(sharedUserId);
-  const { 
-    filters, 
-    updateDateRange, 
-    updateSalespeople, 
-    resetFilters 
-  } = useDashboardFilters();
   
   // Use provided preSalesData or fallback to real data
   const dataToUse = preSalesData || realPreSalesData;
@@ -79,18 +71,6 @@ const PreSalesMetrics = ({ config, preSalesData, isPublicView = false, sharedUse
 
   return (
     <div className="space-y-8">
-      {/* Filtros específicos para pré-vendas - somente se não for visualização pública */}
-      {!isPublicView && (
-        <PreSalesDashboardFilters
-          startDate={filters.startDate}
-          endDate={filters.endDate}
-          selectedSalespeople={filters.selectedSalespeople}
-          onDateChange={updateDateRange}
-          onSalespeopleChange={updateSalespeople}
-          onReset={resetFilters}
-        />
-      )}
-
       {/* Cards de métricas no mesmo estilo do comercial */}
       <PreSalesMetricsCards config={config || dashboardConfig} preSalesData={dataToUse} />
       
