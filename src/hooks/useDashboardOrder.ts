@@ -61,7 +61,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       });
     }
 
-    // SEMPRE adicionar gráficos de produtos se habilitados
+    // SEMPRE adicionar gráficos de produtos se habilitados - CORRIGIDO
     productCharts.forEach(chart => {
       if (config[chart as keyof DashboardConfig] && !finalOrder.includes(chart)) {
         finalOrder.push(chart);

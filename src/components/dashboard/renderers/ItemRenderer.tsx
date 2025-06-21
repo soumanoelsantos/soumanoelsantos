@@ -14,6 +14,8 @@ interface ItemRendererProps {
 
 export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, selectedProductId }) => {
   console.log('🔍 [DEBUG] ItemRenderer - Rendering item:', itemKey);
+  console.log('🔍 [DEBUG] ItemRenderer - selectedProductId:', selectedProductId);
+  console.log('🔍 [DEBUG] ItemRenderer - config for item:', config[itemKey as keyof DashboardConfig]);
 
   // Lista de indicadores de produtos
   const productIndicators = [
@@ -57,20 +59,44 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     />;
   }
 
-  // Se é um gráfico de produto, só renderizar se um produto específico estiver selecionado
+  // Se é um gráfico de produto, renderizar se habilitado na configuração
   if (productCharts.includes(itemKey)) {
-    console.log('🔍 [DEBUG] ItemRenderer - Detected product chart:', itemKey);
-    // Só renderizar se um produto específico estiver selecionado
-    if (!selectedProductId) {
-      console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering product chart');
+    console.log('🔍 [DEBUG] ItemRenderer - Detected product chart:', itemKey, 'enabled:', config[itemKey as keyof DashboardConfig]);
+    
+    // Verificar se o gráfico está habilitado na configuração
+    if (!config[itemKey as keyof DashboardConfig]) {
+      console.log('🔍 [DEBUG] ItemRenderer - Product chart not enabled in config');
       return null;
     }
-    // TODO: Implementar renderização de gráficos de produtos quando necessário
-    return <SingleProductMetricsCards 
-      config={config} 
-      selectedProductId={selectedProductId} 
-      indicatorKey={itemKey}
-    />;
+
+    // Se um produto específico está selecionado, renderizar o gráfico para esse produto
+    if (selectedProductId) {
+      console.log('🔍 [DEBUG] ItemRenderer - Rendering product chart for selected product:', selectedProductId);
+      return <SingleProductMetricsCards 
+        config={config} 
+        selectedProductId={selectedProductId} 
+        indicatorKey={itemKey}
+      />;
+    }
+
+    // Se nenhum produto específico está selecionado mas há produtos configurados, 
+    // renderizar placeholder ou componente geral de gráficos
+    if (config.selectedProductIds && config.selectedProductIds.length > 0) {
+      console.log('🔍 [DEBUG] ItemRenderer - Rendering general product chart');
+      return (
+        <div className="p-8 text-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
+          <h3 className="text-lg font-medium text-gray-700 mb-2">
+            Gráfico de Produtos Disponível
+          </h3>
+          <p className="text-gray-600">
+            Selecione um produto específico no filtro acima para visualizar o gráfico: {itemKey.replace('show', '').replace('Chart', '')}
+          </p>
+        </div>
+      );
+    }
+
+    console.log('🔍 [DEBUG] ItemRenderer - No products configured, not rendering chart');
+    return null;
   }
 
   switch (itemKey) {
