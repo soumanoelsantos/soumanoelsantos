@@ -23,7 +23,9 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
 }) => {
   console.log('🔍 [DEBUG] IndividualSalesManager renderizado com:', { sellerId, performanceId });
   
-  const { sales, isLoading, addSale, deleteSale } = useIndividualSales(performanceId);
+  // Só usar o performanceId se não for 'temp-id'
+  const actualPerformanceId = performanceId === 'temp-id' ? undefined : performanceId;
+  const { sales, isLoading, addSale, deleteSale } = useIndividualSales(actualPerformanceId);
   const [showForm, setShowForm] = useState(false);
 
   console.log('📋 [DEBUG] Estado atual:', { salesCount: sales.length, isLoading, showForm });
@@ -47,12 +49,19 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
   const handleSubmit = async (saleData: IndividualSaleFormData) => {
     console.log('📤 [DEBUG] handleSubmit chamado com:', saleData);
     
-    if (!sellerId || !performanceId) {
-      console.error('❌ [DEBUG] Faltam sellerId ou performanceId:', { sellerId, performanceId });
+    if (!sellerId) {
+      console.error('❌ [DEBUG] Faltam sellerId:', { sellerId });
       return false;
     }
     
-    return await addSale(sellerId, performanceId, saleData);
+    // Se não temos performanceId válido, criar uma venda sem associação
+    if (!actualPerformanceId) {
+      console.warn('⚠️ [DEBUG] Criando venda sem performanceId válido');
+      // Criar uma performance temporária primeiro
+      return false; // Por enquanto não permitir vendas sem performance
+    }
+    
+    return await addSale(sellerId, actualPerformanceId, saleData);
   };
 
   const handleAddSaleClick = () => {
@@ -64,6 +73,25 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
     console.log('❌ [DEBUG] Formulário cancelado');
     setShowForm(false);
   };
+
+  // Se não temos performanceId válido, mostrar aviso
+  if (!actualPerformanceId) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Vendas Individuais
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-600">
+            Salve a performance primeiro para adicionar vendas individuais.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
