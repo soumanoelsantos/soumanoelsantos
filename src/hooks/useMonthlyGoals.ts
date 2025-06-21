@@ -3,11 +3,17 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { MonthlyGoal, CreateGoalData } from '@/types/goals';
+import { processGoalsData } from '@/utils/monthlyGoalsUtils';
 
-export const useMonthlyGoals = (month: number, year: number) => {
+export const useMonthlyGoals = (month?: number, year?: number) => {
   const { userId } = useAuth();
   const [goals, setGoals] = useState<MonthlyGoal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Use current month/year if not provided
+  const currentDate = new Date();
+  const targetMonth = month ?? (currentDate.getMonth() + 1);
+  const targetYear = year ?? currentDate.getFullYear();
 
   const loadGoals = async () => {
     if (!userId) {
@@ -17,7 +23,7 @@ export const useMonthlyGoals = (month: number, year: number) => {
     }
 
     console.log('🔍 [DEBUG] Buscando metas para usuário:', userId);
-    console.log('🔍 [DEBUG] Mês/Ano:', { month, year });
+    console.log('🔍 [DEBUG] Mês/Ano:', { month: targetMonth, year: targetYear });
 
     try {
       const { data, error } = await supabase
@@ -27,8 +33,8 @@ export const useMonthlyGoals = (month: number, year: number) => {
           product:products(*)
         `)
         .eq('user_id', userId)
-        .eq('month', month)
-        .eq('year', year)
+        .eq('month', targetMonth)
+        .eq('year', targetYear)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -39,7 +45,8 @@ export const useMonthlyGoals = (month: number, year: number) => {
 
       console.log('📊 [DEBUG] Dados retornados da query:', data);
       
-      const processedGoals = data || [];
+      // Process the data with proper type casting
+      const processedGoals = processGoalsData(data || []);
       console.log('✅ [DEBUG] Metas processadas:', processedGoals);
       
       setGoals(processedGoals);
@@ -132,7 +139,7 @@ export const useMonthlyGoals = (month: number, year: number) => {
 
   useEffect(() => {
     loadGoals();
-  }, [userId, month, year]);
+  }, [userId, targetMonth, targetYear]);
 
   return {
     goals,
@@ -143,4 +150,3 @@ export const useMonthlyGoals = (month: number, year: number) => {
     refetch: loadGoals
   };
 };
-

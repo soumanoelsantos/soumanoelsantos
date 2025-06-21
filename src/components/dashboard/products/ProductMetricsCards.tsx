@@ -14,7 +14,8 @@ interface ProductMetricsCardsProps {
 
 const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selectedProductId }) => {
   const { products } = useProducts();
-  const { goals } = useMonthlyGoals();
+  const currentDate = new Date();
+  const { goals } = useMonthlyGoals(currentDate.getMonth() + 1, currentDate.getFullYear());
   
   if (!config.showProductMetrics || config.selectedProductIds.length === 0) {
     return null;

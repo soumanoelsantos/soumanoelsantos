@@ -17,7 +17,8 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
   selectedProductId 
 }) => {
   const { products } = useProducts();
-  const { goals } = useMonthlyGoals();
+  const currentDate = new Date();
+  const { goals } = useMonthlyGoals(currentDate.getMonth() + 1, currentDate.getFullYear());
   
   if (!config.showProductMetrics || !selectedProductId) {
     return null;
