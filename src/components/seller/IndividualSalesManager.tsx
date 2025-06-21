@@ -21,8 +21,12 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
   performanceId,
   onTotalsChange
 }) => {
+  console.log('🔍 [DEBUG] IndividualSalesManager renderizado com:', { sellerId, performanceId });
+  
   const { sales, isLoading, addSale, deleteSale } = useIndividualSales(performanceId);
   const [showForm, setShowForm] = useState(false);
+
+  console.log('📋 [DEBUG] Estado atual:', { salesCount: sales.length, isLoading, showForm });
 
   // Calcular totais
   const totals = React.useMemo(() => {
@@ -30,16 +34,35 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
     const revenueTotal = sales.reduce((sum, sale) => sum + Number(sale.revenue_amount), 0);
     const billingTotal = sales.reduce((sum, sale) => sum + Number(sale.billing_amount), 0);
     
+    console.log('📊 [DEBUG] Totais calculados:', { salesCount, revenueTotal, billingTotal });
     return { salesCount, revenueTotal, billingTotal };
   }, [sales]);
 
   // Notificar mudanças nos totais
   React.useEffect(() => {
+    console.log('📈 [DEBUG] Notificando mudança nos totais:', totals);
     onTotalsChange(totals);
   }, [totals, onTotalsChange]);
 
   const handleSubmit = async (saleData: IndividualSaleFormData) => {
+    console.log('📤 [DEBUG] handleSubmit chamado com:', saleData);
+    
+    if (!sellerId || !performanceId) {
+      console.error('❌ [DEBUG] Faltam sellerId ou performanceId:', { sellerId, performanceId });
+      return false;
+    }
+    
     return await addSale(sellerId, performanceId, saleData);
+  };
+
+  const handleAddSaleClick = () => {
+    console.log('➕ [DEBUG] Botão Adicionar Venda clicado');
+    setShowForm(!showForm);
+  };
+
+  const handleCancelForm = () => {
+    console.log('❌ [DEBUG] Formulário cancelado');
+    setShowForm(false);
   };
 
   return (
@@ -54,7 +77,7 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
             </Badge>
           </CardTitle>
           <Button
-            onClick={() => setShowForm(!showForm)}
+            onClick={handleAddSaleClick}
             size="sm"
             variant="outline"
           >
@@ -68,11 +91,13 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
         <IndividualSalesSummary totals={totals} />
 
         {showForm && (
-          <IndividualSaleForm
-            onSubmit={handleSubmit}
-            onCancel={() => setShowForm(false)}
-            isSubmitting={false}
-          />
+          <div>
+            <IndividualSaleForm
+              onSubmit={handleSubmit}
+              onCancel={handleCancelForm}
+              isSubmitting={false}
+            />
+          </div>
         )}
 
         <IndividualSalesList

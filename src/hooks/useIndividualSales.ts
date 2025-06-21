@@ -9,13 +9,18 @@ export const useIndividualSales = (performanceId?: string) => {
   const [sales, setSales] = useState<IndividualSale[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log('🔍 [DEBUG] useIndividualSales inicializado com performanceId:', performanceId);
+
   const fetchSales = async () => {
     if (!performanceId) {
+      console.log('⚠️ [DEBUG] Sem performanceId, definindo sales como array vazio');
       setSales([]);
       return;
     }
 
+    console.log('📋 [DEBUG] Buscando vendas para performanceId:', performanceId);
     setIsLoading(true);
+    
     try {
       const { data, error } = await supabase
         .from('seller_individual_sales')
@@ -26,21 +31,31 @@ export const useIndividualSales = (performanceId?: string) => {
         .eq('performance_id', performanceId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('📝 [DEBUG] Resultado da busca de vendas:', { data, error });
+
+      if (error) {
+        console.error('❌ [DEBUG] Erro na consulta:', error);
+        throw error;
+      }
+      
+      console.log('✅ [DEBUG] Vendas carregadas:', data?.length || 0);
       setSales(data || []);
     } catch (error) {
-      console.error('Erro ao buscar vendas individuais:', error);
+      console.error('💥 [DEBUG] Erro ao buscar vendas individuais:', error);
       toast({
         title: "Erro",
         description: "Não foi possível carregar as vendas individuais",
         variant: "destructive",
       });
+      setSales([]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const addSale = async (sellerId: string, performanceId: string, saleData: IndividualSaleFormData) => {
+    console.log('📤 [DEBUG] Adicionando venda:', { sellerId, performanceId, saleData });
+    
     try {
       const { data, error } = await supabase
         .from('seller_individual_sales')
@@ -58,16 +73,23 @@ export const useIndividualSales = (performanceId?: string) => {
         `)
         .single();
 
-      if (error) throw error;
+      console.log('📝 [DEBUG] Resultado da inserção:', { data, error });
 
+      if (error) {
+        console.error('❌ [DEBUG] Erro na inserção:', error);
+        throw error;
+      }
+
+      console.log('✅ [DEBUG] Venda adicionada com sucesso:', data);
       setSales(prev => [data, ...prev]);
+      
       toast({
         title: "Sucesso",
         description: "Venda individual adicionada com sucesso",
       });
       return true;
     } catch (error) {
-      console.error('Erro ao adicionar venda individual:', error);
+      console.error('💥 [DEBUG] Erro ao adicionar venda individual:', error);
       toast({
         title: "Erro",
         description: "Não foi possível adicionar a venda individual",
@@ -78,22 +100,29 @@ export const useIndividualSales = (performanceId?: string) => {
   };
 
   const deleteSale = async (saleId: string) => {
+    console.log('🗑️ [DEBUG] Deletando venda:', saleId);
+    
     try {
       const { error } = await supabase
         .from('seller_individual_sales')
         .delete()
         .eq('id', saleId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [DEBUG] Erro ao deletar:', error);
+        throw error;
+      }
 
+      console.log('✅ [DEBUG] Venda deletada com sucesso');
       setSales(prev => prev.filter(sale => sale.id !== saleId));
+      
       toast({
         title: "Sucesso",
         description: "Venda individual removida com sucesso",
       });
       return true;
     } catch (error) {
-      console.error('Erro ao remover venda individual:', error);
+      console.error('💥 [DEBUG] Erro ao remover venda individual:', error);
       toast({
         title: "Erro",
         description: "Não foi possível remover a venda individual",
@@ -104,6 +133,7 @@ export const useIndividualSales = (performanceId?: string) => {
   };
 
   useEffect(() => {
+    console.log('🔄 [DEBUG] useEffect do useIndividualSales triggered, performanceId:', performanceId);
     fetchSales();
   }, [performanceId]);
 

@@ -19,6 +19,8 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   onCancel,
   isSubmitting
 }) => {
+  console.log('🔍 [DEBUG] IndividualSaleForm renderizado');
+  
   const { products } = useProducts();
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -27,24 +29,40 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     product_id: null,
   });
 
+  console.log('📋 [DEBUG] Produtos carregados:', products);
+  console.log('📝 [DEBUG] FormData atual:', formData);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('📤 [DEBUG] Submetendo formulário com dados:', formData);
+    
     if (!formData.client_name.trim()) {
+      console.warn('⚠️ [DEBUG] Nome do cliente é obrigatório');
       return;
     }
 
-    const success = await onSubmit(formData);
-    
-    if (success) {
-      setFormData({
-        client_name: '',
-        revenue_amount: 0,
-        billing_amount: 0,
-        product_id: null,
-      });
-      onCancel();
+    try {
+      const success = await onSubmit(formData);
+      console.log('✅ [DEBUG] Resultado do submit:', success);
+      
+      if (success) {
+        setFormData({
+          client_name: '',
+          revenue_amount: 0,
+          billing_amount: 0,
+          product_id: null,
+        });
+        onCancel();
+      }
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro no submit:', error);
     }
+  };
+
+  const handleInputChange = (field: keyof IndividualSaleFormData, value: any) => {
+    console.log(`📝 [DEBUG] Alterando ${field}:`, value);
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -59,7 +77,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
             <Input
               id="client_name"
               value={formData.client_name}
-              onChange={(e) => setFormData(prev => ({ ...prev, client_name: e.target.value }))}
+              onChange={(e) => handleInputChange('client_name', e.target.value)}
               placeholder="Digite o nome do cliente"
               required
             />
@@ -69,18 +87,22 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
             <Label htmlFor="product_id">Produto</Label>
             <Select
               value={formData.product_id || ""}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, product_id: value || null }))}
+              onValueChange={(value) => handleInputChange('product_id', value || null)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um produto ou deixe em branco para venda geral" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Venda Geral (sem produto específico)</SelectItem>
-                {products.map((product) => (
-                  <SelectItem key={product.id} value={product.id}>
-                    {product.name}
-                  </SelectItem>
-                ))}
+                {products && products.length > 0 ? (
+                  products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      {product.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="" disabled>Nenhum produto disponível</SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -94,7 +116,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                 step="0.01"
                 min="0"
                 value={formData.revenue_amount}
-                onChange={(e) => setFormData(prev => ({ ...prev, revenue_amount: Number(e.target.value) }))}
+                onChange={(e) => handleInputChange('revenue_amount', Number(e.target.value))}
                 placeholder="0,00"
                 required
               />
@@ -108,7 +130,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                 step="0.01"
                 min="0"
                 value={formData.billing_amount}
-                onChange={(e) => setFormData(prev => ({ ...prev, billing_amount: Number(e.target.value) }))}
+                onChange={(e) => handleInputChange('billing_amount', Number(e.target.value))}
                 placeholder="0,00"
                 required
               />
