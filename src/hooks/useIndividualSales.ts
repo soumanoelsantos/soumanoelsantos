@@ -4,6 +4,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { IndividualSale, IndividualSaleFormData } from '@/types/individualSales';
 import { useToast } from '@/hooks/use-toast';
 
+// Type for the raw response from Supabase
+interface IndividualSaleResponse {
+  id: string;
+  seller_id: string;
+  performance_id: string;
+  client_name: string;
+  revenue_amount: number;
+  billing_amount: number;
+  product_id?: string | null;
+  created_at: string;
+  updated_at: string;
+  products?: {
+    id: string;
+    name: string;
+  } | null;
+}
+
 export const useIndividualSales = (performanceId?: string) => {
   const { toast } = useToast();
   const [sales, setSales] = useState<IndividualSale[]>([]);
@@ -44,7 +61,12 @@ export const useIndividualSales = (performanceId?: string) => {
       } else {
         console.log('✅ [DEBUG] Vendas carregadas:', data?.length || 0);
         console.log('📊 [DEBUG] Dados das vendas:', data);
-        setSales(data || []);
+        // Transform the response to match our IndividualSale type
+        const transformedSales: IndividualSale[] = (data || []).map((sale: IndividualSaleResponse) => ({
+          ...sale,
+          products: sale.products || null
+        }));
+        setSales(transformedSales);
       }
     } catch (error) {
       console.error('💥 [DEBUG] Erro ao buscar vendas individuais:', error);
@@ -85,7 +107,12 @@ export const useIndividualSales = (performanceId?: string) => {
       }
 
       console.log('✅ [DEBUG] Venda adicionada com sucesso:', data);
-      setSales(prev => [data, ...prev]);
+      // Transform the response to match our IndividualSale type
+      const transformedSale: IndividualSale = {
+        ...data,
+        products: data.products || null
+      };
+      setSales(prev => [transformedSale, ...prev]);
       
       toast({
         title: "Sucesso",
