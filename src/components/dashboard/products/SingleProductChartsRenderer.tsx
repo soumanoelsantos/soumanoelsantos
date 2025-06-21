@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, BarChart3, LineChart, PieChart } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
+import { useSellerPerformanceCharts } from '@/hooks/useSellerPerformanceCharts';
 import { DashboardConfig } from '@/types/dashboardConfig';
 
 interface SingleProductChartsRendererProps {
@@ -17,6 +18,7 @@ const SingleProductChartsRenderer: React.FC<SingleProductChartsRendererProps> = 
   chartKey 
 }) => {
   const { products } = useProducts();
+  const { revenueData, billingData, isLoading } = useSellerPerformanceCharts();
   
   if (!selectedProductId) {
     return null;
@@ -29,16 +31,6 @@ const SingleProductChartsRenderer: React.FC<SingleProductChartsRendererProps> = 
   }
 
   const renderChart = () => {
-    // Dados simulados para demonstração
-    const mockData = [
-      { name: 'Jan', value: Math.random() * 10000 },
-      { name: 'Fev', value: Math.random() * 10000 },
-      { name: 'Mar', value: Math.random() * 10000 },
-      { name: 'Abr', value: Math.random() * 10000 },
-      { name: 'Mai', value: Math.random() * 10000 },
-      { name: 'Jun', value: Math.random() * 10000 },
-    ];
-
     const getChartTitle = () => {
       switch (chartKey) {
         case 'showProductRevenueEvolutionChart':
@@ -77,6 +69,27 @@ const SingleProductChartsRenderer: React.FC<SingleProductChartsRendererProps> = 
 
     const IconComponent = getChartIcon();
 
+    if (isLoading) {
+      return (
+        <Card className="h-96">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <IconComponent className="h-5 w-5 text-blue-600" />
+              {getChartTitle()} - {selectedProduct.name}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="h-72 flex flex-col justify-center items-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p className="text-gray-600 mt-2">Carregando dados reais...</p>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    // Usar dados reais quando disponíveis
+    const hasRealData = revenueData.length > 0 || billingData.length > 0;
+    const dataToShow = chartKey.includes('Revenue') ? revenueData : billingData;
+
     return (
       <Card className="h-96">
         <CardHeader>
@@ -94,9 +107,15 @@ const SingleProductChartsRenderer: React.FC<SingleProductChartsRendererProps> = 
             <p className="text-gray-600 text-center mb-4">
               Produto: <span className="font-medium text-purple-600">{selectedProduct.name}</span>
             </p>
-            <div className="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border">
-              Gráfico em desenvolvimento
-            </div>
+            {hasRealData ? (
+              <div className="text-sm text-green-600 bg-white px-4 py-2 rounded-lg border">
+                Dados reais disponíveis ({dataToShow.length} registros)
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border">
+                Aguardando dados de performance
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
