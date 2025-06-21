@@ -25,7 +25,8 @@ const ProductOrderManager: React.FC<ProductOrderManagerProps> = ({
     resetToDefault
   } = useProductOrder(config, productOrder, onReorderProducts);
 
-  if (!config.showProductMetrics || config.selectedProductIds.length === 0) {
+  // Mostrar apenas se os indicadores de produto estão habilitados
+  if (!config.showProductMetrics) {
     return <EmptyProductOrderState />;
   }
 

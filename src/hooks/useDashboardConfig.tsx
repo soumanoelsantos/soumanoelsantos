@@ -230,7 +230,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_temporal_revenue_chart: updates.showTemporalRevenueChart,
         show_temporal_billing_chart: updates.showTemporalBillingChart,
         
-        // Product metrics mappings - CORRIGIDO
+        // Product metrics mappings - GARANTIR QUE SEMPRE SEJAM MAPEADOS
         show_product_metrics: updates.showProductMetrics,
         selected_product_ids: updates.selectedProductIds,
         show_product_ticket_receita: updates.showProductTicketReceita,
@@ -247,7 +247,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_product_projecao_receita: updates.showProductProjecaoReceita,
         show_product_projecao_faturamento: updates.showProductProjecaoFaturamento,
         
-        // Product charts mappings - CORRIGIDO
+        // Product charts mappings - GARANTIR QUE SEMPRE SEJAM MAPEADOS
         show_product_revenue_evolution_chart: updates.showProductRevenueEvolutionChart,
         show_product_billing_evolution_chart: updates.showProductBillingEvolutionChart,
         show_product_sales_evolution_chart: updates.showProductSalesEvolutionChart,
