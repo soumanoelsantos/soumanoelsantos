@@ -9,6 +9,10 @@ export interface IndividualSale {
   product_id?: string | null;
   created_at: string;
   updated_at: string;
+  products?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 export interface IndividualSaleFormData {
