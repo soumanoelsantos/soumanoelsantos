@@ -1,49 +1,50 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { Target } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
-import { useSellers } from '@/hooks/useSellers';
 import { useToast } from '@/hooks/use-toast';
 import { ProductGoalSelector } from './product-goals/ProductGoalSelector';
-import { ProductGoalStatus } from './product-goals/ProductGoalStatus';
 import { ProductGoalMetrics } from './product-goals/ProductGoalMetrics';
-import { SellerDistribution } from './product-goals/SellerDistribution';
+import { ProductGoalsList } from './product-goals/ProductGoalsList';
 import { EmptyProductsState } from './product-goals/EmptyProductsState';
 
 interface ProductGoal {
   id: string;
   productId: string;
+  productName: string;
   quantityGoal: number;
-  quantitySold: number;
   revenueGoal: number;
-  revenueAchieved: number;
   billingGoal: number;
-  billingAchieved: number;
+  currency: 'BRL' | 'USD';
   isActive: boolean;
-  sellerDistribution: Array<{
-    sellerId: string;
-    quantityGoal: number;
-    quantitySold: number;
-    revenueGoal: number;
-    revenueAchieved: number;
-    billingGoal: number;
-    billingAchieved: number;
-  }>;
 }
 
 const ProductGoalsConfigCard: React.FC = () => {
   const { products, isLoading: productsLoading } = useProducts();
-  const { sellers, isLoading: sellersLoading } = useSellers();
   const { toast } = useToast();
   
   const [productGoals, setProductGoals] = useState<ProductGoal[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string>('');
+  const [editingGoal, setEditingGoal] = useState<ProductGoal | null>(null);
+  
+  // Estados para o formulário
+  const [quantityGoal, setQuantityGoal] = useState(0);
+  const [revenueGoal, setRevenueGoal] = useState(0);
+  const [billingGoal, setBillingGoal] = useState(0);
+  const [currency, setCurrency] = useState<'BRL' | 'USD'>('BRL');
 
-  const currentGoal = productGoals.find(g => g.productId === selectedProduct);
+  const resetForm = () => {
+    setSelectedProduct('');
+    setQuantityGoal(0);
+    setRevenueGoal(0);
+    setBillingGoal(0);
+    setCurrency('BRL');
+    setEditingGoal(null);
+  };
 
-  const handleCreateOrUpdateGoal = () => {
+  const handleSaveGoal = () => {
     if (!selectedProduct) {
       toast({
         variant: "destructive",
@@ -53,90 +54,90 @@ const ProductGoalsConfigCard: React.FC = () => {
       return;
     }
 
-    const goalId = currentGoal?.id || `goal-${selectedProduct}`;
-    
-    const newGoal: ProductGoal = {
-      id: goalId,
+    const selectedProductData = products.find(p => p.id === selectedProduct);
+    if (!selectedProductData) return;
+
+    const goalData: ProductGoal = {
+      id: editingGoal?.id || `goal-${selectedProduct}-${Date.now()}`,
       productId: selectedProduct,
-      quantityGoal: currentGoal?.quantityGoal || 0,
-      quantitySold: currentGoal?.quantitySold || 0,
-      revenueGoal: currentGoal?.revenueGoal || 0,
-      revenueAchieved: currentGoal?.revenueAchieved || 0,
-      billingGoal: currentGoal?.billingGoal || 0,
-      billingAchieved: currentGoal?.billingAchieved || 0,
-      isActive: true,
-      sellerDistribution: currentGoal?.sellerDistribution || []
+      productName: selectedProductData.name,
+      quantityGoal,
+      revenueGoal,
+      billingGoal,
+      currency,
+      isActive: true
     };
 
-    setProductGoals(prev => {
-      const filtered = prev.filter(g => g.id !== goalId);
-      return [...filtered, newGoal];
-    });
+    if (editingGoal) {
+      // Editando meta existente
+      setProductGoals(prev => prev.map(goal => 
+        goal.id === editingGoal.id ? goalData : goal
+      ));
+      toast({
+        title: "Meta atualizada",
+        description: "Meta do produto atualizada com sucesso!"
+      });
+    } else {
+      // Criando nova meta
+      const existingGoal = productGoals.find(g => g.productId === selectedProduct);
+      if (existingGoal) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Já existe uma meta para este produto. Edite a meta existente."
+        });
+        return;
+      }
+      
+      setProductGoals(prev => [...prev, goalData]);
+      toast({
+        title: "Meta criada",
+        description: "Meta do produto criada com sucesso!"
+      });
+    }
 
+    resetForm();
+  };
+
+  const handleEditGoal = (goal: ProductGoal) => {
+    setEditingGoal(goal);
+    setSelectedProduct(goal.productId);
+    setQuantityGoal(goal.quantityGoal);
+    setRevenueGoal(goal.revenueGoal);
+    setBillingGoal(goal.billingGoal);
+    setCurrency(goal.currency);
+  };
+
+  const handleDeleteGoal = (goalId: string) => {
+    setProductGoals(prev => prev.filter(goal => goal.id !== goalId));
     toast({
-      title: "Sucesso",
-      description: `Meta do produto ${currentGoal ? 'atualizada' : 'criada'} com sucesso!`
+      title: "Meta removida",
+      description: "Meta do produto removida com sucesso!"
     });
   };
 
-  const updateGoalValue = (field: keyof ProductGoal, value: any) => {
-    if (!currentGoal) return;
-    
-    setProductGoals(prev => prev.map(goal => 
-      goal.id === currentGoal.id 
-        ? { ...goal, [field]: value }
-        : goal
-    ));
+  const handleCancelEdit = () => {
+    resetForm();
   };
 
-  const toggleGoalStatus = () => {
-    if (!currentGoal) return;
-    
-    const newStatus = !currentGoal.isActive;
-    updateGoalValue('isActive', newStatus);
-    
-    toast({
-      title: newStatus ? "Meta ativada" : "Meta desativada",
-      description: `A meta do produto foi ${newStatus ? 'ativada' : 'desativada'}.`
-    });
+  const handleMetricUpdate = (field: string, value: number | string) => {
+    switch (field) {
+      case 'quantityGoal':
+        setQuantityGoal(value as number);
+        break;
+      case 'revenueGoal':
+        setRevenueGoal(value as number);
+        break;
+      case 'billingGoal':
+        setBillingGoal(value as number);
+        break;
+      case 'currency':
+        setCurrency(value as 'BRL' | 'USD');
+        break;
+    }
   };
 
-  const addSellerToDistribution = () => {
-    if (!currentGoal) return;
-    
-    const newDistribution = {
-      sellerId: '',
-      quantityGoal: 0,
-      quantitySold: 0,
-      revenueGoal: 0,
-      revenueAchieved: 0,
-      billingGoal: 0,
-      billingAchieved: 0
-    };
-
-    updateGoalValue('sellerDistribution', [...currentGoal.sellerDistribution, newDistribution]);
-  };
-
-  const updateSellerDistribution = (index: number, field: string, value: any) => {
-    if (!currentGoal) return;
-    
-    const newDistribution = [...currentGoal.sellerDistribution];
-    newDistribution[index] = { ...newDistribution[index], [field]: value };
-    updateGoalValue('sellerDistribution', newDistribution);
-  };
-
-  const removeSellerFromDistribution = (index: number) => {
-    if (!currentGoal) return;
-    
-    const newDistribution = currentGoal.sellerDistribution.filter((_, i) => i !== index);
-    updateGoalValue('sellerDistribution', newDistribution);
-  };
-
-  const handleMetricUpdate = (field: string, value: number) => {
-    updateGoalValue(field as keyof ProductGoal, value);
-  };
-
-  if (productsLoading || sellersLoading) {
+  if (productsLoading) {
     return (
       <Card>
         <CardContent className="flex items-center justify-center p-8">
@@ -155,57 +156,54 @@ const ProductGoalsConfigCard: React.FC = () => {
           Metas dos Produtos
         </CardTitle>
         <CardDescription>
-          Configure metas totais para cada produto. As metas ficam ativas até serem completamente atingidas.
+          Configure metas de quantidade, receita e faturamento para cada produto.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <ProductGoalSelector
-          products={products}
-          selectedProduct={selectedProduct}
-          onProductChange={setSelectedProduct}
-          onCreateOrUpdate={handleCreateOrUpdateGoal}
-          hasCurrentGoal={!!currentGoal}
-        />
+        {products.length === 0 ? (
+          <EmptyProductsState />
+        ) : (
+          <>
+            {/* Formulário de criação/edição */}
+            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+              <div className="flex justify-between items-center">
+                <h4 className="font-medium">
+                  {editingGoal ? 'Editar Meta' : 'Nova Meta'}
+                </h4>
+                {editingGoal && (
+                  <Button onClick={handleCancelEdit} variant="outline" size="sm">
+                    Cancelar
+                  </Button>
+                )}
+              </div>
 
-        {currentGoal && (
-          <ProductGoalStatus
-            isActive={currentGoal.isActive}
-            onToggleStatus={toggleGoalStatus}
-          />
-        )}
+              <ProductGoalSelector
+                products={products}
+                selectedProduct={selectedProduct}
+                onProductChange={setSelectedProduct}
+                onCreateOrUpdate={handleSaveGoal}
+                hasCurrentGoal={!!editingGoal}
+              />
 
-        {currentGoal && (
-          <Tabs defaultValue="metas" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="metas">Metas Totais</TabsTrigger>
-              <TabsTrigger value="distribuicao">Distribuição por Vendedor</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="metas" className="space-y-4">
-              <ProductGoalMetrics
-                quantityGoal={currentGoal.quantityGoal}
-                quantitySold={currentGoal.quantitySold}
-                revenueGoal={currentGoal.revenueGoal}
-                revenueAchieved={currentGoal.revenueAchieved}
-                billingGoal={currentGoal.billingGoal}
-                billingAchieved={currentGoal.billingAchieved}
-                onUpdateField={handleMetricUpdate}
-              />
-            </TabsContent>
-            
-            <TabsContent value="distribuicao" className="space-y-4">
-              <SellerDistribution
-                sellers={sellers}
-                sellerDistribution={currentGoal.sellerDistribution}
-                onAddSeller={addSellerToDistribution}
-                onUpdateSeller={updateSellerDistribution}
-                onRemoveSeller={removeSellerFromDistribution}
-              />
-            </TabsContent>
-          </Tabs>
+              {selectedProduct && (
+                <ProductGoalMetrics
+                  quantityGoal={quantityGoal}
+                  revenueGoal={revenueGoal}
+                  billingGoal={billingGoal}
+                  currency={currency}
+                  onUpdateField={handleMetricUpdate}
+                />
+              )}
+            </div>
+
+            {/* Lista de metas criadas */}
+            <ProductGoalsList
+              goals={productGoals}
+              onEditGoal={handleEditGoal}
+              onDeleteGoal={handleDeleteGoal}
+            />
+          </>
         )}
-        
-        {products.length === 0 && <EmptyProductsState />}
       </CardContent>
     </Card>
   );

@@ -40,7 +40,7 @@ export const ProductGoalSelector: React.FC<ProductGoalSelectorProps> = ({
       
       <div className="flex items-end">
         <Button onClick={onCreateOrUpdate} className="w-full">
-          {hasCurrentGoal ? 'Atualizar' : 'Criar'} Meta
+          {hasCurrentGoal ? 'Salvar Alterações' : 'Salvar Meta'}
         </Button>
       </div>
     </div>
