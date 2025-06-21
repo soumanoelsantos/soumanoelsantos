@@ -7,7 +7,7 @@ export const useMetricsOrder = (config: DashboardConfig) => {
   const getEnabledMetrics = (): MetricItem[] => {
     const enabledMetrics: MetricItem[] = [];
 
-    // Adicionar métricas de cards habilitadas
+    // Adicionar apenas métricas de cards habilitadas
     ALL_METRIC_KEYS.forEach(key => {
       if (config[key as keyof DashboardConfig]) {
         enabledMetrics.push({
@@ -75,12 +75,17 @@ export const useMetricsOrder = (config: DashboardConfig) => {
   const getOrderedMetrics = (metricsOrder: string[]): MetricItem[] => {
     const enabledMetrics = getEnabledMetrics();
     
-    return metricsOrder
+    // Filtrar apenas os itens que estão habilitados
+    const orderedEnabledMetrics = metricsOrder
       .map(key => enabledMetrics.find(metric => metric.key === key))
-      .filter((metric): metric is MetricItem => metric !== undefined)
-      .concat(
-        enabledMetrics.filter(metric => !metricsOrder.includes(metric.key))
-      );
+      .filter((metric): metric is MetricItem => metric !== undefined);
+    
+    // Adicionar métricas habilitadas que não estão na ordem personalizada
+    const unorderedEnabledMetrics = enabledMetrics.filter(
+      metric => !metricsOrder.includes(metric.key)
+    );
+    
+    return [...orderedEnabledMetrics, ...unorderedEnabledMetrics];
   };
 
   return {
