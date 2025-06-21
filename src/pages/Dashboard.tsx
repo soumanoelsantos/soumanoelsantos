@@ -63,11 +63,20 @@ const Dashboard = () => {
       config.showTemporalRevenueChart || config.showTemporalBillingChart
     );
 
-  // Verificar se a aba de produtos está habilitada
-  const hasProductTab = config.enableProductTab && config.showProductMetrics && config.selectedProductIds.length > 0;
+  // Verificar se a aba de produtos está habilitada (simplificar a condição)
+  const hasProductTab = config.enableProductTab;
 
   // Verificar se a aba de pré-vendas está habilitada
   const hasPreSalesTab = config.enablePreSalesTab;
+
+  console.log('🔍 Debug Dashboard tabs:', {
+    hasProductTab,
+    hasCommercialIndicators,
+    hasPreSalesTab,
+    enableProductTab: config.enableProductTab,
+    showProductMetrics: config.showProductMetrics,
+    selectedProductIds: config.selectedProductIds
+  });
 
   // Determinar a aba padrão baseada nas abas disponíveis
   const getDefaultTab = () => {
