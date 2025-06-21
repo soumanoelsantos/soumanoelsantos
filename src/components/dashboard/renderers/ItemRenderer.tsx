@@ -5,6 +5,7 @@ import MetricsCards from '@/components/dashboard/metrics/MetricsCards';
 import PreSalesMetricsCards from '@/components/dashboard/metrics/PreSalesMetricsCards';
 import ProductMetricsCards from '@/components/dashboard/products/ProductMetricsCards';
 import SingleProductMetricsCards from '@/components/dashboard/products/SingleProductMetricsCards';
+import SingleProductChartsRenderer from '@/components/dashboard/products/SingleProductChartsRenderer';
 
 interface ItemRendererProps {
   itemKey: string;
@@ -59,7 +60,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     />;
   }
 
-  // Se é um gráfico de produto, renderizar se habilitado na configuração
+  // Se é um gráfico de produto, renderizar usando o novo componente de gráficos
   if (productCharts.includes(itemKey)) {
     console.log('🔍 [DEBUG] ItemRenderer - Detected product chart:', itemKey, 'enabled:', config[itemKey as keyof DashboardConfig]);
     
@@ -72,17 +73,17 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     // Se um produto específico está selecionado, renderizar o gráfico para esse produto
     if (selectedProductId) {
       console.log('🔍 [DEBUG] ItemRenderer - Rendering product chart for selected product:', selectedProductId);
-      return <SingleProductMetricsCards 
+      return <SingleProductChartsRenderer 
         config={config} 
         selectedProductId={selectedProductId} 
-        indicatorKey={itemKey}
+        chartKey={itemKey}
       />;
     }
 
     // Se nenhum produto específico está selecionado mas há produtos configurados, 
-    // renderizar placeholder ou componente geral de gráficos
+    // renderizar placeholder
     if (config.selectedProductIds && config.selectedProductIds.length > 0) {
-      console.log('🔍 [DEBUG] ItemRenderer - Rendering general product chart');
+      console.log('🔍 [DEBUG] ItemRenderer - Rendering general product chart placeholder');
       return (
         <div className="p-8 text-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
           <h3 className="text-lg font-medium text-gray-700 mb-2">
