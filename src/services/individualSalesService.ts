@@ -25,20 +25,23 @@ export const fetchIndividualSales = async (performanceId: string) => {
   }
 
   // Transformar os dados para garantir que atendem ao tipo esperado
-  const transformedData: SupabaseIndividualSaleResponse[] = (data || []).map(item => ({
-    id: item.id,
-    seller_id: item.seller_id,
-    performance_id: item.performance_id,
-    client_name: item.client_name,
-    revenue_amount: item.revenue_amount,
-    billing_amount: item.billing_amount,
-    product_id: item.product_id,
-    created_at: item.created_at,
-    updated_at: item.updated_at,
-    products: (item.products && typeof item.products === 'object' && 'id' in item.products && 'name' in item.products)
-      ? { id: item.products.id, name: item.products.name }
-      : null
-  }));
+  const transformedData: SupabaseIndividualSaleResponse[] = (data || []).map(item => {
+    const products = item.products;
+    return {
+      id: item.id,
+      seller_id: item.seller_id,
+      performance_id: item.performance_id,
+      client_name: item.client_name,
+      revenue_amount: item.revenue_amount,
+      billing_amount: item.billing_amount,
+      product_id: item.product_id,
+      created_at: item.created_at,
+      updated_at: item.updated_at,
+      products: (products && typeof products === 'object' && 'id' in products && 'name' in products)
+        ? { id: products.id, name: products.name }
+        : null
+    };
+  });
 
   return transformedData;
 };
@@ -73,6 +76,7 @@ export const createIndividualSale = async ({ sellerId, performanceId, saleData }
   }
 
   // Transformar os dados para garantir que atendem ao tipo esperado
+  const products = data.products;
   const transformedData: SupabaseIndividualSaleResponse = {
     id: data.id,
     seller_id: data.seller_id,
@@ -83,8 +87,8 @@ export const createIndividualSale = async ({ sellerId, performanceId, saleData }
     product_id: data.product_id,
     created_at: data.created_at,
     updated_at: data.updated_at,
-    products: (data.products && typeof data.products === 'object' && 'id' in data.products && 'name' in data.products)
-      ? { id: data.products.id, name: data.products.name }
+    products: (products && typeof products === 'object' && 'id' in products && 'name' in products)
+      ? { id: products.id, name: products.name }
       : null
   };
 
