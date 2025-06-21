@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Target, TrendingUp, Package } from 'lucide-react';
@@ -10,11 +9,13 @@ import { formatCurrency, calculateRemainingDaysInMonth, calculateDailyTarget } f
 interface SingleProductMetricsCardsProps {
   config: DashboardConfig;
   selectedProductId: string | null;
+  indicatorKey?: string; // Novo prop para especificar qual indicador renderizar
 }
 
 const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({ 
   config, 
-  selectedProductId 
+  selectedProductId,
+  indicatorKey 
 }) => {
   const { products } = useProducts();
   const currentDate = new Date();
@@ -99,6 +100,96 @@ const SingleProductMetricsCards: React.FC<SingleProductMetricsCardsProps> = ({
 
   const metrics = calculateProductMetrics(selectedProductId);
 
+  // Se um indicador específico foi passado, renderizar apenas esse
+  if (indicatorKey) {
+    // Verificar se o indicador está habilitado na configuração
+    if (!config[indicatorKey as keyof DashboardConfig]) return null;
+
+    switch (indicatorKey) {
+      case 'showProductReceita':
+        return renderMetricCard(
+          'Receita do Produto',
+          formatCurrency(metrics.receita, metrics.currency),
+          DollarSign
+        );
+      case 'showProductFaturamento':
+        return renderMetricCard(
+          'Faturamento do Produto',
+          formatCurrency(metrics.faturamento, metrics.currency),
+          DollarSign
+        );
+      case 'showProductQuantidadeVendas':
+        return renderMetricCard(
+          'Quantidade de Vendas',
+          `${metrics.vendas} vendas`,
+          Target
+        );
+      case 'showProductTicketReceita':
+        return renderMetricCard(
+          'Ticket Receita',
+          formatCurrency(metrics.ticketReceita, metrics.currency),
+          TrendingUp
+        );
+      case 'showProductTicketFaturamento':
+        return renderMetricCard(
+          'Ticket Faturamento',
+          formatCurrency(metrics.ticketFaturamento, metrics.currency),
+          TrendingUp
+        );
+      case 'showProductMetaReceita':
+        return renderMetricCard(
+          'Meta Receita',
+          formatCurrency(metrics.metaReceita, metrics.currency),
+          Target
+        );
+      case 'showProductMetaFaturamento':
+        return renderMetricCard(
+          'Meta Faturamento',
+          formatCurrency(metrics.metaFaturamento, metrics.currency),
+          Target
+        );
+      case 'showProductMetaQuantidadeVendas':
+        return renderMetricCard(
+          'Meta Quantidade Vendas',
+          `${metrics.metaQuantidade} vendas`,
+          Target
+        );
+      case 'showProductFaltaReceita':
+        return renderMetricCard(
+          'Falta Receita',
+          formatCurrency(metrics.faltaReceita, metrics.currency),
+          Target
+        );
+      case 'showProductFaltaFaturamento':
+        return renderMetricCard(
+          'Falta Faturamento',
+          formatCurrency(metrics.faltaFaturamento, metrics.currency),
+          Target
+        );
+      case 'showProductCashCollect':
+        return renderMetricCard(
+          'Cash Collect',
+          `${metrics.cashCollect.toFixed(1)}%`,
+          DollarSign
+        );
+      case 'showProductProjecaoReceita':
+        return renderMetricCard(
+          'Projeção Receita',
+          formatCurrency(metrics.projecaoReceita, metrics.currency),
+          TrendingUp
+        );
+      case 'showProductProjecaoFaturamento':
+        return renderMetricCard(
+          'Projeção Faturamento',
+          formatCurrency(metrics.projecaoFaturamento, metrics.currency),
+          TrendingUp
+        );
+      default:
+        return null;
+    }
+  }
+
+  // Se nenhum indicador específico foi passado, renderizar todos (comportamento antigo para compatibilidade)
   // Usar a ordem configurada dos produtos ou ordem padrão se não configurada
   const productOrder = config.productOrder && config.productOrder.length > 0 
     ? config.productOrder 

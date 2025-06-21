@@ -50,7 +50,11 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
       console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering product indicator');
       return null;
     }
-    return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+    return <SingleProductMetricsCards 
+      config={config} 
+      selectedProductId={selectedProductId} 
+      indicatorKey={itemKey}
+    />;
   }
 
   // Se é um gráfico de produto, só renderizar se um produto específico estiver selecionado
@@ -62,7 +66,11 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
       return null;
     }
     // TODO: Implementar renderização de gráficos de produtos quando necessário
-    return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+    return <SingleProductMetricsCards 
+      config={config} 
+      selectedProductId={selectedProductId} 
+      indicatorKey={itemKey}
+    />;
   }
 
   switch (itemKey) {
