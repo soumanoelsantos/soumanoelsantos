@@ -12,9 +12,11 @@ export const useIndividualSales = (performanceId?: string) => {
   console.log('🔍 [DEBUG] useIndividualSales inicializado com performanceId:', performanceId);
 
   const fetchSales = async () => {
-    if (!performanceId) {
-      console.log('⚠️ [DEBUG] Sem performanceId, definindo sales como array vazio');
+    // Se não tem performanceId válido, não buscar vendas
+    if (!performanceId || performanceId === 'temp-id') {
+      console.log('⚠️ [DEBUG] Sem performanceId válido, definindo sales como array vazio');
       setSales([]);
+      setIsLoading(false);
       return;
     }
 
@@ -35,18 +37,14 @@ export const useIndividualSales = (performanceId?: string) => {
 
       if (error) {
         console.error('❌ [DEBUG] Erro na consulta:', error);
-        throw error;
+        // Não mostrar toast para erros de consulta, apenas logar
+        setSales([]);
+      } else {
+        console.log('✅ [DEBUG] Vendas carregadas:', data?.length || 0);
+        setSales(data || []);
       }
-      
-      console.log('✅ [DEBUG] Vendas carregadas:', data?.length || 0);
-      setSales(data || []);
     } catch (error) {
       console.error('💥 [DEBUG] Erro ao buscar vendas individuais:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar as vendas individuais",
-        variant: "destructive",
-      });
       setSales([]);
     } finally {
       setIsLoading(false);
