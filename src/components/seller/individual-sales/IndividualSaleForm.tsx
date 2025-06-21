@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { IndividualSaleFormData } from '@/types/individualSales';
-import { useSellerToken } from '@/hooks/useSellerToken';
 
 interface IndividualSaleFormProps {
   onSubmit: (data: IndividualSaleFormData) => Promise<boolean>;
@@ -20,6 +19,7 @@ interface Product {
   id: string;
   name: string;
   description?: string;
+  user_id: string;
 }
 
 const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
@@ -28,7 +28,6 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   isSubmitting,
   sellerId
 }) => {
-  const { seller } = useSellerToken();
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   
@@ -39,25 +38,19 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     product_id: null,
   });
 
-  console.log('🔍 [DEBUG] IndividualSaleForm - seller:', seller);
+  console.log('🔍 [DEBUG] IndividualSaleForm - sellerId:', sellerId);
 
-  // Buscar produtos diretamente do Supabase usando o user_id do seller
+  // Buscar todos os produtos disponíveis
   React.useEffect(() => {
     const fetchProducts = async () => {
-      if (!seller?.user_id) {
-        console.log('⚠️ [DEBUG] Sem user_id do seller para buscar produtos');
-        return;
-      }
-
-      console.log('📋 [DEBUG] Buscando produtos para user_id:', seller.user_id);
+      console.log('📋 [DEBUG] Iniciando busca de produtos...');
       setProductsLoading(true);
       
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('id, name, description')
-          .eq('user_id', seller.user_id)
-          .order('created_at', { ascending: false });
+          .select('id, name, description, user_id')
+          .order('name', { ascending: true });
 
         console.log('📝 [DEBUG] Resultado da busca de produtos:', { data, error });
 
@@ -77,7 +70,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     };
 
     fetchProducts();
-  }, [seller?.user_id]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,7 +139,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                   ))
                 ) : (
                   <SelectItem value="no-products" disabled>
-                    Nenhum produto cadastrado
+                    Nenhum produto encontrado no sistema
                   </SelectItem>
                 )}
               </SelectContent>
@@ -154,8 +147,14 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
             
             {(!products || products.length === 0) && !productsLoading && (
               <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded">
-                ℹ️ <strong>Produtos não encontrados.</strong> Verifique se há produtos cadastrados 
-                em Dashboard → Configurações → Produtos para Formulários de Vendas.
+                ℹ️ <strong>Produtos não encontrados.</strong> Para adicionar produtos, vá em:
+                <br />Dashboard → Configurações → Produtos para Formulários de Vendas
+              </div>
+            )}
+
+            {products && products.length > 0 && (
+              <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
+                ✅ <strong>{products.length} produto(s) disponível(eis)</strong> para seleção
               </div>
             )}
           </div>

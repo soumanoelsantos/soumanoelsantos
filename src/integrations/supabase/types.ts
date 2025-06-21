@@ -1210,6 +1210,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_seller_individual_sales_product"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "seller_individual_sales_performance_id_fkey"
             columns: ["performance_id"]
             isOneToOne: false
