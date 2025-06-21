@@ -7,15 +7,17 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar, TrendingUp } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { PerformanceFormData } from '@/types/sellers';
+import { PerformanceFormData, Seller } from '@/types/sellers';
 
 interface SellerPerformanceFormProps {
+  seller: Seller;
   onSubmit: (data: PerformanceFormData) => Promise<void>;
   isSubmitting: boolean;
   defaultDate: string;
 }
 
 const SellerPerformanceForm: React.FC<SellerPerformanceFormProps> = ({
+  seller,
   onSubmit,
   isSubmitting,
   defaultDate
@@ -32,6 +34,9 @@ const SellerPerformanceForm: React.FC<SellerPerformanceFormProps> = ({
       notes: '',
     }
   });
+
+  const isCloser = seller.seller_type === 'closer';
+  const isSDR = seller.seller_type === 'sdr';
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
@@ -127,16 +132,32 @@ const SellerPerformanceForm: React.FC<SellerPerformanceFormProps> = ({
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="leads_count">Leads</Label>
-              <Input
-                id="leads_count"
-                type="number"
-                min="0"
-                {...register('leads_count', { valueAsNumber: true })}
-              />
-            </div>
+            {/* SDRs precisam registrar leads e ligações */}
+            {isSDR && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="leads_count">Leads</Label>
+                  <Input
+                    id="leads_count"
+                    type="number"
+                    min="0"
+                    {...register('leads_count', { valueAsNumber: true })}
+                  />
+                </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="calls_count">Ligações</Label>
+                  <Input
+                    id="calls_count"
+                    type="number"
+                    min="0"
+                    {...register('calls_count', { valueAsNumber: true })}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Todos os tipos registram reuniões */}
             <div className="space-y-2">
               <Label htmlFor="meetings_count">Reuniões</Label>
               <Input
@@ -144,16 +165,6 @@ const SellerPerformanceForm: React.FC<SellerPerformanceFormProps> = ({
                 type="number"
                 min="0"
                 {...register('meetings_count', { valueAsNumber: true })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="calls_count">Ligações</Label>
-              <Input
-                id="calls_count"
-                type="number"
-                min="0"
-                {...register('calls_count', { valueAsNumber: true })}
               />
             </div>
           </div>

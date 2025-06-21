@@ -65,17 +65,21 @@ const SellerPerformanceManager: React.FC<SellerPerformanceManagerProps> = ({
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <SellerPerformanceForm
+        seller={seller}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         defaultDate={today}
       />
 
-      <IndividualSalesManager
-        sellerId={seller.id}
-        performanceId={currentPerformance?.id || 'temp-id'}
-        ownerUserId={seller.user_id}
-        onTotalsChange={handleIndividualSalesTotalsChange}
-      />
+      {/* Vendas Individuais - sempre mostrar para Closers */}
+      {seller.seller_type === 'closer' && (
+        <IndividualSalesManager
+          sellerId={seller.id}
+          performanceId={currentPerformance?.id || 'temp-id'}
+          ownerUserId={seller.user_id}
+          onTotalsChange={handleIndividualSalesTotalsChange}
+        />
+      )}
 
       <SellerPerformanceHistory
         seller={seller}
