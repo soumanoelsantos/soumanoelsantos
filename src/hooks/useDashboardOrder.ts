@@ -56,6 +56,31 @@ export const useDashboardOrder = (config: DashboardConfig) => {
         finalOrder.push('showClosersPerformanceTable');
       }
       
+      // Adicionar gráficos de produtos se habilitados
+      if (config.showProductRevenueEvolutionChart && !finalOrder.includes('showProductRevenueEvolutionChart')) {
+        finalOrder.push('showProductRevenueEvolutionChart');
+      }
+      
+      if (config.showProductBillingEvolutionChart && !finalOrder.includes('showProductBillingEvolutionChart')) {
+        finalOrder.push('showProductBillingEvolutionChart');
+      }
+      
+      if (config.showProductSalesEvolutionChart && !finalOrder.includes('showProductSalesEvolutionChart')) {
+        finalOrder.push('showProductSalesEvolutionChart');
+      }
+      
+      if (config.showProductPerformanceChart && !finalOrder.includes('showProductPerformanceChart')) {
+        finalOrder.push('showProductPerformanceChart');
+      }
+      
+      if (config.showProductComparisonChart && !finalOrder.includes('showProductComparisonChart')) {
+        finalOrder.push('showProductComparisonChart');
+      }
+      
+      if (config.showProductTemporalChart && !finalOrder.includes('showProductTemporalChart')) {
+        finalOrder.push('showProductTemporalChart');
+      }
+      
       // Converter closersPerformanceTable para showClosersPerformanceTable para consistência
       finalOrder = finalOrder.map(item => 
         item === 'closersPerformanceTable' ? 'showClosersPerformanceTable' : item
@@ -113,7 +138,32 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       defaultOrder.push('temporalBillingChart');
     }
 
-    console.log('🔍 useDashboardOrder - Using default order with closers table:', defaultOrder);
+    // Adicionar gráficos de produtos se habilitados
+    if (config.showProductRevenueEvolutionChart) {
+      defaultOrder.push('showProductRevenueEvolutionChart');
+    }
+    
+    if (config.showProductBillingEvolutionChart) {
+      defaultOrder.push('showProductBillingEvolutionChart');
+    }
+    
+    if (config.showProductSalesEvolutionChart) {
+      defaultOrder.push('showProductSalesEvolutionChart');
+    }
+    
+    if (config.showProductPerformanceChart) {
+      defaultOrder.push('showProductPerformanceChart');
+    }
+    
+    if (config.showProductComparisonChart) {
+      defaultOrder.push('showProductComparisonChart');
+    }
+    
+    if (config.showProductTemporalChart) {
+      defaultOrder.push('showProductTemporalChart');
+    }
+
+    console.log('🔍 useDashboardOrder - Using default order with product charts:', defaultOrder);
     return defaultOrder;
   };
 
