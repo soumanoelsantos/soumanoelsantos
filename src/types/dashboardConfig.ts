@@ -47,10 +47,6 @@ export interface DashboardConfig {
   metricsOrder: string[];
   preSalesOrder: string[];
   productOrder: string[];
-  
-  // Novas opções para metas específicas
-  showSpecificGoals: boolean;
-  selectedGoalIds: string[];
 
   // Gráficos de evolução
   showRevenueEvolutionChart: boolean;

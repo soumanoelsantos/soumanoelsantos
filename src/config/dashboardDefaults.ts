@@ -55,7 +55,6 @@ export const defaultConfig: DashboardConfig = {
     'showQuantidadeVendas',
     'showConversion',
     'showCashCollect',
-    'specificGoals', // ✅ Garantir que está na ordem das métricas
     'showCac',
     'showNoShow',
     'showClosersPerformanceTable',
@@ -91,8 +90,6 @@ export const defaultConfig: DashboardConfig = {
     'showProductMetaQuantidadeVendas',
     'showProductQuantidadeVendas'
   ],
-  showSpecificGoals: true, // ✅ Habilitado por padrão
-  selectedGoalIds: [],
   showRevenueEvolutionChart: false,
   showBillingEvolutionChart: false,
   showSellerRevenueChart: false,

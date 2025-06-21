@@ -3,7 +3,6 @@ import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import MetricsCards from '@/components/dashboard/metrics/MetricsCards';
 import PreSalesMetricsCards from '@/components/dashboard/metrics/PreSalesMetricsCards';
-import SpecificGoalsCards from '@/components/dashboard/goals/SpecificGoalsCards';
 import ProductMetricsCards from '@/components/dashboard/products/ProductMetricsCards';
 import SingleProductMetricsCards from '@/components/dashboard/products/SingleProductMetricsCards';
 
@@ -17,13 +16,6 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
   console.log('🔍 [DEBUG] ItemRenderer - Rendering item:', itemKey);
 
   switch (itemKey) {
-    case 'specificGoals':
-      console.log('🎯 [DEBUG] Rendering SpecificGoalsCards with config:', {
-        showSpecificGoals: config.showSpecificGoals,
-        selectedGoalIds: config.selectedGoalIds
-      });
-      return <SpecificGoalsCards config={config} />;
-    
     case 'productMetrics':
       if (selectedProductId) {
         return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
