@@ -4,30 +4,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Target } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
-import { useToast } from '@/hooks/use-toast';
+import { useProductGoals, type CreateProductGoalData } from '@/hooks/useProductGoals';
 import { ProductGoalSelector } from './product-goals/ProductGoalSelector';
 import { ProductGoalMetrics } from './product-goals/ProductGoalMetrics';
 import { ProductGoalsList } from './product-goals/ProductGoalsList';
 import { EmptyProductsState } from './product-goals/EmptyProductsState';
 
-interface ProductGoal {
-  id: string;
-  productId: string;
-  productName: string;
-  quantityGoal: number;
-  revenueGoal: number;
-  billingGoal: number;
-  currency: 'BRL' | 'USD';
-  isActive: boolean;
-}
-
 const ProductGoalsConfigCard: React.FC = () => {
   const { products, isLoading: productsLoading } = useProducts();
-  const { toast } = useToast();
+  const { 
+    productGoals, 
+    isLoading: goalsLoading, 
+    createProductGoal, 
+    updateProductGoal, 
+    deleteProductGoal,
+    toggleGoalStatus 
+  } = useProductGoals();
   
-  const [productGoals, setProductGoals] = useState<ProductGoal[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string>('');
-  const [editingGoal, setEditingGoal] = useState<ProductGoal | null>(null);
+  const [editingGoal, setEditingGoal] = useState<any>(null);
   
   // Estados para o formulário
   const [quantityGoal, setQuantityGoal] = useState(0);
@@ -44,76 +39,49 @@ const ProductGoalsConfigCard: React.FC = () => {
     setEditingGoal(null);
   };
 
-  const handleSaveGoal = () => {
+  const handleSaveGoal = async () => {
     if (!selectedProduct) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Selecione um produto primeiro"
-      });
       return;
     }
 
-    const selectedProductData = products.find(p => p.id === selectedProduct);
-    if (!selectedProductData) return;
-
-    const goalData: ProductGoal = {
-      id: editingGoal?.id || `goal-${selectedProduct}-${Date.now()}`,
-      productId: selectedProduct,
-      productName: selectedProductData.name,
-      quantityGoal,
-      revenueGoal,
-      billingGoal,
+    const goalData: CreateProductGoalData = {
+      product_id: selectedProduct,
+      quantity_goal: quantityGoal,
+      revenue_goal: revenueGoal,
+      billing_goal: billingGoal,
       currency,
-      isActive: true
     };
+
+    let success = false;
 
     if (editingGoal) {
       // Editando meta existente
-      setProductGoals(prev => prev.map(goal => 
-        goal.id === editingGoal.id ? goalData : goal
-      ));
-      toast({
-        title: "Meta atualizada",
-        description: "Meta do produto atualizada com sucesso!"
-      });
+      success = await updateProductGoal(editingGoal.id, goalData);
     } else {
       // Criando nova meta
-      const existingGoal = productGoals.find(g => g.productId === selectedProduct);
-      if (existingGoal) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Já existe uma meta para este produto. Edite a meta existente."
-        });
-        return;
-      }
-      
-      setProductGoals(prev => [...prev, goalData]);
-      toast({
-        title: "Meta criada",
-        description: "Meta do produto criada com sucesso!"
-      });
+      success = await createProductGoal(goalData);
     }
 
-    resetForm();
+    if (success) {
+      resetForm();
+    }
   };
 
-  const handleEditGoal = (goal: ProductGoal) => {
+  const handleEditGoal = (goal: any) => {
     setEditingGoal(goal);
-    setSelectedProduct(goal.productId);
-    setQuantityGoal(goal.quantityGoal);
-    setRevenueGoal(goal.revenueGoal);
-    setBillingGoal(goal.billingGoal);
+    setSelectedProduct(goal.product_id);
+    setQuantityGoal(goal.quantity_goal);
+    setRevenueGoal(goal.revenue_goal);
+    setBillingGoal(goal.billing_goal);
     setCurrency(goal.currency);
   };
 
-  const handleDeleteGoal = (goalId: string) => {
-    setProductGoals(prev => prev.filter(goal => goal.id !== goalId));
-    toast({
-      title: "Meta removida",
-      description: "Meta do produto removida com sucesso!"
-    });
+  const handleDeleteGoal = async (goalId: string) => {
+    await deleteProductGoal(goalId);
+  };
+
+  const handleToggleStatus = async (goalId: string, isActive: boolean) => {
+    await toggleGoalStatus(goalId, isActive);
   };
 
   const handleCancelEdit = () => {
@@ -137,7 +105,11 @@ const ProductGoalsConfigCard: React.FC = () => {
     }
   };
 
-  if (productsLoading) {
+  // Verificar se já existe uma meta para o produto selecionado
+  const existingGoal = productGoals.find(goal => goal.product_id === selectedProduct);
+  const canCreateGoal = selectedProduct && !existingGoal && !editingGoal;
+
+  if (productsLoading || goalsLoading) {
     return (
       <Card>
         <CardContent className="flex items-center justify-center p-8">
@@ -183,6 +155,8 @@ const ProductGoalsConfigCard: React.FC = () => {
                 onProductChange={setSelectedProduct}
                 onCreateOrUpdate={handleSaveGoal}
                 hasCurrentGoal={!!editingGoal}
+                canCreateGoal={canCreateGoal}
+                existingGoal={existingGoal}
               />
 
               {selectedProduct && (
@@ -201,6 +175,7 @@ const ProductGoalsConfigCard: React.FC = () => {
               goals={productGoals}
               onEditGoal={handleEditGoal}
               onDeleteGoal={handleDeleteGoal}
+              onToggleStatus={handleToggleStatus}
             />
           </>
         )}

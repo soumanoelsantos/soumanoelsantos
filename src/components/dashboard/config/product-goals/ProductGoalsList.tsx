@@ -1,30 +1,22 @@
 
 import React from 'react';
-import { Edit, Trash2, Target } from 'lucide-react';
+import { Edit, Trash2, Target, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
-interface ProductGoal {
-  id: string;
-  productId: string;
-  productName: string;
-  quantityGoal: number;
-  revenueGoal: number;
-  billingGoal: number;
-  currency: 'BRL' | 'USD';
-  isActive: boolean;
-}
+import { ProductGoal } from '@/hooks/useProductGoals';
 
 interface ProductGoalsListProps {
   goals: ProductGoal[];
   onEditGoal: (goal: ProductGoal) => void;
   onDeleteGoal: (goalId: string) => void;
+  onToggleStatus: (goalId: string, isActive: boolean) => void;
 }
 
 export const ProductGoalsList: React.FC<ProductGoalsListProps> = ({
   goals,
   onEditGoal,
-  onDeleteGoal
+  onDeleteGoal,
+  onToggleStatus
 }) => {
   const formatCurrency = (value: number, currency: 'BRL' | 'USD') => {
     const symbol = currency === 'BRL' ? 'R$' : '$';
@@ -49,16 +41,25 @@ export const ProductGoalsList: React.FC<ProductGoalsListProps> = ({
           <div key={goal.id} className="p-4 border rounded-lg bg-gray-50">
             <div className="flex justify-between items-start mb-3">
               <div>
-                <h5 className="font-medium">{goal.productName}</h5>
-                <Badge variant={goal.isActive ? "default" : "secondary"} className="text-xs">
-                  {goal.isActive ? "Ativa" : "Inativa"}
+                <h5 className="font-medium">{goal.product?.name || 'Produto não encontrado'}</h5>
+                <Badge variant={goal.is_active ? "default" : "secondary"} className="text-xs">
+                  {goal.is_active ? "Ativa" : "Inativa"}
                 </Badge>
               </div>
               <div className="flex gap-2">
                 <Button
+                  onClick={() => onToggleStatus(goal.id, !goal.is_active)}
+                  size="sm"
+                  variant="outline"
+                  title={goal.is_active ? "Desativar meta" : "Ativar meta"}
+                >
+                  {goal.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+                <Button
                   onClick={() => onEditGoal(goal)}
                   size="sm"
                   variant="outline"
+                  title="Editar meta"
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -66,6 +67,7 @@ export const ProductGoalsList: React.FC<ProductGoalsListProps> = ({
                   onClick={() => onDeleteGoal(goal.id)}
                   size="sm"
                   variant="destructive"
+                  title="Excluir meta"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -75,15 +77,15 @@ export const ProductGoalsList: React.FC<ProductGoalsListProps> = ({
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">Quantidade:</span>
-                <div className="font-medium">{goal.quantityGoal} unidades</div>
+                <div className="font-medium">{goal.quantity_goal} unidades</div>
               </div>
               <div>
                 <span className="text-gray-600">Receita:</span>
-                <div className="font-medium">{formatCurrency(goal.revenueGoal, goal.currency)}</div>
+                <div className="font-medium">{formatCurrency(goal.revenue_goal, goal.currency)}</div>
               </div>
               <div>
                 <span className="text-gray-600">Faturamento:</span>
-                <div className="font-medium">{formatCurrency(goal.billingGoal, goal.currency)}</div>
+                <div className="font-medium">{formatCurrency(goal.billing_goal, goal.currency)}</div>
               </div>
             </div>
           </div>

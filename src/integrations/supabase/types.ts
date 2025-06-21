@@ -953,6 +953,53 @@ export type Database = {
           },
         ]
       }
+      product_goals: {
+        Row: {
+          billing_goal: number
+          created_at: string
+          currency: string
+          id: string
+          is_active: boolean
+          product_id: string
+          quantity_goal: number
+          revenue_goal: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_goal?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          product_id: string
+          quantity_goal?: number
+          revenue_goal?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_goal?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          product_id?: string
+          quantity_goal?: number
+          revenue_goal?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_goals_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           created_at: string
