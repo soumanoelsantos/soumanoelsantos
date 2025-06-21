@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useProductsForSeller } from '@/hooks/useProductsForSeller';
+import { useProducts } from '@/hooks/useProducts';
 import { useSellers } from '@/hooks/useSellers';
 import { IndividualSaleFormData } from '@/types/individualSales';
 
@@ -32,8 +32,8 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   console.log('🔍 [DEBUG] Seller encontrado:', seller);
   console.log('🔍 [DEBUG] Admin User ID extraído:', adminUserId);
   
-  // Usar o hook específico para vendedores
-  const { products, isLoading: productsLoading } = useProductsForSeller(adminUserId);
+  // Usar o hook useProducts passando o adminUserId como targetUserId
+  const { products, isLoading: productsLoading } = useProducts(adminUserId);
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -42,7 +42,7 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     product_id: null,
   });
 
-  console.log('📋 [DEBUG] Produtos carregados:', products);
+  console.log('📋 [DEBUG] Produtos carregados via useProducts:', products);
   console.log('📋 [DEBUG] Products loading:', productsLoading);
   console.log('📝 [DEBUG] FormData atual:', formData);
   console.log('👤 [DEBUG] Admin User ID:', adminUserId);
@@ -123,19 +123,15 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
               </SelectContent>
             </Select>
             
-            {/* Debug info expandido */}
+            {/* Debug info simplificado */}
             <div className="text-xs text-gray-500 space-y-1 p-2 bg-gray-50 rounded">
-              <div><strong>Debug Info:</strong></div>
+              <div><strong>Debug Info (usando useProducts):</strong></div>
               <div>Produtos encontrados: {products?.length || 0}</div>
               <div>Admin ID: {adminUserId || 'não encontrado'}</div>
               <div>Seller ID: {sellerId}</div>
               <div>Loading: {productsLoading ? 'sim' : 'não'}</div>
-              <div>Seller completo: {JSON.stringify(seller)}</div>
               {products?.length > 0 && (
                 <div>Produtos: {products.map(p => `${p.name} (${p.id})`).join(', ')}</div>
-              )}
-              {products?.length === 0 && !productsLoading && (
-                <div className="text-red-600">⚠️ Nenhum produto encontrado para este admin</div>
               )}
             </div>
           </div>
