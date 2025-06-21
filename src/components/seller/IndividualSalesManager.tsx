@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,15 +13,17 @@ import IndividualSalesSummary from './individual-sales/IndividualSalesSummary';
 interface IndividualSalesManagerProps {
   sellerId: string;
   performanceId: string;
+  ownerUserId?: string; // Novo prop para o ID do usuário proprietário
   onTotalsChange: (totals: { salesCount: number; revenueTotal: number; billingTotal: number }) => void;
 }
 
 const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
   sellerId,
   performanceId,
+  ownerUserId,
   onTotalsChange
 }) => {
-  console.log('🔍 [DEBUG] IndividualSalesManager renderizado com:', { sellerId, performanceId });
+  console.log('🔍 [DEBUG] IndividualSalesManager renderizado com:', { sellerId, performanceId, ownerUserId });
   
   // Só usar o performanceId se não for 'temp-id'
   const actualPerformanceId = performanceId === 'temp-id' ? undefined : performanceId;
@@ -124,6 +127,7 @@ const IndividualSalesManager: React.FC<IndividualSalesManagerProps> = ({
               onCancel={handleCancelForm}
               isSubmitting={false}
               sellerId={sellerId}
+              ownerUserId={ownerUserId}
             />
           </div>
         )}

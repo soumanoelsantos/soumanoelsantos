@@ -13,15 +13,18 @@ interface IndividualSaleFormProps {
   onCancel: () => void;
   isSubmitting: boolean;
   sellerId: string;
+  ownerUserId?: string; // Novo prop para o ID do usuário proprietário
 }
 
 const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting,
-  sellerId
+  sellerId,
+  ownerUserId
 }) => {
-  const { products, isLoading: productsLoading } = useProducts();
+  // Usar ownerUserId para buscar produtos do usuário principal
+  const { products, isLoading: productsLoading } = useProducts(ownerUserId);
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -57,6 +60,8 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   const handleInputChange = (field: keyof IndividualSaleFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  console.log('🔍 [DEBUG] IndividualSaleForm - ownerUserId:', ownerUserId, 'products:', products?.length || 0);
 
   return (
     <Card>
