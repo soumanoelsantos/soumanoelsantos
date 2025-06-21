@@ -10,7 +10,7 @@ import { useProducts } from '@/hooks/useProducts';
 interface IndividualSalesListProps {
   sales: IndividualSale[];
   isLoading: boolean;
-  onDelete: (saleId: string) => Promise<void>;
+  onDelete: (saleId: string) => Promise<boolean>;
 }
 
 const IndividualSalesList: React.FC<IndividualSalesListProps> = ({
