@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { IndividualSaleFormData } from '@/types/individualSales';
-import { useProducts } from '@/hooks/useProducts';
+import { useAuth } from '@/hooks/useAuth';
 
 interface IndividualSaleFormProps {
   onSubmit: (data: IndividualSaleFormData) => Promise<boolean>;
@@ -16,13 +16,22 @@ interface IndividualSaleFormProps {
   sellerId: string;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  user_id: string;
+}
+
 const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting,
   sellerId
 }) => {
-  const { products, isLoading: productsLoading } = useProducts();
+  const { userId } = useAuth();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
     client_name: '',
@@ -32,7 +41,45 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   });
 
   console.log('🔍 [DEBUG] IndividualSaleForm - sellerId:', sellerId);
-  console.log('📋 [DEBUG] Produtos carregados:', products?.length || 0, products);
+
+  // Buscar produtos do usuário atual
+  React.useEffect(() => {
+    const fetchProducts = async () => {
+      if (!userId) {
+        console.log('⚠️ [DEBUG] Usuário não logado, não buscando produtos');
+        setProducts([]);
+        return;
+      }
+
+      console.log('📋 [DEBUG] Iniciando busca de produtos para userId:', userId);
+      setProductsLoading(true);
+      
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('id, name, description, user_id')
+          .eq('user_id', userId)
+          .order('name', { ascending: true });
+
+        console.log('📝 [DEBUG] Resultado da busca de produtos:', { data, error, userId });
+
+        if (error) {
+          console.error('❌ [DEBUG] Erro ao buscar produtos:', error);
+          setProducts([]);
+        } else {
+          console.log('✅ [DEBUG] Produtos carregados:', data?.length || 0);
+          setProducts(data || []);
+        }
+      } catch (error) {
+        console.error('💥 [DEBUG] Erro na busca de produtos:', error);
+        setProducts([]);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [userId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
