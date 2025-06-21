@@ -42,31 +42,37 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     'showProductTemporalChart'
   ];
 
-  // Se é um indicador de produto, renderizar componentes de produtos
+  // Se é um indicador de produto, só renderizar se um produto específico estiver selecionado
   if (productIndicators.includes(itemKey)) {
     console.log('🔍 [DEBUG] ItemRenderer - Detected product indicator:', itemKey);
-    if (selectedProductId) {
-      return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+    // Só renderizar se um produto específico estiver selecionado
+    if (!selectedProductId) {
+      console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering product indicator');
+      return null;
     }
-    return <ProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+    return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
   }
 
-  // Se é um gráfico de produto, renderizar componentes de produtos
+  // Se é um gráfico de produto, só renderizar se um produto específico estiver selecionado
   if (productCharts.includes(itemKey)) {
     console.log('🔍 [DEBUG] ItemRenderer - Detected product chart:', itemKey);
-    // TODO: Implementar renderização de gráficos de produtos quando necessário
-    if (selectedProductId) {
-      return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+    // Só renderizar se um produto específico estiver selecionado
+    if (!selectedProductId) {
+      console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering product chart');
+      return null;
     }
-    return <ProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+    // TODO: Implementar renderização de gráficos de produtos quando necessário
+    return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
   }
 
   switch (itemKey) {
     case 'productMetrics':
-      if (selectedProductId) {
-        return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+      // Só renderizar se um produto específico estiver selecionado
+      if (!selectedProductId) {
+        console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering productMetrics');
+        return null;
       }
-      return <ProductMetricsCards config={config} selectedProductId={selectedProductId} />;
+      return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
     
     default:
       // Verificar se é um indicador de métrica padrão
