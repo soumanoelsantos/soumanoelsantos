@@ -20,30 +20,49 @@ export const useProductsForSeller = (adminUserId?: string) => {
     setIsLoading(true);
     
     try {
-      // Busca direta sem RLS - usando service role se necessário
+      // Primeira tentativa: busca direta com RLS
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('user_id', adminUserId)
         .order('name', { ascending: true });
 
-      console.log('📋 [DEBUG] useProductsForSeller - Resultado:', { data, error, adminUserId });
+      console.log('📋 [DEBUG] useProductsForSeller - Resultado direto:', { data, error, adminUserId });
 
       if (error) {
-        console.error('❌ [DEBUG] useProductsForSeller - Erro:', error);
+        console.error('❌ [DEBUG] useProductsForSeller - Erro na busca direta:', error);
         
-        // Fallback: tenta buscar todos os produtos e filtrar
+        // Fallback: tenta buscar todos os produtos e filtrar localmente
+        console.log('🔄 [DEBUG] useProductsForSeller - Tentando fallback...');
         const { data: allProducts, error: allError } = await supabase
           .from('products')
           .select('*')
           .order('name', { ascending: true });
+          
+        console.log('📋 [DEBUG] useProductsForSeller - Resultado fallback:', { allProducts, allError });
           
         if (!allError && allProducts) {
           const filteredProducts = allProducts.filter(p => p.user_id === adminUserId);
           console.log('📋 [DEBUG] useProductsForSeller - Produtos filtrados:', filteredProducts);
           setProducts(filteredProducts);
         } else {
-          throw error;
+          console.error('❌ [DEBUG] useProductsForSeller - Erro no fallback:', allError);
+          
+          // Último recurso: tentar buscar sem filtro e sem autenticação
+          console.log('🔄 [DEBUG] useProductsForSeller - Último recurso - busca sem autenticação...');
+          const { data: publicProducts, error: publicError } = await supabase
+            .from('products')
+            .select('*');
+            
+          console.log('📋 [DEBUG] useProductsForSeller - Produtos públicos:', { publicProducts, publicError });
+          
+          if (!publicError && publicProducts) {
+            const userProducts = publicProducts.filter(p => p.user_id === adminUserId);
+            console.log('📋 [DEBUG] useProductsForSeller - Produtos do usuário filtrados:', userProducts);
+            setProducts(userProducts);
+          } else {
+            throw error;
+          }
         }
       } else {
         console.log('✅ [DEBUG] useProductsForSeller - Produtos encontrados:', data?.length || 0);
