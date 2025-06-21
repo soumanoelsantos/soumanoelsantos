@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -15,10 +16,13 @@ import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
 import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
 import ProductOrderManager from '@/components/dashboard/config/product-order/ProductOrderManager';
+import { saveDashboardConfig } from '@/services/dashboardConfigService';
+import { toast } from 'sonner';
 
 const DashboardConfig = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, userId } = useAuth();
   const { config, updateConfig, isLoading: configLoading } = useDashboardConfig();
+  const [isSaving, setIsSaving] = useState(false);
 
   if (isLoading || configLoading) {
     return (
@@ -38,8 +42,32 @@ const DashboardConfig = () => {
   };
 
   const handleSave = async () => {
-    console.log('💾 [DEBUG] handleSave chamado - configuração salva automaticamente');
-    // Config is automatically saved by useDashboardConfig
+    if (!userId) {
+      console.error('❌ [DEBUG] Usuário não autenticado');
+      toast.error("Erro", {
+        description: "Usuário não autenticado"
+      });
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      console.log('💾 [DEBUG] Salvando configuração final...', config);
+      
+      await saveDashboardConfig(config, userId);
+      
+      console.log('✅ [DEBUG] Configuração salva com sucesso!');
+      toast.success("Sucesso!", {
+        description: "Configuração salva com sucesso!"
+      });
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro ao salvar configuração:', error);
+      toast.error("Erro", {
+        description: "Não foi possível salvar a configuração"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReorderMetrics = (newOrder: string[]) => {
@@ -59,7 +87,7 @@ const DashboardConfig = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ConfigHeader onSave={handleSave} isLoading={false} />
+      <ConfigHeader onSave={handleSave} isLoading={isSaving} />
       
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="comercial" className="w-full">
