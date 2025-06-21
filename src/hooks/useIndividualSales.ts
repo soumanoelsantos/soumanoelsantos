@@ -61,10 +61,22 @@ export const useIndividualSales = (performanceId?: string) => {
       } else {
         console.log('✅ [DEBUG] Vendas carregadas:', data?.length || 0);
         console.log('📊 [DEBUG] Dados das vendas:', data);
+        
         // Transform the response to match our IndividualSale type
-        const transformedSales: IndividualSale[] = (data || []).map((sale: IndividualSaleResponse) => ({
-          ...sale,
-          products: sale.products || null
+        // Handle cases where products might be null or malformed
+        const transformedSales: IndividualSale[] = (data || []).map((sale: any) => ({
+          id: sale.id,
+          seller_id: sale.seller_id,
+          performance_id: sale.performance_id,
+          client_name: sale.client_name,
+          revenue_amount: sale.revenue_amount,
+          billing_amount: sale.billing_amount,
+          product_id: sale.product_id,
+          created_at: sale.created_at,
+          updated_at: sale.updated_at,
+          products: (sale.products && typeof sale.products === 'object' && 'id' in sale.products) 
+            ? sale.products 
+            : null
         }));
         setSales(transformedSales);
       }
@@ -107,11 +119,23 @@ export const useIndividualSales = (performanceId?: string) => {
       }
 
       console.log('✅ [DEBUG] Venda adicionada com sucesso:', data);
+      
       // Transform the response to match our IndividualSale type
       const transformedSale: IndividualSale = {
-        ...data,
-        products: data.products || null
+        id: data.id,
+        seller_id: data.seller_id,
+        performance_id: data.performance_id,
+        client_name: data.client_name,
+        revenue_amount: data.revenue_amount,
+        billing_amount: data.billing_amount,
+        product_id: data.product_id,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        products: (data.products && typeof data.products === 'object' && 'id' in data.products) 
+          ? data.products 
+          : null
       };
+      
       setSales(prev => [transformedSale, ...prev]);
       
       toast({
