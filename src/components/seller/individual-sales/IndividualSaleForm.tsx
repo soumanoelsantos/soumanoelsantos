@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/hooks/useProducts';
-import { useSellers } from '@/hooks/useSellers';
 import { IndividualSaleFormData } from '@/types/individualSales';
 
 interface IndividualSaleFormProps {
@@ -21,15 +21,6 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
   isSubmitting,
   sellerId
 }) => {
-  console.log('🔍 [DEBUG] IndividualSaleForm renderizado');
-  
-  // Buscar o vendedor para debug
-  const { sellers } = useSellers();
-  const seller = sellers.find(s => s.id === sellerId);
-  
-  console.log('🔍 [DEBUG] Seller encontrado:', seller);
-  
-  // Usar o hook useProducts exatamente como o ProductFilter faz (sem parâmetros)
   const { products, isLoading: productsLoading } = useProducts();
   
   const [formData, setFormData] = useState<IndividualSaleFormData>({
@@ -39,23 +30,15 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
     product_id: null,
   });
 
-  console.log('📋 [DEBUG] Produtos carregados (método ProductFilter):', products);
-  console.log('📋 [DEBUG] Products loading:', productsLoading);
-  console.log('📝 [DEBUG] FormData atual:', formData);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('📤 [DEBUG] Submetendo formulário com dados:', formData);
-    
     if (!formData.client_name.trim()) {
-      console.warn('⚠️ [DEBUG] Nome do cliente é obrigatório');
       return;
     }
 
     try {
       const success = await onSubmit(formData);
-      console.log('✅ [DEBUG] Resultado do submit:', success);
       
       if (success) {
         setFormData({
@@ -67,12 +50,11 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
         onCancel();
       }
     } catch (error) {
-      console.error('❌ [DEBUG] Erro no submit:', error);
+      console.error('Erro no submit:', error);
     }
   };
 
   const handleInputChange = (field: keyof IndividualSaleFormData, value: any) => {
-    console.log(`📝 [DEBUG] Alterando ${field}:`, value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -114,21 +96,19 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
                     </SelectItem>
                   ))
                 ) : (
-                  <SelectItem value="no-products" disabled>Nenhum produto disponível</SelectItem>
+                  <SelectItem value="no-products" disabled>
+                    Nenhum produto cadastrado - Configure produtos no Dashboard
+                  </SelectItem>
                 )}
               </SelectContent>
             </Select>
             
-            {/* Debug info usando método do ProductFilter */}
-            <div className="text-xs text-gray-500 space-y-1 p-2 bg-gray-50 rounded">
-              <div><strong>Debug Info (método ProductFilter):</strong></div>
-              <div>Produtos encontrados: {products?.length || 0}</div>
-              <div>Seller ID: {sellerId}</div>
-              <div>Loading: {productsLoading ? 'sim' : 'não'}</div>
-              {products?.length > 0 && (
-                <div>Produtos: {products.map(p => `${p.name} (${p.id})`).join(', ')}</div>
-              )}
-            </div>
+            {products.length === 0 && !productsLoading && (
+              <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded">
+                ⚠️ <strong>Nenhum produto encontrado.</strong> Para adicionar produtos que apareçam neste formulário, 
+                acesse Dashboard → Configurações → Produtos para Formulários de Vendas.
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
