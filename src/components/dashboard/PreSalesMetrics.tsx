@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { DashboardConfig } from '@/types/dashboardConfig';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { usePreSalesOrder } from './config/pre-sales-order/usePreSalesOrder';
 import { usePreSalesData } from '@/hooks/usePreSalesData';
@@ -10,15 +11,41 @@ import PreSalesMetricsLoading from './loading/PreSalesMetricsLoading';
 import PreSalesMetricsError from './error/PreSalesMetricsError';
 import PreSalesDashboardFilters from './filters/PreSalesDashboardFilters';
 
+interface PreSalesData {
+  dailyCalls: number;
+  dailyCallsTarget: number;
+  dailySchedulings: number;
+  dailySchedulingsTarget: number;
+  dailyNoShow: number;
+  dailyNoShowRate: number;
+  totalSDRs: number;
+  averageSchedulingsPerSDR: number;
+  sdrPerformance: Array<{
+    name: string;
+    calls: number;
+    schedulings: number;
+    noShow: number;
+    conversionRate: number;
+  }>;
+  weeklyData: Array<{
+    date: string;
+    calls: number;
+    schedulings: number;
+    noShow: number;
+  }>;
+}
+
 interface PreSalesMetricsProps {
+  config: DashboardConfig;
+  preSalesData: PreSalesData;
   isPublicView?: boolean;
   sharedUserId?: string;
 }
 
-const PreSalesMetrics = ({ isPublicView = false, sharedUserId }: PreSalesMetricsProps) => {
-  const { config } = useDashboardConfig(sharedUserId);
-  const { getOrderedPreSalesItems } = usePreSalesOrder(config);
-  const { data: preSalesData, isLoading, error } = usePreSalesData(sharedUserId);
+const PreSalesMetrics = ({ config, preSalesData, isPublicView = false, sharedUserId }: PreSalesMetricsProps) => {
+  const { config: dashboardConfig } = useDashboardConfig(sharedUserId);
+  const { getOrderedPreSalesItems } = usePreSalesOrder(config || dashboardConfig);
+  const { data: realPreSalesData, isLoading, error } = usePreSalesData(sharedUserId);
   const { 
     filters, 
     updateDateRange, 
@@ -26,24 +53,27 @@ const PreSalesMetrics = ({ isPublicView = false, sharedUserId }: PreSalesMetrics
     resetFilters 
   } = useDashboardFilters();
   
-  console.log('🔍 PreSalesMetrics - Rendering pre-sales dashboard with config:', config);
-  console.log('🔍 PreSalesMetrics - Pre-sales data:', preSalesData);
+  // Use provided preSalesData or fallback to real data
+  const dataToUse = preSalesData || realPreSalesData;
+  
+  console.log('🔍 PreSalesMetrics - Rendering pre-sales dashboard with config:', config || dashboardConfig);
+  console.log('🔍 PreSalesMetrics - Pre-sales data:', dataToUse);
   console.log('🔍 PreSalesMetrics - Public view:', isPublicView, 'Shared user:', sharedUserId);
 
-  if (isLoading) {
+  if (isLoading && !preSalesData) {
     return <PreSalesMetricsLoading />;
   }
 
-  if (error) {
+  if (error && !preSalesData) {
     return <PreSalesMetricsError error={error} />;
   }
 
-  if (!preSalesData) {
+  if (!dataToUse) {
     return null;
   }
 
   // Obter itens ordenados baseado na configuração
-  const orderedItems = getOrderedPreSalesItems(config.preSalesOrder || []);
+  const orderedItems = getOrderedPreSalesItems((config || dashboardConfig).preSalesOrder || []);
   
   console.log('🔍 PreSalesMetrics - Ordered items:', orderedItems);
 
@@ -62,7 +92,7 @@ const PreSalesMetrics = ({ isPublicView = false, sharedUserId }: PreSalesMetrics
       )}
 
       {/* Cards de métricas no mesmo estilo do comercial */}
-      <PreSalesMetricsCards config={config} preSalesData={preSalesData} />
+      <PreSalesMetricsCards config={config || dashboardConfig} preSalesData={dataToUse} />
       
       {/* Renderizar componentes na ordem configurada */}
       {orderedItems.map((item) => {
@@ -70,8 +100,8 @@ const PreSalesMetrics = ({ isPublicView = false, sharedUserId }: PreSalesMetrics
           <PreSalesComponentRenderer 
             key={item.key}
             itemKey={item.key}
-            weeklyData={preSalesData.weeklyData}
-            sdrPerformance={preSalesData.sdrPerformance}
+            weeklyData={dataToUse.weeklyData}
+            sdrPerformance={dataToUse.sdrPerformance}
             isPublicView={isPublicView}
             sharedUserId={sharedUserId}
           />
