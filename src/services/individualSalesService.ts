@@ -7,13 +7,7 @@ export const fetchIndividualSales = async (performanceId: string) => {
   
   const { data, error } = await supabase
     .from('seller_individual_sales')
-    .select(`
-      *,
-      products(
-        id,
-        name
-      )
-    `)
+    .select('*')
     .eq('performance_id', performanceId)
     .order('created_at', { ascending: false });
 
@@ -35,7 +29,7 @@ export const fetchIndividualSales = async (performanceId: string) => {
     product_id: item.product_id,
     created_at: item.created_at,
     updated_at: item.updated_at,
-    products: item.products
+    products: null
   }));
 
   return transformedData;
@@ -54,13 +48,7 @@ export const createIndividualSale = async ({ sellerId, performanceId, saleData }
       billing_amount: saleData.billing_amount,
       product_id: null,
     })
-    .select(`
-      *,
-      products(
-        id,
-        name
-      )
-    `)
+    .select('*')
     .single();
 
   console.log('📝 [DEBUG] Resultado da inserção:', { data, error });
@@ -81,7 +69,7 @@ export const createIndividualSale = async ({ sellerId, performanceId, saleData }
     product_id: data.product_id,
     created_at: data.created_at,
     updated_at: data.updated_at,
-    products: data.products
+    products: null
   };
 
   return transformedData;
