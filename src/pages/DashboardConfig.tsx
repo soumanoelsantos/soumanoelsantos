@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ConfigHeader from '@/components/dashboard/config/ConfigHeader';
 import GeneralConfigCard from '@/components/dashboard/config/GeneralConfigCard';
 import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
@@ -58,60 +59,94 @@ const DashboardConfig = () => {
       <ConfigHeader onSave={handleSave} isLoading={false} />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Coluna da esquerda */}
-          <div className="space-y-6">
-            <GeneralConfigCard 
-              config={config} 
-              onConfigChange={handleConfigChange} 
-            />
-            <MetricsConfigCard 
-              config={config} 
-              onConfigChange={handleConfigChange} 
-            />
-            <PreSalesConfigCard 
-              config={config} 
-              onConfigChange={handleConfigChange} 
-            />
-            <SpecificGoalsConfigCard 
-              config={config} 
-              onConfigChange={handleConfigChange} 
-            />
-            <DisplayConfigCard 
-              config={config} 
-              onConfigChange={handleConfigChange} 
-            />
-            <MetricsOrderManager
-              config={config}
-              metricsOrder={config.metricsOrder}
-              onReorderMetrics={handleReorderMetrics}
-            />
-          </div>
+        <Tabs defaultValue="comercial" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="comercial">Comercial</TabsTrigger>
+            <TabsTrigger value="pre-vendas">Pré-vendas</TabsTrigger>
+            <TabsTrigger value="produto">Produto</TabsTrigger>
+          </TabsList>
           
-          {/* Coluna da direita */}
-          <div className="space-y-6">
-            <ProductChartsConfigCard 
-              config={config} 
-              onConfigChange={handleConfigChange} 
-            />
-            <ProductMetricsConfigCard 
-              config={config} 
-              onConfigChange={handleConfigChange} 
-            />
-            <PreSalesOrderManager
-              config={config}
-              preSalesOrder={config.preSalesOrder}
-              onReorderPreSales={handleReorderPreSales}
-            />
-            <ProductOrderManager
-              config={config}
-              productOrder={config.productOrder}
-              onReorderProducts={handleReorderProducts}
-            />
-            <SellersManagementCard />
-            <ProductsManagementCard />
-          </div>
-        </div>
+          <TabsContent value="comercial" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Coluna da esquerda - Comercial */}
+              <div className="space-y-6">
+                <GeneralConfigCard 
+                  config={config} 
+                  onConfigChange={handleConfigChange} 
+                />
+                <MetricsConfigCard 
+                  config={config} 
+                  onConfigChange={handleConfigChange} 
+                />
+                <SpecificGoalsConfigCard 
+                  config={config} 
+                  onConfigChange={handleConfigChange} 
+                />
+                <MetricsOrderManager
+                  config={config}
+                  metricsOrder={config.metricsOrder}
+                  onReorderMetrics={handleReorderMetrics}
+                />
+              </div>
+              
+              {/* Coluna da direita - Comercial */}
+              <div className="space-y-6">
+                <DisplayConfigCard 
+                  config={config} 
+                  onConfigChange={handleConfigChange} 
+                />
+                <SellersManagementCard />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="pre-vendas" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Coluna da esquerda - Pré-vendas */}
+              <div className="space-y-6">
+                <PreSalesConfigCard 
+                  config={config} 
+                  onConfigChange={handleConfigChange} 
+                />
+              </div>
+              
+              {/* Coluna da direita - Pré-vendas */}
+              <div className="space-y-6">
+                <PreSalesOrderManager
+                  config={config}
+                  preSalesOrder={config.preSalesOrder}
+                  onReorderPreSales={handleReorderPreSales}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="produto" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Coluna da esquerda - Produto */}
+              <div className="space-y-6">
+                <ProductMetricsConfigCard 
+                  config={config} 
+                  onConfigChange={handleConfigChange} 
+                />
+                <ProductsManagementCard />
+              </div>
+              
+              {/* Coluna da direita - Produto */}
+              <div className="space-y-6">
+                <ProductChartsConfigCard 
+                  config={config} 
+                  onConfigChange={handleConfigChange} 
+                />
+                <ProductOrderManager
+                  config={config}
+                  productOrder={config.productOrder}
+                  onReorderProducts={handleReorderProducts}
+                />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
