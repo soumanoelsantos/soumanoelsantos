@@ -58,8 +58,13 @@ const IndividualSaleForm: React.FC<IndividualSaleFormProps> = ({
           console.error('❌ [DEBUG] Erro ao buscar produtos:', error);
           setProducts([]);
         } else {
-          console.log('✅ [DEBUG] Produtos carregados:', data?.length || 0);
-          setProducts(data || []);
+          // Remover produtos duplicados baseado no ID
+          const uniqueProducts = data?.filter((product, index, array) => 
+            array.findIndex(p => p.id === product.id) === index
+          ) || [];
+          
+          console.log('✅ [DEBUG] Produtos únicos carregados:', uniqueProducts.length);
+          setProducts(uniqueProducts);
         }
       } catch (error) {
         console.error('💥 [DEBUG] Erro na busca de produtos:', error);
