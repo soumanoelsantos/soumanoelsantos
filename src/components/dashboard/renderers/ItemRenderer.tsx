@@ -38,12 +38,18 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
       
       // Verificar se é um indicador de pré-vendas
       if (itemKey.startsWith('showPreSales')) {
-        // Criar dados simulados para pré-vendas se necessário
+        // Criar dados simulados completos para pré-vendas
         const mockPreSalesData = {
-          calls: 0,
-          schedulings: 0,
-          noShow: 0,
-          sdrPerformance: []
+          dailyCalls: 0,
+          dailyCallsTarget: 40,
+          dailySchedulings: 0,
+          dailySchedulingsTarget: 8,
+          dailyNoShow: 0,
+          dailyNoShowRate: 0,
+          totalSDRs: 0,
+          averageSchedulingsPerSDR: 0,
+          sdrPerformance: [],
+          weeklyData: []
         };
         return <PreSalesMetricsCards config={config} preSalesData={mockPreSalesData} />;
       }
