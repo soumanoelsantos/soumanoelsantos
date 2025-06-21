@@ -3,13 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from 'lucide-react';
-import { format } from 'date-fns';
 import { Seller } from '@/types/sellers';
 import { toast } from 'sonner';
 import PerformanceFormFields from './PerformanceFormFields';
 import PerformanceFormSubmit from './PerformanceFormSubmit';
 import { getBrazilianDate } from '@/utils/dateUtils';
-import { supabase } from '@/integrations/supabase/client';
 
 interface PerformanceFormData {
   date: string;
@@ -35,8 +33,6 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   seller,
   onSuccess
 }) => {
-  const [currentPerformanceId, setCurrentPerformanceId] = useState<string | null>(null);
-  
   // Obter data atual no fuso brasileiro para o valor padrão
   const today = new Date();
   const brazilianDateString = today.toLocaleDateString('pt-BR', {
@@ -50,7 +46,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   const [day, month, year] = brazilianDateString.split('/');
   const defaultDate = `${year}-${month}-${day}`;
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<PerformanceFormData>({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<PerformanceFormData>({
     defaultValues: {
       date: defaultDate,
       sales_count: 0,
@@ -62,59 +58,6 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
       notes: '',
     }
   });
-
-  // Buscar ou criar performance para a data atual
-  useEffect(() => {
-    const getOrCreatePerformance = async () => {
-      try {
-        // Primeiro, tentar buscar uma performance existente para a data atual
-        const { data: existingPerformance, error: fetchError } = await supabase
-          .from('seller_daily_performance')
-          .select('id')
-          .eq('seller_id', seller.id)
-          .eq('date', defaultDate)
-          .maybeSingle();
-
-        if (fetchError) {
-          console.error('Erro ao buscar performance existente:', fetchError);
-          return;
-        }
-
-        if (existingPerformance) {
-          setCurrentPerformanceId(existingPerformance.id);
-        } else {
-          // Criar uma nova performance para permitir o uso do gerenciador de vendas
-          const { data: newPerformance, error: createError } = await supabase
-            .from('seller_daily_performance')
-            .insert({
-              seller_id: seller.id,
-              date: defaultDate,
-              sales_count: 0,
-              revenue_amount: 0,
-              billing_amount: 0,
-              leads_count: 0,
-              meetings_count: 0,
-              calls_count: 0,
-              notes: '',
-              submitted_by_seller: true,
-            })
-            .select('id')
-            .single();
-
-          if (createError) {
-            console.error('Erro ao criar nova performance:', createError);
-            return;
-          }
-
-          setCurrentPerformanceId(newPerformance.id);
-        }
-      } catch (error) {
-        console.error('Erro no getOrCreatePerformance:', error);
-      }
-    };
-
-    getOrCreatePerformance();
-  }, [seller.id, defaultDate]);
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
@@ -165,14 +108,6 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
           <span className="text-xs text-blue-600">
             ⏰ Todas as datas são registradas no fuso horário brasileiro (UTC-3)
           </span>
-          {isCloser && (
-            <>
-              <br />
-              <span className="text-xs text-green-600">
-                💡 Para closers: Adicione suas vendas individuais com nome do cliente e valores separados
-              </span>
-            </>
-          )}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -181,9 +116,6 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
             register={register}
             errors={errors}
             isCloser={isCloser}
-            sellerId={seller.id}
-            performanceId={currentPerformanceId || undefined}
-            setValue={setValue}
           />
           <PerformanceFormSubmit isSubmitting={isSubmitting} />
         </form>

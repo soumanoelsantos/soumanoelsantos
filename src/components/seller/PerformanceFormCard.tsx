@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BarChart3 } from 'lucide-react';
-import { UseFormRegister, UseFormHandleSubmit, FieldErrors, UseFormSetValue } from 'react-hook-form';
+import { UseFormRegister, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
 import PerformanceFormFields from './PerformanceFormFields';
 
 interface PerformanceFormData {
@@ -25,9 +25,6 @@ interface PerformanceFormCardProps {
   isSubmitting: boolean;
   onSubmit: (data: PerformanceFormData) => Promise<void>;
   onCancel: () => void;
-  sellerId: string;
-  performanceId?: string;
-  setValue: UseFormSetValue<PerformanceFormData>;
 }
 
 const PerformanceFormCard: React.FC<PerformanceFormCardProps> = ({
@@ -37,10 +34,7 @@ const PerformanceFormCard: React.FC<PerformanceFormCardProps> = ({
   errors,
   isSubmitting,
   onSubmit,
-  onCancel,
-  sellerId,
-  performanceId,
-  setValue
+  onCancel
 }) => {
   return (
     <Card>
@@ -56,9 +50,6 @@ const PerformanceFormCard: React.FC<PerformanceFormCardProps> = ({
             register={register}
             errors={errors}
             isCloser={!isSDR}
-            sellerId={sellerId}
-            performanceId={performanceId}
-            setValue={setValue}
           />
 
           <div className="flex justify-end gap-2">

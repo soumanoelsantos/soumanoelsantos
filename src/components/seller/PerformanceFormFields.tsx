@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { UseFormRegister, FieldErrors, UseFormSetValue } from 'react-hook-form';
+import { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import IndividualSalesManager from './IndividualSalesManager';
 
 interface PerformanceFormData {
   date: string;
@@ -21,28 +20,13 @@ interface PerformanceFormFieldsProps {
   register: UseFormRegister<PerformanceFormData>;
   errors: FieldErrors<PerformanceFormData>;
   isCloser: boolean;
-  sellerId: string;
-  performanceId?: string;
-  setValue: UseFormSetValue<PerformanceFormData>;
 }
 
 const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
   register,
   errors,
-  isCloser,
-  sellerId,
-  performanceId,
-  setValue
+  isCloser
 }) => {
-  console.log('🔍 [DEBUG] PerformanceFormFields renderizado:', { isCloser, sellerId, performanceId });
-
-  const handleTotalsChange = (totals: { salesCount: number; revenueTotal: number; billingTotal: number }) => {
-    console.log('📊 [DEBUG] Totais das vendas individuais mudaram:', totals);
-    setValue('sales_count', totals.salesCount);
-    setValue('revenue_amount', totals.revenueTotal);
-    setValue('billing_amount', totals.billingTotal);
-  };
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
@@ -59,19 +43,6 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
         </div>
       </div>
 
-      {isCloser && (
-        <div className="space-y-4">
-          <div className="border-t pt-4">
-            <h3 className="text-lg font-semibold mb-4">Vendas Individuais</h3>
-            <IndividualSalesManager
-              sellerId={sellerId}
-              performanceId={performanceId || 'temp-id'}
-              onTotalsChange={handleTotalsChange}
-            />
-          </div>
-        </div>
-      )}
-
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="sales_count">Quantidade de Vendas</Label>
@@ -83,8 +54,6 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
               valueAsNumber: true,
               min: { value: 0, message: 'Deve ser maior ou igual a 0' }
             })}
-            readOnly={isCloser}
-            className={isCloser ? 'bg-gray-100' : ''}
           />
           {errors.sales_count && (
             <p className="text-sm text-red-600">{errors.sales_count.message}</p>
@@ -102,8 +71,6 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
               valueAsNumber: true,
               min: { value: 0, message: 'Deve ser maior ou igual a 0' }
             })}
-            readOnly={isCloser}
-            className={isCloser ? 'bg-gray-100' : ''}
           />
           {errors.revenue_amount && (
             <p className="text-sm text-red-600">{errors.revenue_amount.message}</p>
@@ -123,8 +90,6 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
               valueAsNumber: true,
               min: { value: 0, message: 'Deve ser maior ou igual a 0' }
             })}
-            readOnly={isCloser}
-            className={isCloser ? 'bg-gray-100' : ''}
           />
           {errors.billing_amount && (
             <p className="text-sm text-red-600">{errors.billing_amount.message}</p>
