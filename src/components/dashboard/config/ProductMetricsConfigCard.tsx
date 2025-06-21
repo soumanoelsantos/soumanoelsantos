@@ -157,39 +157,39 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
               )}
             </div>
 
-            {/* Seleção de indicadores específicos */}
-            {validSelectedProductIds.length > 0 && (
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">
-                  Indicadores a exibir para os produtos selecionados:
-                </Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {productMetricsOptions.map((option) => (
-                    <div key={option.key} className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50">
-                      <Checkbox
-                        id={option.key}
-                        checked={config[option.key as keyof DashboardConfig] as boolean}
-                        onCheckedChange={(checked) => onConfigChange(option.key, checked as boolean)}
-                      />
-                      <Label htmlFor={option.key} className="text-sm cursor-pointer flex-1">
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
+            {/* Seleção de indicadores específicos - SEMPRE mostrar */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-gray-700">
+                Indicadores a exibir para os produtos:
+              </Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {productMetricsOptions.map((option) => (
+                  <div key={option.key} className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50">
+                    <Checkbox
+                      id={option.key}
+                      checked={config[option.key as keyof DashboardConfig] as boolean}
+                      onCheckedChange={(checked) => onConfigChange(option.key, checked as boolean)}
+                    />
+                    <Label htmlFor={option.key} className="text-sm cursor-pointer flex-1">
+                      {option.label}
+                    </Label>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
 
-            {validSelectedProductIds.length > 0 && (
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>Produtos selecionados:</strong> {validSelectedProductIds.length}
-                </p>
-                <p className="text-xs text-blue-600 mt-1">
-                  Os indicadores serão exibidos para cada produto selecionado no dashboard principal.
-                </p>
-              </div>
-            )}
+            {/* Informação sobre produtos selecionados */}
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Produtos selecionados:</strong> {validSelectedProductIds.length}
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                {validSelectedProductIds.length > 0 ? 
+                  'Os indicadores serão exibidos para cada produto selecionado no dashboard principal.' :
+                  'Selecione pelo menos um produto para ver os indicadores no dashboard.'
+                }
+              </p>
+            </div>
           </div>
         )}
       </CardContent>
