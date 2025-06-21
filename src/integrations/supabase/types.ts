@@ -140,7 +140,9 @@ export type Database = {
           show_pre_sales_schedulings: boolean | null
           show_pre_sales_sdr_comparison_chart: boolean | null
           show_pre_sales_sdr_table: boolean | null
+          show_product_billing_evolution_chart: boolean | null
           show_product_cash_collect: boolean | null
+          show_product_comparison_chart: boolean | null
           show_product_diaria_faturamento: boolean | null
           show_product_diaria_receita: boolean | null
           show_product_falta_faturamento: boolean | null
@@ -150,10 +152,14 @@ export type Database = {
           show_product_meta_quantidade_vendas: boolean | null
           show_product_meta_receita: boolean | null
           show_product_metrics: boolean | null
+          show_product_performance_chart: boolean | null
           show_product_projecao_faturamento: boolean | null
           show_product_projecao_receita: boolean | null
           show_product_quantidade_vendas: boolean | null
           show_product_receita: boolean | null
+          show_product_revenue_evolution_chart: boolean | null
+          show_product_sales_evolution_chart: boolean | null
+          show_product_temporal_chart: boolean | null
           show_product_ticket_faturamento: boolean | null
           show_product_ticket_receita: boolean | null
           show_projecao_faturamento: boolean | null
@@ -220,7 +226,9 @@ export type Database = {
           show_pre_sales_schedulings?: boolean | null
           show_pre_sales_sdr_comparison_chart?: boolean | null
           show_pre_sales_sdr_table?: boolean | null
+          show_product_billing_evolution_chart?: boolean | null
           show_product_cash_collect?: boolean | null
+          show_product_comparison_chart?: boolean | null
           show_product_diaria_faturamento?: boolean | null
           show_product_diaria_receita?: boolean | null
           show_product_falta_faturamento?: boolean | null
@@ -230,10 +238,14 @@ export type Database = {
           show_product_meta_quantidade_vendas?: boolean | null
           show_product_meta_receita?: boolean | null
           show_product_metrics?: boolean | null
+          show_product_performance_chart?: boolean | null
           show_product_projecao_faturamento?: boolean | null
           show_product_projecao_receita?: boolean | null
           show_product_quantidade_vendas?: boolean | null
           show_product_receita?: boolean | null
+          show_product_revenue_evolution_chart?: boolean | null
+          show_product_sales_evolution_chart?: boolean | null
+          show_product_temporal_chart?: boolean | null
           show_product_ticket_faturamento?: boolean | null
           show_product_ticket_receita?: boolean | null
           show_projecao_faturamento?: boolean | null
@@ -300,7 +312,9 @@ export type Database = {
           show_pre_sales_schedulings?: boolean | null
           show_pre_sales_sdr_comparison_chart?: boolean | null
           show_pre_sales_sdr_table?: boolean | null
+          show_product_billing_evolution_chart?: boolean | null
           show_product_cash_collect?: boolean | null
+          show_product_comparison_chart?: boolean | null
           show_product_diaria_faturamento?: boolean | null
           show_product_diaria_receita?: boolean | null
           show_product_falta_faturamento?: boolean | null
@@ -310,10 +324,14 @@ export type Database = {
           show_product_meta_quantidade_vendas?: boolean | null
           show_product_meta_receita?: boolean | null
           show_product_metrics?: boolean | null
+          show_product_performance_chart?: boolean | null
           show_product_projecao_faturamento?: boolean | null
           show_product_projecao_receita?: boolean | null
           show_product_quantidade_vendas?: boolean | null
           show_product_receita?: boolean | null
+          show_product_revenue_evolution_chart?: boolean | null
+          show_product_sales_evolution_chart?: boolean | null
+          show_product_temporal_chart?: boolean | null
           show_product_ticket_faturamento?: boolean | null
           show_product_ticket_receita?: boolean | null
           show_projecao_faturamento?: boolean | null
