@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -55,7 +54,13 @@ export const useProductGoals = () => {
 
       if (error) throw error;
 
-      setProductGoals(data || []);
+      // Garantir que a propriedade currency seja do tipo correto
+      const typedData = (data || []).map(item => ({
+        ...item,
+        currency: (item.currency === 'USD' ? 'USD' : 'BRL') as 'BRL' | 'USD'
+      }));
+
+      setProductGoals(typedData);
     } catch (error: any) {
       console.error('Erro ao carregar metas de produtos:', error);
       toast({

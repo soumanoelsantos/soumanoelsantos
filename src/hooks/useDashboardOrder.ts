@@ -51,14 +51,34 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showProductTemporalChart'
     ];
 
-    // SEMPRE adicionar indicadores de produtos se habilitados, independente de selectedProductIds
-    if (config.showProductMetrics) {
-      productIndicators.forEach(indicator => {
+    // USAR A ORDEM PERSONALIZADA DE PRODUTOS se existir
+    if (config.productOrder && config.productOrder.length > 0) {
+      console.log('🔍 useDashboardOrder - Using custom product order:', config.productOrder);
+      // Usar a ordem personalizada dos produtos
+      config.productOrder.forEach(indicator => {
         if (config[indicator as keyof DashboardConfig] && !finalOrder.includes(indicator)) {
           finalOrder.push(indicator);
-          console.log('🔍 useDashboardOrder - Adding product indicator:', indicator);
+          console.log('🔍 useDashboardOrder - Adding product indicator from custom order:', indicator);
         }
       });
+      
+      // Adicionar indicadores habilitados que não estão na ordem personalizada
+      productIndicators.forEach(indicator => {
+        if (config[indicator as keyof DashboardConfig] && !config.productOrder.includes(indicator) && !finalOrder.includes(indicator)) {
+          finalOrder.push(indicator);
+          console.log('🔍 useDashboardOrder - Adding missing product indicator:', indicator);
+        }
+      });
+    } else {
+      // SEMPRE adicionar indicadores de produtos se habilitados, independente de selectedProductIds
+      if (config.showProductMetrics) {
+        productIndicators.forEach(indicator => {
+          if (config[indicator as keyof DashboardConfig] && !finalOrder.includes(indicator)) {
+            finalOrder.push(indicator);
+            console.log('🔍 useDashboardOrder - Adding product indicator:', indicator);
+          }
+        });
+      }
     }
 
     // SEMPRE adicionar gráficos de produtos se habilitados - CORRIGIDO

@@ -19,6 +19,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   
   console.log('📊 [DEBUG] DashboardMetrics - Config:', {
     metricsOrder: config.metricsOrder,
+    productOrder: config.productOrder,
     selectedProductIds: config.selectedProductIds,
     showProductMetrics: config.showProductMetrics,
     dashboardType
@@ -29,6 +30,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
     const orderedItems = getOrderedItems();
 
     console.log('📊 [DEBUG] DashboardMetrics - Ordered items:', orderedItems);
+    console.log('📊 [DEBUG] DashboardMetrics - Dashboard type:', dashboardType);
 
     // Lista de indicadores de produtos
     const productIndicators = [
@@ -79,6 +81,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       if (dashboardType === 'produtos') {
         // No dashboard de produtos, mostrar apenas indicadores e gráficos de produtos
         shouldRender = productIndicators.includes(itemKey) || productCharts.includes(itemKey);
+        console.log('📊 [DEBUG] Product dashboard - Should render:', shouldRender, 'for item:', itemKey);
       } else if (dashboardType === 'comercial') {
         // No dashboard comercial, mostrar apenas indicadores comerciais
         shouldRender = commercialIndicators.includes(itemKey);
@@ -101,9 +104,11 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
 
       if (renderedComponent) {
         components.push(renderedComponent);
+        console.log('📊 [DEBUG] Added component for:', itemKey);
       }
     });
 
+    console.log('📊 [DEBUG] Total components rendered:', components.length);
     return components;
   };
 
