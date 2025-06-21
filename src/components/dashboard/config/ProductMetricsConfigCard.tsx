@@ -58,6 +58,22 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
     { key: 'showProductProjecaoFaturamento', label: 'Projeção de Faturamento do Produto' },
   ];
 
+  // Filtrar apenas os IDs que existem nos produtos carregados para garantir contagem correta
+  const validSelectedProductIds = config.selectedProductIds.filter(id => 
+    products.some(product => product.id === id)
+  );
+
+  // Se há diferença entre os IDs selecionados e os válidos, atualizar a configuração
+  React.useEffect(() => {
+    if (validSelectedProductIds.length !== config.selectedProductIds.length) {
+      console.log('🔧 [DEBUG] Corrigindo IDs de produtos selecionados:', {
+        original: config.selectedProductIds,
+        valid: validSelectedProductIds
+      });
+      onConfigChange('selectedProductIds', validSelectedProductIds);
+    }
+  }, [validSelectedProductIds.length, config.selectedProductIds.length, onConfigChange]);
+
   return (
     <Card>
       <CardHeader>
@@ -122,7 +138,7 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
                     <div key={product.id} className="flex items-start space-x-2 p-3 border rounded-lg hover:bg-gray-50">
                       <Checkbox
                         id={product.id}
-                        checked={config.selectedProductIds.includes(product.id)}
+                        checked={validSelectedProductIds.includes(product.id)}
                         onCheckedChange={(checked) => handleProductToggle(product.id, checked as boolean)}
                       />
                       <div className="flex-1">
@@ -142,7 +158,7 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
             </div>
 
             {/* Seleção de indicadores específicos */}
-            {config.selectedProductIds.length > 0 && (
+            {validSelectedProductIds.length > 0 && (
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-gray-700">
                   Indicadores a exibir para os produtos selecionados:
@@ -164,10 +180,10 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
               </div>
             )}
 
-            {config.selectedProductIds.length > 0 && (
+            {validSelectedProductIds.length > 0 && (
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>Produtos selecionados:</strong> {config.selectedProductIds.length}
+                  <strong>Produtos selecionados:</strong> {validSelectedProductIds.length}
                 </p>
                 <p className="text-xs text-blue-600 mt-1">
                   Os indicadores serão exibidos para cada produto selecionado no dashboard principal.
