@@ -13,6 +13,9 @@ import SpecificGoalsConfigCard from '@/components/dashboard/config/SpecificGoals
 import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
 import ProductsManagementCard from '@/components/dashboard/config/ProductsManagementCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
+import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
+import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
+import ProductOrderManager from '@/components/dashboard/config/product-order/ProductOrderManager';
 
 const DashboardConfig = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -36,6 +39,18 @@ const DashboardConfig = () => {
 
   const handleSave = async () => {
     // Config is automatically saved by useDashboardConfig
+  };
+
+  const handleReorderMetrics = (newOrder: string[]) => {
+    updateConfig({ metricsOrder: newOrder });
+  };
+
+  const handleReorderPreSales = (newOrder: string[]) => {
+    updateConfig({ preSalesOrder: newOrder });
+  };
+
+  const handleReorderProducts = (newOrder: string[]) => {
+    updateConfig({ productOrder: newOrder });
   };
 
   return (
@@ -66,6 +81,11 @@ const DashboardConfig = () => {
               config={config} 
               onConfigChange={handleConfigChange} 
             />
+            <MetricsOrderManager
+              config={config}
+              metricsOrder={config.metricsOrder}
+              onReorderMetrics={handleReorderMetrics}
+            />
           </div>
           
           {/* Coluna da direita */}
@@ -77,6 +97,16 @@ const DashboardConfig = () => {
             <ProductMetricsConfigCard 
               config={config} 
               onConfigChange={handleConfigChange} 
+            />
+            <PreSalesOrderManager
+              config={config}
+              preSalesOrder={config.preSalesOrder}
+              onReorderPreSales={handleReorderPreSales}
+            />
+            <ProductOrderManager
+              config={config}
+              productOrder={config.productOrder}
+              onReorderProducts={handleReorderProducts}
             />
             <SellersManagementCard />
             <ProductsManagementCard />
