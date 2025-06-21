@@ -1181,6 +1181,7 @@ export type Database = {
           created_at: string
           id: string
           performance_id: string
+          product_id: string | null
           revenue_amount: number
           seller_id: string
           updated_at: string
@@ -1191,6 +1192,7 @@ export type Database = {
           created_at?: string
           id?: string
           performance_id: string
+          product_id?: string | null
           revenue_amount?: number
           seller_id: string
           updated_at?: string
@@ -1201,6 +1203,7 @@ export type Database = {
           created_at?: string
           id?: string
           performance_id?: string
+          product_id?: string | null
           revenue_amount?: number
           seller_id?: string
           updated_at?: string
@@ -1211,6 +1214,13 @@ export type Database = {
             columns: ["performance_id"]
             isOneToOne: false
             referencedRelation: "seller_daily_performance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_individual_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
           {
