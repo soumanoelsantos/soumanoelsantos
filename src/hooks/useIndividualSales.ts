@@ -132,7 +132,7 @@ export const useIndividualSales = (performanceId?: string) => {
         created_at: data.created_at,
         updated_at: data.updated_at,
         products: (data.products && typeof data.products === 'object' && 'id' in data.products) 
-          ? data.products 
+          ? data.products as { id: string; name: string; }
           : null
       };
       
