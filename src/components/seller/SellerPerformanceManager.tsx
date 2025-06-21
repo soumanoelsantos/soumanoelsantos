@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSellerPerformance } from '@/hooks/useSellerPerformance';
-import PerformanceFormCard from './PerformanceFormCard';
+import SellerPerformanceForm from './SellerPerformanceForm';
 import SellerPerformanceHistory from './SellerPerformanceHistory';
 import IndividualSalesManager from './IndividualSalesManager';
 import { PerformanceFormData } from '@/types/sellers';
@@ -64,6 +64,12 @@ const SellerPerformanceManager: React.FC<SellerPerformanceManagerProps> = ({
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
+      <SellerPerformanceForm
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        defaultDate={today}
+      />
+
       <IndividualSalesManager
         sellerId={seller.id}
         performanceId={currentPerformance?.id || 'temp-id'}
