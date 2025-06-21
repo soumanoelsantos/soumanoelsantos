@@ -43,16 +43,16 @@ const ProductMetricsConfigCard: React.FC<ProductMetricsConfigCardProps> = ({
   };
 
   const productMetricsOptions = [
+    { key: 'showProductReceita', label: 'Receita do Produto' },
+    { key: 'showProductFaturamento', label: 'Faturamento do Produto' },
+    { key: 'showProductQuantidadeVendas', label: 'Quantidade de Vendas do Produto' },
     { key: 'showProductTicketReceita', label: 'Ticket Receita do Produto' },
     { key: 'showProductTicketFaturamento', label: 'Ticket Faturamento do Produto' },
-    { key: 'showProductFaturamento', label: 'Faturamento do Produto' },
-    { key: 'showProductReceita', label: 'Receita do Produto' },
-    { key: 'showProductQuantidadeVendas', label: 'Quantidade de Vendas do Produto' },
-    { key: 'showProductMetaFaturamento', label: 'Meta Faturamento do Produto' },
     { key: 'showProductMetaReceita', label: 'Meta Receita do Produto' },
+    { key: 'showProductMetaFaturamento', label: 'Meta Faturamento do Produto' },
     { key: 'showProductMetaQuantidadeVendas', label: 'Meta Quantidade de Vendas do Produto' },
-    { key: 'showProductFaltaFaturamento', label: 'Falta de Faturamento do Produto' },
     { key: 'showProductFaltaReceita', label: 'Falta de Receita do Produto' },
+    { key: 'showProductFaltaFaturamento', label: 'Falta de Faturamento do Produto' },
     { key: 'showProductCashCollect', label: 'Cash Collect do Produto' },
     { key: 'showProductProjecaoReceita', label: 'Projeção de Receita do Produto' },
     { key: 'showProductProjecaoFaturamento', label: 'Projeção de Faturamento do Produto' },
