@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -216,7 +217,7 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Receita (R$)</Label>
+                    <Label>Receita ($)</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -228,7 +229,7 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Faturamento (R$)</Label>
+                    <Label>Faturamento ($)</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -261,10 +262,10 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
               <strong>Total de vendas:</strong> {productSales.length}
             </p>
             <p className="text-xs text-blue-600 mt-1">
-              Receita total: R$ {productSales.reduce((sum, sale) => sum + sale.revenue_amount, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              Receita total: ${productSales.reduce((sum, sale) => sum + sale.revenue_amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
             <p className="text-xs text-blue-600">
-              Faturamento total: R$ {productSales.reduce((sum, sale) => sum + sale.billing_amount, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              Faturamento total: ${productSales.reduce((sum, sale) => sum + sale.billing_amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
         )}
