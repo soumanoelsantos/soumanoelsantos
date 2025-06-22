@@ -25,35 +25,82 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
   productSales,
   onProductSalesChange
 }) => {
-  const { products, isLoading } = useProducts();
+  const { products, isLoading, error } = useProducts();
+
+  console.log('🔍 [DEBUG] ProductSalesSection render:', {
+    productSales: productSales?.length || 0,
+    products: products?.length || 0,
+    isLoading,
+    error
+  });
 
   const addProductSale = () => {
-    const newSale: ProductSale = {
-      id: Date.now().toString(),
-      product_id: '',
-      client_name: '',
-      revenue_amount: 0,
-      billing_amount: 0
-    };
-    onProductSalesChange([...productSales, newSale]);
+    console.log('➕ [DEBUG] Adicionando nova venda');
+    try {
+      const newSale: ProductSale = {
+        id: Date.now().toString(),
+        product_id: '',
+        client_name: '',
+        revenue_amount: 0,
+        billing_amount: 0
+      };
+      onProductSalesChange([...productSales, newSale]);
+      console.log('✅ [DEBUG] Nova venda adicionada:', newSale);
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro ao adicionar venda:', error);
+    }
   };
 
   const removeProductSale = (id: string) => {
-    onProductSalesChange(productSales.filter(sale => sale.id !== id));
+    console.log('🗑️ [DEBUG] Removendo venda:', id);
+    try {
+      onProductSalesChange(productSales.filter(sale => sale.id !== id));
+      console.log('✅ [DEBUG] Venda removida');
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro ao remover venda:', error);
+    }
   };
 
   const updateProductSale = (id: string, field: keyof ProductSale, value: string | number) => {
-    onProductSalesChange(
-      productSales.map(sale =>
-        sale.id === id ? { ...sale, [field]: value } : sale
-      )
-    );
+    console.log('✏️ [DEBUG] Atualizando venda:', { id, field, value });
+    try {
+      onProductSalesChange(
+        productSales.map(sale =>
+          sale.id === id ? { ...sale, [field]: value } : sale
+        )
+      );
+      console.log('✅ [DEBUG] Venda atualizada');
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro ao atualizar venda:', error);
+    }
   };
 
   const getProductName = (productId: string) => {
+    if (!products || !productId) return '';
     const product = products.find(p => p.id === productId);
     return product ? product.name : 'Produto não encontrado';
   };
+
+  // Se houver erro no carregamento dos produtos, mostrar mensagem
+  if (error) {
+    console.error('❌ [DEBUG] Erro ao carregar produtos:', error);
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Vendas por Produto
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-6 text-red-500">
+            <p>Erro ao carregar produtos</p>
+            <p className="text-sm text-gray-500">Tente recarregar a página</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -100,7 +147,7 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
                       <SelectContent>
                         {isLoading ? (
                           <SelectItem value="" disabled>Carregando produtos...</SelectItem>
-                        ) : products.length === 0 ? (
+                        ) : !products || products.length === 0 ? (
                           <SelectItem value="" disabled>Nenhum produto encontrado</SelectItem>
                         ) : (
                           products.map((product) => (
@@ -162,9 +209,10 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
           variant="outline"
           onClick={addProductSale}
           className="w-full"
+          disabled={isLoading}
         >
           <Plus className="h-4 w-4 mr-2" />
-          Adicionar Venda
+          {isLoading ? 'Carregando...' : 'Adicionar Venda'}
         </Button>
 
         {productSales.length > 0 && (

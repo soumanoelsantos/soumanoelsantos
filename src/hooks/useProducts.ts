@@ -2,133 +2,164 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
-import { Product, CreateProductData } from '@/types/goals';
 
-export const useProducts = (targetUserId?: string) => {
+interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { userId } = useAuth();
-  const { toast } = useToast();
-
-  // Use o targetUserId se fornecido, senão use o userId atual
-  const effectiveUserId = targetUserId || userId;
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const fetchProducts = async () => {
-    if (!effectiveUserId) return;
+    console.log('🔍 [DEBUG] useProducts - Iniciando fetch de produtos...');
+    
+    if (!user) {
+      console.log('❌ [DEBUG] useProducts - Usuário não autenticado');
+      setIsLoading(false);
+      setError('Usuário não autenticado');
+      return;
+    }
 
-    console.log('🔍 [DEBUG] useProducts - Buscando produtos para userId:', effectiveUserId);
-    setIsLoading(true);
     try {
-      // Primeiro, tenta buscar produtos do usuário específico
-      let { data, error } = await supabase
+      setIsLoading(true);
+      setError(null);
+      
+      console.log('🔍 [DEBUG] useProducts - Fazendo query para user_id:', user.id);
+      
+      const { data, error: fetchError } = await supabase
         .from('products')
         .select('*')
-        .eq('user_id', effectiveUserId)
-        .order('created_at', { ascending: false });
+        .eq('user_id', user.id)
+        .order('name');
 
-      console.log('📋 [DEBUG] useProducts - Resultado da busca:', { data, error, effectiveUserId });
+      console.log('📋 [DEBUG] useProducts - Resultado da query:', { data, error: fetchError });
 
-      if (error) {
-        console.error('❌ [DEBUG] useProducts - Erro na consulta:', error);
-        // Se der erro, tenta buscar todos os produtos (para debug)
-        const { data: allData, error: allError } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        console.log('📋 [DEBUG] useProducts - Tentativa de buscar todos os produtos:', { allData, allError });
-        
-        if (!allError && allData) {
-          // Filtra manualmente os produtos do usuário
-          const userProducts = allData.filter(product => product.user_id === effectiveUserId);
-          console.log('📋 [DEBUG] useProducts - Produtos filtrados manualmente:', userProducts);
-          data = userProducts;
-        } else {
-          throw error;
-        }
+      if (fetchError) {
+        console.error('❌ [DEBUG] useProducts - Erro na query:', fetchError);
+        throw fetchError;
       }
-      
+
       console.log('✅ [DEBUG] useProducts - Produtos carregados:', data?.length || 0);
       setProducts(data || []);
-    } catch (error: any) {
-      console.error('💥 [DEBUG] useProducts - Erro ao carregar produtos:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao carregar produtos",
-        description: error.message,
-      });
+    } catch (err) {
+      console.error('💥 [DEBUG] useProducts - Erro inesperado:', err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
       setProducts([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const createProduct = async (productData: CreateProductData) => {
-    if (!userId) return false;
+  useEffect(() => {
+    console.log('🔄 [DEBUG] useProducts - useEffect triggered, user:', user?.id);
+    fetchProducts();
+  }, [user]);
+
+  const createProduct = async (productData: { name: string; description?: string }) => {
+    if (!user) {
+      console.log('❌ [DEBUG] useProducts - Usuário não autenticado para criar produto');
+      throw new Error('Usuário não autenticado');
+    }
+
+    console.log('➕ [DEBUG] useProducts - Criando produto:', productData);
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('products')
         .insert({
           ...productData,
-          user_id: userId,
-        });
+          user_id: user.id,
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [DEBUG] useProducts - Erro ao criar produto:', error);
+        throw error;
+      }
 
-      toast({
-        title: "Produto criado",
-        description: "Produto criado com sucesso!",
-      });
+      console.log('✅ [DEBUG] useProducts - Produto criado:', data);
+      await fetchProducts(); // Recarregar a lista
+      return data;
+    } catch (err) {
+      console.error('💥 [DEBUG] useProducts - Erro ao criar produto:', err);
+      throw err;
+    }
+  };
 
-      fetchProducts();
-      return true;
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao criar produto",
-        description: error.message,
-      });
-      return false;
+  const updateProduct = async (productId: string, productData: { name: string; description?: string }) => {
+    if (!user) {
+      console.log('❌ [DEBUG] useProducts - Usuário não autenticado para atualizar produto');
+      throw new Error('Usuário não autenticado');
+    }
+
+    console.log('✏️ [DEBUG] useProducts - Atualizando produto:', { productId, productData });
+
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .update(productData)
+        .eq('id', productId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ [DEBUG] useProducts - Erro ao atualizar produto:', error);
+        throw error;
+      }
+
+      console.log('✅ [DEBUG] useProducts - Produto atualizado:', data);
+      await fetchProducts(); // Recarregar a lista
+      return data;
+    } catch (err) {
+      console.error('💥 [DEBUG] useProducts - Erro ao atualizar produto:', err);
+      throw err;
     }
   };
 
   const deleteProduct = async (productId: string) => {
+    if (!user) {
+      console.log('❌ [DEBUG] useProducts - Usuário não autenticado para deletar produto');
+      throw new Error('Usuário não autenticado');
+    }
+
+    console.log('🗑️ [DEBUG] useProducts - Deletando produto:', productId);
+
     try {
       const { error } = await supabase
         .from('products')
         .delete()
-        .eq('id', productId);
+        .eq('id', productId)
+        .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [DEBUG] useProducts - Erro ao deletar produto:', error);
+        throw error;
+      }
 
-      toast({
-        title: "Produto removido",
-        description: "Produto removido com sucesso!",
-      });
-
-      fetchProducts();
-      return true;
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao remover produto",
-        description: error.message,
-      });
-      return false;
+      console.log('✅ [DEBUG] useProducts - Produto deletado');
+      await fetchProducts(); // Recarregar a lista
+    } catch (err) {
+      console.error('💥 [DEBUG] useProducts - Erro ao deletar produto:', err);
+      throw err;
     }
   };
-
-  useEffect(() => {
-    console.log('🔄 [DEBUG] useProducts - useEffect triggered, effectiveUserId:', effectiveUserId);
-    fetchProducts();
-  }, [effectiveUserId]);
 
   return {
     products,
     isLoading,
+    error,
     createProduct,
+    updateProduct,
     deleteProduct,
     refetch: fetchProducts,
   };
