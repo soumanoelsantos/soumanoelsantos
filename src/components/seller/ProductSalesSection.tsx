@@ -31,7 +31,8 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
     productSales: productSales?.length || 0,
     products: products?.length || 0,
     isLoading,
-    error
+    error,
+    hasError: Boolean(error && error.trim() !== '')
   });
 
   const addProductSale = () => {
@@ -81,8 +82,8 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
     return product ? product.name : 'Produto não encontrado';
   };
 
-  // Se houver erro no carregamento dos produtos, mostrar mensagem
-  if (error) {
+  // Se houver erro no carregamento dos produtos, mostrar mensagem (só se for um erro real)
+  if (error && error.trim() !== '') {
     console.error('❌ [DEBUG] Erro ao carregar produtos:', error);
     return (
       <Card>

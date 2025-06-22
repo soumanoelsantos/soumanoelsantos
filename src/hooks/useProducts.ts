@@ -26,7 +26,7 @@ export const useProducts = () => {
     if (!userId) {
       console.log('❌ [DEBUG] useProducts - Usuário não autenticado');
       setIsLoading(false);
-      setError('Usuário não autenticado');
+      setError(null); // Changed: don't set error for unauthenticated state
       return;
     }
 
