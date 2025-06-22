@@ -160,12 +160,13 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="meetings_count">Reuniões</Label>
+          <Label htmlFor="meetings_count">Reuniões *</Label>
           <Input
             id="meetings_count"
             type="number"
             min="0"
             {...register('meetings_count', { 
+              required: 'Quantidade de reuniões é obrigatória',
               valueAsNumber: true,
               min: { value: 0, message: 'Deve ser maior ou igual a 0' }
             })}
