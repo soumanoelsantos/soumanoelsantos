@@ -235,7 +235,110 @@ export const useSellerPerformance = (sellerId?: string) => {
   return {
     performances,
     isLoading,
-    createOrUpdatePerformance,
+    createOrUpdatePerformance: async (performanceData: {
+      date: string;
+      sales_count: number;
+      revenue_amount: number;
+      billing_amount: number;
+      leads_count: number;
+      meetings_count: number;
+      calls_count: number;
+      notes?: string;
+      submitted_by_seller?: boolean;
+      product_sales?: ProductSale[];
+    }) => {
+      if (!sellerId) {
+        console.log('❌ [DEBUG] Sem sellerId para criar/atualizar performance');
+        return false;
+      }
+
+      try {
+        console.log('📤 [DEBUG] Salvando performance para seller_id:', sellerId);
+        console.log('📤 [DEBUG] Dados da performance:', performanceData);
+        
+        // Salvar a performance principal
+        const { data: performanceResult, error: performanceError } = await supabase
+          .from('seller_daily_performance')
+          .upsert({
+            seller_id: sellerId,
+            date: performanceData.date,
+            sales_count: performanceData.sales_count || 0,
+            revenue_amount: performanceData.revenue_amount || 0,
+            billing_amount: performanceData.billing_amount || 0,
+            leads_count: performanceData.leads_count || 0,
+            meetings_count: performanceData.meetings_count || 0,
+            calls_count: performanceData.calls_count || 0,
+            notes: performanceData.notes || '',
+            submitted_by_seller: performanceData.submitted_by_seller ?? true,
+          }, {
+            onConflict: 'seller_id,date',
+            ignoreDuplicates: false
+          })
+          .select()
+          .single();
+
+        if (performanceError) {
+          console.error('❌ [DEBUG] Erro ao salvar performance:', performanceError);
+          throw performanceError;
+        }
+
+        console.log('✅ [DEBUG] Performance salva com sucesso:', performanceResult);
+
+        // Se há vendas por produto, salvar elas também
+        if (performanceData.product_sales && performanceData.product_sales.length > 0) {
+          console.log('📤 [DEBUG] Salvando vendas por produto:', performanceData.product_sales);
+
+          // Primeiro, deletar vendas existentes para essa performance/data
+          const { error: deleteError } = await supabase
+            .from('seller_individual_sales')
+            .delete()
+            .eq('seller_id', sellerId)
+            .eq('performance_id', performanceResult.id);
+
+          if (deleteError) {
+            console.error('❌ [DEBUG] Erro ao deletar vendas antigas:', deleteError);
+          }
+
+          // Inserir as novas vendas
+          const salesData = performanceData.product_sales.map(sale => ({
+            seller_id: sellerId,
+            performance_id: performanceResult.id,
+            product_id: sale.product_id,
+            client_name: sale.client_name,
+            revenue_amount: sale.revenue_amount,
+            billing_amount: sale.billing_amount
+          }));
+
+          const { error: salesError } = await supabase
+            .from('seller_individual_sales')
+            .insert(salesData);
+
+          if (salesError) {
+            console.error('❌ [DEBUG] Erro ao salvar vendas por produto:', salesError);
+            throw salesError;
+          }
+
+          console.log('✅ [DEBUG] Vendas por produto salvas com sucesso');
+        }
+
+        // Atualizar a lista local
+        await fetchPerformances();
+
+        toast({
+          title: "Sucesso",
+          description: `Lançamento salvo com sucesso${performanceData.product_sales?.length ? ` com ${performanceData.product_sales.length} vendas por produto` : ''}`,
+        });
+        return true;
+      } catch (error) {
+        console.error('💥 [DEBUG] Erro ao salvar lançamento:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível salvar o lançamento",
+          variant: "destructive",
+        });
+        return false;
+      }
+    },
     deletePerformance,
     refetch: fetchPerformances,
   };
