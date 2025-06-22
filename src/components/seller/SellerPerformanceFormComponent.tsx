@@ -48,8 +48,9 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
   const defaultDate = `${year}-${month}-${day}`;
 
   const [productSales, setProductSales] = useState<ProductSale[]>([]);
+  const [noSalesToday, setNoSalesToday] = useState(false);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<PerformanceFormData>({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<PerformanceFormData>({
     defaultValues: {
       date: defaultDate,
       sales_count: 0,
@@ -64,38 +65,51 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
 
   // Atualizar automaticamente os totais baseados nas vendas por produto
   useEffect(() => {
-    const totalRevenue = productSales.reduce((sum, sale) => sum + sale.revenue_amount, 0);
-    const totalBilling = productSales.reduce((sum, sale) => sum + sale.billing_amount, 0);
-    const totalSales = productSales.length;
+    if (noSalesToday) {
+      // Se não houve vendas, zerar tudo
+      setValue('sales_count', 0);
+      setValue('revenue_amount', 0);
+      setValue('billing_amount', 0);
+      setProductSales([]);
+    } else {
+      // Calcular baseado nas vendas por produto
+      const totalRevenue = productSales.reduce((sum, sale) => sum + sale.revenue_amount, 0);
+      const totalBilling = productSales.reduce((sum, sale) => sum + sale.billing_amount, 0);
+      const totalSales = productSales.length;
 
-    // Atualizar os campos do formulário automaticamente
-    reset(prev => ({
-      ...prev,
-      sales_count: totalSales,
-      revenue_amount: totalRevenue,
-      billing_amount: totalBilling
-    }));
-  }, [productSales, reset]);
+      setValue('sales_count', totalSales);
+      setValue('revenue_amount', totalRevenue);
+      setValue('billing_amount', totalBilling);
+    }
+  }, [productSales, noSalesToday, setValue]);
+
+  const handleNoSalesTodayChange = (checked: boolean) => {
+    setNoSalesToday(checked);
+    if (checked) {
+      setProductSales([]);
+    }
+  };
 
   const handleFormSubmit = async (data: PerformanceFormData) => {
     try {
       console.log('📤 [DEBUG] Enviando dados com vendas por produto:', {
         ...data,
-        product_sales: productSales
+        product_sales: productSales,
+        noSalesToday
       });
 
-      // Validar se tem vendas por produto quando é closer
+      // Validar se tem vendas por produto quando é closer e não marcou "sem vendas"
       const isCloser = seller.seller_type === 'closer';
-      if (isCloser && data.sales_count > 0 && productSales.length === 0) {
+      if (isCloser && !noSalesToday && data.sales_count > 0 && productSales.length === 0) {
         toast.error("❌ Erro de Validação", {
-          description: "Como Closer, você deve registrar as vendas por produto quando há vendas.",
+          description: "Como Closer, você deve registrar as vendas por produto quando há vendas ou marcar 'Não houve vendas hoje'.",
           duration: 4000,
         });
         return;
       }
 
-      // Validar se todas as vendas por produto estão completas
-      if (productSales.length > 0) {
+      // Validar se todas as vendas por produto estão completas (apenas se não marcou "sem vendas")
+      if (!noSalesToday && productSales.length > 0) {
         const incompleteSales = productSales.filter(sale => 
           !sale.product_id || !sale.client_name.trim()
         );
@@ -111,11 +125,11 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
 
       await onSubmit({
         ...data,
-        product_sales: productSales
+        product_sales: noSalesToday ? [] : productSales
       });
       
       toast.success("✅ Performance Registrada!", {
-        description: `Sua performance foi registrada com sucesso! ${productSales.length > 0 ? `${productSales.length} vendas por produto incluídas.` : ''}`,
+        description: `Sua performance foi registrada com sucesso! ${noSalesToday ? 'Sem vendas registradas hoje.' : (productSales.length > 0 ? `${productSales.length} vendas por produto incluídas.` : '')}`,
         duration: 4000,
       });
       
@@ -131,6 +145,7 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
       });
       
       setProductSales([]);
+      setNoSalesToday(false);
       
       if (onSuccess) {
         onSuccess();
@@ -169,15 +184,27 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
               register={register}
               errors={errors}
               isCloser={isCloser}
-              showTotalsReadonly={productSales.length > 0}
+              showTotalsReadonly={!noSalesToday && productSales.length > 0}
+              noSalesToday={noSalesToday}
+              onNoSalesTodayChange={handleNoSalesTodayChange}
             />
             
-            {isCloser && (
+            {isCloser && !noSalesToday && (
               <div className="border-t pt-6">
                 <ProductSalesSection
                   productSales={productSales}
                   onProductSalesChange={setProductSales}
                 />
+              </div>
+            )}
+            
+            {noSalesToday && isCloser && (
+              <div className="border-t pt-6">
+                <div className="bg-gray-50 p-4 rounded-lg border">
+                  <p className="text-sm text-gray-600">
+                    ℹ️ Você marcou que não houve vendas hoje. Apenas os dados de reuniões e observações serão registrados.
+                  </p>
+                </div>
               </div>
             )}
             
