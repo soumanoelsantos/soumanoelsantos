@@ -14,6 +14,13 @@ const IndividualSalesDetails: React.FC<IndividualSalesDetailsProps> = ({
 }) => {
   const { sales, isLoading, error } = useSellerIndividualSales(performanceId);
 
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(value);
+  };
+
   if (isLoading) {
     return (
       <div className="mt-4 p-4 bg-gray-50 rounded-lg">
@@ -77,10 +84,10 @@ const IndividualSalesDetails: React.FC<IndividualSalesDetailsProps> = ({
                   <div className="space-y-1">
                     <div className="flex flex-col sm:flex-row sm:gap-2">
                       <Badge variant="outline" className="text-xs">
-                        Receita: R$ {sale.revenue_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        Receita: {formatCurrency(sale.revenue_amount)}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
-                        Faturamento: R$ {sale.billing_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        Faturamento: {formatCurrency(sale.billing_amount)}
                       </Badge>
                     </div>
                   </div>
@@ -96,13 +103,13 @@ const IndividualSalesDetails: React.FC<IndividualSalesDetailsProps> = ({
           <div>
             <span className="font-medium text-blue-800">Total Receita:</span>
             <span className="ml-2 text-blue-700">
-              R$ {sales.reduce((sum, sale) => sum + sale.revenue_amount, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              {formatCurrency(sales.reduce((sum, sale) => sum + sale.revenue_amount, 0))}
             </span>
           </div>
           <div>
             <span className="font-medium text-blue-800">Total Faturamento:</span>
             <span className="ml-2 text-blue-700">
-              R$ {sales.reduce((sum, sale) => sum + sale.billing_amount, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              {formatCurrency(sales.reduce((sum, sale) => sum + sale.billing_amount, 0))}
             </span>
           </div>
         </div>
