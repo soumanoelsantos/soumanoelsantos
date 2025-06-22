@@ -18,10 +18,9 @@ interface SellerPerformanceHistoryProps {
 const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
   seller
 }) => {
-  const { performances, isLoading, createOrUpdatePerformance } = useSellerPerformance(seller.id);
+  const { performances, isLoading } = useSellerPerformance(seller.id);
   const [editingPerformance, setEditingPerformance] = useState<SellerDailyPerformance | null>(null);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const isCloser = seller.seller_type === 'closer';
 
@@ -33,22 +32,6 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
       newExpanded.add(id);
     }
     setExpandedItems(newExpanded);
-  };
-
-  const handleEditPerformance = async (id: string, data: any) => {
-    setIsUpdating(true);
-    try {
-      const performance = performances.find(p => p.id === id);
-      if (performance) {
-        await createOrUpdatePerformance({
-          date: performance.date,
-          ...data,
-          submitted_by_seller: false,
-        });
-      }
-    } finally {
-      setIsUpdating(false);
-    }
   };
 
   const formatCurrency = (value: number) => {
