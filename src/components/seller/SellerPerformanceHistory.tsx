@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Calendar, ChevronDown, ChevronRight, Edit, TrendingUp, Users, Phone, DollarSign } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronRight, Edit, TrendingUp, Users, Phone, DollarSign, Trash2 } from 'lucide-react';
 import { SellerDailyPerformance, Seller } from '@/types/sellers';
 import { getBrazilianDate } from '@/utils/dateUtils';
 import EditPerformanceDialog from './EditPerformanceDialog';
@@ -18,7 +17,7 @@ interface SellerPerformanceHistoryProps {
 const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
   seller
 }) => {
-  const { performances, isLoading } = useSellerPerformance(seller?.id);
+  const { performances, isLoading, deletePerformance } = useSellerPerformance(seller?.id);
   const [editingPerformance, setEditingPerformance] = useState<SellerDailyPerformance | null>(null);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
@@ -35,14 +34,20 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'BRL'
+      currency: 'USD'
     }).format(value);
   };
 
   const formatDate = (dateString: string) => {
     return getBrazilianDate(dateString);
+  };
+
+  const handleDelete = async (performanceId: string) => {
+    if (window.confirm('Tem certeza que deseja deletar este lançamento?')) {
+      await deletePerformance(performanceId);
+    }
   };
 
   if (isLoading) {
@@ -216,7 +221,7 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
                           <IndividualSalesDetails performanceId={performance.id} />
                         )}
 
-                        <div className="flex justify-end mt-4">
+                        <div className="flex justify-end gap-2 mt-4">
                           <Button
                             variant="outline"
                             size="sm"
@@ -228,6 +233,18 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
                           >
                             <Edit className="h-4 w-4" />
                             Editar
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(performance.id);
+                            }}
+                            className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Deletar
                           </Button>
                         </div>
                       </CardContent>

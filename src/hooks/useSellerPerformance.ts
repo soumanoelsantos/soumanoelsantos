@@ -5,7 +5,7 @@ import { SellerDailyPerformance } from '@/types/sellers';
 import { useToast } from '@/hooks/use-toast';
 import { ProductSale } from '@/components/seller/ProductSalesSection';
 
-export const useSellerPerformance = (sellerId: string) => {
+export const useSellerPerformance = (sellerId?: string) => {
   const { toast } = useToast();
   const [performances, setPerformances] = useState<SellerDailyPerformance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
