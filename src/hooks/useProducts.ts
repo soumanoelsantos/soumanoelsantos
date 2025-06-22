@@ -16,12 +16,14 @@ export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { userId } = useAuth(); // Changed from 'user' to 'userId'
+
+  console.log('🔍 [DEBUG] useProducts - Hook inicializado, userId:', userId);
 
   const fetchProducts = async () => {
     console.log('🔍 [DEBUG] useProducts - Iniciando fetch de produtos...');
     
-    if (!user) {
+    if (!userId) {
       console.log('❌ [DEBUG] useProducts - Usuário não autenticado');
       setIsLoading(false);
       setError('Usuário não autenticado');
@@ -32,12 +34,12 @@ export const useProducts = () => {
       setIsLoading(true);
       setError(null);
       
-      console.log('🔍 [DEBUG] useProducts - Fazendo query para user_id:', user.id);
+      console.log('🔍 [DEBUG] useProducts - Fazendo query para user_id:', userId);
       
       const { data, error: fetchError } = await supabase
         .from('products')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('name');
 
       console.log('📋 [DEBUG] useProducts - Resultado da query:', { data, error: fetchError });
@@ -59,12 +61,12 @@ export const useProducts = () => {
   };
 
   useEffect(() => {
-    console.log('🔄 [DEBUG] useProducts - useEffect triggered, user:', user?.id);
+    console.log('🔄 [DEBUG] useProducts - useEffect triggered, userId:', userId);
     fetchProducts();
-  }, [user]);
+  }, [userId]);
 
   const createProduct = async (productData: { name: string; description?: string }) => {
-    if (!user) {
+    if (!userId) {
       console.log('❌ [DEBUG] useProducts - Usuário não autenticado para criar produto');
       throw new Error('Usuário não autenticado');
     }
@@ -76,7 +78,7 @@ export const useProducts = () => {
         .from('products')
         .insert({
           ...productData,
-          user_id: user.id,
+          user_id: userId,
         })
         .select()
         .single();
@@ -96,7 +98,7 @@ export const useProducts = () => {
   };
 
   const updateProduct = async (productId: string, productData: { name: string; description?: string }) => {
-    if (!user) {
+    if (!userId) {
       console.log('❌ [DEBUG] useProducts - Usuário não autenticado para atualizar produto');
       throw new Error('Usuário não autenticado');
     }
@@ -108,7 +110,7 @@ export const useProducts = () => {
         .from('products')
         .update(productData)
         .eq('id', productId)
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .select()
         .single();
 
@@ -127,7 +129,7 @@ export const useProducts = () => {
   };
 
   const deleteProduct = async (productId: string) => {
-    if (!user) {
+    if (!userId) {
       console.log('❌ [DEBUG] useProducts - Usuário não autenticado para deletar produto');
       throw new Error('Usuário não autenticado');
     }
@@ -139,7 +141,7 @@ export const useProducts = () => {
         .from('products')
         .delete()
         .eq('id', productId)
-        .eq('user_id', user.id);
+        .eq('user_id', userId);
 
       if (error) {
         console.error('❌ [DEBUG] useProducts - Erro ao deletar produto:', error);
