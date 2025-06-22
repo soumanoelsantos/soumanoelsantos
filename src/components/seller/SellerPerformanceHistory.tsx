@@ -18,7 +18,7 @@ interface SellerPerformanceHistoryProps {
 const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
   seller
 }) => {
-  const { performances, isLoading } = useSellerPerformance(seller.id);
+  const { performances, isLoading } = useSellerPerformance(seller?.id);
   const [editingPerformance, setEditingPerformance] = useState<SellerDailyPerformance | null>(null);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
