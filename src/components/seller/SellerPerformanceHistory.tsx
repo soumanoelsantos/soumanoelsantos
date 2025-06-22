@@ -1,148 +1,67 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Edit, Trash2, Clock, User } from 'lucide-react';
-import { Seller } from '@/types/sellers';
-import { useSellerPerformance } from '@/hooks/useSellerPerformance';
-import { formatDateToBrazilian, formatToBrazilianTimezone } from '@/utils/dateUtils';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Calendar, ChevronDown, ChevronRight, Edit, TrendingUp, Users, Phone, DollarSign } from 'lucide-react';
+import { SellerDailyPerformance } from '@/types/sellers';
+import { getBrazilianDate } from '@/utils/dateUtils';
 import EditPerformanceDialog from './EditPerformanceDialog';
+import IndividualSalesDetails from './IndividualSalesDetails';
 
 interface SellerPerformanceHistoryProps {
-  seller: Seller;
+  performances: SellerDailyPerformance[];
+  isCloser: boolean;
+  onEditPerformance: (id: string, data: any) => Promise<void>;
+  isUpdating: boolean;
 }
 
-const PerformanceCard = ({ performance, seller, onEdit, onDelete }: any) => {
-  const isSDR = seller.seller_type === 'sdr';
-  const isCloser = !isSDR;
-
-  const renderSDRMetrics = (performance: any) => (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div>
-        <p className="text-sm text-gray-500">Tentativas:</p>
-        <p className="text-lg font-semibold">{performance.calls_count}</p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">No Show:</p>
-        <p className="text-lg font-semibold">{performance.leads_count}</p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Agendamentos:</p>
-        <p className="text-lg font-semibold">{performance.meetings_count}</p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Remarcações:</p>
-        <p className="text-lg font-semibold">{performance.sales_count}</p>
-      </div>
-    </div>
-  );
-
-  const renderCloserMetrics = (performance: any) => (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div>
-        <p className="text-sm text-gray-500">Vendas:</p>
-        <p className="text-lg font-semibold">{performance.sales_count}</p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Receita:</p>
-        <p className="text-lg font-semibold">
-          R$ {performance.revenue_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-        </p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Faturamento:</p>
-        <p className="text-lg font-semibold">
-          R$ {performance.billing_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-        </p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Reuniões:</p>
-        <p className="text-lg font-semibold">{performance.meetings_count}</p>
-      </div>
-    </div>
-  );
-
-  return (
-    <Card className="relative">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span className="font-medium">
-              {formatDateToBrazilian(performance.date)}
-            </span>
-            <Badge variant={performance.submitted_by_seller ? "default" : "secondary"}>
-              {performance.submitted_by_seller ? "Pelo Vendedor" : "Pelo Admin"}
-            </Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(performance)}
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDelete(performance.id)}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {isSDR ? renderSDRMetrics(performance) : renderCloserMetrics(performance)}
-        
-        {performance.notes && (
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Observações:</p>
-            <p className="text-sm bg-gray-50 p-2 rounded">{performance.notes}</p>
-          </div>
-        )}
-        
-        <div className="flex items-center gap-4 text-xs text-gray-500 pt-2 border-t">
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            Lançado em: {formatToBrazilianTimezone(performance.submitted_at)}
-          </div>
-          <div className="flex items-center gap-1">
-            <User className="h-3 w-3" />
-            ID: {performance.id.substring(0, 8)}...
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
 const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
-  seller
+  performances,
+  isCloser,
+  onEditPerformance,
+  isUpdating
 }) => {
-  const { performances, isLoading, deletePerformance } = useSellerPerformance(seller.id);
-  const [editingPerformance, setEditingPerformance] = useState(null);
+  const [editingPerformance, setEditingPerformance] = useState<SellerDailyPerformance | null>(null);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-  const handleDelete = async (performanceId: string) => {
-    if (window.confirm('Tem certeza que deseja deletar este lançamento?')) {
-      await deletePerformance(performanceId);
+  const toggleExpanded = (id: string) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
     }
+    setExpandedItems(newExpanded);
   };
 
-  const handleEdit = (performance: any) => {
-    setEditingPerformance(performance);
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
   };
 
-  if (isLoading) {
+  const formatDate = (dateString: string) => {
+    return getBrazilianDate(dateString);
+  };
+
+  if (performances.length === 0) {
     return (
       <Card>
-        <CardContent className="flex items-center justify-center py-8">
-          <p className="text-gray-500">Carregando histórico...</p>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Histórico de Performance
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-gray-500">
+            <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <p>Nenhuma performance registrada ainda</p>
+            <p className="text-sm">Registre sua primeira performance usando o formulário acima</p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -154,37 +73,163 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Histórico de Lançamentos - {seller.name}
-            <Badge variant="outline">
-              {performances.length} registro{performances.length !== 1 ? 's' : ''}
-            </Badge>
+            Histórico de Performance ({performances.length})
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {performances.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">Nenhum lançamento encontrado</p>
-            </div>
-          ) : (
-            performances.map((performance) => (
-              <PerformanceCard
-                key={performance.id}
-                performance={performance}
-                seller={seller}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))
-          )}
+        <CardContent>
+          <div className="space-y-4">
+            {performances.map((performance) => {
+              const isExpanded = expandedItems.has(performance.id);
+              
+              return (
+                <Collapsible key={performance.id}>
+                  <Card className="border border-gray-200 hover:border-gray-300 transition-colors">
+                    <CollapsibleTrigger 
+                      className="w-full" 
+                      onClick={() => toggleExpanded(performance.id)}
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {isExpanded ? (
+                              <ChevronDown className="h-4 w-4 text-gray-500" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-gray-500" />
+                            )}
+                            <div className="text-left">
+                              <h4 className="font-medium text-gray-900">
+                                {formatDate(performance.date)}
+                              </h4>
+                              <p className="text-sm text-gray-500">
+                                {performance.submitted_by_seller ? 'Enviado pelo vendedor' : 'Registrado pela administração'}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {performance.sales_count} vendas
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {formatCurrency(performance.revenue_amount)}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                      <CardContent className="pt-0">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-green-600" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {performance.sales_count}
+                              </p>
+                              <p className="text-xs text-gray-500">Vendas</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 text-blue-600" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {formatCurrency(performance.revenue_amount)}
+                              </p>
+                              <p className="text-xs text-gray-500">Receita</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 text-purple-600" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {formatCurrency(performance.billing_amount)}
+                              </p>
+                              <p className="text-xs text-gray-500">Faturamento</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-orange-600" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {performance.meetings_count}
+                              </p>
+                              <p className="text-xs text-gray-500">Reuniões</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {!isCloser && (
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="flex items-center gap-2">
+                              <TrendingUp className="h-4 w-4 text-indigo-600" />
+                              <div>
+                                <p className="text-sm font-medium text-gray-900">
+                                  {performance.leads_count}
+                                </p>
+                                <p className="text-xs text-gray-500">Leads</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4 text-green-600" />
+                              <div>
+                                <p className="text-sm font-medium text-gray-900">
+                                  {performance.calls_count}
+                                </p>
+                                <p className="text-xs text-gray-500">Ligações</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {performance.notes && (
+                          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                            <p className="text-sm text-gray-700">
+                              <strong>Observações:</strong> {performance.notes}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Mostrar detalhes das vendas individuais para Closers */}
+                        {isCloser && performance.sales_count > 0 && (
+                          <IndividualSalesDetails performanceId={performance.id} />
+                        )}
+
+                        <div className="flex justify-end mt-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingPerformance(performance);
+                            }}
+                            className="flex items-center gap-2"
+                          >
+                            <Edit className="h-4 w-4" />
+                            Editar
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </Collapsible>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
 
       {editingPerformance && (
         <EditPerformanceDialog
           performance={editingPerformance}
-          seller={seller}
-          open={!!editingPerformance}
+          isCloser={isCloser}
+          onSave={onEditPerformance}
           onClose={() => setEditingPerformance(null)}
+          isSubmitting={isUpdating}
         />
       )}
     </>
