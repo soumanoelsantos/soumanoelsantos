@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -184,7 +183,6 @@ const SellerPerformanceFormComponent: React.FC<SellerPerformanceFormComponentPro
               register={register}
               errors={errors}
               isCloser={isCloser}
-              showTotalsReadonly={!noSalesToday && productSales.length > 0}
               noSalesToday={noSalesToday}
               onNoSalesTodayChange={handleNoSalesTodayChange}
             />

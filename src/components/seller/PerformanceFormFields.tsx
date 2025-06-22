@@ -34,6 +34,9 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
   noSalesToday = false,
   onNoSalesTodayChange
 }) => {
+  // Para Closers, os campos de vendas sempre ficam readonly (calculados automaticamente)
+  const salesFieldsReadonly = isCloser;
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
@@ -68,15 +71,15 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
         <div className="space-y-2">
           <Label htmlFor="sales_count">
             Quantidade de Vendas
-            {showTotalsReadonly && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
+            {isCloser && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
             {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
           </Label>
           <Input
             id="sales_count"
             type="number"
             min="0"
-            readOnly={showTotalsReadonly || noSalesToday}
-            className={(showTotalsReadonly || noSalesToday) ? "bg-gray-100 cursor-not-allowed" : ""}
+            readOnly={salesFieldsReadonly}
+            className={salesFieldsReadonly ? "bg-gray-100 cursor-not-allowed" : ""}
             {...register('sales_count', { 
               valueAsNumber: true,
               min: { value: 0, message: 'Deve ser maior ou igual a 0' }
@@ -90,7 +93,7 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
         <div className="space-y-2">
           <Label htmlFor="revenue_amount">
             Receita (R$)
-            {showTotalsReadonly && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
+            {isCloser && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
             {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
           </Label>
           <Input
@@ -98,8 +101,8 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
             type="number"
             step="0.01"
             min="0"
-            readOnly={showTotalsReadonly || noSalesToday}
-            className={(showTotalsReadonly || noSalesToday) ? "bg-gray-100 cursor-not-allowed" : ""}
+            readOnly={salesFieldsReadonly}
+            className={salesFieldsReadonly ? "bg-gray-100 cursor-not-allowed" : ""}
             {...register('revenue_amount', { 
               valueAsNumber: true,
               min: { value: 0, message: 'Deve ser maior ou igual a 0' }
@@ -115,7 +118,7 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
         <div className="space-y-2">
           <Label htmlFor="billing_amount">
             Faturamento (R$)
-            {showTotalsReadonly && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
+            {isCloser && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
             {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
           </Label>
           <Input
@@ -123,8 +126,8 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
             type="number"
             step="0.01"
             min="0"
-            readOnly={showTotalsReadonly || noSalesToday}
-            className={(showTotalsReadonly || noSalesToday) ? "bg-gray-100 cursor-not-allowed" : ""}
+            readOnly={salesFieldsReadonly}
+            className={salesFieldsReadonly ? "bg-gray-100 cursor-not-allowed" : ""}
             {...register('billing_amount', { 
               valueAsNumber: true,
               min: { value: 0, message: 'Deve ser maior ou igual a 0' }
