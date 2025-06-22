@@ -5,26 +5,25 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Calendar, ChevronDown, ChevronRight, Edit, TrendingUp, Users, Phone, DollarSign } from 'lucide-react';
-import { SellerDailyPerformance } from '@/types/sellers';
+import { SellerDailyPerformance, Seller } from '@/types/sellers';
 import { getBrazilianDate } from '@/utils/dateUtils';
 import EditPerformanceDialog from './EditPerformanceDialog';
 import IndividualSalesDetails from './IndividualSalesDetails';
+import { useSellerPerformance } from '@/hooks/useSellerPerformance';
 
 interface SellerPerformanceHistoryProps {
-  performances: SellerDailyPerformance[];
-  isCloser: boolean;
-  onEditPerformance: (id: string, data: any) => Promise<void>;
-  isUpdating: boolean;
+  seller: Seller;
 }
 
 const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
-  performances,
-  isCloser,
-  onEditPerformance,
-  isUpdating
+  seller
 }) => {
+  const { performances, isLoading, createOrUpdatePerformance } = useSellerPerformance(seller.id);
   const [editingPerformance, setEditingPerformance] = useState<SellerDailyPerformance | null>(null);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const isCloser = seller.seller_type === 'closer';
 
   const toggleExpanded = (id: string) => {
     const newExpanded = new Set(expandedItems);
@@ -34,6 +33,22 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
       newExpanded.add(id);
     }
     setExpandedItems(newExpanded);
+  };
+
+  const handleEditPerformance = async (id: string, data: any) => {
+    setIsUpdating(true);
+    try {
+      const performance = performances.find(p => p.id === id);
+      if (performance) {
+        await createOrUpdatePerformance({
+          date: performance.date,
+          ...data,
+          submitted_by_seller: false,
+        });
+      }
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -46,6 +61,25 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
   const formatDate = (dateString: string) => {
     return getBrazilianDate(dateString);
   };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Histórico de Performance
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-gray-500">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+            <p>Carregando histórico...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (performances.length === 0) {
     return (
@@ -226,10 +260,9 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
       {editingPerformance && (
         <EditPerformanceDialog
           performance={editingPerformance}
-          isCloser={isCloser}
-          onSave={onEditPerformance}
+          seller={seller}
+          open={true}
           onClose={() => setEditingPerformance(null)}
-          isSubmitting={isUpdating}
         />
       )}
     </>
