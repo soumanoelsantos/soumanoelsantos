@@ -53,7 +53,19 @@ export const getBrazilianDateTime = (): string => {
   }).format(now);
 };
 
-export const getBrazilianDate = (): string => {
+export const getBrazilianDate = (date?: string | Date): string => {
+  // Se uma data específica for fornecida, formatá-la
+  if (date) {
+    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    return new Intl.DateTimeFormat('pt-BR', {
+      timeZone: BRAZIL_TIMEZONE,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(dateObj);
+  }
+  
+  // Caso contrário, usar a data atual
   const now = new Date();
   return new Intl.DateTimeFormat('pt-BR', {
     timeZone: BRAZIL_TIMEZONE,

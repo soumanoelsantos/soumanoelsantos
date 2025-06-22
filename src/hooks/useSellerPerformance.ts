@@ -71,12 +71,24 @@ export const useSellerPerformance = (sellerId?: string) => {
       console.log('📤 [DEBUG] Salvando performance para seller_id:', sellerId);
       console.log('📤 [DEBUG] Dados da performance:', performanceData);
       
+      // Garantir que a data seja salva no formato correto (YYYY-MM-DD)
+      let formattedDate = performanceData.date;
+      
+      // Se a data vier no formato brasileiro (DD/MM/YYYY), converter para ISO
+      if (performanceData.date.includes('/')) {
+        const [day, month, year] = performanceData.date.split('/');
+        formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      
+      console.log('📅 [DEBUG] Data original:', performanceData.date);
+      console.log('📅 [DEBUG] Data formatada para salvar:', formattedDate);
+      
       // Salvar a performance principal
       const { data: performanceResult, error: performanceError } = await supabase
         .from('seller_daily_performance')
         .upsert({
           seller_id: sellerId,
-          date: performanceData.date,
+          date: formattedDate, // Usar a data formatada
           sales_count: performanceData.sales_count || 0,
           revenue_amount: performanceData.revenue_amount || 0,
           billing_amount: performanceData.billing_amount || 0,
