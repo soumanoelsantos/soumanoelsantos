@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +25,7 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
   onProductSalesChange
 }) => {
   const { products, isLoading, error } = useProducts();
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   console.log('🔍 [DEBUG] ProductSalesSection render:', {
     productSales: productSales?.length || 0,
@@ -36,43 +36,74 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
   });
 
   const addProductSale = () => {
-    console.log('➕ [DEBUG] Adicionando nova venda');
+    console.log('➕ [DEBUG] Adicionando nova venda - INÍCIO');
+    
     try {
+      // Verificar se a função de callback existe
+      if (!onProductSalesChange) {
+        console.error('❌ [DEBUG] onProductSalesChange não está definido!');
+        setDebugInfo('Erro: Função de callback não definida');
+        return;
+      }
+
+      // Verificar se productSales é um array válido
+      if (!Array.isArray(productSales)) {
+        console.error('❌ [DEBUG] productSales não é um array válido:', productSales);
+        setDebugInfo('Erro: Lista de vendas inválida');
+        return;
+      }
+
+      console.log('✅ [DEBUG] Criando nova venda...');
       const newSale: ProductSale = {
-        id: Date.now().toString(),
+        id: `sale-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         product_id: '',
         client_name: '',
         revenue_amount: 0,
         billing_amount: 0
       };
-      onProductSalesChange([...productSales, newSale]);
-      console.log('✅ [DEBUG] Nova venda adicionada:', newSale);
+
+      console.log('✅ [DEBUG] Nova venda criada:', newSale);
+      console.log('✅ [DEBUG] ProductSales atuais:', productSales);
+      
+      const updatedSales = [...productSales, newSale];
+      console.log('✅ [DEBUG] Lista atualizada:', updatedSales);
+      
+      // Executar callback
+      onProductSalesChange(updatedSales);
+      console.log('✅ [DEBUG] Callback executado com sucesso');
+      
+      setDebugInfo(`Venda adicionada: ${newSale.id}`);
     } catch (error) {
       console.error('❌ [DEBUG] Erro ao adicionar venda:', error);
+      setDebugInfo(`Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 
   const removeProductSale = (id: string) => {
     console.log('🗑️ [DEBUG] Removendo venda:', id);
     try {
-      onProductSalesChange(productSales.filter(sale => sale.id !== id));
+      const updatedSales = productSales.filter(sale => sale.id !== id);
+      onProductSalesChange(updatedSales);
       console.log('✅ [DEBUG] Venda removida');
+      setDebugInfo(`Venda removida: ${id}`);
     } catch (error) {
       console.error('❌ [DEBUG] Erro ao remover venda:', error);
+      setDebugInfo(`Erro ao remover: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 
   const updateProductSale = (id: string, field: keyof ProductSale, value: string | number) => {
     console.log('✏️ [DEBUG] Atualizando venda:', { id, field, value });
     try {
-      onProductSalesChange(
-        productSales.map(sale =>
-          sale.id === id ? { ...sale, [field]: value } : sale
-        )
+      const updatedSales = productSales.map(sale =>
+        sale.id === id ? { ...sale, [field]: value } : sale
       );
+      onProductSalesChange(updatedSales);
       console.log('✅ [DEBUG] Venda atualizada');
+      setDebugInfo(`Venda atualizada: ${id} - ${field}`);
     } catch (error) {
       console.error('❌ [DEBUG] Erro ao atualizar venda:', error);
+      setDebugInfo(`Erro ao atualizar: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 
@@ -97,6 +128,7 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
           <div className="text-center py-6 text-red-500">
             <p>Erro ao carregar produtos</p>
             <p className="text-sm text-gray-500">Tente recarregar a página</p>
+            <p className="text-xs text-gray-400">Erro: {error}</p>
           </div>
         </CardContent>
       </Card>
@@ -112,6 +144,13 @@ const ProductSalesSection: React.FC<ProductSalesSectionProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Debug info para desenvolvimento */}
+        {debugInfo && (
+          <div className="text-xs bg-blue-50 p-2 rounded border">
+            <strong>Debug:</strong> {debugInfo}
+          </div>
+        )}
+
         {productSales.length === 0 ? (
           <div className="text-center py-6 text-gray-500">
             <Package className="h-12 w-12 mx-auto mb-2 text-gray-300" />
