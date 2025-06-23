@@ -37,21 +37,36 @@ const chartConfig = {
 // Componente de tooltip customizado
 const CustomTooltip = ({ active, payload, label, type }: any) => {
   if (active && payload && payload.length > 0) {
-    // Filtrar apenas o item que está sendo hover
-    const activePayload = payload.find((item: any) => item.dataKey !== 'media');
-    const mediaPayload = payload.find((item: any) => item.dataKey === 'media');
+    // Encontrar o item ativo (aquele que está sendo destacado)
+    const activeItem = payload.find((item: any) => item.payload && item.dataKey !== 'media');
+    const mediaItem = payload.find((item: any) => item.dataKey === 'media');
+    
+    // Verificar qual vendedor tem o valor correspondente ao ponto ativo
+    let activeSellerName = '';
+    let activeValue = 0;
+    
+    if (activeItem && activeItem.payload) {
+      // Procurar qual vendedor tem o valor exato do ponto ativo
+      const currentPayload = activeItem.payload;
+      Object.keys(currentPayload).forEach(key => {
+        if (key !== 'day' && key !== 'media' && currentPayload[key] === activeItem.value) {
+          activeSellerName = key;
+          activeValue = activeItem.value;
+        }
+      });
+    }
     
     return (
       <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-3">
         <p className="font-medium text-gray-900">{`Dia ${label}`}</p>
-        {activePayload && (
-          <p className="text-sm" style={{ color: activePayload.color }}>
-            {`${activePayload.dataKey}: ${formatCurrency(activePayload.value)}`}
+        {activeSellerName && (
+          <p className="text-sm" style={{ color: chartConfig[activeSellerName as keyof typeof chartConfig]?.color || '#000' }}>
+            {`${activeSellerName}: ${formatCurrency(activeValue)}`}
           </p>
         )}
-        {mediaPayload && (
-          <p className="text-sm" style={{ color: mediaPayload.color }}>
-            {`Média: ${formatCurrency(mediaPayload.value)}`}
+        {mediaItem && (
+          <p className="text-sm" style={{ color: chartConfig.media.color }}>
+            {`Média: ${formatCurrency(mediaItem.value)}`}
           </p>
         )}
       </div>
