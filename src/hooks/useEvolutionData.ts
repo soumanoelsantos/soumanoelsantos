@@ -65,11 +65,16 @@ export const useEvolutionData = () => {
       const startOfMonth = `${year}-${month.toString().padStart(2, '0')}-01`;
       const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
 
+      // Join seller_individual_sales with seller_daily_performance to get the date
       const { data: performanceData, error: performanceError } = await supabase
         .from('seller_individual_sales')
-        .select('sale_date, revenue_amount, billing_amount')
-        .gte('sale_date', startOfMonth)
-        .lte('sale_date', endOfMonth);
+        .select(`
+          revenue_amount,
+          billing_amount,
+          seller_daily_performance!inner(date)
+        `)
+        .gte('seller_daily_performance.date', startOfMonth)
+        .lte('seller_daily_performance.date', endOfMonth);
 
       if (performanceError) {
         console.error('❌ [DEBUG] Erro ao buscar performance:', performanceError);
@@ -90,8 +95,9 @@ export const useEvolutionData = () => {
       const performanceByDay = new Map<string, { revenue: number; billing: number }>();
       
       performanceData?.forEach(perf => {
-        const existing = performanceByDay.get(perf.sale_date) || { revenue: 0, billing: 0 };
-        performanceByDay.set(perf.sale_date, {
+        const dateStr = perf.seller_daily_performance.date;
+        const existing = performanceByDay.get(dateStr) || { revenue: 0, billing: 0 };
+        performanceByDay.set(dateStr, {
           revenue: existing.revenue + (perf.revenue_amount || 0),
           billing: existing.billing + (perf.billing_amount || 0)
         });
