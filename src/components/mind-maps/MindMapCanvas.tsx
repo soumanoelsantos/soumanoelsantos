@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
@@ -18,7 +17,7 @@ interface MindMapCanvasProps {
 }
 
 const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanvasProps) => {
-  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('list');
+  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('canvas'); // Mudado para canvas por padrão
   
   console.log('MindMapCanvas renderizando com viewMode:', viewMode);
   
@@ -89,10 +88,12 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   };
 
   const handleAddNode = (label: string, connectToNodeId?: string) => {
+    console.log('handleAddNode chamado com:', { label, connectToNodeId });
     addNode(label, connectToNodeId);
   };
 
   const handleAddChildNode = (parentNodeId: string) => {
+    console.log('handleAddChildNode chamado com parentNodeId:', parentNodeId);
     setSelectedParentForNewNode(parentNodeId);
     setIsAddingNode(true);
   };
@@ -144,14 +145,18 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   console.log('Nodes disponíveis:', nodes.length);
   console.log('Nodes visíveis:', visibleNodes.length);
+  console.log('Estado isAddingNode:', isAddingNode);
+
+  const handleAddNodeClick = () => {
+    console.log('Botão + clicado, abrindo dialog para adicionar nó');
+    setSelectedParentForNewNode(null);
+    setIsAddingNode(true);
+  };
 
   return (
     <div className="relative w-full h-full bg-white">
       <MindMapToolbar
-        onAddNode={() => {
-          setSelectedParentForNewNode(null);
-          setIsAddingNode(true);
-        }}
+        onAddNode={handleAddNodeClick}
         onSave={handleSave}
         isSaving={isSaving}
         viewMode={viewMode}
@@ -220,6 +225,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
       <DialogManager
         isAddingNode={isAddingNode}
         setIsAddingNode={(value) => {
+          console.log('setIsAddingNode chamado com valor:', value);
           setIsAddingNode(value);
           if (!value) {
             setSelectedParentForNewNode(null);
