@@ -87,14 +87,13 @@ export const useEvolutionData = () => {
         for (let i = 0; i < totalDaysNeeded; i++) {
           const dayStr = (i + 1).toString();
           
-          // CORREÇÃO: Meta acumulativa baseada apenas nos dias necessários para a meta de quantidade
-          const dayForGoalCalc = Math.min(i + 1, totalQuantityGoal); // Não passa da meta de quantidade
-          const dailyRevenueGoal = totalQuantityGoal > 0 ? (totalRevenueGoal / totalQuantityGoal) * dayForGoalCalc : 0;
-          const dailyBillingGoal = totalQuantityGoal > 0 ? (totalBillingGoal / totalQuantityGoal) * dayForGoalCalc : 0;
+          // CORREÇÃO: Meta acumulativa que sempre termina no valor total da meta
+          const dailyRevenueGoal = totalDaysNeeded > 0 ? (totalRevenueGoal / totalDaysNeeded) * (i + 1) : 0;
+          const dailyBillingGoal = totalDaysNeeded > 0 ? (totalBillingGoal / totalDaysNeeded) * (i + 1) : 0;
           
           revenueEvolutionData.push({
             day: dayStr,
-            metaReceita: dailyRevenueGoal, // VALOR ACUMULATIVO até a meta de quantidade
+            metaReceita: dailyRevenueGoal, // VALOR ACUMULATIVO até o valor total da meta
             receita: null,
             superMetaReceita: totalRevenueGoal * 3,
             hiperMetaReceita: totalRevenueGoal * 5,
@@ -104,7 +103,7 @@ export const useEvolutionData = () => {
 
           billingEvolutionData.push({
             day: dayStr,
-            metaFaturamento: dailyBillingGoal, // VALOR ACUMULATIVO até a meta de quantidade
+            metaFaturamento: dailyBillingGoal, // VALOR ACUMULATIVO até o valor total da meta
             faturamento: null,
             superMetaFaturamento: totalBillingGoal * 2.5,
             hiperMetaFaturamento: totalBillingGoal * 4,
@@ -167,14 +166,13 @@ export const useEvolutionData = () => {
           accumulatedSales += dayData.count;
         }
 
-        // CORREÇÃO: Meta acumulativa baseada apenas nos dias necessários para a meta de quantidade
-        const dayForGoalCalc = Math.min(i + 1, totalQuantityGoal); // Não passa da meta de quantidade
-        const dailyRevenueGoal = totalQuantityGoal > 0 ? (totalRevenueGoal / totalQuantityGoal) * dayForGoalCalc : 0;
-        const dailyBillingGoal = totalQuantityGoal > 0 ? (totalBillingGoal / totalQuantityGoal) * dayForGoalCalc : 0;
+        // CORREÇÃO: Meta acumulativa que sempre termina no valor total da meta
+        const dailyRevenueGoal = totalDaysNeeded > 0 ? (totalRevenueGoal / totalDaysNeeded) * (i + 1) : 0;
+        const dailyBillingGoal = totalDaysNeeded > 0 ? (totalBillingGoal / totalDaysNeeded) * (i + 1) : 0;
 
         revenueEvolutionData.push({
           day: dayStr,
-          metaReceita: dailyRevenueGoal, // META ACUMULATIVA até a meta de quantidade
+          metaReceita: dailyRevenueGoal, // META ACUMULATIVA que termina no valor total da meta
           receita: dateStr <= today ? accumulatedRevenue : null,
           superMetaReceita: totalRevenueGoal * 3,
           hiperMetaReceita: totalRevenueGoal * 5,
@@ -184,7 +182,7 @@ export const useEvolutionData = () => {
 
         billingEvolutionData.push({
           day: dayStr,
-          metaFaturamento: dailyBillingGoal, // META ACUMULATIVA até a meta de quantidade
+          metaFaturamento: dailyBillingGoal, // META ACUMULATIVA que termina no valor total da meta
           faturamento: dateStr <= today ? accumulatedBilling : null,
           superMetaFaturamento: totalBillingGoal * 2.5,
           hiperMetaFaturamento: totalBillingGoal * 4,
@@ -201,6 +199,8 @@ export const useEvolutionData = () => {
         totalQuantityGoal,
         firstSaleDate,
         accumulatedSales,
+        totalDaysNeeded,
+        lastDayRevenueGoal: revenueEvolutionData[revenueEvolutionData.length - 1]?.metaReceita,
         sampleRevenueData: revenueEvolutionData.slice(-3),
         sampleBillingData: billingEvolutionData.slice(-3)
       });
