@@ -61,7 +61,11 @@ const MetricsOrderManager: React.FC<MetricsOrderManagerProps> = ({
           {orderedMetrics.map((metric, index) => (
             <MetricOrderItem
               key={metric.key}
-              metric={metric}
+              metric={{
+                key: metric.key,
+                title: metric.label,
+                enabled: true
+              }}
               index={index}
               isFirst={index === 0}
               isLast={index === orderedMetrics.length - 1}
