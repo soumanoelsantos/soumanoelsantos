@@ -2,7 +2,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { MetricItem } from './types';
+
+interface MetricItem {
+  key: string;
+  title: string;
+  enabled: boolean;
+}
 
 interface MetricOrderItemProps {
   metric: MetricItem;
