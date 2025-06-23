@@ -17,7 +17,7 @@ interface MindMapCanvasProps {
 }
 
 const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanvasProps) => {
-  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('canvas'); // Mudado para canvas por padrão
+  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('canvas'); // Sempre inicia no canvas
   
   console.log('MindMapCanvas renderizando com viewMode:', viewMode);
   
@@ -89,7 +89,12 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const handleAddNode = (label: string, connectToNodeId?: string) => {
     console.log('handleAddNode chamado com:', { label, connectToNodeId });
-    addNode(label, connectToNodeId);
+    try {
+      addNode(label, connectToNodeId);
+      console.log('Nó adicionado com sucesso');
+    } catch (error) {
+      console.error('Erro ao adicionar nó:', error);
+    }
   };
 
   const handleAddChildNode = (parentNodeId: string) => {
@@ -153,6 +158,12 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setIsAddingNode(true);
   };
 
+  const handleCloseAddDialog = () => {
+    console.log('Fechando dialog de adicionar nó');
+    setIsAddingNode(false);
+    setSelectedParentForNewNode(null);
+  };
+
   return (
     <div className="relative w-full h-full bg-white">
       <MindMapToolbar
@@ -160,7 +171,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         onSave={handleSave}
         isSaving={isSaving}
         viewMode={viewMode}
-        onViewModeChange={handleViewModeChange}
+        onViewModeChange={setViewMode}
       />
 
       <div className="h-[calc(100%-73px)]">
@@ -172,12 +183,12 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
               selectedNode={selectedNode}
               hiddenNodes={hiddenNodes}
               onNodeClick={(nodeId) => handleNodeClick(nodeId)}
-              onEditNode={handleEditNode}
+              onEditNode={setEditingNode}
               onDeleteNode={deleteNode}
-              onOpenNodeNotes={handleOpenNodeNotes}
+              onOpenNodeNotes={setEditingNotes}
               onAddChildNode={handleAddChildNode}
               onToggleNodeVisibility={toggleNodeVisibility}
-              onMoveNode={handleMoveNode}
+              onMoveNode={moveNodeInList}
             />
           </div>
         ) : (
@@ -224,13 +235,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
       <DialogManager
         isAddingNode={isAddingNode}
-        setIsAddingNode={(value) => {
-          console.log('setIsAddingNode chamado com valor:', value);
-          setIsAddingNode(value);
-          if (!value) {
-            setSelectedParentForNewNode(null);
-          }
-        }}
+        setIsAddingNode={handleCloseAddDialog}
         editingNode={editingNode}
         setEditingNode={setEditingNode}
         changingNodeType={changingNodeType}

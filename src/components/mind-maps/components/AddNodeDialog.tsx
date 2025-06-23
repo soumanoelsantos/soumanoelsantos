@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -24,25 +25,32 @@ const AddNodeDialog = ({
   preSelectedParent 
 }: AddNodeDialogProps) => {
   const [label, setLabel] = useState('');
-  const [selectedParentId, setSelectedParentId] = useState<string>('');
+  const [selectedParentId, setSelectedParentId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (isOpen) {
       setLabel('');
-      setSelectedParentId(preSelectedParent || '');
+      setSelectedParentId(preSelectedParent || undefined);
     }
   }, [isOpen, preSelectedParent]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (label.trim()) {
-      onAdd(label.trim(), selectedParentId || undefined);
+      console.log('Submetendo novo nó:', { label: label.trim(), selectedParentId });
+      onAdd(label.trim(), selectedParentId);
       onClose();
     }
   };
 
+  const handleClose = () => {
+    setLabel('');
+    setSelectedParentId(undefined);
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Adicionar Novo Nó</DialogTitle>
@@ -62,24 +70,26 @@ const AddNodeDialog = ({
           {nodes.length > 0 && (
             <div>
               <Label htmlFor="parent">Conectar a (opcional)</Label>
-              <Select value={selectedParentId} onValueChange={setSelectedParentId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um nó pai..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Nenhum (nó independente)</SelectItem>
-                  {nodes.map(node => (
-                    <SelectItem key={node.id} value={node.id}>
-                      {node.data.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Select value={selectedParentId || "none"} onValueChange={(value) => setSelectedParentId(value === "none" ? undefined : value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um nó pai..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Nenhum (nó independente)</SelectItem>
+                    {nodes.map(node => (
+                      <SelectItem key={node.id} value={node.id}>
+                        {node.data.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           )}
           
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               Cancelar
             </Button>
             <Button type="submit" disabled={!label.trim()}>
