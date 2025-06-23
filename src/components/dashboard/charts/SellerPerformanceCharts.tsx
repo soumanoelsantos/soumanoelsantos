@@ -6,9 +6,9 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } fro
 import { useSellerPerformanceCharts } from '@/hooks/useSellerPerformanceCharts';
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('pt-BR', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'BRL',
+    currency: 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
@@ -32,6 +32,32 @@ const chartConfig = {
     label: 'Média',
     color: '#6b7280', // Cinza
   }
+};
+
+// Componente de tooltip customizado
+const CustomTooltip = ({ active, payload, label, type }: any) => {
+  if (active && payload && payload.length > 0) {
+    // Filtrar apenas o item que está sendo hover
+    const activePayload = payload.find((item: any) => item.dataKey !== 'media');
+    const mediaPayload = payload.find((item: any) => item.dataKey === 'media');
+    
+    return (
+      <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+        <p className="font-medium text-gray-900">{`Dia ${label}`}</p>
+        {activePayload && (
+          <p className="text-sm" style={{ color: activePayload.color }}>
+            {`${activePayload.dataKey}: ${formatCurrency(activePayload.value)}`}
+          </p>
+        )}
+        {mediaPayload && (
+          <p className="text-sm" style={{ color: mediaPayload.color }}>
+            {`Média: ${formatCurrency(mediaPayload.value)}`}
+          </p>
+        )}
+      </div>
+    );
+  }
+  return null;
 };
 
 export const SellerRevenueChart = () => {
@@ -75,22 +101,19 @@ export const SellerRevenueChart = () => {
             <YAxis 
               tickFormatter={(value) => {
                 if (value >= 1000000) {
-                  return `${(value / 1000000).toFixed(1)}M`;
+                  return `$${(value / 1000000).toFixed(1)}M`;
                 }
                 if (value >= 1000) {
-                  return `${(value / 1000).toFixed(0)}k`;
+                  return `$${(value / 1000).toFixed(0)}k`;
                 }
-                return value.toString();
+                return `$${value}`;
               }}
               axisLine={false}
               tickLine={false}
               className="text-xs"
             />
             <ChartTooltip 
-              content={<ChartTooltipContent 
-                formatter={(value: number, name: string) => [formatCurrency(value), name]}
-                labelFormatter={(label) => `Dia ${label}`}
-              />}
+              content={<CustomTooltip type="revenue" />}
             />
             <ChartLegend content={<ChartLegendContent />} />
             
@@ -165,22 +188,19 @@ export const SellerBillingChart = () => {
             <YAxis 
               tickFormatter={(value) => {
                 if (value >= 1000000) {
-                  return `${(value / 1000000).toFixed(1)}M`;
+                  return `$${(value / 1000000).toFixed(1)}M`;
                 }
                 if (value >= 1000) {
-                  return `${(value / 1000).toFixed(0)}k`;
+                  return `$${(value / 1000).toFixed(0)}k`;
                 }
-                return value.toString();
+                return `$${value}`;
               }}
               axisLine={false}
               tickLine={false}
               className="text-xs"
             />
             <ChartTooltip 
-              content={<ChartTooltipContent 
-                formatter={(value: number, name: string) => [formatCurrency(value), name]}
-                labelFormatter={(label) => `Dia ${label}`}
-              />}
+              content={<CustomTooltip type="billing" />}
             />
             <ChartLegend content={<ChartLegendContent />} />
             
