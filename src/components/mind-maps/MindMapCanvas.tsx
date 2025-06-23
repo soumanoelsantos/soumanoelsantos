@@ -45,7 +45,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setSelectedNode
   });
 
-  const { panOffset, isPanning, handleCanvasMouseDown } = usePanAndZoom();
+  const { panOffset, isPanning, handleCanvasMouseDown: panCanvasMouseDown } = usePanAndZoom();
 
   const {
     selectedNodes,
@@ -101,22 +101,22 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   };
 
   // Wrapper functions to match CanvasContent expected signatures
-  const handleCanvasMouseDown = (nodeId: string, e: React.MouseEvent) => {
+  const handleNodeMouseDown = (nodeId: string, e: React.MouseEvent) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
       dragMouseDown(e, nodeId, node.position);
     }
   };
 
-  const handleCanvasTouchStart = (nodeId: string, e: React.TouchEvent) => {
+  const handleNodeTouchStart = (nodeId: string, e: React.TouchEvent) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
       dragTouchStart(e, nodeId, node.position);
     }
   };
 
-  const handleCanvasNodeClick = (nodeId: string, e: React.MouseEvent) => {
-    canvasNodeClick(e);
+  const handleNodeClick = (nodeId: string, e: React.MouseEvent) => {
+    canvasNodeClick(e, nodeId);
   };
 
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
@@ -133,7 +133,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         ref={canvasRef}
         className="w-full h-full relative overflow-auto cursor-grab active:cursor-grabbing"
         style={{ minHeight: '600px', minWidth: '100%' }}
-        onMouseDown={handleCanvasMouseDown}
+        onMouseDown={panCanvasMouseDown}
         onClick={handleCanvasClick}
       >
         <div 
@@ -155,9 +155,9 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
             alignmentLines={[]}
             panOffset={{ x: 0, y: 0 }}
             isPanning={isPanning}
-            onMouseDown={handleCanvasMouseDown}
-            onTouchStart={handleCanvasTouchStart}
-            onNodeClick={handleCanvasNodeClick}
+            onMouseDown={handleNodeMouseDown}
+            onTouchStart={handleNodeTouchStart}
+            onNodeClick={handleNodeClick}
             onEditNode={handleEditNode}
             onDeleteNode={deleteNode}
             onToggleNodeVisibility={toggleNodeVisibility}
