@@ -24,8 +24,8 @@ const chartConfig = {
     label: 'Will', 
     color: '#3b82f6', // Azul vibrante
   },
-  'Ana Carvalho': {
-    label: 'Ana Carvalho',
+  'Ana Carcalho': { // Corrigido para corresponder ao nome no banco
+    label: 'Ana Carcalho',
     color: '#f59e0b', // Amarelo/laranja vibrante
   },
   media: {

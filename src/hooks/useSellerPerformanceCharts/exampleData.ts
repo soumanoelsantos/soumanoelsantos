@@ -7,7 +7,7 @@ export const generateExampleData = (): {
   sellerNames: string[]
 } => {
   console.log('🎯 [DEBUG] useSellerPerformanceCharts - Gerando dados de exemplo');
-  const exampleNames = ['Renata', 'Will', 'Ana Carvalho'];
+  const exampleNames = ['Renata', 'Will', 'Ana Carcalho']; // Mantém o nome como está no banco
 
   const revenueChartData: SellerChartDataPoint[] = [];
   const billingChartData: SellerChartDataPoint[] = [];
@@ -32,7 +32,7 @@ export const generateExampleData = (): {
       day: dayStr,
       'Renata': renata_revenue,
       'Will': will_revenue,
-      'Ana Carvalho': ana_revenue,
+      'Ana Carcalho': ana_revenue, // Corrigido para corresponder ao nome no banco
       media: revenueMedia
     });
 
@@ -40,7 +40,7 @@ export const generateExampleData = (): {
       day: dayStr,
       'Renata': renata_billing,
       'Will': will_billing,
-      'Ana Carvalho': ana_billing,
+      'Ana Carcalho': ana_billing, // Corrigido para corresponder ao nome no banco
       media: billingMedia
     });
   }
