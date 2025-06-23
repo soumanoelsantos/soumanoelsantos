@@ -18,7 +18,7 @@ interface MindMapNodeProps {
   onDelete: () => void;
   onToggleConnections: () => void;
   onChangeType: () => void;
-  onOpenNotes: () => void; // Nova prop para abrir as notas
+  onOpenNotes: () => void;
 }
 
 const MindMapNode = ({
@@ -65,14 +65,15 @@ const MindMapNode = ({
         left: node.position.x,
         top: node.position.y,
         transform: 'translate(-50%, -50%)',
-        cursor: isDragged ? 'grabbing' : 'grab'
+        cursor: isDragged ? 'grabbing' : 'grab',
+        zIndex: isDragged ? 1000 : 100
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onClick={onClick}
     >
       <Card className={`min-w-[120px] shadow-lg hover:shadow-xl transition-all relative ${
-        isSelected ? 'border-blue-500 bg-blue-50' : ''
+        isSelected ? 'border-blue-500 bg-blue-50' : 'bg-white'
       } ${isDragged ? 'shadow-2xl' : ''}`}>
         <CardContent className="p-3">
           <div className="flex items-center justify-between mb-2">
@@ -81,7 +82,6 @@ const MindMapNode = ({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: node.data.color }}
               />
-              {/* Ícone de notas sempre visível */}
               <Button
                 size="sm"
                 variant="ghost"

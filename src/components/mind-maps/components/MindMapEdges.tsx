@@ -85,7 +85,10 @@ const MindMapEdges = ({ nodes, edges, hiddenNodes = new Set() }: MindMapEdgesPro
   };
 
   return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+    <svg 
+      className="absolute inset-0 w-full h-full pointer-events-none" 
+      style={{ zIndex: -1 }}
+    >
       <defs>
         <marker
           id="arrowhead"
