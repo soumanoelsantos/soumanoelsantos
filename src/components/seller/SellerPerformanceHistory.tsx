@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -34,13 +35,10 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
   };
 
   const formatCurrency = (value: number) => {
-    console.log('💰 [DEBUG] formatCurrency - Input value:', value, 'Type:', typeof value);
-    const result = new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
     }).format(value);
-    console.log('💰 [DEBUG] formatCurrency - Formatted result:', result);
-    return result;
   };
 
   const formatDate = (dateString: string) => {
@@ -92,8 +90,6 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
     );
   }
 
-  console.log('📊 [DEBUG] SellerPerformanceHistory - Performances data:', performances);
-
   return (
     <>
       <Card>
@@ -107,14 +103,6 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
           <div className="space-y-4">
             {performances.map((performance) => {
               const isExpanded = expandedItems.has(performance.id);
-              
-              console.log('🔍 [DEBUG] Performance item:', {
-                id: performance.id,
-                date: performance.date,
-                revenue_amount: performance.revenue_amount,
-                revenue_type: typeof performance.revenue_amount,
-                sales_count: performance.sales_count
-              });
               
               return (
                 <Collapsible key={performance.id}>
@@ -146,7 +134,7 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
                               {performance.sales_count} vendas
                             </Badge>
                             <Badge variant="outline" className="text-xs">
-                              {formatCurrency(Number(performance.revenue_amount))}
+                              {formatCurrency(performance.revenue_amount)}
                             </Badge>
                           </div>
                         </div>
@@ -170,7 +158,7 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
                             <DollarSign className="h-4 w-4 text-blue-600" />
                             <div>
                               <p className="text-sm font-medium text-gray-900">
-                                {formatCurrency(Number(performance.revenue_amount))}
+                                {formatCurrency(performance.revenue_amount)}
                               </p>
                               <p className="text-xs text-gray-500">Receita</p>
                             </div>
@@ -180,7 +168,7 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
                             <DollarSign className="h-4 w-4 text-purple-600" />
                             <div>
                               <p className="text-sm font-medium text-gray-900">
-                                {formatCurrency(Number(performance.billing_amount))}
+                                {formatCurrency(performance.billing_amount)}
                               </p>
                               <p className="text-xs text-gray-500">Faturamento</p>
                             </div>
