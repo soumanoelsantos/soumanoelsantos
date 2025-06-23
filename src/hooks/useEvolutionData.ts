@@ -59,7 +59,7 @@ export const useEvolutionData = () => {
         totalQuantityGoal
       });
 
-      // Buscar TODAS as vendas dos produtos (sem filtro de data) ordenadas por data
+      // Buscar TODAS as vendas dos produtos com suas datas
       const { data: performanceData, error: performanceError } = await supabase
         .from('seller_individual_sales')
         .select(`
@@ -81,32 +81,29 @@ export const useEvolutionData = () => {
         const revenueEvolutionData: EvolutionDataPoint[] = [];
         const billingEvolutionData: EvolutionDataPoint[] = [];
         
-        // Criar pelo menos uma semana de dados futuros
-        const today = new Date();
-        for (let i = 0; i < 7; i++) {
-          const date = new Date(today);
-          date.setDate(today.getDate() + i);
+        // Criar dados até completar a meta + uma semana
+        const totalDaysNeeded = totalQuantityGoal + 7;
+        
+        for (let i = 0; i < totalDaysNeeded; i++) {
           const dayStr = (i + 1).toString();
           
-          const dailyRevenueGoal = totalRevenueGoal / totalQuantityGoal || 0;
-          const dailyBillingGoal = totalBillingGoal / totalQuantityGoal || 0;
-          
+          // A meta é sempre a mesma (meta total do produto), não acumulada
           revenueEvolutionData.push({
             day: dayStr,
-            metaReceita: dailyRevenueGoal * (i + 1),
+            metaReceita: totalRevenueGoal,
             receita: null,
-            superMetaReceita: (dailyRevenueGoal * (i + 1)) * 3,
-            hiperMetaReceita: (dailyRevenueGoal * (i + 1)) * 5,
+            superMetaReceita: totalRevenueGoal * 3,
+            hiperMetaReceita: totalRevenueGoal * 5,
             metaFaturamento: 0,
             faturamento: 0
           });
 
           billingEvolutionData.push({
             day: dayStr,
-            metaFaturamento: dailyBillingGoal * (i + 1),
+            metaFaturamento: totalBillingGoal,
             faturamento: null,
-            superMetaFaturamento: (dailyBillingGoal * (i + 1)) * 2.5,
-            hiperMetaFaturamento: (dailyBillingGoal * (i + 1)) * 4,
+            superMetaFaturamento: totalBillingGoal * 2.5,
+            hiperMetaFaturamento: totalBillingGoal * 4,
             metaReceita: 0,
             receita: 0
           });
@@ -138,17 +135,12 @@ export const useEvolutionData = () => {
 
       console.log('📊 [DEBUG] Primeira venda:', firstSaleDate, 'Hoje:', today);
 
-      // Calcular metas diárias baseadas na quantidade total de vendas necessárias
-      const dailyRevenueGoal = totalRevenueGoal / totalQuantityGoal || 0;
-      const dailyBillingGoal = totalBillingGoal / totalQuantityGoal || 0;
-
       const revenueEvolutionData: EvolutionDataPoint[] = [];
       const billingEvolutionData: EvolutionDataPoint[] = [];
 
       let accumulatedRevenue = 0;
       let accumulatedBilling = 0;
       let accumulatedSales = 0;
-      let dayCounter = 0;
 
       // Criar data inicial
       const startDate = new Date(firstSaleDate);
@@ -158,7 +150,7 @@ export const useEvolutionData = () => {
       const daysPassed = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
       // Processar dados até completar a meta + uma semana a frente
-      const totalDaysNeeded = totalQuantityGoal + 7; // Meta + 7 dias a frente
+      const totalDaysNeeded = totalQuantityGoal + 7;
 
       for (let i = 0; i < totalDaysNeeded; i++) {
         const currentDateIter = new Date(startDate);
@@ -175,27 +167,24 @@ export const useEvolutionData = () => {
           accumulatedSales += dayData.count;
         }
 
-        // Calcular metas acumuladas baseadas na progressão de vendas
-        const expectedSalesAtThisPoint = Math.min(i + 1, totalQuantityGoal);
-        const metaReceitaAcumulada = dailyRevenueGoal * expectedSalesAtThisPoint;
-        const metaFaturamentoAcumulada = dailyBillingGoal * expectedSalesAtThisPoint;
-
+        // A meta não é acumulada - é sempre o valor total da meta do produto
+        // Isso garante que o gráfico mostre uma linha reta na meta total
         revenueEvolutionData.push({
           day: dayStr,
-          metaReceita: metaReceitaAcumulada,
+          metaReceita: totalRevenueGoal, // Meta fixa, não acumulada
           receita: dateStr <= today ? accumulatedRevenue : null,
-          superMetaReceita: metaReceitaAcumulada * 3,
-          hiperMetaReceita: metaReceitaAcumulada * 5,
+          superMetaReceita: totalRevenueGoal * 3,
+          hiperMetaReceita: totalRevenueGoal * 5,
           metaFaturamento: 0,
           faturamento: 0
         });
 
         billingEvolutionData.push({
           day: dayStr,
-          metaFaturamento: metaFaturamentoAcumulada,
+          metaFaturamento: totalBillingGoal, // Meta fixa, não acumulada
           faturamento: dateStr <= today ? accumulatedBilling : null,
-          superMetaFaturamento: metaFaturamentoAcumulada * 2.5,
-          hiperMetaFaturamento: metaFaturamentoAcumulada * 4,
+          superMetaFaturamento: totalBillingGoal * 2.5,
+          hiperMetaFaturamento: totalBillingGoal * 4,
           metaReceita: 0,
           receita: 0
         });
