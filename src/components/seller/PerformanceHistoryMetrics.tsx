@@ -2,6 +2,7 @@
 import React from 'react';
 import { TrendingUp, Users, Phone, DollarSign } from 'lucide-react';
 import { SellerDailyPerformance } from '@/types/sellers';
+import { calculateCashCollect } from '@/utils/goalCalculations';
 
 interface PerformanceHistoryMetricsProps {
   performance: SellerDailyPerformance;
@@ -39,8 +40,8 @@ const PerformanceHistoryMetrics: React.FC<PerformanceHistoryMetricsProps> = ({
   const leadsCount = Number(performance.leads_count) || 0;
   const callsCount = Number(performance.calls_count) || 0;
 
-  // Calcular Cash Collect corretamente: (Receita / Faturamento) × 100
-  const cashCollectPercent = billingAmount > 0 ? (revenueAmount / billingAmount) * 100 : 0;
+  // Usar a função centralizada para calcular Cash Collect
+  const cashCollectPercent = calculateCashCollect(revenueAmount, billingAmount);
 
   console.log('🔍 [DEBUG] PerformanceHistoryMetrics - converted values:', {
     revenueAmount,

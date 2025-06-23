@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { calculateCashCollect } from '@/utils/goalCalculations';
 
 interface CloserData {
   name: string;
@@ -116,8 +117,8 @@ export const useClosersPerformanceData = () => {
         const conversao = real > 0 ? (totalSales / real) * 100 : 0;
         const ticketMedio = totalSales > 0 ? totalRevenue / totalSales : 0;
         
-        // Calcular Cash Collect corretamente: (Receita / Faturamento) × 100
-        const cashCollect = totalBilling > 0 ? (totalRevenue / totalBilling) * 100 : 0;
+        // Usar a função centralizada para calcular Cash Collect
+        const cashCollect = calculateCashCollect(totalRevenue, totalBilling);
         
         return {
           name: seller.name,
@@ -138,7 +139,7 @@ export const useClosersPerformanceData = () => {
       // Calcular totais
       const totalRevenue = closersData.reduce((sum, c) => sum + c.receita, 0);
       const totalBilling = closersData.reduce((sum, c) => sum + c.faturamento, 0);
-      const totalCashCollect = totalBilling > 0 ? (totalRevenue / totalBilling) * 100 : 0;
+      const totalCashCollect = calculateCashCollect(totalRevenue, totalBilling);
 
       const total: CloserData = {
         name: 'Total geral',
@@ -189,7 +190,7 @@ export const useClosersPerformanceData = () => {
         realReceita: 83.75,
         ticketMedio: 6766.67,
         conversao: 19.05,
-        cashCollect: (54133 / 152400) * 100, // 35.52%
+        cashCollect: calculateCashCollect(54133, 152400),
       },
       {
         name: 'Leandro Arcas',
@@ -203,7 +204,7 @@ export const useClosersPerformanceData = () => {
         realReceita: 12.02,
         ticketMedio: 10000,
         conversao: 3.45,
-        cashCollect: (10000 / 10000) * 100, // 100%
+        cashCollect: calculateCashCollect(10000, 10000),
       },
       {
         name: 'Jonatã Almeida',
@@ -217,7 +218,7 @@ export const useClosersPerformanceData = () => {
         realReceita: 0,
         ticketMedio: 5000,
         conversao: 0,
-        cashCollect: (5000 / 10000) * 100, // 50%
+        cashCollect: calculateCashCollect(5000, 10000),
       },
       {
         name: 'Fabrício Nunes',
@@ -231,7 +232,7 @@ export const useClosersPerformanceData = () => {
         realReceita: 0,
         ticketMedio: 11733.33,
         conversao: 33.33,
-        cashCollect: (35200 / 59400) * 100, // 59.26%
+        cashCollect: calculateCashCollect(35200, 59400),
       }
     ];
 
@@ -250,7 +251,7 @@ export const useClosersPerformanceData = () => {
       realReceita: 70.57,
       ticketMedio: 8025.64,
       conversao: 16.25,
-      cashCollect: (totalRevenue / totalBilling) * 100, // Calcular corretamente
+      cashCollect: calculateCashCollect(totalRevenue, totalBilling),
     };
 
     setData({

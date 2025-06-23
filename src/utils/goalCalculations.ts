@@ -32,3 +32,15 @@ export const formatCurrency = (value: number, currency: string = 'BRL'): string 
 export const getCurrencySymbol = (currency: string = 'BRL'): string => {
   return currency === 'USD' ? '$' : 'R$';
 };
+
+export const calculateCashCollect = (receita: number, faturamento: number): number => {
+  if (faturamento <= 0) return 0;
+  const result = (receita / faturamento) * 100;
+  console.log('🔍 [DEBUG] calculateCashCollect:', {
+    receita,
+    faturamento,
+    result: `${result.toFixed(2)}%`,
+    formula: `(${receita} / ${faturamento}) * 100 = ${result.toFixed(2)}%`
+  });
+  return result;
+};

@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Target, TrendingUp, Package } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductGoals } from '@/hooks/useProductGoals';
 import { DashboardConfig } from '@/types/dashboardConfig';
-import { formatCurrency } from '@/utils/goalCalculations';
+import { formatCurrency, calculateCashCollect } from '@/utils/goalCalculations';
 
 interface ProductMetricsCardsProps {
   config: DashboardConfig;
@@ -56,8 +57,8 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selec
     const metaQuantidade = productGoal?.quantity_goal || 0;
     const currency = (productGoal?.currency || 'BRL') as 'BRL' | 'USD';
 
-    // Calcular Cash Collect corretamente: (Receita / Faturamento) × 100
-    const cashCollectPercent = currentFaturamento > 0 ? (currentReceita / currentFaturamento) * 100 : 0;
+    // Usar a função centralizada para calcular Cash Collect
+    const cashCollectPercent = calculateCashCollect(currentReceita, currentFaturamento);
     
     return {
       receita: currentReceita,

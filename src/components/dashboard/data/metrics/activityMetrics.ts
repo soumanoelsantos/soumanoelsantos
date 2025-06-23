@@ -1,6 +1,6 @@
 
 import { Target, DollarSign } from 'lucide-react';
-import { calculateRemainingDaysInMonth, calculateDailyTarget, formatCurrency } from '@/utils/goalCalculations';
+import { calculateRemainingDaysInMonth, calculateDailyTarget, formatCurrency, calculateCashCollect } from '@/utils/goalCalculations';
 
 // Valores de exemplo - em uma implementação real, estes viriam de uma API ou contexto
 const MONTHLY_REVENUE_GOAL = 60000; // R$ 60.000 meta mensal de receita
@@ -13,8 +13,8 @@ const TOTAL_PAID_TRAFFIC_SPENT = 5000; // R$ 5.000 gasto total com tráfego pago
 const TOTAL_SALES = 25; // 25 vendas realizadas
 const CAC_VALUE = TOTAL_SALES > 0 ? TOTAL_PAID_TRAFFIC_SPENT / TOTAL_SALES : 0;
 
-// Calcular Cash Collect corretamente: (Receita / Faturamento) × 100
-const CASH_COLLECT_PERCENT = CURRENT_BILLING > 0 ? (CURRENT_REVENUE / CURRENT_BILLING) * 100 : 0;
+// Usar a função centralizada para calcular Cash Collect
+const CASH_COLLECT_PERCENT = calculateCashCollect(CURRENT_REVENUE, CURRENT_BILLING);
 
 const remainingDays = calculateRemainingDaysInMonth();
 const dailyRevenueTarget = calculateDailyTarget(MONTHLY_REVENUE_GOAL, CURRENT_REVENUE, remainingDays);
