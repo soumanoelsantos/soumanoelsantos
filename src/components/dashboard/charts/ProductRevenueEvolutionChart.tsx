@@ -5,19 +5,12 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { TrendingUp } from 'lucide-react';
 import { useEvolutionData } from '@/hooks/useEvolutionData';
 import { useProducts } from '@/hooks/useProducts';
+import { useProductGoals } from '@/hooks/useProductGoals';
+import { formatCurrency } from '@/utils/goalCalculations';
 
 interface ProductRevenueEvolutionChartProps {
   selectedProductId: string;
 }
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-};
 
 // Função para obter o dia atual do mês
 const getCurrentDay = () => {
@@ -58,14 +51,22 @@ const calculateProjection = (data: any[], valueKey: string, currentDay: number) 
 const ProductRevenueEvolutionChart: React.FC<ProductRevenueEvolutionChartProps> = ({ selectedProductId }) => {
   const { revenueData, isLoading } = useEvolutionData();
   const { products } = useProducts();
+  const { productGoals } = useProductGoals();
   
   const selectedProduct = products.find(product => product.id === selectedProductId);
+  const productGoal = productGoals.find(goal => goal.product_id === selectedProductId && goal.is_active);
+  const currency = productGoal?.currency || 'BRL';
+  
   const currentDay = getCurrentDay();
   
   // Calcular dados com projeção
   const dataWithProjection = React.useMemo(() => {
     return calculateProjection(revenueData, 'receita', currentDay);
   }, [revenueData, currentDay]);
+
+  const formatCurrencyValue = (value: number) => {
+    return formatCurrency(value, currency);
+  };
 
   if (isLoading) {
     return (
@@ -113,7 +114,7 @@ const ProductRevenueEvolutionChart: React.FC<ProductRevenueEvolutionChartProps> 
               tick={{ fontSize: 12 }}
             />
             <Tooltip 
-              formatter={(value: number, name: string) => [formatCurrency(value), name]}
+              formatter={(value: number, name: string) => [formatCurrencyValue(value), name]}
               labelFormatter={(label) => `Dia ${label}`}
               contentStyle={{
                 backgroundColor: 'white',
