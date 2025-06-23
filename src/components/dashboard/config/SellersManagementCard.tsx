@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Plus, Settings, BarChart3, Trash2 } from 'lucide-react';
+import { Users, Plus, Settings, Trash2 } from 'lucide-react';
 import { useSellers } from '@/hooks/useSellers';
 import { Badge } from '@/components/ui/badge';
 import { SellerFormDialog } from './sellers/SellerFormDialog';
@@ -143,14 +142,6 @@ const SellersManagementCard: React.FC = () => {
                         title="Configurações do vendedor"
                       >
                         <Settings className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={(e) => handlePerformanceClick(seller, e)}
-                        title="Ver performance"
-                      >
-                        <BarChart3 className="h-4 w-4" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
