@@ -20,13 +20,14 @@ export const useSellerPerformanceCharts = () => {
 
   const fetchSellerPerformanceData = async () => {
     if (!userId) {
+      console.log('❌ [DEBUG] useSellerPerformanceCharts - No userId available');
       setIsLoading(false);
       return;
     }
 
     try {
       setIsLoading(true);
-      console.log('🔍 [DEBUG] Buscando dados de performance dos vendedores para gráficos');
+      console.log('🔍 [DEBUG] useSellerPerformanceCharts - Buscando dados de performance dos vendedores para userId:', userId);
 
       // Buscar vendedores ativos do usuário
       const { data: sellersData, error: sellersError } = await supabase
@@ -37,15 +38,15 @@ export const useSellerPerformanceCharts = () => {
         .order('name');
 
       if (sellersError) {
-        console.error('❌ [DEBUG] Erro ao buscar vendedores:', sellersError);
+        console.error('❌ [DEBUG] useSellerPerformanceCharts - Erro ao buscar vendedores:', sellersError);
         throw sellersError;
       }
 
-      console.log('✅ [DEBUG] Vendedores encontrados:', sellersData);
+      console.log('✅ [DEBUG] useSellerPerformanceCharts - Vendedores encontrados:', sellersData?.length || 0, sellersData);
 
       // Se não há vendedores, usar dados de exemplo
       if (!sellersData || sellersData.length === 0) {
-        console.log('⚠️ [DEBUG] Nenhum vendedor encontrado, usando dados de exemplo');
+        console.log('⚠️ [DEBUG] useSellerPerformanceCharts - Nenhum vendedor encontrado, usando dados de exemplo');
         generateExampleData();
         return;
       }
@@ -53,6 +54,7 @@ export const useSellerPerformanceCharts = () => {
       // Extrair nomes dos vendedores
       const names = sellersData.map(seller => seller.name);
       setSellerNames(names);
+      console.log('📊 [DEBUG] useSellerPerformanceCharts - Nomes dos vendedores:', names);
 
       // Buscar dados de performance dos vendedores do mês atual
       const currentDate = new Date();
@@ -61,20 +63,29 @@ export const useSellerPerformanceCharts = () => {
       const startOfMonth = `${year}-${month.toString().padStart(2, '0')}-01`;
       const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
 
+      console.log('📅 [DEBUG] useSellerPerformanceCharts - Período de busca:', { startOfMonth, endOfMonth });
+
       const { data: performanceData, error: performanceError } = await supabase
         .from('seller_daily_performance')
-        .select('seller_id, date, revenue_amount, billing_amount')
+        .select(`
+          seller_id, 
+          date, 
+          revenue_amount, 
+          billing_amount,
+          sellers!inner(id, name, user_id)
+        `)
         .in('seller_id', sellersData.map(s => s.id))
         .gte('date', startOfMonth)
         .lte('date', endOfMonth)
         .order('date', { ascending: true });
 
       if (performanceError) {
-        console.error('❌ [DEBUG] Erro ao buscar performance:', performanceError);
+        console.error('❌ [DEBUG] useSellerPerformanceCharts - Erro ao buscar performance:', performanceError);
         throw performanceError;
       }
 
-      console.log('✅ [DEBUG] Dados de performance encontrados:', performanceData);
+      console.log('✅ [DEBUG] useSellerPerformanceCharts - Dados de performance encontrados:', performanceData?.length || 0);
+      console.log('🔍 [DEBUG] useSellerPerformanceCharts - Sample performance data:', performanceData?.slice(0, 3));
 
       // Processar dados para os gráficos
       const daysInMonth = new Date(year, month, 0).getDate();
@@ -90,10 +101,12 @@ export const useSellerPerformanceCharts = () => {
         }
         const sellerMap = performanceBySellerAndDate.get(perf.seller_id)!;
         sellerMap.set(perf.date, {
-          revenue: perf.revenue_amount || 0,
-          billing: perf.billing_amount || 0
+          revenue: Number(perf.revenue_amount) || 0,
+          billing: Number(perf.billing_amount) || 0
         });
       });
+
+      console.log('📊 [DEBUG] useSellerPerformanceCharts - Performance agrupada por vendedor:', performanceBySellerAndDate.size);
 
       // Criar mapa de ID para nome do vendedor
       const sellerIdToName = new Map<string, string>();
@@ -133,6 +146,8 @@ export const useSellerPerformanceCharts = () => {
 
           totalRevenue += sellerRevenue;
           totalBilling += sellerBilling;
+
+          console.log(`📈 [DEBUG] useSellerPerformanceCharts - Dia ${dayStr}, Vendedor ${seller.name}: Revenue=${sellerRevenue}, Billing=${sellerBilling}`);
         });
 
         // Calcular média
@@ -144,17 +159,19 @@ export const useSellerPerformanceCharts = () => {
         billingChartData.push(billingDataPoint);
       }
 
-      console.log('✅ [DEBUG] Dados de gráficos processados com nomes reais:', {
-        revenueData: revenueChartData.length,
-        billingData: billingChartData.length,
-        sellerNames: names
+      console.log('✅ [DEBUG] useSellerPerformanceCharts - Dados de gráficos processados:', {
+        revenueDataLength: revenueChartData.length,
+        billingDataLength: billingChartData.length,
+        sellerNames: names,
+        sampleRevenueData: revenueChartData.slice(-3), // últimos 3 dias
+        sampleBillingData: billingChartData.slice(-3)
       });
 
       setRevenueData(revenueChartData);
       setBillingData(billingChartData);
 
     } catch (error) {
-      console.error('💥 [DEBUG] Erro ao carregar dados de performance dos vendedores:', error);
+      console.error('💥 [DEBUG] useSellerPerformanceCharts - Erro ao carregar dados de performance dos vendedores:', error);
       toast({
         title: "Erro",
         description: "Não foi possível carregar os dados de performance dos vendedores",
@@ -169,6 +186,7 @@ export const useSellerPerformanceCharts = () => {
   };
 
   const generateExampleData = () => {
+    console.log('🎯 [DEBUG] useSellerPerformanceCharts - Gerando dados de exemplo');
     const currentDate = new Date();
     const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
     const exampleNames = ['Michelle Silva', 'Fabricio Costa', 'Leandro Santos'];
@@ -212,6 +230,7 @@ export const useSellerPerformanceCharts = () => {
 
     setRevenueData(revenueChartData);
     setBillingData(billingChartData);
+    console.log('✅ [DEBUG] useSellerPerformanceCharts - Dados de exemplo gerados');
   };
 
   useEffect(() => {
