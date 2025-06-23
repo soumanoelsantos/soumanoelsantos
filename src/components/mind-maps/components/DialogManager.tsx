@@ -4,6 +4,7 @@ import { MindMapNode, MindMapEdge } from '@/types/mindMap';
 import AddNodeDialog from './AddNodeDialog';
 import EditNodeDialog from './EditNodeDialog';
 import ChangeNodeTypeDialog from './ChangeNodeTypeDialog';
+import NodeNotesDialog from './NodeNotesDialog';
 
 interface DialogManagerProps {
   isAddingNode: boolean;
@@ -12,11 +13,14 @@ interface DialogManagerProps {
   setEditingNode: (value: string | null) => void;
   changingNodeType: string | null;
   setChangingNodeType: (value: string | null) => void;
+  editingNotes: string | null; // Nova prop
+  setEditingNotes: (value: string | null) => void; // Nova prop
   visibleNodes: MindMapNode[];
   nodes: MindMapNode[];
   edges: MindMapEdge[];
   onAddNode: (label: string, connectToNodeId?: string) => void;
   onUpdateNodeLabel: (nodeId: string, label: string) => void;
+  onUpdateNodeNotes: (nodeId: string, notes: string) => void; // Nova prop
   getAvailableParents: (nodeId: string) => MindMapNode[];
   onChangeToMain: (nodeId: string) => void;
   onChangeToChild: (nodeId: string, parentId: string) => void;
@@ -30,11 +34,14 @@ const DialogManager = ({
   setEditingNode,
   changingNodeType,
   setChangingNodeType,
+  editingNotes,
+  setEditingNotes,
   visibleNodes,
   nodes,
   edges,
   onAddNode,
   onUpdateNodeLabel,
+  onUpdateNodeNotes,
   getAvailableParents,
   onChangeToMain,
   onChangeToChild,
@@ -51,12 +58,26 @@ const DialogManager = ({
     return nodes.find(n => n.id === changingNodeType) || null;
   };
 
+  const getNotesNode = () => {
+    if (!editingNotes) return null;
+    return nodes.find(n => n.id === editingNotes) || null;
+  };
+
   const handleSaveEdit = (label: string) => {
     if (editingNode) {
       onUpdateNodeLabel(editingNode, label);
       setEditingNode(null);
     }
   };
+
+  const handleSaveNotes = (notes: string) => {
+    if (editingNotes) {
+      onUpdateNodeNotes(editingNotes, notes);
+      setEditingNotes(null);
+    }
+  };
+
+  const notesNode = getNotesNode();
 
   return (
     <>
@@ -83,6 +104,14 @@ const DialogManager = ({
         onChangeToMain={onChangeToMain}
         onChangeToChild={onChangeToChild}
         onChangeToGrandchild={onChangeToGrandchild}
+      />
+
+      <NodeNotesDialog
+        isOpen={!!editingNotes}
+        nodeLabel={notesNode?.data.label || ''}
+        currentNotes={notesNode?.data.notes || ''}
+        onClose={() => setEditingNotes(null)}
+        onSave={handleSaveNotes}
       />
     </>
   );

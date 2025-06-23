@@ -27,6 +27,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     deleteNode,
     updateNodeLabel,
     updateNodePosition,
+    updateNodeNotes, // Nova função
     toggleNodeVisibility,
     getAvailableParents,
     changeNodeToMain,
@@ -71,6 +72,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [editingNode, setEditingNode] = useState<string | null>(null);
   const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
+  const [editingNotes, setEditingNotes] = useState<string | null>(null); // Novo estado
 
   const handleSave = async () => {
     console.log('Salvamento manual do mapa mental:', { nodes, edges });
@@ -92,6 +94,10 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const handleChangeNodeType = (nodeId: string) => {
     setChangingNodeType(nodeId);
+  };
+
+  const handleOpenNodeNotes = (nodeId: string) => {
+    setEditingNotes(nodeId);
   };
 
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
@@ -137,6 +143,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
             onDeleteNode={deleteNode}
             onToggleNodeVisibility={toggleNodeVisibility}
             onChangeNodeType={handleChangeNodeType}
+            onOpenNodeNotes={handleOpenNodeNotes} // Nova prop
           />
         </div>
       </div>
@@ -148,11 +155,14 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         setEditingNode={setEditingNode}
         changingNodeType={changingNodeType}
         setChangingNodeType={setChangingNodeType}
+        editingNotes={editingNotes} // Nova prop
+        setEditingNotes={setEditingNotes} // Nova prop
         visibleNodes={visibleNodes}
         nodes={nodes}
         edges={edges}
         onAddNode={handleAddNode}
         onUpdateNodeLabel={updateNodeLabel}
+        onUpdateNodeNotes={updateNodeNotes} // Nova prop
         getAvailableParents={getAvailableParents}
         onChangeToMain={changeNodeToMain}
         onChangeToChild={changeNodeToChild}

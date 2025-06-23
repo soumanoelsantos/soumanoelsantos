@@ -151,6 +151,14 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     ));
   };
 
+  const updateNodeNotes = (nodeId: string, notes: string) => {
+    setNodes(prev => prev.map(node =>
+      node.id === nodeId
+        ? { ...node, data: { ...node.data, notes } }
+        : node
+    ));
+  };
+
   const addConnection = (sourceId: string, targetId: string) => {
     // Check if connection already exists
     const connectionExists = edges.some(edge => 
@@ -338,6 +346,7 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     updateNode,
     updateNodeLabel,
     updateNodePosition,
+    updateNodeNotes,
     addConnection,
     removeConnection,
     toggleNodeVisibility,

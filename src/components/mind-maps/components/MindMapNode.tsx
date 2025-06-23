@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit2, Trash2, Eye, EyeOff, Network } from 'lucide-react';
+import { Edit2, Trash2, Eye, EyeOff, Network, NotebookPen } from 'lucide-react';
 import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
 
 interface MindMapNodeProps {
@@ -18,6 +18,7 @@ interface MindMapNodeProps {
   onDelete: () => void;
   onToggleConnections: () => void;
   onChangeType: () => void;
+  onOpenNotes: () => void; // Nova prop para abrir as notas
 }
 
 const MindMapNode = ({
@@ -32,7 +33,8 @@ const MindMapNode = ({
   onEdit,
   onDelete,
   onToggleConnections,
-  onChangeType
+  onChangeType,
+  onOpenNotes
 }: MindMapNodeProps) => {
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only start dragging if not clicking on buttons
@@ -51,6 +53,8 @@ const MindMapNode = ({
       onTouchStart(e);
     }
   };
+
+  const hasNotes = node.data.notes && node.data.notes.trim().length > 0;
 
   return (
     <div
@@ -72,10 +76,27 @@ const MindMapNode = ({
       } ${isDragged ? 'shadow-2xl' : ''}`}>
         <CardContent className="p-3">
           <div className="flex items-center justify-between mb-2">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: node.data.color }}
-            />
+            <div className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: node.data.color }}
+              />
+              {/* Ícone de notas sempre visível */}
+              <Button
+                size="sm"
+                variant="ghost"
+                className={`h-5 w-5 p-0 hover:bg-gray-100 ${
+                  hasNotes ? 'text-blue-600' : 'text-gray-400'
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenNotes();
+                }}
+                title={hasNotes ? "Ver/Editar notas" : "Adicionar notas"}
+              >
+                <NotebookPen className="h-3 w-3" />
+              </Button>
+            </div>
             {hasChildNodes && (
               <Button
                 size="sm"

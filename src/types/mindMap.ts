@@ -1,9 +1,12 @@
-
 export interface MindMapNode {
   id: string;
   type: 'default' | 'input' | 'output';
   position: { x: number; y: number };
-  data: { label: string; color?: string };
+  data: { 
+    label: string; 
+    color?: string;
+    notes?: string; // Nova propriedade para as notas
+  };
 }
 
 export interface MindMapEdge {
