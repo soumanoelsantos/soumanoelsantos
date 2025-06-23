@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { TrendingUp } from 'lucide-react';
-import { useEvolutionData } from '@/hooks/useEvolutionData';
+import { useProductEvolutionData } from '@/hooks/useProductEvolutionData';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductGoals } from '@/hooks/useProductGoals';
 import { formatCurrency } from '@/utils/goalCalculations';
@@ -49,7 +49,7 @@ const calculateProjection = (data: any[], valueKey: string, currentDay: number) 
 };
 
 const ProductRevenueEvolutionChart: React.FC<ProductRevenueEvolutionChartProps> = ({ selectedProductId }) => {
-  const { revenueData, isLoading } = useEvolutionData();
+  const { revenueData, isLoading } = useProductEvolutionData(selectedProductId);
   const { products } = useProducts();
   const { productGoals } = useProductGoals();
   
