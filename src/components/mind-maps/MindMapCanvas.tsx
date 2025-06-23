@@ -27,7 +27,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     deleteNode,
     updateNodeLabel,
     updateNodePosition,
-    updateNodeNotes, // Nova função
+    updateNodeNotes,
     toggleNodeVisibility,
     getAvailableParents,
     changeNodeToMain,
@@ -40,7 +40,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     arrangeInGrid
   } = useMindMapState(initialContent);
 
-  const { draggedNode, canvasRef, handleMouseDown, handleTouchStart, isDragging } = useDragAndDrop({
+  const { draggedNode, canvasRef, handleMouseDown: dragMouseDown, handleTouchStart: dragTouchStart, isDragging } = useDragAndDrop({
     updateNodePosition,
     setSelectedNode
   });
@@ -52,7 +52,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setSelectedNodes,
     showAlignmentToolbar,
     setShowAlignmentToolbar,
-    handleNodeClick,
+    handleNodeClick: canvasNodeClick,
     handleCanvasClick,
     clearSelection
   } = useCanvasInteractions({
@@ -65,14 +65,14 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   useAutoSave({
     content: { nodes, edges },
     onSave,
-    delay: 2000, // 2 segundos após a última modificação
+    delay: 2000,
     enabled: true
   });
 
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [editingNode, setEditingNode] = useState<string | null>(null);
   const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
-  const [editingNotes, setEditingNotes] = useState<string | null>(null); // Novo estado
+  const [editingNotes, setEditingNotes] = useState<string | null>(null);
 
   const handleSave = async () => {
     console.log('Salvamento manual do mapa mental:', { nodes, edges });
@@ -100,17 +100,23 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setEditingNotes(nodeId);
   };
 
-  // Fixed function signatures to match expected props
-  const handleMouseDown = (nodeId: string, e: React.MouseEvent) => {
-    handleMouseDown(e);
+  // Wrapper functions to match CanvasContent expected signatures
+  const handleCanvasMouseDown = (nodeId: string, e: React.MouseEvent) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      dragMouseDown(e, nodeId, node.position);
+    }
   };
 
-  const handleTouchStart = (nodeId: string, e: React.TouchEvent) => {
-    handleTouchStart(e);
+  const handleCanvasTouchStart = (nodeId: string, e: React.TouchEvent) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      dragTouchStart(e, nodeId, node.position);
+    }
   };
 
-  const handleNodeClick = (nodeId: string, e: React.MouseEvent) => {
-    handleNodeClick(e);
+  const handleCanvasNodeClick = (nodeId: string, e: React.MouseEvent) => {
+    canvasNodeClick(e);
   };
 
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
@@ -149,9 +155,9 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
             alignmentLines={[]}
             panOffset={{ x: 0, y: 0 }}
             isPanning={isPanning}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
-            onNodeClick={handleNodeClick}
+            onMouseDown={handleCanvasMouseDown}
+            onTouchStart={handleCanvasTouchStart}
+            onNodeClick={handleCanvasNodeClick}
             onEditNode={handleEditNode}
             onDeleteNode={deleteNode}
             onToggleNodeVisibility={toggleNodeVisibility}
