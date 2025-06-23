@@ -35,33 +35,23 @@ const chartConfig = {
 };
 
 // Componente de tooltip customizado
-const CustomTooltip = ({ active, payload, label, type }: any) => {
+const CustomTooltip = ({ active, payload, label, coordinate, activePay }: any) => {
   if (active && payload && payload.length > 0) {
-    // Encontrar o item ativo (aquele que está sendo destacado)
-    const activeItem = payload.find((item: any) => item.payload && item.dataKey !== 'media');
+    // Filtrar apenas os itens visíveis (não incluir itens com opacity 0)
+    const visibleItems = payload.filter((item: any) => item.color && item.color !== 'transparent');
+    
+    if (visibleItems.length === 0) return null;
+    
+    // Pegar o primeiro item visível (que é o que está sendo destacado)
+    const activeItem = visibleItems[0];
     const mediaItem = payload.find((item: any) => item.dataKey === 'media');
-    
-    // Verificar qual vendedor tem o valor correspondente ao ponto ativo
-    let activeSellerName = '';
-    let activeValue = 0;
-    
-    if (activeItem && activeItem.payload) {
-      // Procurar qual vendedor tem o valor exato do ponto ativo
-      const currentPayload = activeItem.payload;
-      Object.keys(currentPayload).forEach(key => {
-        if (key !== 'day' && key !== 'media' && currentPayload[key] === activeItem.value) {
-          activeSellerName = key;
-          activeValue = activeItem.value;
-        }
-      });
-    }
     
     return (
       <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-3">
         <p className="font-medium text-gray-900">{`Dia ${label}`}</p>
-        {activeSellerName && (
-          <p className="text-sm" style={{ color: chartConfig[activeSellerName as keyof typeof chartConfig]?.color || '#000' }}>
-            {`${activeSellerName}: ${formatCurrency(activeValue)}`}
+        {activeItem && activeItem.dataKey !== 'media' && (
+          <p className="text-sm" style={{ color: activeItem.color }}>
+            {`${activeItem.dataKey}: ${formatCurrency(activeItem.value)}`}
           </p>
         )}
         {mediaItem && (
@@ -128,7 +118,7 @@ export const SellerRevenueChart = () => {
               className="text-xs"
             />
             <ChartTooltip 
-              content={<CustomTooltip type="revenue" />}
+              content={<CustomTooltip />}
             />
             <ChartLegend content={<ChartLegendContent />} />
             
@@ -215,7 +205,7 @@ export const SellerBillingChart = () => {
               className="text-xs"
             />
             <ChartTooltip 
-              content={<CustomTooltip type="billing" />}
+              content={<CustomTooltip />}
             />
             <ChartLegend content={<ChartLegendContent />} />
             
