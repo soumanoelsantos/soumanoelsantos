@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { useSellerPerformanceCharts } from '@/hooks/useSellerPerformanceCharts';
 
 const formatCurrency = (value: number) => {
@@ -13,8 +14,25 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-// Cores para os vendedores
-const sellerColors = ['#fbbf24', '#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
+// Configuração de cores para os vendedores com cores mais vivas
+const chartConfig = {
+  'Renata': {
+    label: 'Renata',
+    color: '#22c55e', // Verde vibrante
+  },
+  'Will': {
+    label: 'Will', 
+    color: '#3b82f6', // Azul vibrante
+  },
+  'Ana Carvalho': {
+    label: 'Ana Carvalho',
+    color: '#f59e0b', // Amarelo/laranja vibrante
+  },
+  media: {
+    label: 'Média',
+    color: '#6b7280', // Cinza
+  }
+};
 
 export const SellerRevenueChart = () => {
   const { revenueData, sellerNames, isLoading } = useSellerPerformanceCharts();
@@ -23,10 +41,12 @@ export const SellerRevenueChart = () => {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-center text-lg font-bold">ACUMULADO DIÁRIO DE RECEITA</CardTitle>
+          <CardTitle className="text-center text-lg font-bold text-blue-600">
+            ACUMULADO DIÁRIO DE RECEITA
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-96">
-          <div className="text-gray-500">Carregando dados...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </CardContent>
       </Card>
     );
@@ -35,58 +55,70 @@ export const SellerRevenueChart = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-center text-lg font-bold">ACUMULADO DIÁRIO DE RECEITA</CardTitle>
+        <CardTitle className="text-center text-lg font-bold text-blue-600">
+          ACUMULADO DIÁRIO DE RECEITA
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
+        <ChartContainer
+          config={chartConfig}
+          className="min-h-[400px] w-full"
+        >
           <LineChart data={revenueData}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis 
               dataKey="day" 
               axisLine={false}
               tickLine={false}
+              className="text-xs"
             />
             <YAxis 
               tickFormatter={(value) => {
+                if (value >= 1000000) {
+                  return `${(value / 1000000).toFixed(1)}M`;
+                }
                 if (value >= 1000) {
-                  return `${value / 1000}k`;
+                  return `${(value / 1000).toFixed(0)}k`;
                 }
                 return value.toString();
               }}
               axisLine={false}
               tickLine={false}
+              className="text-xs"
             />
-            <Tooltip 
-              formatter={(value: number, name: string) => [formatCurrency(value), name]}
-              labelFormatter={(label) => `Dia ${label}`}
+            <ChartTooltip 
+              content={<ChartTooltipContent 
+                formatter={(value: number, name: string) => [formatCurrency(value), name]}
+                labelFormatter={(label) => `Dia ${label}`}
+              />}
             />
-            <Legend />
+            <ChartLegend content={<ChartLegendContent />} />
             
-            {/* Linha da média (meta) */}
+            {/* Linha da média */}
             <Line 
               type="monotone" 
               dataKey="media" 
-              stroke="#000000" 
+              stroke="var(--color-media)"
               strokeWidth={2}
-              strokeDasharray="5 5"
-              name="Média"
-              dot={false}
+              strokeDasharray="8 4"
+              dot={{ fill: "var(--color-media)", strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, strokeWidth: 2 }}
             />
             
-            {/* Linhas dos vendedores com nomes reais */}
-            {sellerNames.map((sellerName, index) => (
+            {/* Linhas dos vendedores */}
+            {sellerNames.map((sellerName) => (
               <Line 
                 key={sellerName}
                 type="monotone" 
                 dataKey={sellerName}
-                stroke={sellerColors[index % sellerColors.length]}
+                stroke={`var(--color-${sellerName})`}
                 strokeWidth={3}
-                name={sellerName}
-                dot={false}
+                dot={{ fill: `var(--color-${sellerName})`, strokeWidth: 2, r: 5 }}
+                activeDot={{ r: 7, strokeWidth: 2 }}
               />
             ))}
           </LineChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
@@ -99,10 +131,12 @@ export const SellerBillingChart = () => {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-center text-lg font-bold">ACUMULADO DIÁRIO DE FATURAMENTO</CardTitle>
+          <CardTitle className="text-center text-lg font-bold text-green-600">
+            ACUMULADO DIÁRIO DE FATURAMENTO
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-96">
-          <div className="text-gray-500">Carregando dados...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
         </CardContent>
       </Card>
     );
@@ -111,61 +145,70 @@ export const SellerBillingChart = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-center text-lg font-bold">ACUMULADO DIÁRIO DE FATURAMENTO</CardTitle>
+        <CardTitle className="text-center text-lg font-bold text-green-600">
+          ACUMULADO DIÁRIO DE FATURAMENTO
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
+        <ChartContainer
+          config={chartConfig}
+          className="min-h-[400px] w-full"
+        >
           <LineChart data={billingData}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis 
               dataKey="day" 
               axisLine={false}
               tickLine={false}
+              className="text-xs"
             />
             <YAxis 
               tickFormatter={(value) => {
                 if (value >= 1000000) {
-                  return `${value / 1000000}M`;
+                  return `${(value / 1000000).toFixed(1)}M`;
                 }
                 if (value >= 1000) {
-                  return `${value / 1000}k`;
+                  return `${(value / 1000).toFixed(0)}k`;
                 }
                 return value.toString();
               }}
               axisLine={false}
               tickLine={false}
+              className="text-xs"
             />
-            <Tooltip 
-              formatter={(value: number, name: string) => [formatCurrency(value), name]}
-              labelFormatter={(label) => `Dia ${label}`}
+            <ChartTooltip 
+              content={<ChartTooltipContent 
+                formatter={(value: number, name: string) => [formatCurrency(value), name]}
+                labelFormatter={(label) => `Dia ${label}`}
+              />}
             />
-            <Legend />
+            <ChartLegend content={<ChartLegendContent />} />
             
-            {/* Linha da média (meta) */}
+            {/* Linha da média */}
             <Line 
               type="monotone" 
               dataKey="media" 
-              stroke="#000000" 
+              stroke="var(--color-media)"
               strokeWidth={2}
-              strokeDasharray="5 5"
-              name="Média"
-              dot={false}
+              strokeDasharray="8 4"
+              dot={{ fill: "var(--color-media)", strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, strokeWidth: 2 }}
             />
             
-            {/* Linhas dos vendedores com nomes reais */}
-            {sellerNames.map((sellerName, index) => (
+            {/* Linhas dos vendedores */}
+            {sellerNames.map((sellerName) => (
               <Line 
                 key={sellerName}
                 type="monotone" 
                 dataKey={sellerName}
-                stroke={sellerColors[index % sellerColors.length]}
+                stroke={`var(--color-${sellerName})`}
                 strokeWidth={3}
-                name={sellerName}
-                dot={false}
+                dot={{ fill: `var(--color-${sellerName})`, strokeWidth: 2, r: 5 }}
+                activeDot={{ r: 7, strokeWidth: 2 }}
               />
             ))}
           </LineChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
