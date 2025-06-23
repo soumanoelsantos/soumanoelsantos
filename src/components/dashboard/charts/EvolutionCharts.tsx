@@ -27,10 +27,13 @@ const calculateProjection = (data: any[], valueKey: string, currentDay: number) 
   const actualData = data.slice(0, currentDay);
   if (actualData.length < 2) return data;
   
-  // Calcular tendência baseada nos últimos dados
-  const lastValue = actualData[actualData.length - 1][valueKey];
-  const previousValue = actualData[actualData.length - 2][valueKey];
-  const trend = lastValue - previousValue;
+  // Calcular tendência baseada nos últimos dados válidos
+  const lastValidData = actualData.filter(item => item[valueKey] !== null);
+  if (lastValidData.length < 2) return data;
+  
+  const lastValue = lastValidData[lastValidData.length - 1][valueKey];
+  const previousValue = lastValidData[lastValidData.length - 2][valueKey];
+  const trend = (lastValue - previousValue) * 0.8; // Suavizar tendência
   
   // Aplicar projeção para os dias restantes
   return data.map((item, index) => {
@@ -79,11 +82,12 @@ export const RevenueEvolutionChart = () => {
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={dataWithProjection}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis 
               dataKey="day" 
               axisLine={false}
               tickLine={false}
+              tick={{ fontSize: 12 }}
             />
             <YAxis 
               tickFormatter={(value) => {
@@ -94,10 +98,17 @@ export const RevenueEvolutionChart = () => {
               }}
               axisLine={false}
               tickLine={false}
+              tick={{ fontSize: 12 }}
             />
             <Tooltip 
               formatter={(value: number, name: string) => [formatCurrency(value), name]}
               labelFormatter={(label) => `Dia ${label}`}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
             />
             <Legend />
             
@@ -106,28 +117,33 @@ export const RevenueEvolutionChart = () => {
               type="monotone" 
               dataKey="metaReceita" 
               stroke="#ef4444" 
-              strokeWidth={2}
+              strokeWidth={3}
               name="Meta Receita"
               dot={false}
             />
             
-            {/* Realizado até a data atual */}
+            {/* Receita realizada até a data atual - linha sólida melhorada */}
             <Line 
               type="monotone" 
               dataKey="receita" 
-              stroke="#22c55e" 
-              strokeWidth={2}
-              name="Receita"
-              dot={false}
+              stroke="#10b981" 
+              strokeWidth={4}
+              name="Receita Realizada"
+              dot={{
+                fill: '#10b981',
+                strokeWidth: 2,
+                stroke: '#ffffff',
+                r: 4
+              }}
               connectNulls={false}
             />
             
-            {/* Projeção de receita - linha pontilhada */}
+            {/* Projeção de receita - linha pontilhada verde */}
             <Line 
               type="monotone" 
               dataKey="receitaProjection" 
-              stroke="#22c55e" 
-              strokeWidth={2}
+              stroke="#10b981" 
+              strokeWidth={3}
               strokeDasharray="8 4"
               name="Projeção Receita"
               dot={false}
@@ -198,11 +214,12 @@ export const BillingEvolutionChart = () => {
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={dataWithProjection}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis 
               dataKey="day" 
               axisLine={false}
               tickLine={false}
+              tick={{ fontSize: 12 }}
             />
             <YAxis 
               tickFormatter={(value) => {
@@ -216,10 +233,17 @@ export const BillingEvolutionChart = () => {
               }}
               axisLine={false}
               tickLine={false}
+              tick={{ fontSize: 12 }}
             />
             <Tooltip 
               formatter={(value: number, name: string) => [formatCurrency(value), name]}
               labelFormatter={(label) => `Dia ${label}`}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
             />
             <Legend />
             
@@ -228,28 +252,33 @@ export const BillingEvolutionChart = () => {
               type="monotone" 
               dataKey="metaFaturamento" 
               stroke="#ef4444" 
-              strokeWidth={2}
+              strokeWidth={3}
               name="Meta Faturamento"
               dot={false}
             />
             
-            {/* Realizado até a data atual */}
+            {/* Faturamento realizado até a data atual - linha sólida melhorada */}
             <Line 
               type="monotone" 
               dataKey="faturamento" 
-              stroke="#22c55e" 
-              strokeWidth={2}
-              name="Faturamento"
-              dot={false}
+              stroke="#3b82f6" 
+              strokeWidth={4}
+              name="Faturamento Realizado"
+              dot={{
+                fill: '#3b82f6',
+                strokeWidth: 2,
+                stroke: '#ffffff',
+                r: 4
+              }}
               connectNulls={false}
             />
             
-            {/* Projeção de faturamento - linha pontilhada */}
+            {/* Projeção de faturamento - linha pontilhada azul */}
             <Line 
               type="monotone" 
               dataKey="faturamentoProjection" 
-              stroke="#22c55e" 
-              strokeWidth={2}
+              stroke="#3b82f6" 
+              strokeWidth={3}
               strokeDasharray="8 4"
               name="Projeção Faturamento"
               dot={false}
