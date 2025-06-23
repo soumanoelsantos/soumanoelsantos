@@ -87,10 +87,10 @@ export const useEvolutionData = () => {
         for (let i = 0; i < totalDaysNeeded; i++) {
           const dayStr = (i + 1).toString();
           
-          // A meta é sempre a mesma (meta total do produto), não acumulada
+          // Meta sempre fixa no valor total
           revenueEvolutionData.push({
             day: dayStr,
-            metaReceita: totalRevenueGoal,
+            metaReceita: totalRevenueGoal, // VALOR FIXO - não acumulado
             receita: null,
             superMetaReceita: totalRevenueGoal * 3,
             hiperMetaReceita: totalRevenueGoal * 5,
@@ -100,7 +100,7 @@ export const useEvolutionData = () => {
 
           billingEvolutionData.push({
             day: dayStr,
-            metaFaturamento: totalBillingGoal,
+            metaFaturamento: totalBillingGoal, // VALOR FIXO - não acumulado
             faturamento: null,
             superMetaFaturamento: totalBillingGoal * 2.5,
             hiperMetaFaturamento: totalBillingGoal * 4,
@@ -145,10 +145,6 @@ export const useEvolutionData = () => {
       // Criar data inicial
       const startDate = new Date(firstSaleDate);
       
-      // Calcular quantos dias já se passaram desde a primeira venda
-      const currentDate = new Date(today);
-      const daysPassed = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-
       // Processar dados até completar a meta + uma semana a frente
       const totalDaysNeeded = totalQuantityGoal + 7;
 
@@ -167,11 +163,10 @@ export const useEvolutionData = () => {
           accumulatedSales += dayData.count;
         }
 
-        // A meta não é acumulada - é sempre o valor total da meta do produto
-        // Isso garante que o gráfico mostre uma linha reta na meta total
+        // CORREÇÃO: Meta sempre fixa no valor total do produto
         revenueEvolutionData.push({
           day: dayStr,
-          metaReceita: totalRevenueGoal, // Meta fixa, não acumulada
+          metaReceita: totalRevenueGoal, // SEMPRE o valor total fixo
           receita: dateStr <= today ? accumulatedRevenue : null,
           superMetaReceita: totalRevenueGoal * 3,
           hiperMetaReceita: totalRevenueGoal * 5,
@@ -181,7 +176,7 @@ export const useEvolutionData = () => {
 
         billingEvolutionData.push({
           day: dayStr,
-          metaFaturamento: totalBillingGoal, // Meta fixa, não acumulada
+          metaFaturamento: totalBillingGoal, // SEMPRE o valor total fixo
           faturamento: dateStr <= today ? accumulatedBilling : null,
           superMetaFaturamento: totalBillingGoal * 2.5,
           hiperMetaFaturamento: totalBillingGoal * 4,
