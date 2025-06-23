@@ -26,8 +26,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   });
 
   const renderMetrics = () => {
-    const components: JSX.Element[] = [];
     const orderedItems = getOrderedItems();
+    const metricsComponents: JSX.Element[] = [];
+    const chartsComponents: JSX.Element[] = [];
 
     console.log('📊 [DEBUG] DashboardMetrics - Ordered items:', orderedItems);
     console.log('📊 [DEBUG] DashboardMetrics - Dashboard type:', dashboardType);
@@ -59,6 +60,17 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       'showProductTemporalChart'
     ];
 
+    // Lista de gráficos comerciais
+    const commercialCharts = [
+      'revenueEvolutionChart',
+      'billingEvolutionChart',
+      'sellerRevenueChart',
+      'sellerBillingChart',
+      'temporalRevenueChart',
+      'temporalBillingChart',
+      'showClosersPerformanceTable'
+    ];
+
     // Lista de indicadores comerciais
     const commercialIndicators = [
       'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
@@ -67,9 +79,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
       'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
       'showQuantidadeVendas', 'showCashCollect', 'showCac',
-      'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
-      'showClosersPerformanceTable', 'showRevenueEvolutionChart', 'showBillingEvolutionChart',
-      'showSellerRevenueChart', 'showSellerBillingChart', 'showTemporalRevenueChart', 'showTemporalBillingChart'
+      'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
     ];
 
     orderedItems.forEach((itemKey, index) => {
@@ -84,7 +94,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         console.log('📊 [DEBUG] Product dashboard - Should render:', shouldRender, 'for item:', itemKey);
       } else if (dashboardType === 'comercial') {
         // No dashboard comercial, mostrar apenas indicadores comerciais
-        shouldRender = commercialIndicators.includes(itemKey);
+        shouldRender = commercialIndicators.includes(itemKey) || commercialCharts.includes(itemKey);
       }
 
       if (!shouldRender) {
@@ -103,18 +113,42 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       );
 
       if (renderedComponent) {
-        components.push(renderedComponent);
-        console.log('📊 [DEBUG] Added component for:', itemKey);
+        // Separar gráficos de métricas
+        const isChart = productCharts.includes(itemKey) || commercialCharts.includes(itemKey);
+        
+        if (isChart) {
+          chartsComponents.push(renderedComponent);
+        } else {
+          metricsComponents.push(renderedComponent);
+        }
+        
+        console.log('📊 [DEBUG] Added component for:', itemKey, 'Type:', isChart ? 'chart' : 'metric');
       }
     });
 
-    console.log('📊 [DEBUG] Total components rendered:', components.length);
-    return components;
+    console.log('📊 [DEBUG] Total metrics rendered:', metricsComponents.length);
+    console.log('📊 [DEBUG] Total charts rendered:', chartsComponents.length);
+    
+    return { metricsComponents, chartsComponents };
   };
 
+  const { metricsComponents, chartsComponents } = renderMetrics();
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-      {renderMetrics()}
+    <div className="space-y-6">
+      {/* Grid para métricas em cards pequenos */}
+      {metricsComponents.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+          {metricsComponents}
+        </div>
+      )}
+      
+      {/* Layout de uma coluna para gráficos */}
+      {chartsComponents.length > 0 && (
+        <div className="space-y-6">
+          {chartsComponents}
+        </div>
+      )}
     </div>
   );
 };
