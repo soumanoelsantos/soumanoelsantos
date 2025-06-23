@@ -73,10 +73,13 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    console.log('💰 [DEBUG] SellerPerformanceTab formatCurrency - Input value:', value, 'Type:', typeof value);
+    const result = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
     }).format(value);
+    console.log('💰 [DEBUG] SellerPerformanceTab formatCurrency - Formatted result:', result);
+    return result;
   };
 
   const formatDate = (dateString: string) => {
@@ -124,6 +127,8 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
       </div>
     );
   }
+
+  console.log('📊 [DEBUG] SellerPerformanceTab - Performances data:', performances);
 
   return (
     <div className="space-y-4">
@@ -173,6 +178,14 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
             <div className="space-y-4">
               {performances.map((performance) => {
                 const isExpanded = expandedItems.has(performance.id);
+                
+                console.log('🔍 [DEBUG] SellerPerformanceTab Performance item:', {
+                  id: performance.id,
+                  date: performance.date,
+                  revenue_amount: performance.revenue_amount,
+                  revenue_type: typeof performance.revenue_amount,
+                  sales_count: performance.sales_count
+                });
                 
                 return (
                   <Collapsible key={performance.id}>
@@ -228,7 +241,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                               <DollarSign className="h-4 w-4 text-blue-600" />
                               <div>
                                 <p className="text-sm font-medium text-gray-900">
-                                  {formatCurrency(performance.revenue_amount)}
+                                  {formatCurrency(Number(performance.revenue_amount))}
                                 </p>
                                 <p className="text-xs text-gray-500">Receita</p>
                               </div>
@@ -238,7 +251,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                               <DollarSign className="h-4 w-4 text-purple-600" />
                               <div>
                                 <p className="text-sm font-medium text-gray-900">
-                                  {formatCurrency(performance.billing_amount)}
+                                  {formatCurrency(Number(performance.billing_amount))}
                                 </p>
                                 <p className="text-xs text-gray-500">Faturamento</p>
                               </div>
