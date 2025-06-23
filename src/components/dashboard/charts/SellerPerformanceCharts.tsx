@@ -27,15 +27,11 @@ const chartConfig = {
   'Ana Carcalho': { // Corrigido para corresponder ao nome no banco
     label: 'Ana Carcalho',
     color: '#f59e0b', // Amarelo/laranja vibrante
-  },
-  media: {
-    label: 'Média',
-    color: '#6b7280', // Cinza
   }
 };
 
 // Componente de tooltip customizado
-const CustomTooltip = ({ active, payload, label, coordinate, activePay }: any) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length > 0) {
     // Filtrar apenas os itens visíveis (não incluir itens com opacity 0)
     const visibleItems = payload.filter((item: any) => item.color && item.color !== 'transparent');
@@ -44,19 +40,13 @@ const CustomTooltip = ({ active, payload, label, coordinate, activePay }: any) =
     
     // Pegar o primeiro item visível (que é o que está sendo destacado)
     const activeItem = visibleItems[0];
-    const mediaItem = payload.find((item: any) => item.dataKey === 'media');
     
     return (
       <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-3">
         <p className="font-medium text-gray-900">{`Dia ${label}`}</p>
-        {activeItem && activeItem.dataKey !== 'media' && (
+        {activeItem && (
           <p className="text-sm" style={{ color: activeItem.color }}>
             {`${activeItem.dataKey}: ${formatCurrency(activeItem.value)}`}
-          </p>
-        )}
-        {mediaItem && (
-          <p className="text-sm" style={{ color: chartConfig.media.color }}>
-            {`Média: ${formatCurrency(mediaItem.value)}`}
           </p>
         )}
       </div>
@@ -121,17 +111,6 @@ export const SellerRevenueChart = () => {
               content={<CustomTooltip />}
             />
             <ChartLegend content={<ChartLegendContent />} />
-            
-            {/* Linha da média */}
-            <Line 
-              type="monotone" 
-              dataKey="media" 
-              stroke="var(--color-media)"
-              strokeWidth={2}
-              strokeDasharray="8 4"
-              dot={{ fill: "var(--color-media)", strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, strokeWidth: 2 }}
-            />
             
             {/* Linhas dos vendedores */}
             {sellerNames.map((sellerName) => (
@@ -208,17 +187,6 @@ export const SellerBillingChart = () => {
               content={<CustomTooltip />}
             />
             <ChartLegend content={<ChartLegendContent />} />
-            
-            {/* Linha da média */}
-            <Line 
-              type="monotone" 
-              dataKey="media" 
-              stroke="var(--color-media)"
-              strokeWidth={2}
-              strokeDasharray="8 4"
-              dot={{ fill: "var(--color-media)", strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, strokeWidth: 2 }}
-            />
             
             {/* Linhas dos vendedores */}
             {sellerNames.map((sellerName) => (
