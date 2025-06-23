@@ -116,6 +116,9 @@ export const useClosersPerformanceData = () => {
         const conversao = real > 0 ? (totalSales / real) * 100 : 0;
         const ticketMedio = totalSales > 0 ? totalRevenue / totalSales : 0;
         
+        // Calcular Cash Collect corretamente: (Receita / Faturamento) × 100
+        const cashCollect = totalBilling > 0 ? (totalRevenue / totalBilling) * 100 : 0;
+        
         return {
           name: seller.name,
           agendadas,
@@ -128,24 +131,28 @@ export const useClosersPerformanceData = () => {
           realReceita: totalRevenue > 0 ? Math.random() * 100 : 0,
           ticketMedio,
           conversao,
-          cashCollect: Math.random() * 100,
+          cashCollect,
         };
       });
 
       // Calcular totais
+      const totalRevenue = closersData.reduce((sum, c) => sum + c.receita, 0);
+      const totalBilling = closersData.reduce((sum, c) => sum + c.faturamento, 0);
+      const totalCashCollect = totalBilling > 0 ? (totalRevenue / totalBilling) * 100 : 0;
+
       const total: CloserData = {
         name: 'Total geral',
         agendadas: closersData.reduce((sum, c) => sum + c.agendadas, 0),
         real: closersData.reduce((sum, c) => sum + c.real, 0),
         noShow: closersData.reduce((sum, c) => sum + c.noShow, 0),
         vendas: closersData.reduce((sum, c) => sum + c.vendas, 0),
-        faturamento: closersData.reduce((sum, c) => sum + c.faturamento, 0),
+        faturamento: totalBilling,
         realFaturamento: closersData.length > 0 ? closersData.reduce((sum, c) => sum + c.realFaturamento, 0) / closersData.length : 0,
-        receita: closersData.reduce((sum, c) => sum + c.receita, 0),
+        receita: totalRevenue,
         realReceita: closersData.length > 0 ? closersData.reduce((sum, c) => sum + c.realReceita, 0) / closersData.length : 0,
         ticketMedio: closersData.reduce((sum, c) => sum + c.ticketMedio, 0) / (closersData.length || 1),
         conversao: closersData.length > 0 ? closersData.reduce((sum, c) => sum + c.conversao, 0) / closersData.length : 0,
-        cashCollect: closersData.length > 0 ? closersData.reduce((sum, c) => sum + c.cashCollect, 0) / closersData.length : 0,
+        cashCollect: totalCashCollect,
       };
 
       setData({
@@ -182,7 +189,7 @@ export const useClosersPerformanceData = () => {
         realReceita: 83.75,
         ticketMedio: 6766.67,
         conversao: 19.05,
-        cashCollect: 35.52,
+        cashCollect: (54133 / 152400) * 100, // 35.52%
       },
       {
         name: 'Leandro Arcas',
@@ -196,7 +203,7 @@ export const useClosersPerformanceData = () => {
         realReceita: 12.02,
         ticketMedio: 10000,
         conversao: 3.45,
-        cashCollect: 100,
+        cashCollect: (10000 / 10000) * 100, // 100%
       },
       {
         name: 'Jonatã Almeida',
@@ -210,7 +217,7 @@ export const useClosersPerformanceData = () => {
         realReceita: 0,
         ticketMedio: 5000,
         conversao: 0,
-        cashCollect: 50,
+        cashCollect: (5000 / 10000) * 100, // 50%
       },
       {
         name: 'Fabrício Nunes',
@@ -224,9 +231,12 @@ export const useClosersPerformanceData = () => {
         realReceita: 0,
         ticketMedio: 11733.33,
         conversao: 33.33,
-        cashCollect: 59.26,
+        cashCollect: (35200 / 59400) * 100, // 59.26%
       }
     ];
+
+    const totalRevenue = exampleClosers.reduce((sum, c) => sum + c.receita, 0);
+    const totalBilling = exampleClosers.reduce((sum, c) => sum + c.faturamento, 0);
 
     const total: CloserData = {
       name: 'Total geral',
@@ -234,13 +244,13 @@ export const useClosersPerformanceData = () => {
       real: 80,
       noShow: 30,
       vendas: 13,
-      faturamento: 231800,
+      faturamento: totalBilling,
       realFaturamento: 50.17,
-      receita: 104333,
+      receita: totalRevenue,
       realReceita: 70.57,
       ticketMedio: 8025.64,
       conversao: 16.25,
-      cashCollect: 45.01,
+      cashCollect: (totalRevenue / totalBilling) * 100, // Calcular corretamente
     };
 
     setData({

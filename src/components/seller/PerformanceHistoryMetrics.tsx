@@ -39,13 +39,17 @@ const PerformanceHistoryMetrics: React.FC<PerformanceHistoryMetricsProps> = ({
   const leadsCount = Number(performance.leads_count) || 0;
   const callsCount = Number(performance.calls_count) || 0;
 
+  // Calcular Cash Collect corretamente: (Receita / Faturamento) × 100
+  const cashCollectPercent = billingAmount > 0 ? (revenueAmount / billingAmount) * 100 : 0;
+
   console.log('🔍 [DEBUG] PerformanceHistoryMetrics - converted values:', {
     revenueAmount,
     billingAmount,
     salesCount,
     meetingsCount,
     leadsCount,
-    callsCount
+    callsCount,
+    cashCollectPercent: `${cashCollectPercent.toFixed(2)}%`
   });
 
   return (
@@ -115,6 +119,22 @@ const PerformanceHistoryMetrics: React.FC<PerformanceHistoryMetricsProps> = ({
           </div>
         </div>
       )}
+
+      {/* Cash Collect Section */}
+      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <DollarSign className="h-4 w-4 text-green-600" />
+          <div>
+            <p className="text-sm font-medium text-gray-900">
+              {cashCollectPercent.toFixed(2)}%
+            </p>
+            <p className="text-xs text-gray-500">Cash Collect</p>
+          </div>
+        </div>
+        <p className="text-xs text-gray-600 mt-1">
+          Taxa de conversão de faturamento em receita
+        </p>
+      </div>
     </>
   );
 };

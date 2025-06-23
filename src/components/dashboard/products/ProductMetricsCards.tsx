@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Target, TrendingUp, Package } from 'lucide-react';
@@ -57,8 +56,8 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selec
     const metaQuantidade = productGoal?.quantity_goal || 0;
     const currency = (productGoal?.currency || 'BRL') as 'BRL' | 'USD';
 
-    // Calcular Cash Collect como percentual da diferença entre faturamento e receita
-    const cashCollectPercent = currentFaturamento > 0 ? ((currentFaturamento - currentReceita) / currentFaturamento) * 100 : 0;
+    // Calcular Cash Collect corretamente: (Receita / Faturamento) × 100
+    const cashCollectPercent = currentFaturamento > 0 ? (currentReceita / currentFaturamento) * 100 : 0;
     
     return {
       receita: currentReceita,
@@ -260,7 +259,7 @@ const ProductMetricsCards: React.FC<ProductMetricsCardsProps> = ({ config, selec
             <div key={key}>
               {renderMetricCard(
                 'Cash Collect',
-                `${metrics.cashCollect.toFixed(1)}%`,
+                `${metrics.cashCollect.toFixed(2)}%`,
                 DollarSign,
                 product.name
               )}

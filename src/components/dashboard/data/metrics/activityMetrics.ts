@@ -13,6 +13,9 @@ const TOTAL_PAID_TRAFFIC_SPENT = 5000; // R$ 5.000 gasto total com tráfego pago
 const TOTAL_SALES = 25; // 25 vendas realizadas
 const CAC_VALUE = TOTAL_SALES > 0 ? TOTAL_PAID_TRAFFIC_SPENT / TOTAL_SALES : 0;
 
+// Calcular Cash Collect corretamente: (Receita / Faturamento) × 100
+const CASH_COLLECT_PERCENT = CURRENT_BILLING > 0 ? (CURRENT_REVENUE / CURRENT_BILLING) * 100 : 0;
+
 const remainingDays = calculateRemainingDaysInMonth();
 const dailyRevenueTarget = calculateDailyTarget(MONTHLY_REVENUE_GOAL, CURRENT_REVENUE, remainingDays);
 const dailyBillingTarget = calculateDailyTarget(MONTHLY_BILLING_GOAL, CURRENT_BILLING, remainingDays);
@@ -48,10 +51,10 @@ export const activityMetrics = [
   {
     key: 'showCashCollect',
     title: 'Cash Collect',
-    value: '25%',
-    description: 'Taxa de cobrança',
+    value: `${CASH_COLLECT_PERCENT.toFixed(2)}%`,
+    description: 'Taxa de conversão de faturamento em receita',
     icon: DollarSign,
-    trend: '+5%',
+    trend: 'Receita / Faturamento × 100',
     color: 'text-purple-600'
   },
   {
