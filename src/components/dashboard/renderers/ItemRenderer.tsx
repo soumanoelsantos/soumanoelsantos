@@ -5,13 +5,15 @@ import MetricsCards from '@/components/dashboard/metrics/MetricsCards';
 import PreSalesMetricsCards from '@/components/dashboard/metrics/PreSalesMetricsCards';
 import ProductMetricsCards from '@/components/dashboard/products/ProductMetricsCards';
 import SingleProductMetricsCards from '@/components/dashboard/products/SingleProductMetricsCards';
-import SingleProductChartsRenderer from '@/components/dashboard/products/SingleProductChartsRenderer';
 import RevenueEvolutionChart from '@/components/dashboard/charts/RevenueEvolutionChart';
 import BillingEvolutionChart from '@/components/dashboard/charts/BillingEvolutionChart';
 import SellerRevenueChart from '@/components/dashboard/charts/SellerRevenueChart';
 import SellerBillingChart from '@/components/dashboard/charts/SellerBillingChart';
 import TemporalRevenueChart from '@/components/dashboard/charts/TemporalRevenueChart';
 import TemporalBillingChart from '@/components/dashboard/charts/TemporalBillingChart';
+import ProductRevenueEvolutionChart from '@/components/dashboard/charts/ProductRevenueEvolutionChart';
+import ProductBillingEvolutionChart from '@/components/dashboard/charts/ProductBillingEvolutionChart';
+import ProductSalesEvolutionChart from '@/components/dashboard/charts/ProductSalesEvolutionChart';
 import ClosersPerformanceTable from '@/components/dashboard/tables/ClosersPerformanceTable';
 
 interface ItemRendererProps {
@@ -104,7 +106,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     />;
   }
 
-  // Se é um gráfico de produto, renderizar usando o novo componente de gráficos
+  // Se é um gráfico de produto, renderizar o gráfico específico
   if (productCharts.includes(itemKey)) {
     console.log('🔍 [DEBUG] ItemRenderer - Detected product chart:', itemKey, 'enabled:', config[itemKey as keyof DashboardConfig]);
     
@@ -116,12 +118,31 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
 
     // Se um produto específico está selecionado, renderizar o gráfico para esse produto
     if (selectedProductId) {
-      console.log('🔍 [DEBUG] ItemRenderer - Rendering product chart for selected product:', selectedProductId);
-      return <SingleProductChartsRenderer 
-        config={config} 
-        selectedProductId={selectedProductId} 
-        chartKey={itemKey}
-      />;
+      console.log('🔍 [DEBUG] ItemRenderer - Rendering specific product chart for:', selectedProductId);
+      
+      switch (itemKey) {
+        case 'showProductRevenueEvolutionChart':
+          return <ProductRevenueEvolutionChart selectedProductId={selectedProductId} />;
+        
+        case 'showProductBillingEvolutionChart':
+          return <ProductBillingEvolutionChart selectedProductId={selectedProductId} />;
+        
+        case 'showProductSalesEvolutionChart':
+          return <ProductSalesEvolutionChart selectedProductId={selectedProductId} />;
+        
+        default:
+          // Para outros gráficos de produtos que ainda não foram implementados, mostrar placeholder
+          return (
+            <div className="p-8 text-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
+              <h3 className="text-lg font-medium text-gray-700 mb-2">
+                Gráfico em Desenvolvimento
+              </h3>
+              <p className="text-gray-600">
+                {itemKey.replace('show', '').replace('Chart', '')} será implementado em breve
+              </p>
+            </div>
+          );
+      }
     }
 
     // Se nenhum produto específico está selecionado, não renderizar nada
