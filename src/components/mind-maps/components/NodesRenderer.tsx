@@ -18,6 +18,7 @@ interface NodesRendererProps {
   onToggleNodeVisibility: (nodeId: string) => void;
   onChangeNodeType: (nodeId: string) => void;
   onOpenNodeNotes: (nodeId: string) => void;
+  onAddChildNode: (parentNodeId: string) => void;
 }
 
 const NodesRenderer = ({
@@ -34,7 +35,8 @@ const NodesRenderer = ({
   onDeleteNode,
   onToggleNodeVisibility,
   onChangeNodeType,
-  onOpenNodeNotes
+  onOpenNodeNotes,
+  onAddChildNode
 }: NodesRendererProps) => {
   const getDirectChildNodes = (nodeId: string): string[] => {
     const children: string[] = [];
@@ -70,6 +72,7 @@ const NodesRenderer = ({
             onToggleConnections={() => onToggleNodeVisibility(node.id)}
             onChangeType={() => onChangeNodeType(node.id)}
             onOpenNotes={() => onOpenNodeNotes(node.id)}
+            onAddChild={() => onAddChildNode(node.id)}
           />
         );
       })}

@@ -8,6 +8,7 @@ import { useCanvasInteractions } from './hooks/useCanvasInteractions';
 import { useAutoSave } from './hooks/useAutoSave';
 import MindMapToolbar from './components/MindMapToolbar';
 import CanvasContent from './components/CanvasContent';
+import MindMapListView from './components/MindMapListView';
 import DialogManager from './components/DialogManager';
 
 interface MindMapCanvasProps {
@@ -17,6 +18,8 @@ interface MindMapCanvasProps {
 }
 
 const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanvasProps) => {
+  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('canvas');
+  
   const {
     nodes,
     edges,
@@ -37,7 +40,8 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     alignNodesVertically,
     distributeNodesHorizontally,
     distributeNodesVertically,
-    arrangeInGrid
+    arrangeInGrid,
+    moveNodeInList
   } = useMindMapState(initialContent);
 
   const { draggedNode, canvasRef, handleMouseDown: dragMouseDown, handleTouchStart: dragTouchStart, isDragging } = useDragAndDrop({
@@ -45,7 +49,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setSelectedNode
   });
 
-  const { panOffset, isPanning, handleCanvasMouseDown: panCanvasMouseDown } = usePanAndZoom();
+  const { panOffset, isPanning, handleCanvasMouseDown: panMouseDown } = usePanAndZoom();
 
   const {
     selectedNodes,
@@ -106,6 +110,18 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setEditingNotes(nodeId);
   };
 
+  const handleNodeClick = (nodeId: string, e?: React.MouseEvent) => {
+    if (e) {
+      canvasNodeClick(e, nodeId);
+    } else {
+      setSelectedNode(nodeId);
+    }
+  };
+
+  const handleMoveNode = (nodeId: string, direction: 'up' | 'down') => {
+    moveNodeInList(nodeId, direction);
+  };
+
   // Wrapper functions to match CanvasContent expected signatures
   const handleNodeMouseDown = (nodeId: string, e: React.MouseEvent) => {
     const node = nodes.find(n => n.id === nodeId);
@@ -121,10 +137,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     }
   };
 
-  const handleNodeClick = (nodeId: string, e: React.MouseEvent) => {
-    canvasNodeClick(e, nodeId);
-  };
-
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
   return (
@@ -136,46 +148,66 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         }}
         onSave={handleSave}
         isSaving={isSaving}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
       />
 
-      <div 
-        ref={canvasRef}
-        className="w-full h-full relative overflow-auto cursor-grab active:cursor-grabbing"
-        style={{ minHeight: '600px', minWidth: '100%' }}
-        onMouseDown={panCanvasMouseDown}
-        onClick={handleCanvasClick}
-      >
+      {viewMode === 'canvas' ? (
         <div 
-          className="relative"
-          style={{ 
-            minWidth: '200vw', 
-            minHeight: '200vh',
-            transform: `translate(${panOffset.x}px, ${panOffset.y}px)`,
-            transition: isPanning ? 'none' : 'transform 0.1s ease-out'
-          }}
+          ref={canvasRef}
+          className="w-full h-full relative overflow-auto cursor-grab active:cursor-grabbing"
+          style={{ minHeight: '600px', minWidth: '100%' }}
+          onMouseDown={panMouseDown}
+          onClick={handleCanvasClick}
         >
-          <CanvasContent
+          <div 
+            className="relative"
+            style={{ 
+              minWidth: '200vw', 
+              minHeight: '200vh',
+              transform: `translate(${panOffset.x}px, ${panOffset.y}px)`,
+              transition: isPanning ? 'none' : 'transform 0.1s ease-out'
+            }}
+          >
+            <CanvasContent
+              nodes={nodes}
+              edges={edges}
+              selectedNode={selectedNode}
+              selectedNodes={selectedNodes}
+              hiddenNodes={hiddenNodes}
+              draggedNode={draggedNode}
+              alignmentLines={[]}
+              panOffset={{ x: 0, y: 0 }}
+              isPanning={isPanning}
+              onMouseDown={handleNodeMouseDown}
+              onTouchStart={handleNodeTouchStart}
+              onNodeClick={(nodeId, e) => handleNodeClick(nodeId, e)}
+              onEditNode={handleEditNode}
+              onDeleteNode={deleteNode}
+              onToggleNodeVisibility={toggleNodeVisibility}
+              onChangeNodeType={handleChangeNodeType}
+              onOpenNodeNotes={handleOpenNodeNotes}
+              onAddChildNode={handleAddChildNode}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="h-[calc(100%-73px)] overflow-auto">
+          <MindMapListView
             nodes={nodes}
             edges={edges}
             selectedNode={selectedNode}
-            selectedNodes={selectedNodes}
             hiddenNodes={hiddenNodes}
-            draggedNode={draggedNode}
-            alignmentLines={[]}
-            panOffset={{ x: 0, y: 0 }}
-            isPanning={isPanning}
-            onMouseDown={handleNodeMouseDown}
-            onTouchStart={handleNodeTouchStart}
-            onNodeClick={handleNodeClick}
+            onNodeClick={(nodeId) => handleNodeClick(nodeId)}
             onEditNode={handleEditNode}
             onDeleteNode={deleteNode}
-            onToggleNodeVisibility={toggleNodeVisibility}
-            onChangeNodeType={handleChangeNodeType}
             onOpenNodeNotes={handleOpenNodeNotes}
             onAddChildNode={handleAddChildNode}
+            onToggleNodeVisibility={toggleNodeVisibility}
+            onMoveNode={handleMoveNode}
           />
         </div>
-      </div>
+      )}
 
       <DialogManager
         isAddingNode={isAddingNode}

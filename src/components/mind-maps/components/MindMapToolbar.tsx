@@ -1,45 +1,64 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Save, Loader2 } from 'lucide-react';
+import { Plus, Save, LayoutGrid, List } from 'lucide-react';
 
 interface MindMapToolbarProps {
   onAddNode: () => void;
   onSave: () => void;
   isSaving?: boolean;
+  viewMode?: 'canvas' | 'list';
+  onViewModeChange?: (mode: 'canvas' | 'list') => void;
 }
 
-const MindMapToolbar = ({ onAddNode, onSave, isSaving = false }: MindMapToolbarProps) => {
+const MindMapToolbar = ({ 
+  onAddNode, 
+  onSave, 
+  isSaving = false,
+  viewMode = 'canvas',
+  onViewModeChange
+}: MindMapToolbarProps) => {
   return (
-    <div className="absolute top-4 left-4 z-10 flex gap-2">
-      <Button
-        onClick={onAddNode}
-        size="sm"
-        className="flex items-center gap-2"
-      >
-        <Plus className="h-4 w-4" />
-        Adicionar Nó
-      </Button>
-      
-      <Button
-        onClick={onSave}
-        variant="outline"
-        size="sm"
-        disabled={isSaving}
-        className="flex items-center gap-2"
-      >
-        {isSaving ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Save className="h-4 w-4" />
+    <div className="flex items-center justify-between p-4 border-b bg-white">
+      <div className="flex items-center gap-2">
+        <Button onClick={onAddNode} size="sm">
+          <Plus className="h-4 w-4 mr-2" />
+          Adicionar Nó
+        </Button>
+        
+        {onViewModeChange && (
+          <div className="flex items-center border rounded-lg">
+            <Button
+              variant={viewMode === 'canvas' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => onViewModeChange('canvas')}
+              className="rounded-r-none"
+            >
+              <LayoutGrid className="h-4 w-4 mr-2" />
+              Mapa
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => onViewModeChange('list')}
+              className="rounded-l-none"
+            >
+              <List className="h-4 w-4 mr-2" />
+              Lista
+            </Button>
+          </div>
         )}
-        Salvar Agora
-      </Button>
-      
-      <div className="flex items-center gap-2 px-3 py-1 bg-green-50 border border-green-200 rounded text-xs text-green-700">
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-        Salvamento automático ativo
       </div>
+      
+      <Button 
+        onClick={onSave} 
+        disabled={isSaving}
+        size="sm"
+        variant="outline"
+      >
+        <Save className="h-4 w-4 mr-2" />
+        {isSaving ? 'Salvando...' : 'Salvar'}
+      </Button>
     </div>
   );
 };

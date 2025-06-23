@@ -335,6 +335,20 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     }));
   };
 
+  const moveNodeInList = (nodeId: string, direction: 'up' | 'down') => {
+    const nodeIndex = nodes.findIndex(node => node.id === nodeId);
+    if (nodeIndex === -1) return;
+
+    const newNodes = [...nodes];
+    const targetIndex = direction === 'up' ? nodeIndex - 1 : nodeIndex + 1;
+
+    if (targetIndex < 0 || targetIndex >= newNodes.length) return;
+
+    // Swap nodes
+    [newNodes[nodeIndex], newNodes[targetIndex]] = [newNodes[targetIndex], newNodes[nodeIndex]];
+    setNodes(newNodes);
+  };
+
   return {
     nodes,
     edges,
@@ -360,6 +374,7 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     alignNodesVertically,
     distributeNodesHorizontally,
     distributeNodesVertically,
-    arrangeInGrid
+    arrangeInGrid,
+    moveNodeInList
   };
 };
