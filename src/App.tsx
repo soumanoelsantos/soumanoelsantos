@@ -15,7 +15,6 @@ import PropostaUnicaValor from './pages/PropostaUnicaValor';
 import MapaEquipe from './pages/MapaEquipe';
 import CrmPage from './pages/CrmPage';
 import TesteFase from './pages/TesteFase';
-import PlanejamentoEstrategicoPage from './pages/PlanejamentoEstrategicoPage';
 import ProcessDocuments from './pages/ProcessDocuments';
 import SharedDocument from './pages/SharedDocument';
 import SharedFolder from './pages/SharedFolder';
@@ -39,7 +38,6 @@ function App() {
           <Route path="/mapa-equipe" element={<MapaEquipe />} />
           <Route path="/crm" element={<CrmPage />} />
           <Route path="/phase-test" element={<TesteFase />} />
-          <Route path="/planejamento-estrategico" element={<PlanejamentoEstrategicoPage />} />
           <Route path="/processos-documentados" element={<ProcessDocuments />} />
           <Route path="/shared/document/:token" element={<SharedDocument />} />
           <Route path="/shared/folder/:token" element={<SharedFolder />} />
