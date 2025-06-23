@@ -24,7 +24,7 @@ const chartConfig = {
     label: 'Will', 
     color: '#3b82f6', // Azul vibrante
   },
-  'Ana Carvalho': { // Usando o nome correto
+  'Ana Carvalho': {
     label: 'Ana Carvalho',
     color: '#f59e0b', // Amarelo/laranja vibrante
   }
@@ -60,6 +60,8 @@ export const SellerRevenueChart = () => {
 
   console.log('🔍 [DEBUG] SellerRevenueChart - sellerNames:', sellerNames);
   console.log('🔍 [DEBUG] SellerRevenueChart - revenueData sample:', revenueData.slice(-3));
+  console.log('🔍 [DEBUG] SellerRevenueChart - chartConfig keys:', Object.keys(chartConfig));
+  console.log('🔍 [DEBUG] SellerRevenueChart - Ana Carvalho in chartConfig:', chartConfig['Ana Carvalho']);
 
   if (isLoading) {
     return (
@@ -118,6 +120,7 @@ export const SellerRevenueChart = () => {
             {/* Linhas dos vendedores */}
             {sellerNames.map((sellerName) => {
               console.log('🔍 [DEBUG] Rendering line for seller:', sellerName);
+              console.log('🔍 [DEBUG] Color for seller:', chartConfig[sellerName as keyof typeof chartConfig]?.color);
               return (
                 <Line 
                   key={sellerName}
@@ -142,6 +145,8 @@ export const SellerBillingChart = () => {
 
   console.log('🔍 [DEBUG] SellerBillingChart - sellerNames:', sellerNames);
   console.log('🔍 [DEBUG] SellerBillingChart - billingData sample:', billingData.slice(-3));
+  console.log('🔍 [DEBUG] SellerBillingChart - chartConfig keys:', Object.keys(chartConfig));
+  console.log('🔍 [DEBUG] SellerBillingChart - Ana Carvalho in chartConfig:', chartConfig['Ana Carvalho']);
 
   if (isLoading) {
     return (
@@ -200,6 +205,7 @@ export const SellerBillingChart = () => {
             {/* Linhas dos vendedores */}
             {sellerNames.map((sellerName) => {
               console.log('🔍 [DEBUG] Rendering billing line for seller:', sellerName);
+              console.log('🔍 [DEBUG] Color for billing seller:', chartConfig[sellerName as keyof typeof chartConfig]?.color);
               return (
                 <Line 
                   key={sellerName}
