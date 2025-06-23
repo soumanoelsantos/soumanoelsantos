@@ -3,17 +3,28 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, FolderPlus, Plus, Folder } from 'lucide-react';
+import { FileText, FolderPlus, Plus, Folder, ArrowLeft } from 'lucide-react';
 import { useProcessDocuments } from '@/hooks/useProcessDocuments';
+import { ProcessFolder } from '@/types/processDocuments';
 import DocumentsList from './DocumentsList';
 import FoldersList from './FoldersList';
 import CreateDocumentDialog from './CreateDocumentDialog';
 import CreateFolderDialog from './CreateFolderDialog';
+import FolderView from './FolderView';
 
 const ProcessDocumentsManager = () => {
   const { documents, folders, isLoading } = useProcessDocuments();
   const [isCreateDocumentOpen, setIsCreateDocumentOpen] = useState(false);
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState<ProcessFolder | null>(null);
+
+  const handleFolderClick = (folder: ProcessFolder) => {
+    setSelectedFolder(folder);
+  };
+
+  const handleBackToFolders = () => {
+    setSelectedFolder(null);
+  };
 
   if (isLoading) {
     return (
@@ -30,6 +41,45 @@ const ProcessDocumentsManager = () => {
           </div>
         </CardContent>
       </Card>
+    );
+  }
+
+  // Se uma pasta foi selecionada, mostrar a visualização da pasta
+  if (selectedFolder) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleBackToFolders}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar para Pastas
+              </Button>
+            </div>
+            <CardTitle className="flex items-center gap-2">
+              <Folder className="h-5 w-5" />
+              {selectedFolder.name}
+            </CardTitle>
+            {selectedFolder.description && (
+              <CardDescription>
+                {selectedFolder.description}
+              </CardDescription>
+            )}
+          </CardHeader>
+          <CardContent>
+            <FolderView 
+              folder={selectedFolder}
+              documents={documents}
+              folders={folders}
+            />
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -58,24 +108,27 @@ const ProcessDocumentsManager = () => {
             </Button>
           </div>
 
-          <Tabs defaultValue="documents" className="w-full">
+          <Tabs defaultValue="folders" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="documents" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Documentos ({documents.length})
-              </TabsTrigger>
               <TabsTrigger value="folders" className="flex items-center gap-2">
                 <Folder className="h-4 w-4" />
                 Pastas ({folders.length})
               </TabsTrigger>
+              <TabsTrigger value="documents" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Documentos ({documents.length})
+              </TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="folders" className="space-y-4">
+              <FoldersList 
+                folders={folders} 
+                onFolderClick={handleFolderClick}
+              />
+            </TabsContent>
             
             <TabsContent value="documents" className="space-y-4">
               <DocumentsList documents={documents} folders={folders} />
-            </TabsContent>
-            
-            <TabsContent value="folders" className="space-y-4">
-              <FoldersList folders={folders} />
             </TabsContent>
           </Tabs>
         </CardContent>

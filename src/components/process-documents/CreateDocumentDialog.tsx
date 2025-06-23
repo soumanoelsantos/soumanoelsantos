@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,26 +7,33 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { ProcessFolder, CreateDocumentData } from '@/types/processDocuments';
+import { ProcessFolder } from '@/types/processDocuments';
 import { useProcessDocuments } from '@/hooks/useProcessDocuments';
 
 interface CreateDocumentDialogProps {
   isOpen: boolean;
   onClose: () => void;
   folders: ProcessFolder[];
+  defaultFolderId?: string;
 }
 
-const CreateDocumentDialog = ({ isOpen, onClose, folders }: CreateDocumentDialogProps) => {
+const CreateDocumentDialog = ({ isOpen, onClose, folders, defaultFolderId }: CreateDocumentDialogProps) => {
   const { createDocument } = useProcessDocuments();
-  const [formData, setFormData] = useState<CreateDocumentData>({
+  const [formData, setFormData] = useState({
     title: '',
     content: '',
     description: '',
     category: 'geral',
-    folder_id: '',
+    folder_id: defaultFolderId || '',
     is_public: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (defaultFolderId) {
+      setFormData(prev => ({ ...prev, folder_id: defaultFolderId }));
+    }
+  }, [defaultFolderId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,17 +41,16 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders }: CreateDocumentDialog
 
     setIsSubmitting(true);
     try {
-      const dataToSubmit = {
+      await createDocument({
         ...formData,
         folder_id: formData.folder_id || undefined,
-      };
-      await createDocument(dataToSubmit);
+      });
       setFormData({
         title: '',
         content: '',
         description: '',
         category: 'geral',
-        folder_id: '',
+        folder_id: defaultFolderId || '',
         is_public: false,
       });
       onClose();
@@ -56,17 +62,15 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders }: CreateDocumentDialog
   };
 
   const handleClose = () => {
-    if (!isSubmitting) {
-      setFormData({
-        title: '',
-        content: '',
-        description: '',
-        category: 'geral',
-        folder_id: '',
-        is_public: false,
-      });
-      onClose();
-    }
+    setFormData({
+      title: '',
+      content: '',
+      description: '',
+      category: 'geral',
+      folder_id: defaultFolderId || '',
+      is_public: false,
+    });
+    onClose();
   };
 
   return (
@@ -89,12 +93,13 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders }: CreateDocumentDialog
           </div>
 
           <div>
-            <Label htmlFor="description">Descrição</Label>
-            <Input
+            <Label htmlFor="description">Descrição (opcional)</Label>
+            <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Breve descrição do documento"
+              rows={2}
             />
           </div>
 
@@ -112,7 +117,6 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders }: CreateDocumentDialog
                   <SelectItem value="marketing">Marketing</SelectItem>
                   <SelectItem value="operacional">Operacional</SelectItem>
                   <SelectItem value="rh">Recursos Humanos</SelectItem>
-                  <SelectItem value="financeiro">Financeiro</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -141,9 +145,8 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders }: CreateDocumentDialog
               id="content"
               value={formData.content}
               onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Escreva o conteúdo do seu documento aqui..."
-              rows={10}
-              className="min-h-[200px]"
+              placeholder="Digite o conteúdo do documento aqui..."
+              rows={8}
             />
           </div>
 
@@ -153,7 +156,7 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders }: CreateDocumentDialog
               checked={formData.is_public}
               onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
             />
-            <Label htmlFor="is_public">Tornar documento público</Label>
+            <Label htmlFor="is_public">Tornar documento público (pode ser compartilhado via link)</Label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">

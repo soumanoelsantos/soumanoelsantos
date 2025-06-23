@@ -10,16 +10,34 @@ import ShareDialog from './ShareDialog';
 
 interface FoldersListProps {
   folders: ProcessFolder[];
+  onFolderClick?: (folder: ProcessFolder) => void;
 }
 
-const FoldersList = ({ folders }: FoldersListProps) => {
+const FoldersList = ({ folders, onFolderClick }: FoldersListProps) => {
   const { deleteFolder, toggleFolderPublic } = useProcessDocuments();
   const [editingFolder, setEditingFolder] = useState<ProcessFolder | null>(null);
   const [sharingFolder, setSharingFolder] = useState<ProcessFolder | null>(null);
 
-  const handleDelete = async (folder: ProcessFolder) => {
+  const handleDelete = async (folder: ProcessFolder, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (confirm(`Tem certeza que deseja excluir a pasta "${folder.name}"? Os documentos dentro dela não serão excluídos.`)) {
       await deleteFolder(folder.id);
+    }
+  };
+
+  const handleEdit = (folder: ProcessFolder, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingFolder(folder);
+  };
+
+  const handleShare = (folder: ProcessFolder, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSharingFolder(folder);
+  };
+
+  const handleFolderClick = (folder: ProcessFolder) => {
+    if (onFolderClick) {
+      onFolderClick(folder);
     }
   };
 
@@ -42,13 +60,16 @@ const FoldersList = ({ folders }: FoldersListProps) => {
       {folders.map((folder) => (
         <div
           key={folder.id}
-          className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+          className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+          onClick={() => handleFolderClick(folder)}
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <Folder className="h-4 w-4 text-blue-600" />
-                <h3 className="font-medium">{folder.name}</h3>
+                <h3 className="font-medium hover:text-blue-600 transition-colors">
+                  {folder.name}
+                </h3>
                 {folder.is_public && (
                   <Badge variant="outline" className="text-green-600 border-green-600">
                     Público
@@ -70,21 +91,21 @@ const FoldersList = ({ folders }: FoldersListProps) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setEditingFolder(folder)}
+                onClick={(e) => handleEdit(folder, e)}
               >
                 <Edit className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setSharingFolder(folder)}
+                onClick={(e) => handleShare(folder, e)}
               >
                 <Share2 className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleDelete(folder)}
+                onClick={(e) => handleDelete(folder, e)}
                 className="text-red-600 hover:text-red-700"
               >
                 <Trash2 className="h-4 w-4" />
