@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
@@ -18,7 +17,9 @@ interface MindMapCanvasProps {
 }
 
 const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanvasProps) => {
-  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('canvas');
+  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('list'); // Iniciando com lista por padrão para teste
+  
+  console.log('MindMapCanvas - viewMode:', viewMode);
   
   const {
     nodes,
@@ -118,6 +119,11 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     }
   };
 
+  const handleViewModeChange = (mode: 'canvas' | 'list') => {
+    console.log('Mudando modo de visualização para:', mode);
+    setViewMode(mode);
+  };
+
   const handleMoveNode = (nodeId: string, direction: 'up' | 'down') => {
     moveNodeInList(nodeId, direction);
   };
@@ -139,6 +145,8 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
+  console.log('Renderizando MindMapCanvas:', { viewMode, nodesCount: nodes.length, visibleNodesCount: visibleNodes.length });
+
   return (
     <div className="relative w-full h-full bg-white">
       <MindMapToolbar
@@ -149,7 +157,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         onSave={handleSave}
         isSaving={isSaving}
         viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        onViewModeChange={handleViewModeChange}
       />
 
       {viewMode === 'canvas' ? (
@@ -192,7 +200,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
           </div>
         </div>
       ) : (
-        <div className="h-[calc(100%-73px)] overflow-auto">
+        <div className="h-[calc(100%-73px)] overflow-auto bg-gray-50">
           <MindMapListView
             nodes={nodes}
             edges={edges}
