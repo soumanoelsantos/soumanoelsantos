@@ -2,15 +2,26 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Plus, Settings, BarChart3 } from 'lucide-react';
+import { Users, Plus, Settings, BarChart3, Trash2 } from 'lucide-react';
 import { useSellers } from '@/hooks/useSellers';
 import { Badge } from '@/components/ui/badge';
 import { SellerFormDialog } from './sellers/SellerFormDialog';
 import { SellerDetailsDialog } from './sellers/SellerDetailsDialog';
 import { Seller } from '@/types/sellers';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const SellersManagementCard: React.FC = () => {
-  const { sellers, isLoading } = useSellers();
+  const { sellers, isLoading, deleteSeller } = useSellers();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
 
@@ -31,6 +42,21 @@ const SellersManagementCard: React.FC = () => {
       outro: 'bg-gray-100 text-gray-800'
     };
     return colors[type as keyof typeof colors] || colors.outro;
+  };
+
+  const handleDeleteSeller = async (sellerId: string) => {
+    await deleteSeller(sellerId);
+  };
+
+  const handleSettingsClick = (seller: Seller, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedSeller(seller);
+  };
+
+  const handlePerformanceClick = (seller: Seller, e: React.MouseEvent) => {
+    e.stopPropagation();
+    // TODO: Navegar para página de performance do vendedor
+    console.log('Ver performance de:', seller.name);
   };
 
   if (isLoading) {
@@ -110,12 +136,54 @@ const SellersManagementCard: React.FC = () => {
                       )}
                     </div>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={(e) => handleSettingsClick(seller, e)}
+                        title="Configurações do vendedor"
+                      >
                         <Settings className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={(e) => handlePerformanceClick(seller, e)}
+                        title="Ver performance"
+                      >
                         <BarChart3 className="h-4 w-4" />
                       </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={(e) => e.stopPropagation()}
+                            title="Excluir vendedor"
+                            className="hover:bg-red-50 hover:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir Vendedor</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir o vendedor "{seller.name}"? 
+                              Esta ação não pode ser desfeita e todos os dados relacionados 
+                              ao vendedor serão removidos permanentemente.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteSeller(seller.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 ))}
