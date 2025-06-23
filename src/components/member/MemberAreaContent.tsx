@@ -5,7 +5,7 @@ import DashboardCard from "@/components/member/DashboardCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Brain } from "lucide-react";
+import { Brain, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const MemberAreaContent: React.FC = () => {
@@ -20,6 +20,27 @@ const MemberAreaContent: React.FC = () => {
       
       <div className="grid grid-cols-1 gap-8">
         <DashboardCard />
+        
+        {/* Card para Processos Documentados */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Processos Documentados
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">
+              Crie e gerencie documentos de processos da sua empresa como playbooks de vendas, diretrizes e padronizações
+            </p>
+            <Button 
+              onClick={() => navigate('/processos-documentados')} 
+              className="w-full"
+            >
+              Acessar Processos Documentados
+            </Button>
+          </CardContent>
+        </Card>
         
         {/* Card para Mapas Mentais */}
         <Card>

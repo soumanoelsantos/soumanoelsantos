@@ -962,6 +962,89 @@ export type Database = {
           },
         ]
       }
+      process_documents: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          description: string | null
+          folder_id: string | null
+          id: string
+          is_public: boolean
+          share_token: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          description?: string | null
+          folder_id?: string | null
+          id?: string
+          is_public?: boolean
+          share_token?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          description?: string | null
+          folder_id?: string | null
+          id?: string
+          is_public?: boolean
+          share_token?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_documents_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "process_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      process_folders: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          name: string
+          share_token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          name: string
+          share_token?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          name?: string
+          share_token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       product_goals: {
         Row: {
           billing_goal: number

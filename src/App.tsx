@@ -1,83 +1,51 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import MemberArea from './pages/MemberArea';
+import AdminArea from './pages/AdminArea';
+import DashboardConfig from './pages/DashboardConfig';
+import MapaMental from './pages/MapaMental';
+import SwotAnalysisPage from './pages/SwotAnalysisPage';
+import BusinessModelCanvasPage from './pages/BusinessModelCanvasPage';
+import DiagnosticPage from './pages/DiagnosticPage';
+import PuvAnalysisPage from './pages/PuvAnalysisPage';
+import MapaEquipePage from './pages/MapaEquipePage';
+import CrmPage from './pages/CrmPage';
+import PhaseTestPage from './pages/PhaseTestPage';
+import PlanejamentoEstrategicoPage from './pages/PlanejamentoEstrategicoPage';
+import ProcessDocuments from './pages/ProcessDocuments';
+import SharedDocument from './pages/SharedDocument';
+import SharedFolder from './pages/SharedFolder';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/hooks/useAuth";
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import MemberArea from "./pages/MemberArea";
-import Dashboard from "./pages/Dashboard";
-import DashboardConfig from "./pages/DashboardConfig";
-import SharedDashboard from "./pages/SharedDashboard";
-import GoalsManagement from "./pages/GoalsManagement";
-import AdminPage from "./pages/AdminPage";
-import DiagnosticoTest from "./pages/DiagnosticoTest";
-import TesteFase from "./pages/TesteFase";
-import AnaliseSwot from "./pages/AnaliseSwot";
-import MapaNegocio from "./pages/MapaNegocio";
-import PropostaUnicaValor from "./pages/PropostaUnicaValor";
-import MapaEquipe from "./pages/MapaEquipe";
-import CheckListContratacao from "./pages/CheckListContratacao";
-import Ferramentas from "./pages/Ferramentas";
-import CrmPage from "./pages/CrmPage";
-import DevAI from "./pages/DevAI";
-import MindMapEditor from "./pages/MindMapEditor";
-import SharedMindMap from "./pages/SharedMindMap";
-import MapaMental from "./pages/MapaMental";
-import DiagnosticoLanding from "./pages/DiagnosticoLanding";
-import DiagnosticoLandingV2 from "./pages/DiagnosticoLandingV2";
-import SellerPerformanceForm from "./pages/SellerPerformanceForm";
-import NotFound from "./pages/NotFound";
-
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/cadastro" element={<Register />} />
-            <Route path="/membros" element={<MemberArea />} />
-            <Route path="/area-membro" element={<MemberArea />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/configurar" element={<DashboardConfig />} />
-            <Route path="/dashboard/compartilhado/:shareToken" element={<SharedDashboard />} />
-            <Route path="/dashboard/metas" element={<GoalsManagement />} />
-            <Route path="/metas" element={<GoalsManagement />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/diagnostico" element={<DiagnosticoTest />} />
-            <Route path="/teste-fase" element={<TesteFase />} />
-            <Route path="/analise-swot" element={<AnaliseSwot />} />
-            <Route path="/mapa-negocio" element={<MapaNegocio />} />
-            <Route path="/proposta-unica-valor" element={<PropostaUnicaValor />} />
-            <Route path="/mapa-equipe" element={<MapaEquipe />} />
-            <Route path="/checklist-contratacao" element={<CheckListContratacao />} />
-            <Route path="/ferramentas" element={<Ferramentas />} />
-            <Route path="/crm" element={<CrmPage />} />
-            <Route path="/dev-ai" element={<DevAI />} />
-            <Route path="/mind-map-editor" element={<MindMapEditor />} />
-            <Route path="/mapa-mental" element={<MapaMental />} />
-            <Route path="/mapa-mental/:id" element={<MindMapEditor />} />
-            <Route path="/mapa-mental/compartilhado/:shareToken" element={<SharedMindMap />} />
-            <Route path="/shared-mind-map/:shareToken" element={<SharedMindMap />} />
-            <Route path="/diagnostico-landing" element={<DiagnosticoLanding />} />
-            <Route path="/diagnostico-landing-v2" element={<DiagnosticoLandingV2 />} />
-            <Route path="/seller-performance/:token" element={<SellerPerformanceForm />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <BrowserRouter>
+      <div className="App">
+        <Toaster position="top-right" />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/membros" element={<MemberArea />} />
+          <Route path="/admin" element={<AdminArea />} />
+          <Route path="/dashboard-config" element={<DashboardConfig />} />
+          <Route path="/mapa-mental" element={<MapaMental />} />
+          <Route path="/swot" element={<SwotAnalysisPage />} />
+          <Route path="/canvas" element={<BusinessModelCanvasPage />} />
+          <Route path="/puv" element={<PuvAnalysisPage />} />
+          <Route path="/diagnostic" element={<DiagnosticPage />} />
+          <Route path="/mapa-equipe" element={<MapaEquipePage />} />
+          <Route path="/crm" element={<CrmPage />} />
+          <Route path="/phase-test" element={<PhaseTestPage />} />
+          <Route path="/planejamento-estrategico" element={<PlanejamentoEstrategicoPage />} />
+          <Route path="/processos-documentados" element={<ProcessDocuments />} />
+          <Route path="/shared/document/:token" element={<SharedDocument />} />
+          <Route path="/shared/folder/:token" element={<SharedFolder />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
+}
 
 export default App;
