@@ -6,6 +6,13 @@ import PreSalesMetricsCards from '@/components/dashboard/metrics/PreSalesMetrics
 import ProductMetricsCards from '@/components/dashboard/products/ProductMetricsCards';
 import SingleProductMetricsCards from '@/components/dashboard/products/SingleProductMetricsCards';
 import SingleProductChartsRenderer from '@/components/dashboard/products/SingleProductChartsRenderer';
+import RevenueEvolutionChart from '@/components/dashboard/charts/RevenueEvolutionChart';
+import BillingEvolutionChart from '@/components/dashboard/charts/BillingEvolutionChart';
+import SellerRevenueChart from '@/components/dashboard/charts/SellerRevenueChart';
+import SellerBillingChart from '@/components/dashboard/charts/SellerBillingChart';
+import TemporalRevenueChart from '@/components/dashboard/charts/TemporalRevenueChart';
+import TemporalBillingChart from '@/components/dashboard/charts/TemporalBillingChart';
+import ClosersPerformanceTable from '@/components/dashboard/tables/ClosersPerformanceTable';
 
 interface ItemRendererProps {
   itemKey: string;
@@ -44,6 +51,41 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     'showProductComparisonChart',
     'showProductTemporalChart'
   ];
+
+  // Lista de indicadores comerciais
+  const commercialIndicators = [
+    'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
+    'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
+    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
+    'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
+    'showQuantidadeVendas', 'showCashCollect', 'showCac',
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
+  ];
+
+  // GRÁFICOS COMERCIAIS - renderizar diretamente
+  switch (itemKey) {
+    case 'revenueEvolutionChart':
+      return config.showRevenueEvolutionChart ? <RevenueEvolutionChart /> : null;
+    
+    case 'billingEvolutionChart':
+      return config.showBillingEvolutionChart ? <BillingEvolutionChart /> : null;
+    
+    case 'sellerRevenueChart':
+      return config.showSellerRevenueChart ? <SellerRevenueChart /> : null;
+    
+    case 'sellerBillingChart':
+      return config.showSellerBillingChart ? <SellerBillingChart /> : null;
+    
+    case 'temporalRevenueChart':
+      return config.showTemporalRevenueChart ? <TemporalRevenueChart /> : null;
+    
+    case 'temporalBillingChart':
+      return config.showTemporalBillingChart ? <TemporalBillingChart /> : null;
+    
+    case 'showClosersPerformanceTable':
+      return config.showClosersPerformanceTable ? <ClosersPerformanceTable /> : null;
+  }
 
   // Se é um indicador de produto, só renderizar se um produto específico estiver selecionado
   if (productIndicators.includes(itemKey)) {
@@ -100,39 +142,34 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     return null;
   }
 
-  switch (itemKey) {
-    case 'productMetrics':
-      // Só renderizar se um produto específico estiver selecionado
-      if (!selectedProductId) {
-        console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering productMetrics');
-        return null;
-      }
-      return <SingleProductMetricsCards config={config} selectedProductId={selectedProductId} />;
-    
-    default:
-      // Verificar se é um indicador de métrica padrão
-      if (config[itemKey as keyof DashboardConfig]) {
-        return <MetricsCards config={config} />;
-      }
-      
-      // Verificar se é um indicador de pré-vendas
-      if (itemKey.startsWith('showPreSales')) {
-        // Criar dados simulados completos para pré-vendas
-        const mockPreSalesData = {
-          dailyCalls: 0,
-          dailyCallsTarget: 40,
-          dailySchedulings: 0,
-          dailySchedulingsTarget: 8,
-          dailyNoShow: 0,
-          dailyNoShowRate: 0,
-          totalSDRs: 0,
-          averageSchedulingsPerSDR: 0,
-          sdrPerformance: [],
-          weeklyData: []
-        };
-        return <PreSalesMetricsCards config={config} preSalesData={mockPreSalesData} />;
-      }
-      
-      return null;
+  // Verificar se é um indicador comercial
+  if (commercialIndicators.includes(itemKey)) {
+    console.log('🔍 [DEBUG] ItemRenderer - Detected commercial indicator:', itemKey);
+    if (config[itemKey as keyof DashboardConfig]) {
+      return <MetricsCards config={config} />;
+    }
+    return null;
   }
+
+  // Verificar se é um indicador de pré-vendas
+  if (itemKey.startsWith('showPreSales')) {
+    console.log('🔍 [DEBUG] ItemRenderer - Detected pre-sales indicator:', itemKey);
+    // Criar dados simulados completos para pré-vendas
+    const mockPreSalesData = {
+      dailyCalls: 0,
+      dailyCallsTarget: 40,
+      dailySchedulings: 0,
+      dailySchedulingsTarget: 8,
+      dailyNoShow: 0,
+      dailyNoShowRate: 0,
+      totalSDRs: 0,
+      averageSchedulingsPerSDR: 0,
+      sdrPerformance: [],
+      weeklyData: []
+    };
+    return <PreSalesMetricsCards config={config} preSalesData={mockPreSalesData} />;
+  }
+
+  console.log('🔍 [DEBUG] ItemRenderer - No match found for:', itemKey);
+  return null;
 };
