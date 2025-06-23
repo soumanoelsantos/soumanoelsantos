@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
@@ -17,8 +18,9 @@ interface MindMapCanvasProps {
 }
 
 const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanvasProps) => {
-  // Começar sempre em formato lista
   const [viewMode, setViewMode] = useState<'canvas' | 'list'>('list');
+  
+  console.log('MindMapCanvas renderizando com viewMode:', viewMode);
   
   const {
     nodes,
@@ -116,6 +118,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   };
 
   const handleViewModeChange = (mode: 'canvas' | 'list') => {
+    console.log('Mudando viewMode para:', mode);
     setViewMode(mode);
   };
 
@@ -139,6 +142,9 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
+  console.log('Nodes disponíveis:', nodes.length);
+  console.log('Nodes visíveis:', visibleNodes.length);
+
   return (
     <div className="relative w-full h-full bg-white">
       <MindMapToolbar
@@ -152,63 +158,64 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         onViewModeChange={handleViewModeChange}
       />
 
-      {/* Renderização condicional simples */}
-      {viewMode === 'list' ? (
-        <div className="h-[calc(100%-73px)] overflow-auto bg-gray-50">
-          <MindMapListView
-            nodes={nodes}
-            edges={edges}
-            selectedNode={selectedNode}
-            hiddenNodes={hiddenNodes}
-            onNodeClick={(nodeId) => handleNodeClick(nodeId)}
-            onEditNode={handleEditNode}
-            onDeleteNode={deleteNode}
-            onOpenNodeNotes={handleOpenNodeNotes}
-            onAddChildNode={handleAddChildNode}
-            onToggleNodeVisibility={toggleNodeVisibility}
-            onMoveNode={handleMoveNode}
-          />
-        </div>
-      ) : (
-        <div 
-          ref={canvasRef}
-          className="w-full h-full relative overflow-auto cursor-grab active:cursor-grabbing"
-          style={{ minHeight: '600px', minWidth: '100%' }}
-          onMouseDown={panMouseDown}
-          onClick={handleCanvasClick}
-        >
-          <div 
-            className="relative"
-            style={{ 
-              minWidth: '200vw', 
-              minHeight: '200vh',
-              transform: `translate(${panOffset.x}px, ${panOffset.y}px)`,
-              transition: isPanning ? 'none' : 'transform 0.1s ease-out'
-            }}
-          >
-            <CanvasContent
+      <div className="h-[calc(100%-73px)]">
+        {viewMode === 'list' ? (
+          <div className="w-full h-full overflow-auto bg-gray-50">
+            <MindMapListView
               nodes={nodes}
               edges={edges}
               selectedNode={selectedNode}
-              selectedNodes={selectedNodes}
               hiddenNodes={hiddenNodes}
-              draggedNode={draggedNode}
-              alignmentLines={[]}
-              panOffset={{ x: 0, y: 0 }}
-              isPanning={isPanning}
-              onMouseDown={handleNodeMouseDown}
-              onTouchStart={handleNodeTouchStart}
-              onNodeClick={(nodeId, e) => handleNodeClick(nodeId, e)}
+              onNodeClick={(nodeId) => handleNodeClick(nodeId)}
               onEditNode={handleEditNode}
               onDeleteNode={deleteNode}
-              onToggleNodeVisibility={toggleNodeVisibility}
-              onChangeNodeType={handleChangeNodeType}
               onOpenNodeNotes={handleOpenNodeNotes}
               onAddChildNode={handleAddChildNode}
+              onToggleNodeVisibility={toggleNodeVisibility}
+              onMoveNode={handleMoveNode}
             />
           </div>
-        </div>
-      )}
+        ) : (
+          <div 
+            ref={canvasRef}
+            className="w-full h-full relative overflow-auto cursor-grab active:cursor-grabbing"
+            style={{ minHeight: '600px', minWidth: '100%' }}
+            onMouseDown={panMouseDown}
+            onClick={handleCanvasClick}
+          >
+            <div 
+              className="relative"
+              style={{ 
+                minWidth: '200vw', 
+                minHeight: '200vh',
+                transform: `translate(${panOffset.x}px, ${panOffset.y}px)`,
+                transition: isPanning ? 'none' : 'transform 0.1s ease-out'
+              }}
+            >
+              <CanvasContent
+                nodes={nodes}
+                edges={edges}
+                selectedNode={selectedNode}
+                selectedNodes={selectedNodes}
+                hiddenNodes={hiddenNodes}
+                draggedNode={draggedNode}
+                alignmentLines={[]}
+                panOffset={{ x: 0, y: 0 }}
+                isPanning={isPanning}
+                onMouseDown={handleNodeMouseDown}
+                onTouchStart={handleNodeTouchStart}
+                onNodeClick={(nodeId, e) => handleNodeClick(nodeId, e)}
+                onEditNode={handleEditNode}
+                onDeleteNode={deleteNode}
+                onToggleNodeVisibility={toggleNodeVisibility}
+                onChangeNodeType={handleChangeNodeType}
+                onOpenNodeNotes={handleOpenNodeNotes}
+                onAddChildNode={handleAddChildNode}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       <DialogManager
         isAddingNode={isAddingNode}

@@ -3,7 +3,7 @@ import React from 'react';
 import { MindMapNode, MindMapEdge } from '@/types/mindMap';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit2, Trash2, NotebookPen, Plus, GripVertical, Eye, EyeOff, ChevronUp, ChevronDown } from 'lucide-react';
+import { Edit2, Trash2, NotebookPen, Plus, GripVertical, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface MindMapListViewProps {
   nodes: MindMapNode[];
@@ -32,6 +32,8 @@ const MindMapListView = ({
   onToggleNodeVisibility,
   onMoveNode
 }: MindMapListViewProps) => {
+  console.log('MindMapListView renderizando com', nodes.length, 'nodes');
+  
   const getNodeLevel = (nodeId: string): number => {
     let level = 0;
     let currentId = nodeId;
@@ -109,7 +111,7 @@ const MindMapListView = ({
   return (
     <div className="p-6 space-y-4 max-w-5xl mx-auto">
       <div className="text-sm text-gray-500 mb-6 bg-white p-3 rounded-lg shadow-sm border">
-        📋 {hierarchicalNodes.length} nós • Visualização em Lista • Arraste para reordenar
+        📋 {hierarchicalNodes.length} nós • Visualização em Lista • Reorganize seus nós
       </div>
       
       <div className="space-y-3">
@@ -125,7 +127,7 @@ const MindMapListView = ({
               className={`transition-all duration-200 hover:shadow-md border ${
                 isSelected ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-200' : 'bg-white hover:bg-gray-50'
               }`}
-              style={{ marginLeft: `${level * 24}px` }}
+              style={{ marginLeft: `${level * 20}px` }}
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -184,7 +186,7 @@ const MindMapListView = ({
                       disabled={index === 0}
                       title="Mover para cima"
                     >
-                      <ChevronUp className="h-3 w-3" />
+                      <ArrowUp className="h-3 w-3" />
                     </Button>
                     
                     <Button
@@ -195,7 +197,7 @@ const MindMapListView = ({
                       disabled={index === hierarchicalNodes.length - 1}
                       title="Mover para baixo"
                     >
-                      <ChevronDown className="h-3 w-3" />
+                      <ArrowDown className="h-3 w-3" />
                     </Button>
                     
                     <Button
