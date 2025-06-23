@@ -60,7 +60,9 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
+    'showClosersPerformanceTable', 'showRevenueEvolutionChart', 'showBillingEvolutionChart',
+    'showSellerRevenueChart', 'showSellerBillingChart', 'showTemporalRevenueChart', 'showTemporalBillingChart'
   ];
 
   // GRÁFICOS COMERCIAIS - renderizar diretamente
@@ -122,23 +124,8 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
       />;
     }
 
-    // Se nenhum produto específico está selecionado mas há produtos configurados, 
-    // renderizar placeholder
-    if (config.selectedProductIds && config.selectedProductIds.length > 0) {
-      console.log('🔍 [DEBUG] ItemRenderer - Rendering general product chart placeholder');
-      return (
-        <div className="p-8 text-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
-          <h3 className="text-lg font-medium text-gray-700 mb-2">
-            Gráfico de Produtos Disponível
-          </h3>
-          <p className="text-gray-600">
-            Selecione um produto específico no filtro acima para visualizar o gráfico: {itemKey.replace('show', '').replace('Chart', '')}
-          </p>
-        </div>
-      );
-    }
-
-    console.log('🔍 [DEBUG] ItemRenderer - No products configured, not rendering chart');
+    // Se nenhum produto específico está selecionado, não renderizar nada
+    console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering chart');
     return null;
   }
 
