@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit2, Trash2, Eye, EyeOff, Network, NotebookPen } from 'lucide-react';
+import { Edit2, Trash2, Eye, EyeOff, Network, NotebookPen, Plus } from 'lucide-react';
 import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
 
 interface MindMapNodeProps {
@@ -19,6 +19,7 @@ interface MindMapNodeProps {
   onToggleConnections: () => void;
   onChangeType: () => void;
   onOpenNotes: () => void;
+  onAddChild: () => void;
 }
 
 const MindMapNode = ({
@@ -34,7 +35,8 @@ const MindMapNode = ({
   onDelete,
   onToggleConnections,
   onChangeType,
-  onOpenNotes
+  onOpenNotes,
+  onAddChild
 }: MindMapNodeProps) => {
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only start dragging if not clicking on buttons
@@ -58,7 +60,7 @@ const MindMapNode = ({
 
   return (
     <div
-      className={`absolute select-none ${
+      className={`absolute select-none group ${
         isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
       } ${isDragged ? 'z-50 scale-105' : 'z-10'} transition-all duration-200`}
       style={{
@@ -160,6 +162,20 @@ const MindMapNode = ({
           )}
         </CardContent>
       </Card>
+
+      {/* Add Child Button - appears on hover */}
+      <Button
+        size="sm"
+        variant="default"
+        className="absolute -bottom-2 -right-2 h-6 w-6 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+        onClick={(e) => {
+          e.stopPropagation();
+          onAddChild();
+        }}
+        title="Adicionar nó filho"
+      >
+        <Plus className="h-3 w-3" />
+      </Button>
     </div>
   );
 };

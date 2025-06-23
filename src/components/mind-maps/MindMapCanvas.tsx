@@ -73,6 +73,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   const [editingNode, setEditingNode] = useState<string | null>(null);
   const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
+  const [selectedParentForNewNode, setSelectedParentForNewNode] = useState<string | null>(null);
 
   const handleSave = async () => {
     console.log('Salvamento manual do mapa mental:', { nodes, edges });
@@ -86,6 +87,11 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const handleAddNode = (label: string, connectToNodeId?: string) => {
     addNode(label, connectToNodeId);
+  };
+
+  const handleAddChildNode = (parentNodeId: string) => {
+    setSelectedParentForNewNode(parentNodeId);
+    setIsAddingNode(true);
   };
 
   const handleEditNode = (nodeId: string) => {
@@ -124,7 +130,10 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   return (
     <div className="relative w-full h-full bg-white">
       <MindMapToolbar
-        onAddNode={() => setIsAddingNode(true)}
+        onAddNode={() => {
+          setSelectedParentForNewNode(null);
+          setIsAddingNode(true);
+        }}
         onSave={handleSave}
         isSaving={isSaving}
       />
@@ -163,13 +172,19 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
             onToggleNodeVisibility={toggleNodeVisibility}
             onChangeNodeType={handleChangeNodeType}
             onOpenNodeNotes={handleOpenNodeNotes}
+            onAddChildNode={handleAddChildNode}
           />
         </div>
       </div>
 
       <DialogManager
         isAddingNode={isAddingNode}
-        setIsAddingNode={setIsAddingNode}
+        setIsAddingNode={(value) => {
+          setIsAddingNode(value);
+          if (!value) {
+            setSelectedParentForNewNode(null);
+          }
+        }}
         editingNode={editingNode}
         setEditingNode={setEditingNode}
         changingNodeType={changingNodeType}
@@ -186,6 +201,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         onChangeToMain={changeNodeToMain}
         onChangeToChild={changeNodeToChild}
         onChangeToGrandchild={changeNodeToGrandchild}
+        selectedParentForNewNode={selectedParentForNewNode}
       />
     </div>
   );

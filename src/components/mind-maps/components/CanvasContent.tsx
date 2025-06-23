@@ -22,6 +22,7 @@ interface CanvasContentProps {
   onToggleNodeVisibility: (nodeId: string) => void;
   onChangeNodeType: (nodeId: string) => void;
   onOpenNodeNotes: (nodeId: string) => void;
+  onAddChildNode: (parentNodeId: string) => void;
 }
 
 const CanvasContent = ({
@@ -41,7 +42,8 @@ const CanvasContent = ({
   onDeleteNode,
   onToggleNodeVisibility,
   onChangeNodeType,
-  onOpenNodeNotes
+  onOpenNodeNotes,
+  onAddChildNode
 }: CanvasContentProps) => {
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
   const visibleEdges = edges.filter(edge => 
@@ -103,6 +105,7 @@ const CanvasContent = ({
           onToggleConnections={() => onToggleNodeVisibility(node.id)}
           onChangeType={() => onChangeNodeType(node.id)}
           onOpenNotes={() => onOpenNodeNotes(node.id)}
+          onAddChild={() => onAddChildNode(node.id)}
         />
       ))}
     </div>

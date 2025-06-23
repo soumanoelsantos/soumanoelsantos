@@ -13,18 +13,19 @@ interface DialogManagerProps {
   setEditingNode: (value: string | null) => void;
   changingNodeType: string | null;
   setChangingNodeType: (value: string | null) => void;
-  editingNotes: string | null; // Nova prop
-  setEditingNotes: (value: string | null) => void; // Nova prop
+  editingNotes: string | null;
+  setEditingNotes: (value: string | null) => void;
   visibleNodes: MindMapNode[];
   nodes: MindMapNode[];
   edges: MindMapEdge[];
   onAddNode: (label: string, connectToNodeId?: string) => void;
   onUpdateNodeLabel: (nodeId: string, label: string) => void;
-  onUpdateNodeNotes: (nodeId: string, notes: string) => void; // Nova prop
+  onUpdateNodeNotes: (nodeId: string, notes: string) => void;
   getAvailableParents: (nodeId: string) => MindMapNode[];
   onChangeToMain: (nodeId: string) => void;
   onChangeToChild: (nodeId: string, parentId: string) => void;
   onChangeToGrandchild: (nodeId: string, parentId: string) => void;
+  selectedParentForNewNode?: string | null;
 }
 
 const DialogManager = ({
@@ -45,7 +46,8 @@ const DialogManager = ({
   getAvailableParents,
   onChangeToMain,
   onChangeToChild,
-  onChangeToGrandchild
+  onChangeToGrandchild,
+  selectedParentForNewNode
 }: DialogManagerProps) => {
   const getEditingNodeLabel = () => {
     if (!editingNode) return '';
@@ -87,6 +89,7 @@ const DialogManager = ({
         onAdd={onAddNode}
         nodes={visibleNodes}
         edges={edges}
+        preSelectedParent={selectedParentForNewNode}
       />
 
       <EditNodeDialog
