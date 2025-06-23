@@ -1,19 +1,20 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import Home from './pages/Home';
+import Index from './pages/Index';
 import Login from './pages/Login';
 import MemberArea from './pages/MemberArea';
-import AdminArea from './pages/AdminArea';
+import AdminPage from './pages/AdminPage';
 import DashboardConfig from './pages/DashboardConfig';
 import MapaMental from './pages/MapaMental';
-import SwotAnalysisPage from './pages/SwotAnalysisPage';
-import BusinessModelCanvasPage from './pages/BusinessModelCanvasPage';
-import DiagnosticPage from './pages/DiagnosticPage';
-import PuvAnalysisPage from './pages/PuvAnalysisPage';
-import MapaEquipePage from './pages/MapaEquipePage';
+import AnaliseSwot from './pages/AnaliseSwot';
+import MapaNegocio from './pages/MapaNegocio';
+import DiagnosticoTest from './pages/DiagnosticoTest';
+import PropostaUnicaValor from './pages/PropostaUnicaValor';
+import MapaEquipe from './pages/MapaEquipe';
 import CrmPage from './pages/CrmPage';
-import PhaseTestPage from './pages/PhaseTestPage';
+import TesteFase from './pages/TesteFase';
 import PlanejamentoEstrategicoPage from './pages/PlanejamentoEstrategicoPage';
 import ProcessDocuments from './pages/ProcessDocuments';
 import SharedDocument from './pages/SharedDocument';
@@ -25,19 +26,19 @@ function App() {
       <div className="App">
         <Toaster position="top-right" />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/membros" element={<MemberArea />} />
-          <Route path="/admin" element={<AdminArea />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="/dashboard-config" element={<DashboardConfig />} />
           <Route path="/mapa-mental" element={<MapaMental />} />
-          <Route path="/swot" element={<SwotAnalysisPage />} />
-          <Route path="/canvas" element={<BusinessModelCanvasPage />} />
-          <Route path="/puv" element={<PuvAnalysisPage />} />
-          <Route path="/diagnostic" element={<DiagnosticPage />} />
-          <Route path="/mapa-equipe" element={<MapaEquipePage />} />
+          <Route path="/swot" element={<AnaliseSwot />} />
+          <Route path="/canvas" element={<MapaNegocio />} />
+          <Route path="/puv" element={<PropostaUnicaValor />} />
+          <Route path="/diagnostic" element={<DiagnosticoTest />} />
+          <Route path="/mapa-equipe" element={<MapaEquipe />} />
           <Route path="/crm" element={<CrmPage />} />
-          <Route path="/phase-test" element={<PhaseTestPage />} />
+          <Route path="/phase-test" element={<TesteFase />} />
           <Route path="/planejamento-estrategico" element={<PlanejamentoEstrategicoPage />} />
           <Route path="/processos-documentados" element={<ProcessDocuments />} />
           <Route path="/shared/document/:token" element={<SharedDocument />} />
