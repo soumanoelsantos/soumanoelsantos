@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import MetricsCards from '@/components/dashboard/metrics/MetricsCards';
@@ -12,7 +13,6 @@ import TemporalRevenueChart from '@/components/dashboard/charts/TemporalRevenueC
 import TemporalBillingChart from '@/components/dashboard/charts/TemporalBillingChart';
 import ProductRevenueEvolutionChart from '@/components/dashboard/charts/ProductRevenueEvolutionChart';
 import ProductBillingEvolutionChart from '@/components/dashboard/charts/ProductBillingEvolutionChart';
-import ProductSalesEvolutionChart from '@/components/dashboard/charts/ProductSalesEvolutionChart';
 import ClosersPerformanceTable from '@/components/dashboard/tables/ClosersPerformanceTable';
 
 interface ItemRendererProps {
@@ -43,10 +43,14 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     'showProductProjecaoFaturamento'
   ];
 
-  // Lista de gráficos de produtos (removidos os 4 gráficos)
+  // Lista de gráficos de produtos (apenas os dois gráficos de evolução + os novos 4 gráficos)
   const productCharts = [
     'showProductRevenueEvolutionChart',
-    'showProductBillingEvolutionChart'
+    'showProductBillingEvolutionChart',
+    'showSellerRevenueChart',
+    'showSellerBillingChart',
+    'showTemporalRevenueChart',
+    'showTemporalBillingChart'
   ];
 
   // Lista de indicadores comerciais
@@ -119,6 +123,18 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
         
         case 'showProductBillingEvolutionChart':
           return <ProductBillingEvolutionChart selectedProductId={selectedProductId} />;
+        
+        case 'showSellerRevenueChart':
+          return <SellerRevenueChart />;
+        
+        case 'showSellerBillingChart':
+          return <SellerBillingChart />;
+        
+        case 'showTemporalRevenueChart':
+          return <TemporalRevenueChart />;
+        
+        case 'showTemporalBillingChart':
+          return <TemporalBillingChart />;
         
         default:
           return null;

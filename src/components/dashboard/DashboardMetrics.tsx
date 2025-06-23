@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import { ItemRenderer } from './renderers/ItemRenderer';
@@ -49,10 +50,14 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       'showProductProjecaoFaturamento'
     ];
 
-    // Lista de gráficos de produtos (removidos os 4 gráficos)
+    // Lista de gráficos de produtos (incluindo os novos 4 gráficos)
     const productCharts = [
       'showProductRevenueEvolutionChart',
-      'showProductBillingEvolutionChart'
+      'showProductBillingEvolutionChart',
+      'showSellerRevenueChart',
+      'showSellerBillingChart',
+      'showTemporalRevenueChart',
+      'showTemporalBillingChart'
     ];
 
     // Lista de gráficos comerciais

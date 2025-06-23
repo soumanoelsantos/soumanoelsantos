@@ -1,190 +1,10 @@
-
 import { DashboardConfig } from '@/types/dashboardConfig';
-import { defaultConfig } from '@/config/dashboardDefaults';
 
-export const mapDatabaseToConfig = (data: any): DashboardConfig => {
-  console.log('🔵 dashboardConfigMapper - Mapping database data to config:', data);
-  
-  // Safely parse metrics_order with type checking
-  let metricsOrder = defaultConfig.metricsOrder;
-  if (data.metrics_order) {
-    if (Array.isArray(data.metrics_order)) {
-      metricsOrder = data.metrics_order as string[];
-    } else if (typeof data.metrics_order === 'string') {
-      try {
-        const parsed = JSON.parse(data.metrics_order);
-        if (Array.isArray(parsed)) {
-          metricsOrder = parsed;
-        }
-      } catch (e) {
-        console.warn('🟡 Failed to parse metrics_order, using default');
-      }
-    }
-  }
-
-  // Safely parse pre_sales_order with type checking
-  let preSalesOrder = defaultConfig.preSalesOrder;
-  if (data.pre_sales_order) {
-    if (Array.isArray(data.pre_sales_order)) {
-      preSalesOrder = data.pre_sales_order as string[];
-    } else if (typeof data.pre_sales_order === 'string') {
-      try {
-        const parsed = JSON.parse(data.pre_sales_order);
-        if (Array.isArray(parsed)) {
-          preSalesOrder = parsed;
-        }
-      } catch (e) {
-        console.warn('🟡 Failed to parse pre_sales_order, using default');
-      }
-    }
-  }
-
-  // Safely parse product_order with type checking
-  let productOrder = defaultConfig.productOrder;
-  if (data.product_order) {
-    if (Array.isArray(data.product_order)) {
-      productOrder = data.product_order as string[];
-    } else if (typeof data.product_order === 'string') {
-      try {
-        const parsed = JSON.parse(data.product_order);
-        if (Array.isArray(parsed)) {
-          productOrder = parsed;
-        }
-      } catch (e) {
-        console.warn('🟡 Failed to parse product_order, using default');
-      }
-    }
-  }
-
-  // Safely parse selected_product_ids with type checking
-  let selectedProductIds = defaultConfig.selectedProductIds;
-  if (data.selected_product_ids) {
-    if (Array.isArray(data.selected_product_ids)) {
-      selectedProductIds = data.selected_product_ids as string[];
-    } else if (typeof data.selected_product_ids === 'string') {
-      try {
-        const parsed = JSON.parse(data.selected_product_ids);
-        if (Array.isArray(parsed)) {
-          selectedProductIds = parsed;
-        }
-      } catch (e) {
-        console.warn('🟡 Failed to parse selected_product_ids, using default');
-      }
-    }
-  }
-
-  const mappedConfig = {
-    showConversion: data.show_conversion ?? defaultConfig.showConversion,
-    showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
-    showTicketFaturamento: data.show_ticket_faturamento ?? defaultConfig.showTicketFaturamento,
-    showTicketReceita: data.show_ticket_receita ?? defaultConfig.showTicketReceita,
-    showFaltaFaturamento: data.show_falta_faturamento ?? defaultConfig.showFaltaFaturamento,
-    showFaltaReceita: data.show_falta_receita ?? defaultConfig.showFaltaReceita,
-    showDiariaReceita: data.show_diaria_receita ?? defaultConfig.showDiariaReceita,
-    showDiariaFaturamento: data.show_diaria_faturamento ?? defaultConfig.showDiariaFaturamento,
-    showSuperMetaFaturamento: data.show_super_meta_faturamento ?? defaultConfig.showSuperMetaFaturamento,
-    showSuperMetaReceita: data.show_super_meta_receita ?? defaultConfig.showSuperMetaReceita,
-    showHiperMetaFaturamento: data.show_hiper_meta_faturamento ?? defaultConfig.showHiperMetaFaturamento,
-    showHiperMetaReceita: data.show_hiper_meta_receita ?? defaultConfig.showHiperMetaReceita,
-    showFaltaReceitaSuper: data.show_falta_receita_super ?? defaultConfig.showFaltaReceitaSuper,
-    showFaltaReceitaHiper: data.show_falta_receita_hiper ?? defaultConfig.showFaltaReceitaHiper,
-    showFaltaFaturamentoSuper: data.show_falta_faturamento_super ?? defaultConfig.showFaltaFaturamentoSuper,
-    showFaltaFaturamentoHiper: data.show_falta_faturamento_hiper ?? defaultConfig.showFaltaFaturamentoHiper,
-    showMetaFaturamento: data.show_meta_faturamento ?? defaultConfig.showMetaFaturamento,
-    showMetaReceita: data.show_meta_receita ?? defaultConfig.showMetaReceita,
-    showFaturamento: data.show_faturamento ?? defaultConfig.showFaturamento,
-    showReceita: data.show_receita ?? defaultConfig.showReceita,
-    showQuantidadeVendas: data.show_quantidade_vendas ?? defaultConfig.showQuantidadeVendas,
-    showCashCollect: data.show_cash_collect ?? defaultConfig.showCashCollect,
-    showCac: data.show_cac ?? defaultConfig.showCac,
-    
-    // Novos indicadores de projeção - mapeamento correto com as colunas do banco
-    showProjecaoReceita: data.show_projecao_receita ?? defaultConfig.showProjecaoReceita,
-    showProjecaoFaturamento: data.show_projecao_faturamento ?? defaultConfig.showProjecaoFaturamento,
-    showNoShow: data.show_no_show ?? defaultConfig.showNoShow,
-    
-    // Nova tabela de performance dos closers
-    showClosersPerformanceTable: data.show_closers_performance_table ?? defaultConfig.showClosersPerformanceTable,
-    
-    // Configurações de pré-vendas
-    showPreSalesCalls: data.show_pre_sales_calls ?? defaultConfig.showPreSalesCalls,
-    showPreSalesSchedulings: data.show_pre_sales_schedulings ?? defaultConfig.showPreSalesSchedulings,
-    showPreSalesNoShow: data.show_pre_sales_no_show ?? defaultConfig.showPreSalesNoShow,
-    showPreSalesSDRTable: data.show_pre_sales_sdr_table ?? defaultConfig.showPreSalesSDRTable,
-    showPreSalesCallsChart: data.show_pre_sales_calls_chart ?? defaultConfig.showPreSalesCallsChart,
-    showPreSalesSchedulingChart: data.show_pre_sales_scheduling_chart ?? defaultConfig.showPreSalesSchedulingChart,
-    showPreSalesNoShowChart: data.show_pre_sales_no_show_chart ?? defaultConfig.showPreSalesNoShowChart,
-    showPreSalesSDRComparisonChart: data.show_pre_sales_sdr_comparison_chart ?? defaultConfig.showPreSalesSDRComparisonChart,
-    
-    companyName: data.company_name || defaultConfig.companyName,
-    metricsOrder: metricsOrder,
-    preSalesOrder: preSalesOrder,
-    productOrder: productOrder,
-
-    // Mapeamento explícito dos gráficos de evolução com fallback para true
-    showRevenueEvolutionChart: data.show_revenue_evolution_chart !== undefined ? data.show_revenue_evolution_chart : true,
-    showBillingEvolutionChart: data.show_billing_evolution_chart !== undefined ? data.show_billing_evolution_chart : true,
-    
-    // Mapeamento dos novos gráficos de vendedores
-    showSellerRevenueChart: data.show_seller_revenue_chart !== undefined ? data.show_seller_revenue_chart : true,
-    showSellerBillingChart: data.show_seller_billing_chart !== undefined ? data.show_seller_billing_chart : true,
-    
-    // Mapeamento dos novos gráficos de análise temporal
-    showTemporalRevenueChart: data.show_temporal_revenue_chart !== undefined ? data.show_temporal_revenue_chart : true,
-    showTemporalBillingChart: data.show_temporal_billing_chart !== undefined ? data.show_temporal_billing_chart : true,
-
-    // Product metrics fields
-    showProductMetrics: data.show_product_metrics ?? defaultConfig.showProductMetrics,
-    selectedProductIds: selectedProductIds,
-    showProductTicketReceita: data.show_product_ticket_receita ?? defaultConfig.showProductTicketReceita,
-    showProductTicketFaturamento: data.show_product_ticket_faturamento ?? defaultConfig.showProductTicketFaturamento,
-    showProductFaturamento: data.show_product_faturamento ?? defaultConfig.showProductFaturamento,
-    showProductReceita: data.show_product_receita ?? defaultConfig.showProductReceita,
-    showProductQuantidadeVendas: data.show_product_quantidade_vendas ?? defaultConfig.showProductQuantidadeVendas,
-    showProductMetaFaturamento: data.show_product_meta_faturamento ?? defaultConfig.showProductMetaFaturamento,
-    showProductMetaReceita: data.show_product_meta_receita ?? defaultConfig.showProductMetaReceita,
-    showProductMetaQuantidadeVendas: data.show_product_meta_quantidade_vendas ?? defaultConfig.showProductMetaQuantidadeVendas,
-    showProductFaltaFaturamento: data.show_product_falta_faturamento ?? defaultConfig.showProductFaltaFaturamento,
-    showProductFaltaReceita: data.show_product_falta_receita ?? defaultConfig.showProductFaltaReceita,
-    showProductCashCollect: data.show_product_cash_collect ?? defaultConfig.showProductCashCollect,
-    showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
-    showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,
-
-    // Product charts fields
-    showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
-    showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
-    showProductSalesEvolutionChart: data.show_product_sales_evolution_chart ?? defaultConfig.showProductSalesEvolutionChart,
-    showProductPerformanceChart: data.show_product_performance_chart ?? defaultConfig.showProductPerformanceChart,
-    showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
-    showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
-
-    // NOVOS MAPEAMENTOS DE CONTROLE DE ABAS
-    enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
-    enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
-    enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
-  };
-
-  console.log('🟢 dashboardConfigMapper - Final mapped config with projection indicators:', {
-    showProjecaoReceita: mappedConfig.showProjecaoReceita,
-    showProjecaoFaturamento: mappedConfig.showProjecaoFaturamento,
-    showNoShow: mappedConfig.showNoShow,
-    showClosersPerformanceTable: mappedConfig.showClosersPerformanceTable,
-    preSalesOrder: mappedConfig.preSalesOrder,
-    productOrder: mappedConfig.productOrder,
-    enableCommercialTab: mappedConfig.enableCommercialTab,
-    enableProductTab: mappedConfig.enableProductTab,
-    enablePreSalesTab: mappedConfig.enablePreSalesTab
-  });
-  
-  return mappedConfig;
-};
-
-export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => {
-  console.log('🔵 dashboardConfigMapper - Mapping config to database format:', config);
-  
-  const databaseData = {
-    user_id: userId,
-    company_name: config.companyName,
+export const mapConfigToDatabase = (config: DashboardConfig) => {
+  return {
+    metrics_order: config.metricsOrder,
+    pre_sales_order: config.preSalesOrder,
+    product_order: config.productOrder,
     show_conversion: config.showConversion,
     show_revenue: config.showRevenue,
     show_ticket_faturamento: config.showTicketFaturamento,
@@ -208,16 +28,10 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_quantidade_vendas: config.showQuantidadeVendas,
     show_cash_collect: config.showCashCollect,
     show_cac: config.showCac,
-    
-    // Novos indicadores de projeção - mapeamento correto para as colunas do banco
     show_projecao_receita: config.showProjecaoReceita,
     show_projecao_faturamento: config.showProjecaoFaturamento,
     show_no_show: config.showNoShow,
-    
-    // Nova tabela de performance dos closers
     show_closers_performance_table: config.showClosersPerformanceTable,
-    
-    // Configurações de pré-vendas
     show_pre_sales_calls: config.showPreSalesCalls,
     show_pre_sales_schedulings: config.showPreSalesSchedulings,
     show_pre_sales_no_show: config.showPreSalesNoShow,
@@ -226,24 +40,13 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_pre_sales_scheduling_chart: config.showPreSalesSchedulingChart,
     show_pre_sales_no_show_chart: config.showPreSalesNoShowChart,
     show_pre_sales_sdr_comparison_chart: config.showPreSalesSDRComparisonChart,
-    
-    metrics_order: config.metricsOrder,
-    pre_sales_order: config.preSalesOrder,
-    product_order: config.productOrder,
-
-    // Novos gráficos de evolução
+    company_name: config.companyName,
     show_revenue_evolution_chart: config.showRevenueEvolutionChart,
     show_billing_evolution_chart: config.showBillingEvolutionChart,
-    
-    // Novos gráficos de vendedores
     show_seller_revenue_chart: config.showSellerRevenueChart,
     show_seller_billing_chart: config.showSellerBillingChart,
-    
-    // Novos gráficos de análise temporal
     show_temporal_revenue_chart: config.showTemporalRevenueChart,
     show_temporal_billing_chart: config.showTemporalBillingChart,
-
-    // Product metrics mappings
     show_product_metrics: config.showProductMetrics,
     selected_product_ids: config.selectedProductIds,
     show_product_ticket_receita: config.showProductTicketReceita,
@@ -259,32 +62,88 @@ export const mapConfigToDatabase = (config: DashboardConfig, userId: string) => 
     show_product_cash_collect: config.showProductCashCollect,
     show_product_projecao_receita: config.showProductProjecaoReceita,
     show_product_projecao_faturamento: config.showProductProjecaoFaturamento,
-
-    // Product charts mappings
+    
+    // Product charts mappings - apenas os dois que ficaram
     show_product_revenue_evolution_chart: config.showProductRevenueEvolutionChart,
     show_product_billing_evolution_chart: config.showProductBillingEvolutionChart,
-    show_product_sales_evolution_chart: config.showProductSalesEvolutionChart,
-    show_product_performance_chart: config.showProductPerformanceChart,
-    show_product_comparison_chart: config.showProductComparisonChart,
-    show_product_temporal_chart: config.showProductTemporalChart,
 
-    // NOVOS MAPEAMENTOS DE CONTROLE DE ABAS
+    // MAPEAMENTOS DE CONTROLE DE ABAS
     enable_commercial_tab: config.enableCommercialTab,
     enable_product_tab: config.enableProductTab,
     enable_pre_sales_tab: config.enablePreSalesTab,
   };
+};
 
-  console.log('🟢 dashboardConfigMapper - Final database data with projection indicators:', {
-    show_projecao_receita: databaseData.show_projecao_receita,
-    show_projecao_faturamento: databaseData.show_projecao_faturamento,
-    show_no_show: databaseData.show_no_show,
-    show_closers_performance_table: databaseData.show_closers_performance_table,
-    pre_sales_order: databaseData.pre_sales_order,
-    product_order: databaseData.product_order,
-    enable_commercial_tab: databaseData.enable_commercial_tab,
-    enable_product_tab: databaseData.enable_product_tab,
-    enable_pre_sales_tab: databaseData.enable_pre_sales_tab
-  });
-  
-  return databaseData;
+export const mapDatabaseToConfig = (data: any): DashboardConfig => {
+  return {
+    showConversion: data.show_conversion ?? true,
+    showRevenue: data.show_revenue ?? true,
+    showTicketFaturamento: data.show_ticket_faturamento ?? true,
+    showTicketReceita: data.show_ticket_receita ?? true,
+    showFaltaFaturamento: data.show_falta_faturamento ?? true,
+    showFaltaReceita: data.show_falta_receita ?? true,
+    showDiariaReceita: data.show_diaria_receita ?? true,
+    showDiariaFaturamento: data.show_diaria_faturamento ?? true,
+    showSuperMetaFaturamento: data.show_super_meta_faturamento ?? true,
+    showSuperMetaReceita: data.show_super_meta_receita ?? true,
+    showHiperMetaFaturamento: data.show_hiper_meta_faturamento ?? true,
+    showHiperMetaReceita: data.show_hiper_meta_receita ?? true,
+    showFaltaReceitaSuper: data.show_falta_receita_super ?? true,
+    showFaltaReceitaHiper: data.show_falta_receita_hiper ?? true,
+    showFaltaFaturamentoSuper: data.show_falta_faturamento_super ?? true,
+    showFaltaFaturamentoHiper: data.show_falta_faturamento_hiper ?? true,
+    showMetaFaturamento: data.show_meta_faturamento ?? true,
+    showMetaReceita: data.show_meta_receita ?? true,
+    showFaturamento: data.show_faturamento ?? true,
+    showReceita: data.show_receita ?? true,
+    showQuantidadeVendas: data.show_quantidade_vendas ?? true,
+    showCashCollect: data.show_cash_collect ?? true,
+    showCac: data.show_cac ?? true,
+    showProjecaoReceita: data.show_projecao_receita ?? true,
+    showProjecaoFaturamento: data.show_projecao_faturamento ?? true,
+    showNoShow: data.show_no_show ?? true,
+    showClosersPerformanceTable: data.show_closers_performance_table ?? true,
+    showPreSalesCalls: data.show_pre_sales_calls ?? true,
+    showPreSalesSchedulings: data.show_pre_sales_schedulings ?? true,
+    showPreSalesNoShow: data.show_pre_sales_no_show ?? true,
+    showPreSalesSDRTable: data.show_pre_sales_sdr_table ?? true,
+    showPreSalesCallsChart: data.show_pre_sales_calls_chart ?? true,
+    showPreSalesSchedulingChart: data.show_pre_sales_scheduling_chart ?? true,
+    showPreSalesNoShowChart: data.show_pre_sales_no_show_chart ?? true,
+    showPreSalesSDRComparisonChart: data.show_pre_sales_sdr_comparison_chart ?? true,
+    companyName: data.company_name || 'Minha Empresa',
+    metricsOrder: data.metrics_order || [],
+    preSalesOrder: data.pre_sales_order || [],
+    productOrder: data.product_order || [],
+    showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? true,
+    showBillingEvolutionChart: data.show_billing_evolution_chart ?? true,
+    showSellerRevenueChart: data.show_seller_revenue_chart ?? true,
+    showSellerBillingChart: data.show_seller_billing_chart ?? true,
+    showTemporalRevenueChart: data.show_temporal_revenue_chart ?? true,
+    showTemporalBillingChart: data.show_temporal_billing_chart ?? true,
+    showProductMetrics: data.show_product_metrics ?? true,
+    selectedProductIds: data.selected_product_ids || [],
+    showProductTicketReceita: data.show_product_ticket_receita ?? true,
+    showProductTicketFaturamento: data.show_product_ticket_faturamento ?? true,
+    showProductFaturamento: data.show_product_faturamento ?? true,
+    showProductReceita: data.show_product_receita ?? true,
+    showProductQuantidadeVendas: data.show_product_quantidade_vendas ?? true,
+    showProductMetaFaturamento: data.show_product_meta_faturamento ?? true,
+    showProductMetaReceita: data.show_product_meta_receita ?? true,
+    showProductMetaQuantidadeVendas: data.show_product_meta_quantidade_vendas ?? true,
+    showProductFaltaFaturamento: data.show_product_falta_faturamento ?? true,
+    showProductFaltaReceita: data.show_product_falta_receita ?? true,
+    showProductCashCollect: data.show_product_cash_collect ?? true,
+    showProductProjecaoReceita: data.show_product_projecao_receita ?? true,
+    showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? true,
+    
+    // Product charts fields - apenas os dois que ficaram
+    showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? true,
+    showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? true,
+
+    // CAMPOS DE CONTROLE DE ABAS
+    enableCommercialTab: data.enable_commercial_tab ?? true,
+    enableProductTab: data.enable_product_tab ?? true,
+    enablePreSalesTab: data.enable_pre_sales_tab ?? true,
+  };
 };

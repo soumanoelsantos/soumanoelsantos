@@ -41,14 +41,14 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       'showProductProjecaoFaturamento'
     ];
 
-    // Lista de gráficos de produtos
+    // Lista de gráficos de produtos (incluindo os novos 4 gráficos)
     const productCharts = [
       'showProductRevenueEvolutionChart',
       'showProductBillingEvolutionChart',
-      'showProductSalesEvolutionChart',
-      'showProductPerformanceChart',
-      'showProductComparisonChart',
-      'showProductTemporalChart'
+      'showSellerRevenueChart',
+      'showSellerBillingChart',
+      'showTemporalRevenueChart',
+      'showTemporalBillingChart'
     ];
 
     // USAR A ORDEM PERSONALIZADA DE PRODUTOS se existir
@@ -81,7 +81,7 @@ export const useDashboardOrder = (config: DashboardConfig) => {
       }
     }
 
-    // SEMPRE adicionar gráficos de produtos se habilitados - CORRIGIDO
+    // SEMPRE adicionar gráficos de produtos se habilitados
     productCharts.forEach(chart => {
       if (config[chart as keyof DashboardConfig] && !finalOrder.includes(chart)) {
         finalOrder.push(chart);

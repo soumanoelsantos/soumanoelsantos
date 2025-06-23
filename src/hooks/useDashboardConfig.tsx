@@ -160,13 +160,13 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
           showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,
 
-          // Product charts fields
+          // Product charts fields - apenas os dois que ficaram
           showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
           showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
-          showProductSalesEvolutionChart: data.show_product_sales_evolution_chart ?? defaultConfig.showProductSalesEvolutionChart,
-          showProductPerformanceChart: data.show_product_performance_chart ?? defaultConfig.showProductPerformanceChart,
-          showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
-          showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
+          showSellerRevenueChart: data.show_seller_revenue_chart ?? defaultConfig.showSellerRevenueChart,
+          showSellerBillingChart: data.show_seller_billing_chart ?? defaultConfig.showSellerBillingChart,
+          showTemporalRevenueChart: data.show_temporal_revenue_chart ?? defaultConfig.showTemporalRevenueChart,
+          showTemporalBillingChart: data.show_temporal_billing_chart ?? defaultConfig.showTemporalBillingChart,
 
           // NOVOS CAMPOS DE CONTROLE DE ABAS
           enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
@@ -251,13 +251,13 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         show_product_projecao_receita: updates.showProductProjecaoReceita,
         show_product_projecao_faturamento: updates.showProductProjecaoFaturamento,
         
-        // Product charts mappings - GARANTIR QUE SEMPRE SEJAM MAPEADOS
+        // Product charts mappings - apenas os dois que ficaram
         show_product_revenue_evolution_chart: updates.showProductRevenueEvolutionChart,
         show_product_billing_evolution_chart: updates.showProductBillingEvolutionChart,
-        show_product_sales_evolution_chart: updates.showProductSalesEvolutionChart,
-        show_product_performance_chart: updates.showProductPerformanceChart,
-        show_product_comparison_chart: updates.showProductComparisonChart,
-        show_product_temporal_chart: updates.showProductTemporalChart,
+        show_seller_revenue_chart: updates.showSellerRevenueChart,
+        show_seller_billing_chart: updates.showSellerBillingChart,
+        show_temporal_revenue_chart: updates.showTemporalRevenueChart,
+        show_temporal_billing_chart: updates.showTemporalBillingChart,
 
         // NOVOS MAPEAMENTOS DE CONTROLE DE ABAS
         enable_commercial_tab: updates.enableCommercialTab,
