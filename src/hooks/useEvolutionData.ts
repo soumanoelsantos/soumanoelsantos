@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface EvolutionDataPoint {
   day: string;
@@ -17,6 +18,7 @@ interface EvolutionDataPoint {
 
 export const useEvolutionData = () => {
   const { toast } = useToast();
+  const { userId } = useAuth();
   const [revenueData, setRevenueData] = useState<EvolutionDataPoint[]>([]);
   const [billingData, setBillingData] = useState<EvolutionDataPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,9 +26,38 @@ export const useEvolutionData = () => {
   const fetchEvolutionData = async () => {
     try {
       setIsLoading(true);
-      console.log('🔍 [DEBUG] Buscando dados de evolução dos vendedores');
+      console.log('🔍 [DEBUG] Buscando dados de evolução dos produtos');
 
-      // Buscar dados de performance dos vendedores do mês atual
+      if (!userId) {
+        console.log('❌ [DEBUG] Nenhum userId disponível');
+        setIsLoading(false);
+        return;
+      }
+
+      // Buscar metas dos produtos ativos
+      const { data: productGoals, error: goalsError } = await supabase
+        .from('product_goals')
+        .select('revenue_goal, billing_goal, quantity_goal')
+        .eq('user_id', userId)
+        .eq('is_active', true);
+
+      if (goalsError) {
+        console.error('❌ [DEBUG] Erro ao buscar metas dos produtos:', goalsError);
+        throw goalsError;
+      }
+
+      console.log('📊 [DEBUG] Metas dos produtos encontradas:', productGoals);
+
+      // Calcular totais das metas
+      const totalRevenueGoal = productGoals?.reduce((acc, goal) => acc + (goal.revenue_goal || 0), 0) || 0;
+      const totalBillingGoal = productGoals?.reduce((acc, goal) => acc + (goal.billing_goal || 0), 0) || 0;
+
+      console.log('📊 [DEBUG] Totais calculados:', {
+        totalRevenueGoal,
+        totalBillingGoal
+      });
+
+      // Buscar dados de performance dos produtos do mês atual
       const currentDate = new Date();
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() + 1;
@@ -35,32 +66,17 @@ export const useEvolutionData = () => {
       const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
 
       const { data: performanceData, error: performanceError } = await supabase
-        .from('seller_daily_performance')
-        .select('date, revenue_amount, billing_amount')
-        .gte('date', startOfMonth)
-        .lte('date', endOfMonth)
-        .order('date', { ascending: true });
+        .from('seller_individual_sales')
+        .select('sale_date, revenue_amount, billing_amount')
+        .gte('sale_date', startOfMonth)
+        .lte('sale_date', endOfMonth);
 
       if (performanceError) {
         console.error('❌ [DEBUG] Erro ao buscar performance:', performanceError);
         throw performanceError;
       }
 
-      // Buscar metas dos vendedores
-      const { data: goalsData, error: goalsError } = await supabase
-        .from('seller_monthly_goals')
-        .select('revenue_goal, billing_goal')
-        .eq('month', month)
-        .eq('year', year);
-
-      if (goalsError) {
-        console.error('❌ [DEBUG] Erro ao buscar metas:', goalsError);
-        throw goalsError;
-      }
-
-      // Calcular totais de metas
-      const totalRevenueGoal = goalsData?.reduce((acc, goal) => acc + (goal.revenue_goal || 0), 0) || 60000;
-      const totalBillingGoal = goalsData?.reduce((acc, goal) => acc + (goal.billing_goal || 0), 0) || 200000;
+      console.log('📊 [DEBUG] Dados de performance encontrados:', performanceData?.length || 0);
 
       // Processar dados para o gráfico
       const daysInMonth = new Date(year, month, 0).getDate();
@@ -70,12 +86,12 @@ export const useEvolutionData = () => {
       const revenueEvolutionData: EvolutionDataPoint[] = [];
       const billingEvolutionData: EvolutionDataPoint[] = [];
 
-      // Agrupar performances por dia e calcular acumulado
+      // Agrupar performances por dia
       const performanceByDay = new Map<string, { revenue: number; billing: number }>();
       
       performanceData?.forEach(perf => {
-        const existing = performanceByDay.get(perf.date) || { revenue: 0, billing: 0 };
-        performanceByDay.set(perf.date, {
+        const existing = performanceByDay.get(perf.sale_date) || { revenue: 0, billing: 0 };
+        performanceByDay.set(perf.sale_date, {
           revenue: existing.revenue + (perf.revenue_amount || 0),
           billing: existing.billing + (perf.billing_amount || 0)
         });
@@ -123,7 +139,11 @@ export const useEvolutionData = () => {
       console.log('✅ [DEBUG] Dados de evolução processados:', {
         revenueData: revenueEvolutionData.length,
         billingData: billingEvolutionData.length,
-        currentDay
+        totalRevenueGoal,
+        totalBillingGoal,
+        currentDay,
+        sampleRevenueData: revenueEvolutionData.slice(-3),
+        sampleBillingData: billingEvolutionData.slice(-3)
       });
 
       setRevenueData(revenueEvolutionData);
@@ -136,6 +156,10 @@ export const useEvolutionData = () => {
         description: "Não foi possível carregar os dados de evolução",
         variant: "destructive",
       });
+      
+      // Em caso de erro, usar dados vazios
+      setRevenueData([]);
+      setBillingData([]);
     } finally {
       setIsLoading(false);
     }
@@ -143,7 +167,7 @@ export const useEvolutionData = () => {
 
   useEffect(() => {
     fetchEvolutionData();
-  }, []);
+  }, [userId]);
 
   return {
     revenueData,
