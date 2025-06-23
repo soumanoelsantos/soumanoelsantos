@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Dialog,
@@ -15,8 +15,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from 'lucide-react';
 import { Seller, SellerDailyPerformance } from '@/types/sellers';
 import { useSellerPerformance } from '@/hooks/useSellerPerformance';
+import { useSellerIndividualSales } from '@/hooks/useSellerIndividualSales';
 import { formatDateToBrazilian } from '@/utils/dateUtils';
 import { toast } from 'sonner';
+import ProductSalesSection, { ProductSale } from './ProductSalesSection';
 
 interface EditPerformanceDialogProps {
   performance: SellerDailyPerformance;
@@ -42,7 +44,10 @@ const EditPerformanceDialog: React.FC<EditPerformanceDialogProps> = ({
   onClose
 }) => {
   const { createOrUpdatePerformance } = useSellerPerformance(seller.id);
+  const { sales: individualSales, isLoading: salesLoading } = useSellerIndividualSales(performance.id);
+  const [productSales, setProductSales] = useState<ProductSale[]>([]);
   const isSDR = seller.seller_type === 'sdr';
+  const isCloser = seller.seller_type === 'closer';
   
   const { register, handleSubmit, formState: { isSubmitting } } = useForm<EditFormData>({
     defaultValues: {
@@ -56,6 +61,22 @@ const EditPerformanceDialog: React.FC<EditPerformanceDialogProps> = ({
     }
   });
 
+  // Carregar vendas individuais quando o diálogo abrir
+  useEffect(() => {
+    if (individualSales && individualSales.length > 0) {
+      const formattedSales: ProductSale[] = individualSales.map(sale => ({
+        id: sale.id,
+        product_id: sale.product_id || '',
+        client_name: sale.client_name,
+        revenue_amount: sale.revenue_amount,
+        billing_amount: sale.billing_amount
+      }));
+      setProductSales(formattedSales);
+    } else {
+      setProductSales([]);
+    }
+  }, [individualSales]);
+
   const onSubmit = async (data: EditFormData) => {
     try {
       const success = await createOrUpdatePerformance({
@@ -68,6 +89,7 @@ const EditPerformanceDialog: React.FC<EditPerformanceDialogProps> = ({
         calls_count: Number(data.calls_count) || 0,
         notes: data.notes || '',
         submitted_by_seller: false, // Editado pelo admin
+        product_sales: isCloser ? productSales : undefined, // Incluir vendas por produto para Closers
       });
 
       if (success) {
@@ -81,7 +103,7 @@ const EditPerformanceDialog: React.FC<EditPerformanceDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
@@ -156,7 +178,7 @@ const EditPerformanceDialog: React.FC<EditPerformanceDialogProps> = ({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="revenue_amount">Receita (R$) *</Label>
+                  <Label htmlFor="revenue_amount">Receita ($) *</Label>
                   <Input
                     id="revenue_amount"
                     type="number"
@@ -166,7 +188,7 @@ const EditPerformanceDialog: React.FC<EditPerformanceDialogProps> = ({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="billing_amount">Faturamento (R$) *</Label>
+                  <Label htmlFor="billing_amount">Faturamento ($) *</Label>
                   <Input
                     id="billing_amount"
                     type="number"
@@ -176,6 +198,16 @@ const EditPerformanceDialog: React.FC<EditPerformanceDialogProps> = ({
                   />
                 </div>
               </div>
+
+              {/* Seção de Vendas por Produto para Closers */}
+              {isCloser && (
+                <div className="space-y-4">
+                  <ProductSalesSection
+                    productSales={productSales}
+                    onProductSalesChange={setProductSales}
+                  />
+                </div>
+              )}
             </>
           )}
 
@@ -189,7 +221,7 @@ const EditPerformanceDialog: React.FC<EditPerformanceDialogProps> = ({
           </div>
 
           <div className="flex items-center gap-3 pt-4">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || salesLoading}>
               {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>
