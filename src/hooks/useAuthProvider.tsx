@@ -2,6 +2,8 @@
 import { useAuthState, useAuthOperations, useUserProfile, useAuthInitializer } from '@/hooks/auth';
 
 export const useAuthProvider = () => {
+  console.log("useAuthProvider: Initializing auth provider...");
+  
   // Manage auth state
   const {
     isAuthenticated,
@@ -42,6 +44,14 @@ export const useAuthProvider = () => {
     loadUserProfile,
     setLoginRedirectPath
   );
+
+  console.log("useAuthProvider: Current state:", {
+    isAuthenticated,
+    userEmail,
+    userId,
+    isAdmin,
+    isLoading
+  });
 
   return { 
     isAuthenticated, 

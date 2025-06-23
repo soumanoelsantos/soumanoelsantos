@@ -1,3 +1,4 @@
+
 import { useToast } from '@/hooks/use-toast';
 import { authService } from '@/services/auth';
 
@@ -16,7 +17,9 @@ export const useAuthOperations = (
    * Login function with improved error handling
    */
   const login = async (email: string, password: string, redirectPath: string | null): Promise<void> => {
+    console.log("Auth operations: Starting login for:", email);
     setIsLoading(true);
+    
     try {
       if (!email || !email.trim()) {
         throw new Error("O email é obrigatório");
@@ -26,14 +29,16 @@ export const useAuthOperations = (
         throw new Error("A senha é obrigatória");
       }
       
+      console.log("Auth operations: Calling auth service login...");
       const response = await authService.signInWithPassword(email, password);
       
       if (response.error) {
-        // Use the error message from the response
+        console.error("Auth operations: Login error from service:", response.error);
         const errorMessage = response.error.message || "Falha na autenticação";
         throw new Error(errorMessage);
       }
 
+      console.log("Auth operations: Login successful, handling redirect...");
       // Store redirect path in localStorage - default to /membros if none specified
       const finalRedirectPath = redirectPath || '/membros';
       handleRedirectPath(finalRedirectPath);
@@ -42,8 +47,10 @@ export const useAuthOperations = (
         title: "Login bem-sucedido",
         description: "Bem-vindo de volta!",
       });
+
+      console.log("Auth operations: Login completed successfully");
     } catch (error: any) {
-      console.error('Erro no login:', error);
+      console.error('Auth operations: Login error:', error);
       toast({
         variant: "destructive",
         title: "Erro no login",
@@ -59,7 +66,10 @@ export const useAuthOperations = (
    * Set user as admin with improved error handling
    */
   const setUserAsAdmin = async (value: boolean) => {
+    console.log("Auth operations: Setting admin status to:", value);
+    
     if (!userId) {
+      console.error("Auth operations: No user ID available for admin update");
       toast({
         variant: "destructive",
         title: "Erro de operação",
@@ -81,7 +91,7 @@ export const useAuthOperations = (
         description: value ? "Você agora tem acesso às funcionalidades de administrador" : "Suas permissões de administrador foram removidas",
       });
     } catch (error: any) {
-      console.error('Erro ao atualizar status de admin:', error);
+      console.error('Auth operations: Error updating admin status:', error);
       toast({
         variant: "destructive",
         title: "Erro ao atualizar permissões",
@@ -94,6 +104,8 @@ export const useAuthOperations = (
    * Logout function with improved error handling
    */
   const logout = async () => {
+    console.log("Auth operations: Starting logout...");
+    
     try {
       const response = await authService.signOut();
       
@@ -105,12 +117,13 @@ export const useAuthOperations = (
       // Clear localStorage data
       localStorage.removeItem('loginRedirectPath');
       
+      console.log("Auth operations: Logout successful");
       toast({
         title: "Logout realizado",
         description: "Você saiu da sua conta com sucesso",
       });
     } catch (error: any) {
-      console.error('Erro ao fazer logout:', error);
+      console.error('Auth operations: Logout error:', error);
       toast({
         variant: "destructive",
         title: "Erro no logout",

@@ -14,30 +14,34 @@ export const useAuthInitializer = (
   setLoginRedirectPath: (path: string | null) => void
 ) => {
   useEffect(() => {
-    console.log("Auth Provider initializing...");
+    console.log("Auth initializer: Starting auth initialization...");
     
     // Recover redirect path from localStorage (if exists)
     const storedRedirectPath = localStorage.getItem('loginRedirectPath');
     if (storedRedirectPath) {
+      console.log("Auth initializer: Found stored redirect path:", storedRedirectPath);
       setLoginRedirectPath(storedRedirectPath);
     }
 
     // Set up listener for authentication changes
     const { data: { subscription } } = authService.onAuthStateChange(
       (event: any, session: any) => {
-        console.log("Auth state changed:", event, session?.user?.email);
+        console.log("Auth initializer: Auth state changed:", event, session?.user?.email);
         const isAuth = !!session;
         setIsAuthenticated(isAuth);
         
         if (session?.user) {
+          console.log("Auth initializer: User session found, setting user data");
           setUserEmail(session.user.email);
           setUserId(session.user.id);
           
-          // Use setTimeout to avoid recursion issues
+          // Load user profile after a short delay to avoid recursion
           setTimeout(() => {
+            console.log("Auth initializer: Loading user profile...");
             loadUserProfile(session.user.id);
           }, 100);
         } else {
+          console.log("Auth initializer: No user session, resetting state");
           resetUserState();
         }
       }
@@ -45,19 +49,25 @@ export const useAuthInitializer = (
 
     // Check existing session
     authService.getSession().then(({ data: { session } }) => {
-      console.log("Current session:", session?.user?.email);
+      console.log("Auth initializer: Initial session check:", session?.user?.email);
       const isAuth = !!session;
       setIsAuthenticated(isAuth);
       
       if (session?.user) {
+        console.log("Auth initializer: Initial session found, setting user data");
         setUserEmail(session.user.email);
         setUserId(session.user.id);
         loadUserProfile(session.user.id);
+      } else {
+        console.log("Auth initializer: No initial session found");
       }
+    }).catch(error => {
+      console.error("Auth initializer: Error checking initial session:", error);
     });
 
     return () => {
+      console.log("Auth initializer: Cleaning up auth subscription");
       subscription?.unsubscribe();
     };
-  }, []);
+  }, [setIsAuthenticated, setUserEmail, setUserId, resetUserState, loadUserProfile, setLoginRedirectPath]);
 };

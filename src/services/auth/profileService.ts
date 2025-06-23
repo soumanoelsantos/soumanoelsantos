@@ -1,62 +1,37 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { UserProfile } from '@/types/auth';
+import { getAuthErrorMessage } from './errorHandling';
 
 /**
  * Service for handling user profiles
  */
 export const profileService = {
   /**
-   * Fetch user profile from the database
+   * Fetch user profile
    */
-  fetchUserProfile: async (userId: string): Promise<UserProfile | null> => {
+  fetchUserProfile: async (userId: string) => {
     try {
-      console.log("Auth service: Fetching user profile for:", userId);
-      
-      if (!userId) {
-        console.error("Auth service: Invalid user ID provided");
-        return null;
-      }
-      
-      // Use edge function to bypass RLS policy recursion issue
-      const { data, error } = await supabase.functions.invoke('get-user-profile', {
-        body: { userId }
-      });
-      
+      console.log("Profile service: Fetching profile for:", userId);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
       if (error) {
-        console.error("Auth service: Error fetching profile via edge function:", error);
-        
-        // Fallback to direct query with limited fields as a backup strategy
-        // This should avoid the recursion issue by not triggering complex RLS checks
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('id', userId)
-          .single();
-        
-        if (profileError) {
-          console.error("Auth service: Fallback profile query failed:", profileError);
-          return { id: userId, is_admin: false, is_new_user: true } as UserProfile;
+        console.error("Profile service: Error fetching profile:", error);
+        if (error.code === 'PGRST116') {
+          console.log("Profile service: No profile found for user:", userId);
+          return null;
         }
-        
-        return {
-          id: userId,
-          is_admin: profileData?.is_admin || false,
-          is_new_user: true // Default to true if we're only getting partial data
-        } as UserProfile;
+        throw error;
       }
       
-      if (!data) {
-        console.warn("Auth service: No profile found for user:", userId);
-        return null;
-      }
-      
-      console.log("Auth service: Profile loaded:", data);
-      return data as UserProfile;
+      console.log("Profile service: Profile data:", data);
+      return data;
     } catch (error) {
-      console.error('Auth service: Error in fetchUserProfile:', error);
-      // Return default profile with admin set to false to prevent access issues
-      return { id: userId, is_admin: false, is_new_user: true } as UserProfile;
+      console.error('Profile service: Erro ao buscar perfil do usuário:', error);
+      return null;
     }
   },
 
@@ -65,27 +40,32 @@ export const profileService = {
    */
   updateUserAdminStatus: async (userId: string, isAdmin: boolean) => {
     try {
-      if (!userId) {
-        console.error("Auth service: Invalid user ID provided");
-        return { error: { message: "ID de usuário inválido" } };
-      }
+      console.log("Profile service: Updating admin status for user:", userId, "to:", isAdmin);
       
-      const response = await supabase
+      // Verify current user is the same as the user being updated
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session || session.user.id !== userId) {
+        throw new Error('Unauthorized: Can only update own profile');
+      }
+
+      const { data, error } = await supabase
         .from('profiles')
         .update({ is_admin: isAdmin })
-        .eq('id', userId);
-      
-      if (response.error) {
-        console.error("Auth service: Error updating admin status:", response.error);
-        response.error.message = "Falha ao atualizar status de administrador";
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Profile service: Error updating admin status:", error);
+        throw error;
       }
-      
-      return response;
-    } catch (error: any) {
-      console.error('Auth service: Unexpected error updating admin status:', error);
-      return { 
-        error: { message: "Erro inesperado ao atualizar status de administrador" }
-      };
+
+      console.log("Profile service: Admin status updated successfully:", data);
+      return { data, error: null };
+    } catch (error) {
+      console.error('Profile service: Error updating admin status:', error);
+      return { data: null, error };
     }
   }
 };
