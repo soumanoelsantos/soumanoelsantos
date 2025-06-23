@@ -87,10 +87,13 @@ export const useEvolutionData = () => {
         for (let i = 0; i < totalDaysNeeded; i++) {
           const dayStr = (i + 1).toString();
           
-          // Meta sempre fixa no valor total
+          // Meta acumulativa: valor proporcional ao dia atual
+          const dailyRevenueGoal = (totalRevenueGoal / totalDaysNeeded) * (i + 1);
+          const dailyBillingGoal = (totalBillingGoal / totalDaysNeeded) * (i + 1);
+          
           revenueEvolutionData.push({
             day: dayStr,
-            metaReceita: totalRevenueGoal, // VALOR FIXO - não acumulado
+            metaReceita: dailyRevenueGoal, // VALOR ACUMULATIVO
             receita: null,
             superMetaReceita: totalRevenueGoal * 3,
             hiperMetaReceita: totalRevenueGoal * 5,
@@ -100,7 +103,7 @@ export const useEvolutionData = () => {
 
           billingEvolutionData.push({
             day: dayStr,
-            metaFaturamento: totalBillingGoal, // VALOR FIXO - não acumulado
+            metaFaturamento: dailyBillingGoal, // VALOR ACUMULATIVO
             faturamento: null,
             superMetaFaturamento: totalBillingGoal * 2.5,
             hiperMetaFaturamento: totalBillingGoal * 4,
@@ -163,10 +166,13 @@ export const useEvolutionData = () => {
           accumulatedSales += dayData.count;
         }
 
-        // CORREÇÃO: Meta sempre fixa no valor total do produto
+        // Meta acumulativa: valor proporcional ao dia atual
+        const dailyRevenueGoal = (totalRevenueGoal / totalDaysNeeded) * (i + 1);
+        const dailyBillingGoal = (totalBillingGoal / totalDaysNeeded) * (i + 1);
+
         revenueEvolutionData.push({
           day: dayStr,
-          metaReceita: totalRevenueGoal, // SEMPRE o valor total fixo
+          metaReceita: dailyRevenueGoal, // META ACUMULATIVA - cresce diariamente
           receita: dateStr <= today ? accumulatedRevenue : null,
           superMetaReceita: totalRevenueGoal * 3,
           hiperMetaReceita: totalRevenueGoal * 5,
@@ -176,7 +182,7 @@ export const useEvolutionData = () => {
 
         billingEvolutionData.push({
           day: dayStr,
-          metaFaturamento: totalBillingGoal, // SEMPRE o valor total fixo
+          metaFaturamento: dailyBillingGoal, // META ACUMULATIVA - cresce diariamente
           faturamento: dateStr <= today ? accumulatedBilling : null,
           superMetaFaturamento: totalBillingGoal * 2.5,
           hiperMetaFaturamento: totalBillingGoal * 4,
