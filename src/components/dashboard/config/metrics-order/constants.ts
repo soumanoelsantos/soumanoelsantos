@@ -1,51 +1,35 @@
 
-export const METRIC_TITLES: { [key: string]: string } = {
-  'showTicketFaturamento': 'Ticket Faturamento',
-  'showTicketReceita': 'Ticket Receita',
-  'showFaltaFaturamento': 'Falta de Faturamento',
-  'showFaltaReceita': 'Falta de Receita',
-  'showDiariaReceita': 'Diária de Receita',
-  'showDiariaFaturamento': 'Diária de Faturamento',
-  'showSuperMetaFaturamento': 'Super Meta Faturamento',
-  'showSuperMetaReceita': 'Super Meta Receita',
-  'showHiperMetaFaturamento': 'Hiper Meta Faturamento',
-  'showHiperMetaReceita': 'Hiper Meta Receita',
-  'showFaltaReceitaSuper': 'Falta Receita (Super)',
-  'showFaltaReceitaHiper': 'Falta Receita (Hiper)',
-  'showFaltaFaturamentoSuper': 'Falta Faturamento (Super)',
-  'showFaltaFaturamentoHiper': 'Falta Faturamento (Hiper)',
-  'showMetaFaturamento': 'Meta Faturamento',
-  'showMetaReceita': 'Meta Receita',
-  'showFaturamento': 'Faturamento',
-  'showReceita': 'Receita',
-  'showQuantidadeVendas': 'Quantidade de Vendas',
-  'showCashCollect': 'Cash Collect',
-  'showCac': 'CAC (Custo de Aquisição)',
-  'showConversion': 'Taxa de Conversão',
-  'showRevenue': 'Receita',
-  'showProjecaoReceita': 'Projeção de Receita',
-  'showProjecaoFaturamento': 'Projeção de Faturamento',
-  'showNoShow': 'No-Show',
-  'showClosersPerformanceTable': 'Tabela de desempenho dos closers',
-  'specificGoals': 'Metas Específicas',
-  'revenueEvolutionChart': 'Gráfico de Evolução de Receita',
-  'billingEvolutionChart': 'Gráfico de Evolução de Faturamento',
-  'sellerRevenueChart': 'Gráfico de Receita por Vendedor',
-  'sellerBillingChart': 'Gráfico de Faturamento por Vendedor',
-  'temporalRevenueChart': 'Gráfico de Análise Temporal de Receita',
-  'temporalBillingChart': 'Gráfico de Análise Temporal de Faturamento',
-  'closersPerformanceTable': 'Tabela de desempenho dos closers'
-};
+export interface MetricItem {
+  key: string;
+  label: string;
+  category: string;
+}
 
-export const ALL_METRIC_KEYS = [
-  'showConversion', 'showRevenue',
-  'showTicketFaturamento', 'showTicketReceita', 'showFaltaFaturamento', 
-  'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
-  'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento',
-  'showHiperMetaReceita', 'showFaltaReceitaSuper',
-  'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
-  'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita', 
-  'showQuantidadeVendas', 'showCashCollect', 'showCac',
-  'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
-  'showClosersPerformanceTable'
+export const AVAILABLE_METRICS: MetricItem[] = [
+  { key: 'showConversion', label: 'Taxa de Conversão', category: 'basic' },
+  { key: 'showRevenue', label: 'Receita', category: 'basic' },
+  { key: 'showTicketFaturamento', label: 'Ticket Médio Faturamento', category: 'ticket' },
+  { key: 'showTicketReceita', label: 'Ticket Médio Receita', category: 'ticket' },
+  { key: 'showFaltaFaturamento', label: 'Falta Faturamento', category: 'gap' },
+  { key: 'showFaltaReceita', label: 'Falta Receita', category: 'gap' },
+  { key: 'showDiariaReceita', label: 'Diária Receita', category: 'daily' },
+  { key: 'showDiariaFaturamento', label: 'Diária Faturamento', category: 'daily' },
+  { key: 'showSuperMetaFaturamento', label: 'Super Meta Faturamento', category: 'goal' },
+  { key: 'showSuperMetaReceita', label: 'Super Meta Receita', category: 'goal' },
+  { key: 'showHiperMetaFaturamento', label: 'Hiper Meta Faturamento', category: 'goal' },
+  { key: 'showHiperMetaReceita', label: 'Hiper Meta Receita', category: 'goal' },
+  { key: 'showFaltaReceitaSuper', label: 'Falta Receita Super', category: 'gap' },
+  { key: 'showFaltaReceitaHiper', label: 'Falta Receita Hiper', category: 'gap' },
+  { key: 'showFaltaFaturamentoSuper', label: 'Falta Faturamento Super', category: 'gap' },
+  { key: 'showFaltaFaturamentoHiper', label: 'Falta Faturamento Hiper', category: 'gap' },
+  { key: 'showMetaFaturamento', label: 'Meta Faturamento', category: 'goal' },
+  { key: 'showMetaReceita', label: 'Meta Receita', category: 'goal' },
+  { key: 'showFaturamento', label: 'Faturamento', category: 'basic' },
+  { key: 'showReceita', label: 'Receita', category: 'basic' },
+  { key: 'showQuantidadeVendas', label: 'Quantidade de Vendas', category: 'basic' },
+  { key: 'showCashCollect', label: 'Cash Collect', category: 'basic' },
+  { key: 'showCac', label: 'CAC', category: 'basic' },
+  { key: 'showProjecaoReceita', label: 'Projeção Receita', category: 'projection' },
+  { key: 'showProjecaoFaturamento', label: 'Projeção Faturamento', category: 'projection' },
+  { key: 'showNoShow', label: 'No Show', category: 'basic' }
 ];

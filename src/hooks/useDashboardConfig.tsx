@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -163,10 +164,6 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           // Product charts fields - apenas os dois que ficaram
           showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
           showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
-          showSellerRevenueChart: data.show_seller_revenue_chart ?? defaultConfig.showSellerRevenueChart,
-          showSellerBillingChart: data.show_seller_billing_chart ?? defaultConfig.showSellerBillingChart,
-          showTemporalRevenueChart: data.show_temporal_revenue_chart ?? defaultConfig.showTemporalRevenueChart,
-          showTemporalBillingChart: data.show_temporal_billing_chart ?? defaultConfig.showTemporalBillingChart,
 
           // NOVOS CAMPOS DE CONTROLE DE ABAS
           enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
@@ -254,10 +251,6 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         // Product charts mappings - apenas os dois que ficaram
         show_product_revenue_evolution_chart: updates.showProductRevenueEvolutionChart,
         show_product_billing_evolution_chart: updates.showProductBillingEvolutionChart,
-        show_seller_revenue_chart: updates.showSellerRevenueChart,
-        show_seller_billing_chart: updates.showSellerBillingChart,
-        show_temporal_revenue_chart: updates.showTemporalRevenueChart,
-        show_temporal_billing_chart: updates.showTemporalBillingChart,
 
         // NOVOS MAPEAMENTOS DE CONTROLE DE ABAS
         enable_commercial_tab: updates.enableCommercialTab,

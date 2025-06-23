@@ -12,13 +12,13 @@ export const useMetricsOrder = (config: DashboardConfig) => {
     });
   }, [config]);
 
-  const orderedMetrics = useMemo(() => {
-    if (!config.metricsOrder || config.metricsOrder.length === 0) {
+  const getOrderedMetrics = (metricsOrder: string[]) => {
+    if (!metricsOrder || metricsOrder.length === 0) {
       return availableMetrics;
     }
 
     // Ordenar baseado na ordem personalizada
-    const ordered = config.metricsOrder
+    const ordered = metricsOrder
       .map(key => availableMetrics.find(metric => metric.key === key))
       .filter(Boolean);
 
@@ -27,10 +27,10 @@ export const useMetricsOrder = (config: DashboardConfig) => {
     const missing = availableMetrics.filter(metric => !orderedKeys.includes(metric.key));
 
     return [...ordered, ...missing] as typeof availableMetrics;
-  }, [availableMetrics, config.metricsOrder]);
+  };
 
   return {
     availableMetrics,
-    orderedMetrics
+    getOrderedMetrics
   };
 };

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -168,12 +169,6 @@ const SharedDashboard = () => {
             showProductCashCollect: data.show_product_cash_collect ?? defaultConfig.showProductCashCollect,
             showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
             showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,
-            showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
-            showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
-            showProductSalesEvolutionChart: data.show_product_sales_evolution_chart ?? defaultConfig.showProductSalesEvolutionChart,
-            showProductPerformanceChart: data.show_product_performance_chart ?? defaultConfig.showProductPerformanceChart,
-            showProductComparisonChart: data.show_product_comparison_chart ?? defaultConfig.showProductComparisonChart,
-            showProductTemporalChart: data.show_product_temporal_chart ?? defaultConfig.showProductTemporalChart,
 
             // Product charts fields - apenas os dois que ficaram
             showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,

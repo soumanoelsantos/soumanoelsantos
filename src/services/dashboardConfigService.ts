@@ -36,13 +36,16 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
   console.log('🔵 dashboardConfigService - Starting save for user:', userId);
   
   try {
-    const configData = mapConfigToDatabase(config, userId);
+    const configData = mapConfigToDatabase(config);
     console.log('🔵 dashboardConfigService - Mapped data for database');
 
     // Use upsert to insert or update in one operation
     const { data, error } = await supabase
       .from('dashboard_configs')
-      .upsert(configData, {
+      .upsert({
+        user_id: userId,
+        ...configData
+      }, {
         onConflict: 'user_id',
         ignoreDuplicates: false
       })
