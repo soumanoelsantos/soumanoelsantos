@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Package } from 'lucide-react';
+import { Plus, Trash2, Package, Calendar } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
 import { CreateProductData } from '@/types/goals';
 
@@ -15,6 +15,8 @@ const ProductsManagementCard: React.FC = () => {
   const [newProduct, setNewProduct] = useState<CreateProductData>({
     name: '',
     description: '',
+    start_date: '',
+    end_date: '',
   });
 
   const handleCreateProduct = async () => {
@@ -22,7 +24,7 @@ const ProductsManagementCard: React.FC = () => {
 
     const success = await createProduct(newProduct);
     if (success) {
-      setNewProduct({ name: '', description: '' });
+      setNewProduct({ name: '', description: '', start_date: '', end_date: '' });
       setIsCreating(false);
     }
   };
@@ -31,6 +33,11 @@ const ProductsManagementCard: React.FC = () => {
     if (confirm('Tem certeza que deseja remover este produto? Ele será removido de todas as funcionalidades do sistema.')) {
       await deleteProduct(productId);
     }
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('pt-BR');
   };
 
   if (isLoading) {
@@ -95,6 +102,16 @@ const ProductsManagementCard: React.FC = () => {
                     {product.description && (
                       <p className="text-sm text-gray-500 mt-1">{product.description}</p>
                     )}
+                    {(product.start_date || product.end_date) && (
+                      <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                        <Calendar className="h-3 w-3" />
+                        <span>
+                          {product.start_date && formatDate(product.start_date)}
+                          {product.start_date && product.end_date && ' - '}
+                          {product.end_date && formatDate(product.end_date)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <Button
                     variant="outline"
@@ -132,6 +149,26 @@ const ProductsManagementCard: React.FC = () => {
                 rows={2}
               />
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="start-date">Data de Início das Vendas</Label>
+                <Input
+                  id="start-date"
+                  type="date"
+                  value={newProduct.start_date}
+                  onChange={(e) => setNewProduct(prev => ({ ...prev, start_date: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="end-date">Data de Fim das Vendas</Label>
+                <Input
+                  id="end-date"
+                  type="date"
+                  value={newProduct.end_date}
+                  onChange={(e) => setNewProduct(prev => ({ ...prev, end_date: e.target.value }))}
+                />
+              </div>
+            </div>
             <div className="flex gap-2">
               <Button onClick={handleCreateProduct} disabled={!newProduct.name.trim()}>
                 Criar Produto
@@ -146,7 +183,8 @@ const ProductsManagementCard: React.FC = () => {
         {/* Info sobre uso */}
         <div className="text-xs text-blue-600 bg-blue-50 p-3 rounded">
           💡 <strong>Dica:</strong> Os produtos cadastrados aqui serão utilizados em metas específicas, 
-          relatórios de desempenho, formulários de vendas e dashboards de produtos.
+          relatórios de desempenho, formulários de vendas e dashboards de produtos. As datas de início e fim 
+          das vendas serão usadas para filtrar os dados nos gráficos.
         </div>
       </CardContent>
     </Card>

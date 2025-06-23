@@ -7,6 +7,8 @@ interface Product {
   id: string;
   name: string;
   description?: string;
+  start_date?: string;
+  end_date?: string;
   user_id: string;
   created_at: string;
   updated_at: string;
@@ -16,7 +18,7 @@ export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { userId } = useAuth(); // Changed from 'user' to 'userId'
+  const { userId } = useAuth();
 
   console.log('🔍 [DEBUG] useProducts - Hook inicializado, userId:', userId);
 
@@ -26,7 +28,7 @@ export const useProducts = () => {
     if (!userId) {
       console.log('❌ [DEBUG] useProducts - Usuário não autenticado');
       setIsLoading(false);
-      setError(null); // Changed: don't set error for unauthenticated state
+      setError(null);
       return;
     }
 
@@ -65,7 +67,7 @@ export const useProducts = () => {
     fetchProducts();
   }, [userId]);
 
-  const createProduct = async (productData: { name: string; description?: string }) => {
+  const createProduct = async (productData: { name: string; description?: string; start_date?: string; end_date?: string }) => {
     if (!userId) {
       console.log('❌ [DEBUG] useProducts - Usuário não autenticado para criar produto');
       throw new Error('Usuário não autenticado');
@@ -89,7 +91,7 @@ export const useProducts = () => {
       }
 
       console.log('✅ [DEBUG] useProducts - Produto criado:', data);
-      await fetchProducts(); // Recarregar a lista
+      await fetchProducts();
       return data;
     } catch (err) {
       console.error('💥 [DEBUG] useProducts - Erro ao criar produto:', err);
@@ -97,7 +99,7 @@ export const useProducts = () => {
     }
   };
 
-  const updateProduct = async (productId: string, productData: { name: string; description?: string }) => {
+  const updateProduct = async (productId: string, productData: { name: string; description?: string; start_date?: string; end_date?: string }) => {
     if (!userId) {
       console.log('❌ [DEBUG] useProducts - Usuário não autenticado para atualizar produto');
       throw new Error('Usuário não autenticado');
@@ -120,7 +122,7 @@ export const useProducts = () => {
       }
 
       console.log('✅ [DEBUG] useProducts - Produto atualizado:', data);
-      await fetchProducts(); // Recarregar a lista
+      await fetchProducts();
       return data;
     } catch (err) {
       console.error('💥 [DEBUG] useProducts - Erro ao atualizar produto:', err);
@@ -149,7 +151,7 @@ export const useProducts = () => {
       }
 
       console.log('✅ [DEBUG] useProducts - Produto deletado');
-      await fetchProducts(); // Recarregar a lista
+      await fetchProducts();
     } catch (err) {
       console.error('💥 [DEBUG] useProducts - Erro ao deletar produto:', err);
       throw err;

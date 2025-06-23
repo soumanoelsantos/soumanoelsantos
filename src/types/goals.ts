@@ -4,6 +4,8 @@ export interface Product {
   user_id: string;
   name: string;
   description?: string;
+  start_date?: string;
+  end_date?: string;
   created_at: string;
   updated_at: string;
 }
@@ -39,4 +41,6 @@ export interface CreateGoalData {
 export interface CreateProductData {
   name: string;
   description?: string;
+  start_date?: string;
+  end_date?: string;
 }
