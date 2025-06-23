@@ -25,7 +25,7 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders, defaultFolderId }: Cre
     content: '',
     description: '',
     category: 'geral',
-    folder_id: defaultFolderId || '',
+    folder_id: defaultFolderId || 'no-folder',
     is_public: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,16 +42,18 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders, defaultFolderId }: Cre
 
     setIsSubmitting(true);
     try {
-      await createDocument({
+      const submitData = {
         ...formData,
-        folder_id: formData.folder_id || undefined,
-      });
+        folder_id: formData.folder_id === 'no-folder' ? undefined : formData.folder_id,
+      };
+      
+      await createDocument(submitData);
       setFormData({
         title: '',
         content: '',
         description: '',
         category: 'geral',
-        folder_id: defaultFolderId || '',
+        folder_id: defaultFolderId || 'no-folder',
         is_public: false,
       });
       onClose();
@@ -68,7 +70,7 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders, defaultFolderId }: Cre
       content: '',
       description: '',
       category: 'geral',
-      folder_id: defaultFolderId || '',
+      folder_id: defaultFolderId || 'no-folder',
       is_public: false,
     });
     onClose();
@@ -130,7 +132,7 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders, defaultFolderId }: Cre
                 <SelectValue placeholder="Selecione uma pasta" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Sem pasta</SelectItem>
+                <SelectItem value="no-folder">Sem pasta</SelectItem>
                 {folders.map(folder => (
                   <SelectItem key={folder.id} value={folder.id}>
                     {folder.name}
