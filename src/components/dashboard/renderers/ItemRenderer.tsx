@@ -62,9 +62,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
     'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
     'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow',
-    'showClosersPerformanceTable', 'showRevenueEvolutionChart', 'showBillingEvolutionChart',
-    'showSellerRevenueChart', 'showSellerBillingChart', 'showTemporalRevenueChart', 'showTemporalBillingChart'
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ];
 
   // GRÁFICOS COMERCIAIS - renderizar diretamente
@@ -130,18 +128,14 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
         case 'showProductSalesEvolutionChart':
           return <ProductSalesEvolutionChart selectedProductId={selectedProductId} />;
         
+        case 'showProductPerformanceChart':
+        case 'showProductComparisonChart':
+        case 'showProductTemporalChart':
+          // Para estes gráficos que ainda não foram totalmente implementados, não mostrar nada
+          return null;
+        
         default:
-          // Para outros gráficos de produtos que ainda não foram implementados, mostrar placeholder
-          return (
-            <div className="p-8 text-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
-              <h3 className="text-lg font-medium text-gray-700 mb-2">
-                Gráfico em Desenvolvimento
-              </h3>
-              <p className="text-gray-600">
-                {itemKey.replace('show', '').replace('Chart', '')} será implementado em breve
-              </p>
-            </div>
-          );
+          return null;
       }
     }
 
