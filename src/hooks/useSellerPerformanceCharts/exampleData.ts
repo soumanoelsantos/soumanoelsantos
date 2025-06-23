@@ -7,7 +7,7 @@ export const generateExampleData = (): {
   sellerNames: string[]
 } => {
   console.log('🎯 [DEBUG] useSellerPerformanceCharts - Gerando dados de exemplo');
-  const exampleNames = ['Renata', 'Will', 'Ana Carvalho']; // Corrigido para o nome correto
+  const exampleNames = ['Renata', 'Will', 'Ana Carvalho'];
 
   const revenueChartData: SellerChartDataPoint[] = [];
   const billingChartData: SellerChartDataPoint[] = [];
@@ -29,14 +29,14 @@ export const generateExampleData = (): {
       day: dayStr,
       'Renata': renata_revenue,
       'Will': will_revenue,
-      'Ana Carvalho': ana_revenue, // Corrigido para o nome correto
+      'Ana Carvalho': ana_revenue,
     });
 
     billingChartData.push({
       day: dayStr,
       'Renata': renata_billing,
       'Will': will_billing,
-      'Ana Carvalho': ana_billing, // Corrigido para o nome correto
+      'Ana Carvalho': ana_billing,
     });
   }
 
