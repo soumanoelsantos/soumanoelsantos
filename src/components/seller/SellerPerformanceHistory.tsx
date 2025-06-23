@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -134,7 +135,7 @@ const SellerPerformanceHistory: React.FC<SellerPerformanceHistoryProps> = ({
                               {performance.sales_count} vendas
                             </Badge>
                             <Badge variant="outline" className="text-xs">
-                              {formatCurrency(performance.revenue_amount)}
+                              {formatCurrency(Number(performance.revenue_amount))}
                             </Badge>
                           </div>
                         </div>

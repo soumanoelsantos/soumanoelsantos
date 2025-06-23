@@ -204,7 +204,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                                 {performance.sales_count} vendas
                               </Badge>
                               <Badge variant="outline" className="text-xs">
-                                {formatCurrency(performance.revenue_amount)}
+                                {formatCurrency(Number(performance.revenue_amount))}
                               </Badge>
                             </div>
                           </div>
