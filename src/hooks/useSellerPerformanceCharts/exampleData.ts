@@ -7,7 +7,7 @@ export const generateExampleData = (): {
   sellerNames: string[]
 } => {
   console.log('🎯 [DEBUG] useSellerPerformanceCharts - Gerando dados de exemplo');
-  const exampleNames = ['Renata', 'Will', 'Ana Carcalho']; // Mantém o nome como está no banco
+  const exampleNames = ['Renata', 'Will', 'Ana Carvalho']; // Corrigido para o nome correto
 
   const revenueChartData: SellerChartDataPoint[] = [];
   const billingChartData: SellerChartDataPoint[] = [];
@@ -25,27 +25,24 @@ export const generateExampleData = (): {
     const will_billing = baseBilling * day * 1.0;
     const ana_billing = baseBilling * day * 0.6;
 
-    const revenueMedia = (renata_revenue + will_revenue + ana_revenue) / 3;
-    const billingMedia = (renata_billing + will_billing + ana_billing) / 3;
-
     revenueChartData.push({
       day: dayStr,
       'Renata': renata_revenue,
       'Will': will_revenue,
-      'Ana Carcalho': ana_revenue, // Corrigido para corresponder ao nome no banco
-      media: revenueMedia
+      'Ana Carvalho': ana_revenue, // Corrigido para o nome correto
     });
 
     billingChartData.push({
       day: dayStr,
       'Renata': renata_billing,
       'Will': will_billing,
-      'Ana Carcalho': ana_billing, // Corrigido para corresponder ao nome no banco
-      media: billingMedia
+      'Ana Carvalho': ana_billing, // Corrigido para o nome correto
     });
   }
 
   console.log('✅ [DEBUG] useSellerPerformanceCharts - Dados de exemplo gerados com vendedores específicos');
+  console.log('🔍 [DEBUG] Sample revenue data:', revenueChartData.slice(-3));
+  console.log('🔍 [DEBUG] Sample billing data:', billingChartData.slice(-3));
   
   return {
     revenueData: revenueChartData,

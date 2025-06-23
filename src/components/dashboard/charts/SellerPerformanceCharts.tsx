@@ -24,8 +24,8 @@ const chartConfig = {
     label: 'Will', 
     color: '#3b82f6', // Azul vibrante
   },
-  'Ana Carcalho': { // Corrigido para corresponder ao nome no banco
-    label: 'Ana Carcalho',
+  'Ana Carvalho': { // Usando o nome correto
+    label: 'Ana Carvalho',
     color: '#f59e0b', // Amarelo/laranja vibrante
   }
 };
@@ -57,6 +57,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export const SellerRevenueChart = () => {
   const { revenueData, sellerNames, isLoading } = useSellerPerformanceCharts();
+
+  console.log('🔍 [DEBUG] SellerRevenueChart - sellerNames:', sellerNames);
+  console.log('🔍 [DEBUG] SellerRevenueChart - revenueData sample:', revenueData.slice(-3));
 
   if (isLoading) {
     return (
@@ -113,17 +116,20 @@ export const SellerRevenueChart = () => {
             <ChartLegend content={<ChartLegendContent />} />
             
             {/* Linhas dos vendedores */}
-            {sellerNames.map((sellerName) => (
-              <Line 
-                key={sellerName}
-                type="monotone" 
-                dataKey={sellerName}
-                stroke={`var(--color-${sellerName})`}
-                strokeWidth={3}
-                dot={{ fill: `var(--color-${sellerName})`, strokeWidth: 2, r: 5 }}
-                activeDot={{ r: 7, strokeWidth: 2 }}
-              />
-            ))}
+            {sellerNames.map((sellerName) => {
+              console.log('🔍 [DEBUG] Rendering line for seller:', sellerName);
+              return (
+                <Line 
+                  key={sellerName}
+                  type="monotone" 
+                  dataKey={sellerName}
+                  stroke={chartConfig[sellerName as keyof typeof chartConfig]?.color || '#000000'}
+                  strokeWidth={3}
+                  dot={{ fill: chartConfig[sellerName as keyof typeof chartConfig]?.color || '#000000', strokeWidth: 2, r: 5 }}
+                  activeDot={{ r: 7, strokeWidth: 2 }}
+                />
+              );
+            })}
           </LineChart>
         </ChartContainer>
       </CardContent>
@@ -133,6 +139,9 @@ export const SellerRevenueChart = () => {
 
 export const SellerBillingChart = () => {
   const { billingData, sellerNames, isLoading } = useSellerPerformanceCharts();
+
+  console.log('🔍 [DEBUG] SellerBillingChart - sellerNames:', sellerNames);
+  console.log('🔍 [DEBUG] SellerBillingChart - billingData sample:', billingData.slice(-3));
 
   if (isLoading) {
     return (
@@ -189,17 +198,20 @@ export const SellerBillingChart = () => {
             <ChartLegend content={<ChartLegendContent />} />
             
             {/* Linhas dos vendedores */}
-            {sellerNames.map((sellerName) => (
-              <Line 
-                key={sellerName}
-                type="monotone" 
-                dataKey={sellerName}
-                stroke={`var(--color-${sellerName})`}
-                strokeWidth={3}
-                dot={{ fill: `var(--color-${sellerName})`, strokeWidth: 2, r: 5 }}
-                activeDot={{ r: 7, strokeWidth: 2 }}
-              />
-            ))}
+            {sellerNames.map((sellerName) => {
+              console.log('🔍 [DEBUG] Rendering billing line for seller:', sellerName);
+              return (
+                <Line 
+                  key={sellerName}
+                  type="monotone" 
+                  dataKey={sellerName}
+                  stroke={chartConfig[sellerName as keyof typeof chartConfig]?.color || '#000000'}
+                  strokeWidth={3}
+                  dot={{ fill: chartConfig[sellerName as keyof typeof chartConfig]?.color || '#000000', strokeWidth: 2, r: 5 }}
+                  activeDot={{ r: 7, strokeWidth: 2 }}
+                />
+              );
+            })}
           </LineChart>
         </ChartContainer>
       </CardContent>

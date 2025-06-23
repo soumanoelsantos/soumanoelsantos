@@ -34,12 +34,8 @@ export const processPerformanceData = (
     const dayStr = date.getDate().toString().padStart(2, '0');
     
     // Inicializar dados do dia
-    const revenueDataPoint: SellerChartDataPoint = { day: dayStr, media: 0 };
-    const billingDataPoint: SellerChartDataPoint = { day: dayStr, media: 0 };
-
-    let totalRevenue = 0;
-    let totalBilling = 0;
-    let activeSellers = 0;
+    const revenueDataPoint: SellerChartDataPoint = { day: dayStr };
+    const billingDataPoint: SellerChartDataPoint = { day: dayStr };
 
     // Calcular acumulados até este dia para cada vendedor
     sellersData.forEach(seller => {
@@ -60,20 +56,18 @@ export const processPerformanceData = (
         }
       }
 
-      // Usar o nome real do vendedor como chave
-      revenueDataPoint[seller.name] = sellerRevenue;
-      billingDataPoint[seller.name] = sellerBilling;
+      // Normalizar nome da Ana Carvalho para garantir consistência
+      let sellerDisplayName = seller.name;
+      if (seller.name === 'Ana Carcalho') {
+        sellerDisplayName = 'Ana Carvalho';
+      }
 
-      totalRevenue += sellerRevenue;
-      totalBilling += sellerBilling;
-      activeSellers++;
+      // Usar o nome normalizado como chave
+      revenueDataPoint[sellerDisplayName] = sellerRevenue;
+      billingDataPoint[sellerDisplayName] = sellerBilling;
 
-      console.log(`📈 [DEBUG] useSellerPerformanceCharts - Dia ${dayStr}, Vendedor ${seller.name}: Revenue=${sellerRevenue}, Billing=${sellerBilling}`);
+      console.log(`📈 [DEBUG] useSellerPerformanceCharts - Dia ${dayStr}, Vendedor ${sellerDisplayName}: Revenue=${sellerRevenue}, Billing=${sellerBilling}`);
     });
-
-    // Calcular média
-    revenueDataPoint.media = activeSellers > 0 ? totalRevenue / activeSellers : 0;
-    billingDataPoint.media = activeSellers > 0 ? totalBilling / activeSellers : 0;
 
     revenueChartData.push(revenueDataPoint);
     billingChartData.push(billingDataPoint);
