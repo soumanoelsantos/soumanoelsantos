@@ -23,6 +23,19 @@ const ViewDocumentDialog = ({ document, isOpen, onClose }: ViewDocumentDialogPro
     });
   };
 
+  const formatContent = (content: string) => {
+    if (!content) return 'Nenhum conteúdo adicionado ainda.';
+    
+    return content
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mt-4 mb-2">$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold mt-3 mb-2">$1</h3>')
+      .replace(/^• (.*$)/gm, '<li class="ml-4">$1</li>')
+      .replace(/^\d+\. (.*$)/gm, '<li class="ml-4 list-decimal">$1</li>')
+      .replace(/\n/g, '<br>');
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -38,7 +51,7 @@ const ViewDocumentDialog = ({ document, isOpen, onClose }: ViewDocumentDialogPro
           </div>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
           {document.description && (
             <div>
               <h4 className="font-medium text-sm text-gray-700 mb-1">Descrição</h4>
@@ -59,10 +72,13 @@ const ViewDocumentDialog = ({ document, isOpen, onClose }: ViewDocumentDialogPro
 
           <div>
             <h4 className="font-medium text-sm text-gray-700 mb-3">Conteúdo</h4>
-            <div className="bg-gray-50 p-4 rounded-lg min-h-[300px]">
-              <div className="whitespace-pre-wrap text-gray-700">
-                {document.content || 'Nenhum conteúdo adicionado ainda.'}
-              </div>
+            <div className="bg-white border rounded-lg p-6 min-h-[300px]">
+              <div 
+                className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
+                dangerouslySetInnerHTML={{ 
+                  __html: formatContent(document.content) 
+                }}
+              />
             </div>
           </div>
 

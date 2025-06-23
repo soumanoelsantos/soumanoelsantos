@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { ProcessFolder } from '@/types/processDocuments';
 import { useProcessDocuments } from '@/hooks/useProcessDocuments';
+import AdvancedTextEditor from './AdvancedTextEditor';
 
 interface CreateDocumentDialogProps {
   isOpen: boolean;
@@ -75,35 +76,24 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders, defaultFolderId }: Cre
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Criar Novo Documento</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">Título *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Ex: Playbook de Vendas, Manual de Atendimento..."
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Descrição (opcional)</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Breve descrição do documento"
-              rows={2}
-            />
-          </div>
-
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="title">Título *</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Ex: Playbook de Vendas, Manual de Atendimento..."
+                required
+              />
+            </div>
+
             <div>
               <Label htmlFor="category">Categoria</Label>
               <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
@@ -120,33 +110,51 @@ const CreateDocumentDialog = ({ isOpen, onClose, folders, defaultFolderId }: Cre
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
-              <Label htmlFor="folder">Pasta (opcional)</Label>
-              <Select value={formData.folder_id} onValueChange={(value) => setFormData(prev => ({ ...prev, folder_id: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma pasta" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Sem pasta</SelectItem>
-                  {folders.map(folder => (
-                    <SelectItem key={folder.id} value={folder.id}>
-                      {folder.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <div>
-            <Label htmlFor="content">Conteúdo</Label>
+            <Label htmlFor="description">Descrição (opcional)</Label>
             <Textarea
-              id="content"
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Breve descrição do documento"
+              rows={2}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="folder">Pasta (opcional)</Label>
+            <Select value={formData.folder_id} onValueChange={(value) => setFormData(prev => ({ ...prev, folder_id: value }))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione uma pasta" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Sem pasta</SelectItem>
+                {folders.map(folder => (
+                  <SelectItem key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="content">Conteúdo do Documento</Label>
+            <AdvancedTextEditor
               value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Digite o conteúdo do documento aqui..."
-              rows={8}
+              onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+              placeholder="Digite o conteúdo do documento aqui...
+
+Você pode usar formatação markdown:
+- **texto em negrito**
+- *texto em itálico*
+- ## Para títulos
+- • Para listas com marcadores
+- 1. Para listas numeradas
+
+Use a barra de ferramentas acima para facilitar a formatação!"
             />
           </div>
 
