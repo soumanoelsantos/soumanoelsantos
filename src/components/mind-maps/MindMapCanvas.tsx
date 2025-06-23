@@ -17,9 +17,8 @@ interface MindMapCanvasProps {
 }
 
 const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanvasProps) => {
-  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('list'); // Iniciando com lista por padrão para teste
-  
-  console.log('MindMapCanvas - viewMode:', viewMode);
+  // Começar sempre em formato lista
+  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('list');
   
   const {
     nodes,
@@ -66,7 +65,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     isDragging
   });
 
-  // Auto-save hook
   useAutoSave({
     content: { nodes, edges },
     onSave,
@@ -81,12 +79,10 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   const [selectedParentForNewNode, setSelectedParentForNewNode] = useState<string | null>(null);
 
   const handleSave = async () => {
-    console.log('Salvamento manual do mapa mental:', { nodes, edges });
     try {
       await onSave({ nodes, edges });
-      console.log('Mapa mental salvo manualmente com sucesso');
     } catch (error) {
-      console.error('Erro ao salvar mapa mental manualmente:', error);
+      console.error('Erro ao salvar mapa mental:', error);
     }
   };
 
@@ -120,7 +116,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   };
 
   const handleViewModeChange = (mode: 'canvas' | 'list') => {
-    console.log('Mudando modo de visualização para:', mode);
     setViewMode(mode);
   };
 
@@ -128,7 +123,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     moveNodeInList(nodeId, direction);
   };
 
-  // Wrapper functions to match CanvasContent expected signatures
   const handleNodeMouseDown = (nodeId: string, e: React.MouseEvent) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
@@ -145,8 +139,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
 
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
-  console.log('Renderizando MindMapCanvas:', { viewMode, nodesCount: nodes.length, visibleNodesCount: visibleNodes.length });
-
   return (
     <div className="relative w-full h-full bg-white">
       <MindMapToolbar
@@ -160,7 +152,24 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         onViewModeChange={handleViewModeChange}
       />
 
-      {viewMode === 'canvas' ? (
+      {/* Renderização condicional simples */}
+      {viewMode === 'list' ? (
+        <div className="h-[calc(100%-73px)] overflow-auto bg-gray-50">
+          <MindMapListView
+            nodes={nodes}
+            edges={edges}
+            selectedNode={selectedNode}
+            hiddenNodes={hiddenNodes}
+            onNodeClick={(nodeId) => handleNodeClick(nodeId)}
+            onEditNode={handleEditNode}
+            onDeleteNode={deleteNode}
+            onOpenNodeNotes={handleOpenNodeNotes}
+            onAddChildNode={handleAddChildNode}
+            onToggleNodeVisibility={toggleNodeVisibility}
+            onMoveNode={handleMoveNode}
+          />
+        </div>
+      ) : (
         <div 
           ref={canvasRef}
           className="w-full h-full relative overflow-auto cursor-grab active:cursor-grabbing"
@@ -198,22 +207,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
               onAddChildNode={handleAddChildNode}
             />
           </div>
-        </div>
-      ) : (
-        <div className="h-[calc(100%-73px)] overflow-auto bg-gray-50">
-          <MindMapListView
-            nodes={nodes}
-            edges={edges}
-            selectedNode={selectedNode}
-            hiddenNodes={hiddenNodes}
-            onNodeClick={(nodeId) => handleNodeClick(nodeId)}
-            onEditNode={handleEditNode}
-            onDeleteNode={deleteNode}
-            onOpenNodeNotes={handleOpenNodeNotes}
-            onAddChildNode={handleAddChildNode}
-            onToggleNodeVisibility={toggleNodeVisibility}
-            onMoveNode={handleMoveNode}
-          />
         </div>
       )}
 
