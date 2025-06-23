@@ -15,10 +15,6 @@ const ProductChartsConfigCard: React.FC<ProductChartsConfigCardProps> = ({ confi
   const chartOptions = [
     { key: 'showProductRevenueEvolutionChart', label: 'Gráfico de Evolução de Receita por Produto' },
     { key: 'showProductBillingEvolutionChart', label: 'Gráfico de Evolução de Faturamento por Produto' },
-    { key: 'showProductSalesEvolutionChart', label: 'Gráfico de Evolução de Vendas por Produto' },
-    { key: 'showProductPerformanceChart', label: 'Gráfico de Performance dos Produtos' },
-    { key: 'showProductComparisonChart', label: 'Gráfico de Comparação entre Produtos' },
-    { key: 'showProductTemporalChart', label: 'Gráfico de Análise Temporal dos Produtos' },
   ];
 
   return (

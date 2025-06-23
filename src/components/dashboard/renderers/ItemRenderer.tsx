@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import MetricsCards from '@/components/dashboard/metrics/MetricsCards';
@@ -44,14 +43,10 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     'showProductProjecaoFaturamento'
   ];
 
-  // Lista de gráficos de produtos
+  // Lista de gráficos de produtos (removidos os 4 gráficos)
   const productCharts = [
     'showProductRevenueEvolutionChart',
-    'showProductBillingEvolutionChart',
-    'showProductSalesEvolutionChart',
-    'showProductPerformanceChart',
-    'showProductComparisonChart',
-    'showProductTemporalChart'
+    'showProductBillingEvolutionChart'
   ];
 
   // Lista de indicadores comerciais
@@ -124,15 +119,6 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
         
         case 'showProductBillingEvolutionChart':
           return <ProductBillingEvolutionChart selectedProductId={selectedProductId} />;
-        
-        case 'showProductSalesEvolutionChart':
-          return <ProductSalesEvolutionChart selectedProductId={selectedProductId} />;
-        
-        case 'showProductPerformanceChart':
-        case 'showProductComparisonChart':
-        case 'showProductTemporalChart':
-          // Para estes gráficos que ainda não foram totalmente implementados, não mostrar nada
-          return null;
         
         default:
           return null;

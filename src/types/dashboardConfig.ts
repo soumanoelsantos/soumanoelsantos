@@ -79,13 +79,9 @@ export interface DashboardConfig {
   showProductProjecaoReceita: boolean;
   showProductProjecaoFaturamento: boolean;
 
-  // Novos gráficos e visualizações de produtos
+  // Gráficos de produtos (mantendo apenas os dois que ficaram)
   showProductRevenueEvolutionChart: boolean;
   showProductBillingEvolutionChart: boolean;
-  showProductSalesEvolutionChart: boolean;
-  showProductPerformanceChart: boolean;
-  showProductComparisonChart: boolean;
-  showProductTemporalChart: boolean;
 
   // NOVAS CONFIGURAÇÕES DE CONTROLE DE ABAS
   enableCommercialTab: boolean;
