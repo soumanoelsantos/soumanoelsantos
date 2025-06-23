@@ -29,12 +29,13 @@ export const useSellerPerformanceCharts = () => {
       setIsLoading(true);
       console.log('🔍 [DEBUG] useSellerPerformanceCharts - Buscando dados de performance dos vendedores para userId:', userId);
 
-      // Buscar vendedores ativos do usuário
+      // Buscar vendedores ativos do usuário (tipo closer)
       const { data: sellersData, error: sellersError } = await supabase
         .from('sellers')
-        .select('id, name')
+        .select('id, name, seller_type')
         .eq('user_id', userId)
         .eq('is_active', true)
+        .in('seller_type', ['closer', 'vendedor_interno'])
         .order('name');
 
       if (sellersError) {
@@ -44,7 +45,6 @@ export const useSellerPerformanceCharts = () => {
 
       console.log('✅ [DEBUG] useSellerPerformanceCharts - Vendedores encontrados:', sellersData?.length || 0, sellersData);
 
-      // Se não há vendedores, usar dados de exemplo
       if (!sellersData || sellersData.length === 0) {
         console.log('⚠️ [DEBUG] useSellerPerformanceCharts - Nenhum vendedor encontrado, usando dados de exemplo');
         generateExampleData();
@@ -56,15 +56,17 @@ export const useSellerPerformanceCharts = () => {
       setSellerNames(names);
       console.log('📊 [DEBUG] useSellerPerformanceCharts - Nomes dos vendedores:', names);
 
-      // Buscar dados de performance dos vendedores do mês atual
+      // Buscar dados de performance dos últimos 30 dias
       const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      const startOfMonth = `${year}-${month.toString().padStart(2, '0')}-01`;
-      const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
+      const startDate = new Date();
+      startDate.setDate(currentDate.getDate() - 30);
+      
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = currentDate.toISOString().split('T')[0];
 
-      console.log('📅 [DEBUG] useSellerPerformanceCharts - Período de busca:', { startOfMonth, endOfMonth });
+      console.log('📅 [DEBUG] useSellerPerformanceCharts - Período de busca:', { startDateStr, endDateStr });
 
+      // Buscar todas as performances dos vendedores no período
       const { data: performanceData, error: performanceError } = await supabase
         .from('seller_daily_performance')
         .select(`
@@ -75,8 +77,8 @@ export const useSellerPerformanceCharts = () => {
           sellers!inner(id, name, user_id)
         `)
         .in('seller_id', sellersData.map(s => s.id))
-        .gte('date', startOfMonth)
-        .lte('date', endOfMonth)
+        .gte('date', startDateStr)
+        .lte('date', endDateStr)
         .order('date', { ascending: true });
 
       if (performanceError) {
@@ -85,38 +87,41 @@ export const useSellerPerformanceCharts = () => {
       }
 
       console.log('✅ [DEBUG] useSellerPerformanceCharts - Dados de performance encontrados:', performanceData?.length || 0);
-      console.log('🔍 [DEBUG] useSellerPerformanceCharts - Sample performance data:', performanceData?.slice(0, 3));
+      console.log('🔍 [DEBUG] useSellerPerformanceCharts - Sample performance data:', performanceData?.slice(0, 5));
 
-      // Processar dados para os gráficos
-      const daysInMonth = new Date(year, month, 0).getDate();
+      // Processar dados para os gráficos (acumulado diário)
       const revenueChartData: SellerChartDataPoint[] = [];
       const billingChartData: SellerChartDataPoint[] = [];
 
-      // Agrupar performances por vendedor e data
-      const performanceBySellerAndDate = new Map<string, Map<string, { revenue: number; billing: number }>>();
+      // Criar mapa de vendedor por ID
+      const sellerMap = new Map<string, string>();
+      sellersData.forEach(seller => {
+        sellerMap.set(seller.id, seller.name);
+      });
+
+      // Agrupar performances por data
+      const performanceByDate = new Map<string, Map<string, { revenue: number; billing: number }>>();
       
       performanceData?.forEach(perf => {
-        if (!performanceBySellerAndDate.has(perf.seller_id)) {
-          performanceBySellerAndDate.set(perf.seller_id, new Map());
+        const date = perf.date;
+        if (!performanceByDate.has(date)) {
+          performanceByDate.set(date, new Map());
         }
-        const sellerMap = performanceBySellerAndDate.get(perf.seller_id)!;
-        sellerMap.set(perf.date, {
+        const dateMap = performanceByDate.get(date)!;
+        dateMap.set(perf.seller_id, {
           revenue: Number(perf.revenue_amount) || 0,
           billing: Number(perf.billing_amount) || 0
         });
       });
 
-      console.log('📊 [DEBUG] useSellerPerformanceCharts - Performance agrupada por vendedor:', performanceBySellerAndDate.size);
+      console.log('📊 [DEBUG] useSellerPerformanceCharts - Performance agrupada por data:', performanceByDate.size);
 
-      // Criar mapa de ID para nome do vendedor
-      const sellerIdToName = new Map<string, string>();
-      sellersData.forEach(seller => {
-        sellerIdToName.set(seller.id, seller.name);
-      });
-
-      // Calcular acumulados para cada dia
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dayStr = day.toString().padStart(2, '0');
+      // Gerar dados para cada dia dos últimos 30 dias
+      for (let i = 0; i <= 30; i++) {
+        const date = new Date();
+        date.setDate(currentDate.getDate() - (30 - i));
+        const dateStr = date.toISOString().split('T')[0];
+        const dayStr = date.getDate().toString().padStart(2, '0');
         
         // Inicializar dados do dia
         const revenueDataPoint: SellerChartDataPoint = { day: dayStr, media: 0 };
@@ -124,19 +129,24 @@ export const useSellerPerformanceCharts = () => {
 
         let totalRevenue = 0;
         let totalBilling = 0;
+        let activeSellers = 0;
 
         // Calcular acumulados até este dia para cada vendedor
         sellersData.forEach(seller => {
           let sellerRevenue = 0;
           let sellerBilling = 0;
 
-          for (let d = 1; d <= day; d++) {
-            const dayDate = `${year}-${month.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
-            const sellerPerf = performanceBySellerAndDate.get(seller.id)?.get(dayDate);
+          // Somar todas as performances até esta data
+          for (let j = 0; j <= i; j++) {
+            const checkDate = new Date();
+            checkDate.setDate(currentDate.getDate() - (30 - j));
+            const checkDateStr = checkDate.toISOString().split('T')[0];
             
-            if (sellerPerf) {
-              sellerRevenue += sellerPerf.revenue;
-              sellerBilling += sellerPerf.billing;
+            const datePerformances = performanceByDate.get(checkDateStr);
+            if (datePerformances && datePerformances.has(seller.id)) {
+              const perf = datePerformances.get(seller.id)!;
+              sellerRevenue += perf.revenue;
+              sellerBilling += perf.billing;
             }
           }
 
@@ -146,14 +156,14 @@ export const useSellerPerformanceCharts = () => {
 
           totalRevenue += sellerRevenue;
           totalBilling += sellerBilling;
+          activeSellers++;
 
           console.log(`📈 [DEBUG] useSellerPerformanceCharts - Dia ${dayStr}, Vendedor ${seller.name}: Revenue=${sellerRevenue}, Billing=${sellerBilling}`);
         });
 
         // Calcular média
-        const sellerCount = sellersData.length;
-        revenueDataPoint.media = sellerCount > 0 ? totalRevenue / sellerCount : 0;
-        billingDataPoint.media = sellerCount > 0 ? totalBilling / sellerCount : 0;
+        revenueDataPoint.media = activeSellers > 0 ? totalRevenue / activeSellers : 0;
+        billingDataPoint.media = activeSellers > 0 ? totalBilling / activeSellers : 0;
 
         revenueChartData.push(revenueDataPoint);
         billingChartData.push(billingDataPoint);
@@ -187,50 +197,48 @@ export const useSellerPerformanceCharts = () => {
 
   const generateExampleData = () => {
     console.log('🎯 [DEBUG] useSellerPerformanceCharts - Gerando dados de exemplo');
-    const currentDate = new Date();
-    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-    const exampleNames = ['Michelle Silva', 'Fabricio Costa', 'Leandro Santos'];
+    const exampleNames = ['Renata', 'Will', 'Ana Carvalho'];
     setSellerNames(exampleNames);
 
     const revenueChartData: SellerChartDataPoint[] = [];
     const billingChartData: SellerChartDataPoint[] = [];
 
-    for (let day = 1; day <= daysInMonth; day++) {
+    for (let day = 1; day <= 30; day++) {
       const dayStr = day.toString().padStart(2, '0');
-      const baseRevenue = 2000;
-      const baseBilling = 8000;
+      const baseRevenue = 1500;
+      const baseBilling = 6000;
       
-      const michelle_revenue = baseRevenue * day * 1.8;
-      const fabricio_revenue = baseRevenue * day * 1.2;
-      const leandro_revenue = baseRevenue * day * 0.4;
+      const renata_revenue = baseRevenue * day * 1.5;
+      const will_revenue = baseRevenue * day * 1.1;
+      const ana_revenue = baseRevenue * day * 0.8;
       
-      const michelle_billing = baseBilling * day * 2.0;
-      const fabricio_billing = baseBilling * day * 0.8;
-      const leandro_billing = baseBilling * day * 0.2;
+      const renata_billing = baseBilling * day * 1.8;
+      const will_billing = baseBilling * day * 1.0;
+      const ana_billing = baseBilling * day * 0.6;
 
-      const revenueMedia = (michelle_revenue + fabricio_revenue + leandro_revenue) / 3;
-      const billingMedia = (michelle_billing + fabricio_billing + leandro_billing) / 3;
+      const revenueMedia = (renata_revenue + will_revenue + ana_revenue) / 3;
+      const billingMedia = (renata_billing + will_billing + ana_billing) / 3;
 
       revenueChartData.push({
         day: dayStr,
-        'Michelle Silva': michelle_revenue,
-        'Fabricio Costa': fabricio_revenue,
-        'Leandro Santos': leandro_revenue,
+        'Renata': renata_revenue,
+        'Will': will_revenue,
+        'Ana Carvalho': ana_revenue,
         media: revenueMedia
       });
 
       billingChartData.push({
         day: dayStr,
-        'Michelle Silva': michelle_billing,
-        'Fabricio Costa': fabricio_billing,
-        'Leandro Santos': leandro_billing,
+        'Renata': renata_billing,
+        'Will': will_billing,
+        'Ana Carvalho': ana_billing,
         media: billingMedia
       });
     }
 
     setRevenueData(revenueChartData);
     setBillingData(billingChartData);
-    console.log('✅ [DEBUG] useSellerPerformanceCharts - Dados de exemplo gerados');
+    console.log('✅ [DEBUG] useSellerPerformanceCharts - Dados de exemplo gerados com vendedores específicos');
   };
 
   useEffect(() => {
