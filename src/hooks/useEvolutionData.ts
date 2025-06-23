@@ -51,21 +51,15 @@ export const useEvolutionData = () => {
       // Calcular totais das metas
       const totalRevenueGoal = productGoals?.reduce((acc, goal) => acc + (goal.revenue_goal || 0), 0) || 0;
       const totalBillingGoal = productGoals?.reduce((acc, goal) => acc + (goal.billing_goal || 0), 0) || 0;
+      const totalQuantityGoal = productGoals?.reduce((acc, goal) => acc + (goal.quantity_goal || 0), 0) || 0;
 
       console.log('📊 [DEBUG] Totais calculados:', {
         totalRevenueGoal,
-        totalBillingGoal
+        totalBillingGoal,
+        totalQuantityGoal
       });
 
-      // Buscar dados de performance dos produtos do mês atual
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      const currentDay = currentDate.getDate();
-      const startOfMonth = `${year}-${month.toString().padStart(2, '0')}-01`;
-      const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
-
-      // Join seller_individual_sales with seller_daily_performance to get the date
+      // Buscar TODAS as vendas dos produtos (sem filtro de data) ordenadas por data
       const { data: performanceData, error: performanceError } = await supabase
         .from('seller_individual_sales')
         .select(`
@@ -73,8 +67,7 @@ export const useEvolutionData = () => {
           billing_amount,
           seller_daily_performance!inner(date)
         `)
-        .gte('seller_daily_performance.date', startOfMonth)
-        .lte('seller_daily_performance.date', endOfMonth);
+        .order('seller_daily_performance(date)', { ascending: true });
 
       if (performanceError) {
         console.error('❌ [DEBUG] Erro ao buscar performance:', performanceError);
@@ -83,60 +76,126 @@ export const useEvolutionData = () => {
 
       console.log('📊 [DEBUG] Dados de performance encontrados:', performanceData?.length || 0);
 
-      // Processar dados para o gráfico
-      const daysInMonth = new Date(year, month, 0).getDate();
-      const dailyRevenueGoal = totalRevenueGoal / daysInMonth;
-      const dailyBillingGoal = totalBillingGoal / daysInMonth;
+      if (!performanceData || performanceData.length === 0) {
+        // Se não há vendas, criar dados apenas com as metas
+        const revenueEvolutionData: EvolutionDataPoint[] = [];
+        const billingEvolutionData: EvolutionDataPoint[] = [];
+        
+        // Criar pelo menos uma semana de dados futuros
+        const today = new Date();
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+          const dayStr = (i + 1).toString();
+          
+          const dailyRevenueGoal = totalRevenueGoal / totalQuantityGoal || 0;
+          const dailyBillingGoal = totalBillingGoal / totalQuantityGoal || 0;
+          
+          revenueEvolutionData.push({
+            day: dayStr,
+            metaReceita: dailyRevenueGoal * (i + 1),
+            receita: null,
+            superMetaReceita: (dailyRevenueGoal * (i + 1)) * 3,
+            hiperMetaReceita: (dailyRevenueGoal * (i + 1)) * 5,
+            metaFaturamento: 0,
+            faturamento: 0
+          });
+
+          billingEvolutionData.push({
+            day: dayStr,
+            metaFaturamento: dailyBillingGoal * (i + 1),
+            faturamento: null,
+            superMetaFaturamento: (dailyBillingGoal * (i + 1)) * 2.5,
+            hiperMetaFaturamento: (dailyBillingGoal * (i + 1)) * 4,
+            metaReceita: 0,
+            receita: 0
+          });
+        }
+        
+        setRevenueData(revenueEvolutionData);
+        setBillingData(billingEvolutionData);
+        setIsLoading(false);
+        return;
+      }
+
+      // Agrupar vendas por dia e calcular acumulado
+      const salesByDay = new Map<string, { revenue: number; billing: number; count: number }>();
+      
+      performanceData.forEach(perf => {
+        const dateStr = perf.seller_daily_performance.date;
+        const existing = salesByDay.get(dateStr) || { revenue: 0, billing: 0, count: 0 };
+        salesByDay.set(dateStr, {
+          revenue: existing.revenue + (perf.revenue_amount || 0),
+          billing: existing.billing + (perf.billing_amount || 0),
+          count: existing.count + 1
+        });
+      });
+
+      // Ordenar as datas
+      const sortedDates = Array.from(salesByDay.keys()).sort();
+      const firstSaleDate = sortedDates[0];
+      const today = new Date().toISOString().split('T')[0];
+
+      console.log('📊 [DEBUG] Primeira venda:', firstSaleDate, 'Hoje:', today);
+
+      // Calcular metas diárias baseadas na quantidade total de vendas necessárias
+      const dailyRevenueGoal = totalRevenueGoal / totalQuantityGoal || 0;
+      const dailyBillingGoal = totalBillingGoal / totalQuantityGoal || 0;
 
       const revenueEvolutionData: EvolutionDataPoint[] = [];
       const billingEvolutionData: EvolutionDataPoint[] = [];
 
-      // Agrupar performances por dia
-      const performanceByDay = new Map<string, { revenue: number; billing: number }>();
-      
-      performanceData?.forEach(perf => {
-        const dateStr = perf.seller_daily_performance.date;
-        const existing = performanceByDay.get(dateStr) || { revenue: 0, billing: 0 };
-        performanceByDay.set(dateStr, {
-          revenue: existing.revenue + (perf.revenue_amount || 0),
-          billing: existing.billing + (perf.billing_amount || 0)
-        });
-      });
-
       let accumulatedRevenue = 0;
       let accumulatedBilling = 0;
+      let accumulatedSales = 0;
+      let dayCounter = 0;
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dayStr = day.toString().padStart(2, '0');
-        const dateStr = `${year}-${month.toString().padStart(2, '0')}-${dayStr}`;
+      // Criar data inicial
+      const startDate = new Date(firstSaleDate);
+      
+      // Calcular quantos dias já se passaram desde a primeira venda
+      const currentDate = new Date(today);
+      const daysPassed = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      // Processar dados até completar a meta + uma semana a frente
+      const totalDaysNeeded = totalQuantityGoal + 7; // Meta + 7 dias a frente
+
+      for (let i = 0; i < totalDaysNeeded; i++) {
+        const currentDateIter = new Date(startDate);
+        currentDateIter.setDate(startDate.getDate() + i);
+        const dateStr = currentDateIter.toISOString().split('T')[0];
         
-        const dayPerformance = performanceByDay.get(dateStr) || { revenue: 0, billing: 0 };
+        const dayStr = (i + 1).toString();
+        const dayData = salesByDay.get(dateStr);
         
-        // Só acumular se for até o dia atual ou antes
-        if (day <= currentDay) {
-          accumulatedRevenue += dayPerformance.revenue;
-          accumulatedBilling += dayPerformance.billing;
+        // Se há vendas neste dia e não passou do dia atual, acumular
+        if (dayData && dateStr <= today) {
+          accumulatedRevenue += dayData.revenue;
+          accumulatedBilling += dayData.billing;
+          accumulatedSales += dayData.count;
         }
 
-        const metaReceitaDiaria = dailyRevenueGoal * day;
-        const metaFaturamentoDiaria = dailyBillingGoal * day;
+        // Calcular metas acumuladas baseadas na progressão de vendas
+        const expectedSalesAtThisPoint = Math.min(i + 1, totalQuantityGoal);
+        const metaReceitaAcumulada = dailyRevenueGoal * expectedSalesAtThisPoint;
+        const metaFaturamentoAcumulada = dailyBillingGoal * expectedSalesAtThisPoint;
 
         revenueEvolutionData.push({
           day: dayStr,
-          metaReceita: metaReceitaDiaria,
-          receita: day <= currentDay ? accumulatedRevenue : null,
-          superMetaReceita: metaReceitaDiaria * 3, // 3x a meta normal
-          hiperMetaReceita: metaReceitaDiaria * 5, // 5x a meta normal
+          metaReceita: metaReceitaAcumulada,
+          receita: dateStr <= today ? accumulatedRevenue : null,
+          superMetaReceita: metaReceitaAcumulada * 3,
+          hiperMetaReceita: metaReceitaAcumulada * 5,
           metaFaturamento: 0,
           faturamento: 0
         });
 
         billingEvolutionData.push({
           day: dayStr,
-          metaFaturamento: metaFaturamentoDiaria,
-          faturamento: day <= currentDay ? accumulatedBilling : null,
-          superMetaFaturamento: metaFaturamentoDiaria * 2.5, // 2.5x a meta normal
-          hiperMetaFaturamento: metaFaturamentoDiaria * 4, // 4x a meta normal
+          metaFaturamento: metaFaturamentoAcumulada,
+          faturamento: dateStr <= today ? accumulatedBilling : null,
+          superMetaFaturamento: metaFaturamentoAcumulada * 2.5,
+          hiperMetaFaturamento: metaFaturamentoAcumulada * 4,
           metaReceita: 0,
           receita: 0
         });
@@ -147,7 +206,9 @@ export const useEvolutionData = () => {
         billingData: billingEvolutionData.length,
         totalRevenueGoal,
         totalBillingGoal,
-        currentDay,
+        totalQuantityGoal,
+        firstSaleDate,
+        accumulatedSales,
         sampleRevenueData: revenueEvolutionData.slice(-3),
         sampleBillingData: billingEvolutionData.slice(-3)
       });
