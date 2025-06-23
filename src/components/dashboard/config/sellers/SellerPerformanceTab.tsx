@@ -73,10 +73,14 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    console.log('🔍 [DEBUG] SellerPerformanceTab - formatCurrency input:', value);
+    const numValue = Number(value) || 0;
+    const formatted = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
-    }).format(value);
+    }).format(numValue);
+    console.log('🔍 [DEBUG] SellerPerformanceTab - formatCurrency output:', formatted);
+    return formatted;
   };
 
   const formatDate = (dateString: string) => {
@@ -174,6 +178,29 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
               {performances.map((performance) => {
                 const isExpanded = expandedItems.has(performance.id);
                 
+                // Debug logs para cada performance
+                console.log('🔍 [DEBUG] SellerPerformanceTab - rendering performance:', {
+                  id: performance.id,
+                  date: performance.date,
+                  revenue_amount: performance.revenue_amount,
+                  billing_amount: performance.billing_amount,
+                  sales_count: performance.sales_count
+                });
+
+                // Garantir que os valores sejam números válidos
+                const revenueAmount = Number(performance.revenue_amount) || 0;
+                const billingAmount = Number(performance.billing_amount) || 0;
+                const salesCount = Number(performance.sales_count) || 0;
+                const meetingsCount = Number(performance.meetings_count) || 0;
+                const leadsCount = Number(performance.leads_count) || 0;
+                const callsCount = Number(performance.calls_count) || 0;
+
+                console.log('🔍 [DEBUG] SellerPerformanceTab - converted values for badge:', {
+                  revenueAmount,
+                  billingAmount,
+                  salesCount
+                });
+                
                 return (
                   <Collapsible key={performance.id}>
                     <Card className="border border-gray-200 hover:border-gray-300 transition-colors">
@@ -201,10 +228,10 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                             
                             <div className="flex items-center gap-2">
                               <Badge variant="outline" className="text-xs">
-                                {performance.sales_count} vendas
+                                {salesCount} vendas
                               </Badge>
                               <Badge variant="outline" className="text-xs">
-                                {formatCurrency(performance.revenue_amount)}
+                                {formatCurrency(revenueAmount)}
                               </Badge>
                             </div>
                           </div>
@@ -218,7 +245,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                               <TrendingUp className="h-4 w-4 text-green-600" />
                               <div>
                                 <p className="text-sm font-medium text-gray-900">
-                                  {performance.sales_count}
+                                  {salesCount}
                                 </p>
                                 <p className="text-xs text-gray-500">Vendas</p>
                               </div>
@@ -228,7 +255,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                               <DollarSign className="h-4 w-4 text-blue-600" />
                               <div>
                                 <p className="text-sm font-medium text-gray-900">
-                                  {formatCurrency(performance.revenue_amount)}
+                                  {formatCurrency(revenueAmount)}
                                 </p>
                                 <p className="text-xs text-gray-500">Receita</p>
                               </div>
@@ -238,7 +265,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                               <DollarSign className="h-4 w-4 text-purple-600" />
                               <div>
                                 <p className="text-sm font-medium text-gray-900">
-                                  {formatCurrency(performance.billing_amount)}
+                                  {formatCurrency(billingAmount)}
                                 </p>
                                 <p className="text-xs text-gray-500">Faturamento</p>
                               </div>
@@ -248,7 +275,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                               <Users className="h-4 w-4 text-orange-600" />
                               <div>
                                 <p className="text-sm font-medium text-gray-900">
-                                  {performance.meetings_count}
+                                  {meetingsCount}
                                 </p>
                                 <p className="text-xs text-gray-500">Reuniões</p>
                               </div>
@@ -261,7 +288,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                                 <TrendingUp className="h-4 w-4 text-indigo-600" />
                                 <div>
                                   <p className="text-sm font-medium text-gray-900">
-                                    {performance.leads_count}
+                                    {leadsCount}
                                   </p>
                                   <p className="text-xs text-gray-500">Leads</p>
                                 </div>
@@ -271,7 +298,7 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                                 <Phone className="h-4 w-4 text-green-600" />
                                 <div>
                                   <p className="text-sm font-medium text-gray-900">
-                                    {performance.calls_count}
+                                    {callsCount}
                                   </p>
                                   <p className="text-xs text-gray-500">Ligações</p>
                                 </div>
@@ -287,7 +314,6 @@ export const SellerPerformanceTab: React.FC<SellerPerformanceTabProps> = ({ sell
                             </div>
                           )}
 
-                          {/* Mostrar detalhes das vendas individuais para Closers */}
                           {isCloser && performance.sales_count > 0 && (
                             <IndividualSalesDetails performanceId={performance.id} />
                           )}

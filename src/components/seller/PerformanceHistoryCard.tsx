@@ -30,15 +30,38 @@ const PerformanceHistoryCard: React.FC<PerformanceHistoryCardProps> = ({
   const isCloser = seller.seller_type === 'closer';
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    console.log('🔍 [DEBUG] PerformanceHistoryCard - formatCurrency input:', value);
+    const formatted = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
     }).format(value);
+    console.log('🔍 [DEBUG] PerformanceHistoryCard - formatCurrency output:', formatted);
+    return formatted;
   };
 
   const formatDate = (dateString: string) => {
     return getBrazilianDate(dateString);
   };
+
+  // Debug logs para investigar os valores
+  console.log('🔍 [DEBUG] PerformanceHistoryCard - performance data:', {
+    id: performance.id,
+    date: performance.date,
+    revenue_amount: performance.revenue_amount,
+    billing_amount: performance.billing_amount,
+    sales_count: performance.sales_count
+  });
+
+  // Garantir que os valores sejam números válidos
+  const revenueAmount = Number(performance.revenue_amount) || 0;
+  const billingAmount = Number(performance.billing_amount) || 0;
+  const salesCount = Number(performance.sales_count) || 0;
+
+  console.log('🔍 [DEBUG] PerformanceHistoryCard - converted values:', {
+    revenueAmount,
+    billingAmount,
+    salesCount
+  });
 
   return (
     <Collapsible>
@@ -67,10 +90,10 @@ const PerformanceHistoryCard: React.FC<PerformanceHistoryCardProps> = ({
               
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs">
-                  {performance.sales_count} vendas
+                  {salesCount} vendas
                 </Badge>
                 <Badge variant="outline" className="text-xs">
-                  {formatCurrency(performance.revenue_amount)}
+                  {formatCurrency(revenueAmount)}
                 </Badge>
               </div>
             </div>
