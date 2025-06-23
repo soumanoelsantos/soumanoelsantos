@@ -100,6 +100,19 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setEditingNotes(nodeId);
   };
 
+  // Fixed function signatures to match expected props
+  const handleMouseDown = (nodeId: string, e: React.MouseEvent) => {
+    handleMouseDown(e);
+  };
+
+  const handleTouchStart = (nodeId: string, e: React.TouchEvent) => {
+    handleTouchStart(e);
+  };
+
+  const handleNodeClick = (nodeId: string, e: React.MouseEvent) => {
+    handleNodeClick(e);
+  };
+
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
   return (
@@ -143,7 +156,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
             onDeleteNode={deleteNode}
             onToggleNodeVisibility={toggleNodeVisibility}
             onChangeNodeType={handleChangeNodeType}
-            onOpenNodeNotes={handleOpenNodeNotes} // Nova prop
+            onOpenNodeNotes={handleOpenNodeNotes}
           />
         </div>
       </div>
@@ -155,14 +168,14 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         setEditingNode={setEditingNode}
         changingNodeType={changingNodeType}
         setChangingNodeType={setChangingNodeType}
-        editingNotes={editingNotes} // Nova prop
-        setEditingNotes={setEditingNotes} // Nova prop
+        editingNotes={editingNotes}
+        setEditingNotes={setEditingNotes}
         visibleNodes={visibleNodes}
         nodes={nodes}
         edges={edges}
         onAddNode={handleAddNode}
         onUpdateNodeLabel={updateNodeLabel}
-        onUpdateNodeNotes={updateNodeNotes} // Nova prop
+        onUpdateNodeNotes={updateNodeNotes}
         getAvailableParents={getAvailableParents}
         onChangeToMain={changeNodeToMain}
         onChangeToChild={changeNodeToChild}

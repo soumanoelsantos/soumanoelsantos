@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MindMapNode, MindMapEdge } from '@/types/mindMap';
-import MindMapNode from './MindMapNode';
+import MindMapNodeComponent from './MindMapNode';
 import MindMapEdges from './MindMapEdges';
 
 interface CanvasContentProps {
@@ -21,7 +21,7 @@ interface CanvasContentProps {
   onDeleteNode: (nodeId: string) => void;
   onToggleNodeVisibility: (nodeId: string) => void;
   onChangeNodeType: (nodeId: string) => void;
-  onOpenNodeNotes: (nodeId: string) => void; // Nova prop
+  onOpenNodeNotes: (nodeId: string) => void;
 }
 
 const CanvasContent = ({
@@ -88,7 +88,7 @@ const CanvasContent = ({
 
       {/* Render nodes */}
       {visibleNodes.map(node => (
-        <MindMapNode
+        <MindMapNodeComponent
           key={node.id}
           node={node}
           isSelected={selectedNode === node.id}
@@ -102,7 +102,7 @@ const CanvasContent = ({
           onDelete={() => onDeleteNode(node.id)}
           onToggleConnections={() => onToggleNodeVisibility(node.id)}
           onChangeType={() => onChangeNodeType(node.id)}
-          onOpenNotes={() => onOpenNodeNotes(node.id)} // Nova prop
+          onOpenNotes={() => onOpenNodeNotes(node.id)}
         />
       ))}
     </div>
