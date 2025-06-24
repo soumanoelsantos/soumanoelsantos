@@ -8,8 +8,15 @@ export {
   isOverdueBrazilian 
 } from './brazilianDateUtils';
 
-// Manter compatibilidade com código existente
-export const formatDateToBrazilian = (dateString: string): string => {
+// Funções de compatibilidade para código existente
+export const getBrazilianDate = () => {
+  const now = new Date();
+  // Ajustar para o fuso horário brasileiro (UTC-3)
+  const brazilTime = new Date(now.getTime() - (3 * 60 * 60 * 1000));
+  return brazilTime.toISOString().split('T')[0];
+};
+
+export const formatToBrazilianTimezone = (dateString: string): string => {
   try {
     const date = new Date(dateString);
     
