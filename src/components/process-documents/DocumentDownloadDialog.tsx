@@ -14,17 +14,17 @@ interface DocumentDownloadDialogProps {
   onClose: () => void;
 }
 
-const DocumentDownloadDialog = ({ document, isOpen, onClose }: DocumentDownloadDialogProps) => {
+const DocumentDownloadDialog = ({ document: doc, isOpen, onClose }: DocumentDownloadDialogProps) => {
   const [format, setFormat] = useState('txt');
   const [isDownloading, setIsDownloading] = useState(false);
 
   const downloadAsText = () => {
-    const content = `${document.title}\n\n${document.description || ''}\n\n${document.content}`;
+    const content = `${doc.title}\n\n${doc.description || ''}\n\n${doc.content}`;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${document.title}.txt`;
+    a.download = `${doc.title}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -36,12 +36,12 @@ const DocumentDownloadDialog = ({ document, isOpen, onClose }: DocumentDownloadD
       <html>
         <head>
           <meta charset="utf-8">
-          <title>${document.title}</title>
+          <title>${doc.title}</title>
         </head>
         <body>
-          <h1>${document.title}</h1>
-          ${document.description ? `<p><strong>Descrição:</strong> ${document.description}</p>` : ''}
-          <div>${document.content.replace(/\n/g, '<br>')}</div>
+          <h1>${doc.title}</h1>
+          ${doc.description ? `<p><strong>Descrição:</strong> ${doc.description}</p>` : ''}
+          <div>${doc.content.replace(/\n/g, '<br>')}</div>
         </body>
       </html>
     `;
@@ -49,7 +49,7 @@ const DocumentDownloadDialog = ({ document, isOpen, onClose }: DocumentDownloadD
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${document.title}.doc`;
+    a.download = `${doc.title}.doc`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -64,15 +64,15 @@ const DocumentDownloadDialog = ({ document, isOpen, onClose }: DocumentDownloadD
       const content = `
         <div style="padding: 20px; font-family: Arial, sans-serif;">
           <h1 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-            ${document.title}
+            ${doc.title}
           </h1>
-          ${document.description ? `
+          ${doc.description ? `
             <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #007bff;">
-              <strong>Descrição:</strong> ${document.description}
+              <strong>Descrição:</strong> ${doc.description}
             </div>
           ` : ''}
           <div style="margin-top: 20px; line-height: 1.6;">
-            ${document.content.replace(/\n/g, '<br>')}
+            ${doc.content.replace(/\n/g, '<br>')}
           </div>
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
             Documento gerado em: ${new Date().toLocaleDateString('pt-BR')}
@@ -82,7 +82,7 @@ const DocumentDownloadDialog = ({ document, isOpen, onClose }: DocumentDownloadD
 
       const opt = {
         margin: 1,
-        filename: `${document.title}.pdf`,
+        filename: `${doc.title}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -132,7 +132,7 @@ const DocumentDownloadDialog = ({ document, isOpen, onClose }: DocumentDownloadD
         <div className="space-y-6">
           <div>
             <p className="text-sm text-gray-600 mb-4">
-              Escolha o formato para download do documento "{document.title}":
+              Escolha o formato para download do documento "{doc.title}":
             </p>
             
             <RadioGroup value={format} onValueChange={setFormat}>
