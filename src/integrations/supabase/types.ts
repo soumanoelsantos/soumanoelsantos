@@ -968,6 +968,10 @@ export type Database = {
           content: string
           created_at: string
           description: string | null
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          file_type: string | null
           folder_id: string | null
           id: string
           is_public: boolean
@@ -981,6 +985,10 @@ export type Database = {
           content?: string
           created_at?: string
           description?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          file_type?: string | null
           folder_id?: string | null
           id?: string
           is_public?: boolean
@@ -994,6 +1002,10 @@ export type Database = {
           content?: string
           created_at?: string
           description?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          file_type?: string | null
           folder_id?: string | null
           id?: string
           is_public?: boolean
