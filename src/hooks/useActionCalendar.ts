@@ -48,19 +48,25 @@ export const useActionCalendar = () => {
 
       if (error) throw error;
       
-      // Update status based on due date
-      const updatedActions = (data || []).map(action => {
+      // Transform data to match our ActionCalendar type
+      const transformedActions: ActionCalendar[] = (data || []).map(action => {
         const today = new Date();
         const dueDate = new Date(action.due_date);
         
-        if (action.status !== 'concluida' && dueDate < today) {
-          return { ...action, status: 'atrasada' as const };
+        let status = action.status as ActionCalendar['status'];
+        
+        // Update status based on due date if not completed
+        if (status !== 'concluida' && dueDate < today) {
+          status = 'atrasada';
         }
         
-        return action;
+        return {
+          ...action,
+          status
+        } as ActionCalendar;
       });
       
-      setActions(updatedActions);
+      setActions(transformedActions);
     } catch (error) {
       console.error('Erro ao buscar ações:', error);
       toast.error('Erro ao carregar ações');
@@ -88,12 +94,17 @@ export const useActionCalendar = () => {
 
       if (error) throw error;
 
-      setActions(prev => [newAction, ...prev].sort((a, b) => 
+      const transformedAction: ActionCalendar = {
+        ...newAction,
+        status: newAction.status as ActionCalendar['status']
+      };
+
+      setActions(prev => [transformedAction, ...prev].sort((a, b) => 
         new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
       ));
       
       toast.success('Ação criada com sucesso!');
-      return newAction;
+      return transformedAction;
     } catch (error) {
       console.error('Erro ao criar ação:', error);
       toast.error('Erro ao criar ação');
@@ -115,14 +126,19 @@ export const useActionCalendar = () => {
 
       if (error) throw error;
 
+      const transformedAction: ActionCalendar = {
+        ...updatedAction,
+        status: updatedAction.status as ActionCalendar['status']
+      };
+
       setActions(prev => prev.map(action => 
-        action.id === id ? updatedAction : action
+        action.id === id ? transformedAction : action
       ).sort((a, b) => 
         new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
       ));
       
       toast.success('Ação atualizada com sucesso!');
-      return updatedAction;
+      return transformedAction;
     } catch (error) {
       console.error('Erro ao atualizar ação:', error);
       toast.error('Erro ao atualizar ação');

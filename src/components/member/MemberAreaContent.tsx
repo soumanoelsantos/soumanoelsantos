@@ -2,10 +2,11 @@
 import React from "react";
 import MemberContentList from "@/components/MemberContentList";
 import DashboardCard from "@/components/member/DashboardCard";
+import ActionCalendarManager from "@/components/action-calendar/ActionCalendarManager";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Brain, FileText } from "lucide-react";
+import { Brain, FileText, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const MemberAreaContent: React.FC = () => {
@@ -20,6 +21,19 @@ const MemberAreaContent: React.FC = () => {
       
       <div className="grid grid-cols-1 gap-8">
         <DashboardCard />
+        
+        {/* Card para Calendário de Ações */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Calendário de Ações
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ActionCalendarManager />
+          </CardContent>
+        </Card>
         
         {/* Card para Processos Documentados */}
         <Card>
