@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Edit, Trash2, Share2, Calendar } from 'lucide-react';
-import { formatDateToBrazilian } from '@/utils/dateUtils';
+import { formatDateToBrazilian, isOverdueBrazilian } from '@/utils/brazilianDateUtils';
 import ActionDetailsDialog from './ActionDetailsDialog';
 import EditActionDialog from './EditActionDialog';
 import ActionShareDialog from './ActionShareDialog';
@@ -28,20 +28,19 @@ const ActionCalendarTable = ({
   const [sharingAction, setSharingAction] = useState<ActionCalendar | null>(null);
 
   const getStatusBadge = (status: string, dueDate: string) => {
-    const today = new Date();
-    const due = new Date(dueDate);
+    const isOverdue = isOverdueBrazilian(dueDate);
     
     let badgeColor = 'default';
     let displayStatus = status;
     
     switch (status) {
       case 'pendente':
-        badgeColor = due < today ? 'destructive' : 'secondary';
-        displayStatus = due < today ? 'Atrasada' : 'Pendente';
+        badgeColor = isOverdue ? 'destructive' : 'secondary';
+        displayStatus = isOverdue ? 'Atrasada' : 'Pendente';
         break;
       case 'em_andamento':
-        badgeColor = due < today ? 'destructive' : 'default';
-        displayStatus = due < today ? 'Atrasada' : 'Em Andamento';
+        badgeColor = isOverdue ? 'destructive' : 'default';
+        displayStatus = isOverdue ? 'Atrasada' : 'Em Andamento';
         break;
       case 'concluida':
         badgeColor = 'success';

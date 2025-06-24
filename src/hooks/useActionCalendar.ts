@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { ActionCalendar, CreateActionData, ActionFilters } from '@/types/actionCalendar';
 import { toast } from 'sonner';
+import { isOverdueBrazilian } from '@/utils/brazilianDateUtils';
 
 export const useActionCalendar = () => {
   const [actions, setActions] = useState<ActionCalendar[]>([]);
@@ -50,13 +51,10 @@ export const useActionCalendar = () => {
       
       // Transform data to match our ActionCalendar type
       const transformedActions: ActionCalendar[] = (data || []).map(action => {
-        const today = new Date();
-        const dueDate = new Date(action.due_date);
-        
         let status = action.status as ActionCalendar['status'];
         
-        // Update status based on due date if not completed
-        if (status !== 'concluida' && dueDate < today) {
+        // Update status based on due date if not completed (usando fuso brasileiro)
+        if (status !== 'concluida' && isOverdueBrazilian(action.due_date)) {
           status = 'atrasada';
         }
         

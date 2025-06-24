@@ -1,88 +1,29 @@
 
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+// Re-exportar as funções brasileiras como padrão
+export { 
+  formatDateToBrazilian, 
+  formatDateTimeToBrazilian, 
+  convertToUTCFromBrazil, 
+  getCurrentBrazilianDate, 
+  isOverdueBrazilian 
+} from './brazilianDateUtils';
 
-// Fuso horário brasileiro (UTC-3)
-const BRAZIL_TIMEZONE = 'America/Sao_Paulo';
-
-export const formatToBrazilianTimezone = (date: string | Date): string => {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
-  
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: BRAZIL_TIMEZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  }).format(dateObj);
-};
-
-export const formatDateToBrazilian = (date: string | Date): string => {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
-  
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: BRAZIL_TIMEZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(dateObj);
-};
-
-export const formatTimeToBrazilian = (date: string | Date): string => {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
-  
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: BRAZIL_TIMEZONE,
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(dateObj);
-};
-
-export const getBrazilianDateTime = (): string => {
-  const now = new Date();
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: BRAZIL_TIMEZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  }).format(now);
-};
-
-export const getBrazilianDate = (date?: string | Date): string => {
-  // Se uma data específica for fornecida, formatá-la
-  if (date) {
-    const dateObj = typeof date === 'string' ? parseISO(date) : date;
-    return new Intl.DateTimeFormat('pt-BR', {
-      timeZone: BRAZIL_TIMEZONE,
-      year: 'numeric',
+// Manter compatibilidade com código existente
+export const formatDateToBrazilian = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    
+    // Ajustar para fuso horário brasileiro (UTC-3)
+    const brazilDate = new Date(date.getTime() - (3 * 60 * 60 * 1000));
+    
+    return brazilDate.toLocaleDateString('pt-BR', {
+      day: '2-digit',
       month: '2-digit',
-      day: '2-digit'
-    }).format(dateObj);
+      year: 'numeric',
+      timeZone: 'America/Sao_Paulo'
+    });
+  } catch (error) {
+    console.error('Erro ao formatar data:', error);
+    return dateString;
   }
-  
-  // Caso contrário, usar a data atual
-  const now = new Date();
-  return new Intl.DateTimeFormat('pt-BR', {
-    timeZone: BRAZIL_TIMEZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(now);
-};
-
-// Converte data brasileira para formato ISO para envio ao banco
-export const convertBrazilianDateToISO = (brazilianDate: string): string => {
-  const [day, month, year] = brazilianDate.split('/');
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-};
-
-// Converte data ISO para formato brasileiro
-export const convertISOToBrazilianDate = (isoDate: string): string => {
-  const [year, month, day] = isoDate.split('-');
-  return `${day}/${month}/${year}`;
 };

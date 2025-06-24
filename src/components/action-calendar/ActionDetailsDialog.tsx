@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { ActionCalendar } from '@/types/actionCalendar';
-import { formatDateToBrazilian } from '@/utils/dateUtils';
+import { formatDateToBrazilian, isOverdueBrazilian } from '@/utils/brazilianDateUtils';
 
 interface ActionDetailsDialogProps {
   action: ActionCalendar;
@@ -13,20 +13,19 @@ interface ActionDetailsDialogProps {
 
 const ActionDetailsDialog = ({ action, isOpen, onClose }: ActionDetailsDialogProps) => {
   const getStatusBadge = (status: string, dueDate: string) => {
-    const today = new Date();
-    const due = new Date(dueDate);
+    const isOverdue = isOverdueBrazilian(dueDate);
     
     let badgeClass = '';
     let displayStatus = status;
     
     switch (status) {
       case 'pendente':
-        badgeClass = due < today ? 'bg-red-500 text-white' : 'bg-gray-500 text-white';
-        displayStatus = due < today ? 'Atrasada' : 'Pendente';
+        badgeClass = isOverdue ? 'bg-red-500 text-white' : 'bg-gray-500 text-white';
+        displayStatus = isOverdue ? 'Atrasada' : 'Pendente';
         break;
       case 'em_andamento':
-        badgeClass = due < today ? 'bg-red-500 text-white' : 'bg-blue-500 text-white';
-        displayStatus = due < today ? 'Atrasada' : 'Em Andamento';
+        badgeClass = isOverdue ? 'bg-red-500 text-white' : 'bg-blue-500 text-white';
+        displayStatus = isOverdue ? 'Atrasada' : 'Em Andamento';
         break;
       case 'concluida':
         badgeClass = 'bg-green-500 text-white';
