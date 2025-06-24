@@ -1,4 +1,3 @@
-
 export interface ProcessDocument {
   id: string;
   user_id: string;
@@ -9,6 +8,10 @@ export interface ProcessDocument {
   folder_id?: string;
   is_public: boolean;
   share_token: string;
+  file_path?: string;
+  file_name?: string;
+  file_size?: number;
+  file_type?: string;
   created_at: string;
   updated_at: string;
 }
@@ -31,6 +34,10 @@ export interface CreateDocumentData {
   category?: string;
   folder_id?: string;
   is_public?: boolean;
+  file_path?: string;
+  file_name?: string;
+  file_size?: number;
+  file_type?: string;
 }
 
 export interface CreateFolderData {

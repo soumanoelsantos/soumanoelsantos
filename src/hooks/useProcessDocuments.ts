@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -113,6 +112,22 @@ export const useProcessDocuments = () => {
     if (!userId) throw new Error('Usuário não autenticado');
 
     try {
+      // Get document to check if it has a file
+      const { data: document } = await supabase
+        .from('process_documents')
+        .select('file_path')
+        .eq('id', id)
+        .eq('user_id', userId)
+        .single();
+
+      // Delete file from storage if it exists
+      if (document?.file_path) {
+        await supabase.storage
+          .from('process-files')
+          .remove([document.file_path]);
+      }
+
+      // Delete document record
       const { error } = await supabase
         .from('process_documents')
         .delete()

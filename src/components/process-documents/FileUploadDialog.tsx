@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Upload, File, X } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface FileUploadDialogProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ interface FileUploadDialogProps {
 const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUploadDialogProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const { userId } = useAuth();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles(prev => [...prev, ...acceptedFiles]);
@@ -39,15 +42,50 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
   };
 
   const handleUpload = async () => {
-    if (files.length === 0) return;
+    if (files.length === 0 || !userId || !folderId) return;
 
     setIsUploading(true);
     try {
-      // Aqui você implementaria o upload real para o Supabase Storage
-      // Por enquanto, vamos simular o upload
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const uploadPromises = files.map(async (file) => {
+        // Generate unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `process-documents/${userId}/${fileName}`;
+
+        // Upload file to Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('process-files')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        // Create document record in database
+        const { data: documentData, error: documentError } = await supabase
+          .from('process_documents')
+          .insert({
+            user_id: userId,
+            title: file.name.replace(/\.[^/.]+$/, ''), // Remove file extension
+            content: `Arquivo: ${file.name}`,
+            description: `Arquivo enviado: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
+            category: 'arquivo',
+            folder_id: folderId,
+            is_public: false,
+            file_path: filePath,
+            file_name: file.name,
+            file_size: file.size,
+            file_type: file.type
+          })
+          .select()
+          .single();
+
+        if (documentError) throw documentError;
+
+        return documentData;
+      });
+
+      await Promise.all(uploadPromises);
       
-      toast.success('Arquivos enviados com sucesso!');
+      toast.success(`${files.length} arquivo(s) enviado(s) com sucesso!`);
       setFiles([]);
       onUploadSuccess?.();
       onClose();
@@ -126,7 +164,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
             </Button>
             <Button 
               onClick={handleUpload} 
-              disabled={files.length === 0 || isUploading}
+              disabled={files.length === 0 || isUploading || !folderId}
             >
               {isUploading ? 'Enviando...' : `Enviar ${files.length} arquivo(s)`}
             </Button>
