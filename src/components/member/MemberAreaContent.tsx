@@ -2,7 +2,6 @@
 import React from "react";
 import MemberContentList from "@/components/MemberContentList";
 import DashboardCard from "@/components/member/DashboardCard";
-import ActionCalendarManager from "@/components/action-calendar/ActionCalendarManager";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,15 @@ const MemberAreaContent: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ActionCalendarManager />
+            <p className="text-gray-600 mb-4">
+              Gerencie e acompanhe todas as ações da sua equipe com datas de vencimento, responsáveis e status de execução
+            </p>
+            <Button 
+              onClick={() => navigate('/calendario-acoes')} 
+              className="w-full"
+            >
+              Acessar Calendário de Ações
+            </Button>
           </CardContent>
         </Card>
         

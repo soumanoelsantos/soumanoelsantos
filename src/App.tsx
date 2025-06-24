@@ -20,6 +20,7 @@ import TesteFase from './pages/TesteFase';
 import ProcessDocuments from './pages/ProcessDocuments';
 import SharedDocument from './pages/SharedDocument';
 import SharedFolder from './pages/SharedFolder';
+import ActionCalendar from './pages/ActionCalendar';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="/processos-documentados" element={<ProcessDocuments />} />
           <Route path="/shared/document/:token" element={<SharedDocument />} />
           <Route path="/shared/folder/:token" element={<SharedFolder />} />
+          <Route path="/calendario-acoes" element={<ActionCalendar />} />
         </Routes>
       </div>
     </BrowserRouter>
