@@ -1,70 +1,117 @@
 
-import React from "react";
-import MemberContentList from "@/components/MemberContentList";
-import DashboardCard from "@/components/member/DashboardCard";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Brain, FileText } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Calendar, Users, BarChart3, Target, FileText, Lightbulb, Brain, Layers, CheckSquare, ClipboardList, Book, Workflow } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import ModuleContent from './ModuleContent';
+import ProgressCard from './ProgressCard';
+import DashboardCard from './DashboardCard';
+import MentorshipCard from './MentorshipCard';
+import ActionCalendarManager from '@/components/action-calendar/ActionCalendarManager';
 
-const MemberAreaContent: React.FC = () => {
-  const isMobile = useIsMobile();
-  const navigate = useNavigate();
-  
+const MemberAreaContent = () => {
   return (
-    <div className="container mx-auto px-4 py-8 bg-white">
-      <h1 className={`${isMobile ? 'text-3xl' : 'text-4xl'} font-bold text-gray-800 mb-8 text-center`}>
-        Área de Membros
-      </h1>
-      
-      <div className="grid grid-cols-1 gap-8">
+    <div className="max-w-7xl mx-auto p-6 space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ProgressCard />
         <DashboardCard />
-        
-        {/* Card para Processos Documentados */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Processos Documentados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              Crie e gerencie documentos de processos da sua empresa como playbooks de vendas, diretrizes e padronizações
-            </p>
-            <Button 
-              onClick={() => navigate('/processos-documentados')} 
-              className="w-full"
-            >
-              Acessar Processos Documentados
-            </Button>
-          </CardContent>
-        </Card>
-        
-        {/* Card para Mapas Mentais */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5" />
-              Mapas Mentais
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              Crie e gerencie mapas mentais para organizar ideias e compartilhar com sua equipe
-            </p>
-            <Button 
-              onClick={() => navigate('/mapa-mental')} 
-              className="w-full"
-            >
-              Acessar Mapas Mentais
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <MemberContentList />
+        <MentorshipCard />
       </div>
+
+      {/* Calendário de Ações */}
+      <ActionCalendarManager />
+
+      {/* Ferramentas Estratégicas */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lightbulb className="h-5 w-5" />
+            Ferramentas Estratégicas
+          </CardTitle>
+          <CardDescription>
+            Acesse as principais ferramentas para análise e planejamento estratégico
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link to="/swot">
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-blue-50">
+                <Target className="h-6 w-6" />
+                <span className="text-sm font-medium">Análise SWOT</span>
+              </Button>
+            </Link>
+
+            <Link to="/canvas">
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-green-50">
+                <Layers className="h-6 w-6" />
+                <span className="text-sm font-medium">Canvas</span>
+              </Button>
+            </Link>
+
+            <Link to="/puv">
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-purple-50">
+                <Lightbulb className="h-6 w-6" />
+                <span className="text-sm font-medium">Proposta Única de Valor</span>
+              </Button>
+            </Link>
+
+            <Link to="/mapa-equipe">
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-orange-50">
+                <Users className="h-6 w-6" />
+                <span className="text-sm font-medium">Mapa da Equipe</span>
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Ferramentas de Gestão */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Ferramentas de Gestão
+          </CardTitle>
+          <CardDescription>
+            Gerencie e acompanhe o desempenho do seu negócio
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link to="/crm">
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-blue-50">
+                <Users className="h-6 w-6" />
+                <span className="text-sm font-medium">CRM</span>
+              </Button>
+            </Link>
+
+            <Link to="/mapa-mental">
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-green-50">
+                <Brain className="h-6 w-6" />
+                <span className="text-sm font-medium">Mapas Mentais</span>
+              </Button>
+            </Link>
+
+            <Link to="/processos-documentados">
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-purple-50">
+                <Book className="h-6 w-6" />
+                <span className="text-sm font-medium">Processos</span>
+              </Button>
+            </Link>
+
+            <Link to="/diagnostic">
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-orange-50">
+                <CheckSquare className="h-6 w-6" />
+                <span className="text-sm font-medium">Diagnóstico</span>
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Conteúdo do Programa */}
+      <ModuleContent />
     </div>
   );
 };

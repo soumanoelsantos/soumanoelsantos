@@ -48,7 +48,7 @@ export const useActionCalendar = () => {
 
       if (error) throw error;
       
-      // Update status based on due date
+      // Update status based on due date and cast to proper type
       const updatedActions = (data || []).map(action => {
         const today = new Date();
         const dueDate = new Date(action.due_date);
@@ -57,7 +57,7 @@ export const useActionCalendar = () => {
           return { ...action, status: 'atrasada' as const };
         }
         
-        return action;
+        return action as ActionCalendar;
       });
       
       setActions(updatedActions);
@@ -88,12 +88,13 @@ export const useActionCalendar = () => {
 
       if (error) throw error;
 
-      setActions(prev => [newAction, ...prev].sort((a, b) => 
+      const typedAction = newAction as ActionCalendar;
+      setActions(prev => [typedAction, ...prev].sort((a, b) => 
         new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
       ));
       
       toast.success('Ação criada com sucesso!');
-      return newAction;
+      return typedAction;
     } catch (error) {
       console.error('Erro ao criar ação:', error);
       toast.error('Erro ao criar ação');
@@ -115,14 +116,15 @@ export const useActionCalendar = () => {
 
       if (error) throw error;
 
+      const typedAction = updatedAction as ActionCalendar;
       setActions(prev => prev.map(action => 
-        action.id === id ? updatedAction : action
+        action.id === id ? typedAction : action
       ).sort((a, b) => 
         new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
       ));
       
       toast.success('Ação atualizada com sucesso!');
-      return updatedAction;
+      return typedAction;
     } catch (error) {
       console.error('Erro ao atualizar ação:', error);
       toast.error('Erro ao atualizar ação');

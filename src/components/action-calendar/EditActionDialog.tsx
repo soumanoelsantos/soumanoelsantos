@@ -1,31 +1,38 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CreateActionData } from '@/types/actionCalendar';
+import { ActionCalendar, CreateActionData } from '@/types/actionCalendar';
 
-interface CreateActionDialogProps {
+interface EditActionDialogProps {
+  action: ActionCalendar;
   isOpen: boolean;
   onClose: () => void;
-  onCreateAction: (data: CreateActionData) => Promise<any>;
+  onUpdateAction: (id: string, data: Partial<CreateActionData>) => Promise<ActionCalendar>;
 }
 
-const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDialogProps) => {
-  const [formData, setFormData] = useState<CreateActionData>({
-    title: '',
-    description: '',
-    responsible_person: '',
-    department: '',
-    due_date: '',
-    status: 'pendente',
-    details: '',
-    is_public: false,
-  });
+const EditActionDialog = ({ action, isOpen, onClose, onUpdateAction }: EditActionDialogProps) => {
+  const [formData, setFormData] = useState<Partial<CreateActionData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (action) {
+      setFormData({
+        title: action.title,
+        description: action.description || '',
+        responsible_person: action.responsible_person,
+        department: action.department,
+        due_date: action.due_date,
+        status: action.status,
+        details: action.details || '',
+        is_public: action.is_public,
+      });
+    }
+  }, [action]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,44 +43,20 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
 
     setIsSubmitting(true);
     try {
-      await onCreateAction(formData);
-      setFormData({
-        title: '',
-        description: '',
-        responsible_person: '',
-        department: '',
-        due_date: '',
-        status: 'pendente',
-        details: '',
-        is_public: false,
-      });
+      await onUpdateAction(action.id, formData);
       onClose();
     } catch (error) {
-      console.error('Erro ao criar ação:', error);
+      console.error('Erro ao atualizar ação:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleClose = () => {
-    setFormData({
-      title: '',
-      description: '',
-      responsible_person: '',
-      department: '',
-      due_date: '',
-      status: 'pendente',
-      details: '',
-      is_public: false,
-    });
-    onClose();
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Nova Ação</DialogTitle>
+          <DialogTitle>Editar Ação</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,7 +65,7 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
               <Label htmlFor="title">Nome da Ação *</Label>
               <Input
                 id="title"
-                value={formData.title}
+                value={formData.title || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="Ex: Implementar novo sistema"
                 required
@@ -94,7 +77,7 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
               <Input
                 id="due_date"
                 type="date"
-                value={formData.due_date}
+                value={formData.due_date || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
                 required
               />
@@ -105,7 +88,7 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
             <Label htmlFor="description">Descrição</Label>
             <Textarea
               id="description"
-              value={formData.description}
+              value={formData.description || ''}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Breve descrição da ação"
               rows={2}
@@ -117,7 +100,7 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
               <Label htmlFor="responsible_person">Pessoa Responsável *</Label>
               <Input
                 id="responsible_person"
-                value={formData.responsible_person}
+                value={formData.responsible_person || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, responsible_person: e.target.value }))}
                 placeholder="Ex: João Silva"
                 required
@@ -128,7 +111,7 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
               <Label htmlFor="department">Setor Responsável *</Label>
               <Input
                 id="department"
-                value={formData.department}
+                value={formData.department || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
                 placeholder="Ex: TI, Marketing, Vendas"
                 required
@@ -149,6 +132,7 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
                 <SelectItem value="pendente">Pendente</SelectItem>
                 <SelectItem value="em_andamento">Em Andamento</SelectItem>
                 <SelectItem value="concluida">Concluída</SelectItem>
+                <SelectItem value="atrasada">Atrasada</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -157,7 +141,7 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
             <Label htmlFor="details">Detalhes de Execução</Label>
             <Textarea
               id="details"
-              value={formData.details}
+              value={formData.details || ''}
               onChange={(e) => setFormData(prev => ({ ...prev, details: e.target.value }))}
               placeholder="Descreva como a ação será realizada, passos necessários, recursos etc."
               rows={4}
@@ -165,11 +149,11 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={handleClose}>
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Criando...' : 'Criar Ação'}
+              {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
             </Button>
           </div>
         </form>
@@ -178,4 +162,4 @@ const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDia
   );
 };
 
-export default CreateActionDialog;
+export default EditActionDialog;
