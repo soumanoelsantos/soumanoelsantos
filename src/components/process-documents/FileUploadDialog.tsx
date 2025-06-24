@@ -23,6 +23,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
   const { userId } = useAuth();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    console.log('Files dropped:', acceptedFiles);
     setFiles(prev => [...prev, ...acceptedFiles]);
   }, []);
 
@@ -42,55 +43,90 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
   };
 
   const handleUpload = async () => {
-    if (files.length === 0 || !userId || !folderId) return;
+    if (files.length === 0 || !userId) {
+      console.log('Upload canceled - missing files or user:', { filesCount: files.length, userId });
+      return;
+    }
 
+    if (!folderId) {
+      console.log('Upload canceled - no folder selected');
+      toast.error('Selecione uma pasta para fazer o upload');
+      return;
+    }
+
+    console.log('Starting upload process:', { filesCount: files.length, folderId, userId });
     setIsUploading(true);
+
     try {
       const uploadPromises = files.map(async (file) => {
+        console.log('Processing file:', file.name);
+        
         // Generate unique filename
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `process-documents/${userId}/${fileName}`;
+
+        console.log('Uploading to path:', filePath);
 
         // Upload file to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('process-files')
           .upload(filePath, file);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Storage upload error:', uploadError);
+          throw uploadError;
+        }
+
+        console.log('File uploaded successfully:', uploadData);
 
         // Create document record in database
-        const { data: documentData, error: documentError } = await supabase
+        const documentData = {
+          user_id: userId,
+          title: file.name.replace(/\.[^/.]+$/, ''), // Remove file extension
+          content: `Arquivo: ${file.name}`,
+          description: `Arquivo enviado: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
+          category: 'arquivo',
+          folder_id: folderId,
+          is_public: false,
+          file_path: filePath,
+          file_name: file.name,
+          file_size: file.size,
+          file_type: file.type
+        };
+
+        console.log('Creating document record:', documentData);
+
+        const { data: document, error: documentError } = await supabase
           .from('process_documents')
-          .insert({
-            user_id: userId,
-            title: file.name.replace(/\.[^/.]+$/, ''), // Remove file extension
-            content: `Arquivo: ${file.name}`,
-            description: `Arquivo enviado: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
-            category: 'arquivo',
-            folder_id: folderId,
-            is_public: false,
-            file_path: filePath,
-            file_name: file.name,
-            file_size: file.size,
-            file_type: file.type
-          })
+          .insert(documentData)
           .select()
           .single();
 
-        if (documentError) throw documentError;
+        if (documentError) {
+          console.error('Database insert error:', documentError);
+          throw documentError;
+        }
 
-        return documentData;
+        console.log('Document created successfully:', document);
+        return document;
       });
 
-      await Promise.all(uploadPromises);
+      const results = await Promise.all(uploadPromises);
+      console.log('All uploads completed:', results);
       
       toast.success(`${files.length} arquivo(s) enviado(s) com sucesso!`);
       setFiles([]);
-      onUploadSuccess?.();
+      
+      // Call the success callback to refresh the parent component
+      if (onUploadSuccess) {
+        console.log('Calling onUploadSuccess callback');
+        onUploadSuccess();
+      }
+      
       onClose();
     } catch (error) {
-      console.error('Erro no upload:', error);
+      console.error('Upload process error:', error);
       toast.error('Erro ao enviar arquivos');
     } finally {
       setIsUploading(false);
