@@ -9,23 +9,12 @@ import ProgressCard from './ProgressCard';
 import DashboardCard from './DashboardCard';
 import MentorshipCard from './MentorshipCard';
 import ActionCalendarManager from '@/components/action-calendar/ActionCalendarManager';
-import { useAuth } from '@/hooks/useAuth';
-import { useCompletionPercentage } from '@/hooks/useCompletionPercentage';
-import { useToolCompletionCheck } from '@/hooks/useToolCompletionCheck';
-import { programModules } from '@/data/programModules';
 
 const MemberAreaContent = () => {
-  const { userId } = useAuth();
-  const { completionPercent } = useCompletionPercentage(userId);
-  const { completedTools } = useToolCompletionCheck(userId);
-
-  // Get the first module as the main module to display
-  const mainModule = programModules[0];
-
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ProgressCard completionPercent={completionPercent} />
+        <ProgressCard />
         <DashboardCard />
         <MentorshipCard />
       </div>
@@ -122,12 +111,7 @@ const MemberAreaContent = () => {
       </Card>
 
       {/* Conteúdo do Programa */}
-      {mainModule && (
-        <ModuleContent 
-          module={mainModule} 
-          completedTools={completedTools} 
-        />
-      )}
+      <ModuleContent />
     </div>
   );
 };
