@@ -8,6 +8,8 @@ import MemberArea from './pages/MemberArea';
 import AdminPage from './pages/AdminPage';
 import DashboardConfig from './pages/DashboardConfig';
 import MapaMental from './pages/MapaMental';
+import MindMapEditor from './pages/MindMapEditor';
+import SharedMindMap from './pages/SharedMindMap';
 import AnaliseSwot from './pages/AnaliseSwot';
 import MapaNegocio from './pages/MapaNegocio';
 import DiagnosticoTest from './pages/DiagnosticoTest';
@@ -31,6 +33,8 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/dashboard-config" element={<DashboardConfig />} />
           <Route path="/mapa-mental" element={<MapaMental />} />
+          <Route path="/mapa-mental/:id" element={<MindMapEditor />} />
+          <Route path="/mapa-mental/compartilhado/:shareToken" element={<SharedMindMap />} />
           <Route path="/swot" element={<AnaliseSwot />} />
           <Route path="/canvas" element={<MapaNegocio />} />
           <Route path="/puv" element={<PropostaUnicaValor />} />
