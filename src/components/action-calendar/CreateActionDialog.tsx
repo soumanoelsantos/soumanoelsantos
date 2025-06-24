@@ -11,7 +11,7 @@ import { CreateActionData } from '@/types/actionCalendar';
 interface CreateActionDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateAction: (data: CreateActionData) => Promise<any>;
+  onCreateAction: (data: CreateActionData) => Promise<void>;
 }
 
 const CreateActionDialog = ({ isOpen, onClose, onCreateAction }: CreateActionDialogProps) => {
