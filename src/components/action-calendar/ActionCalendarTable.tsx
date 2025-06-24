@@ -4,7 +4,7 @@ import { ActionCalendar, CreateActionData } from '@/types/actionCalendar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Edit, Trash2, Share2, Eye, Calendar } from 'lucide-react';
+import { Edit, Trash2, Share2, Calendar } from 'lucide-react';
 import { formatDateToBrazilian } from '@/utils/dateUtils';
 import ActionDetailsDialog from './ActionDetailsDialog';
 import EditActionDialog from './EditActionDialog';
@@ -97,17 +97,12 @@ const ActionCalendarTable = ({
                   <div>
                     <button
                       onClick={() => setViewingAction(action)}
-                      className="font-medium text-blue-600 hover:text-blue-800 text-left"
+                      className="font-medium text-blue-600 hover:text-blue-800 text-left cursor-pointer hover:underline"
                     >
                       {action.title}
                     </button>
-                    {action.description && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        {action.description}
-                      </p>
-                    )}
                     {action.is_public && (
-                      <Badge variant="outline" className="text-green-600 border-green-600 mt-1">
+                      <Badge variant="outline" className="text-green-600 border-green-600 mt-1 ml-2">
                         Público
                       </Badge>
                     )}
@@ -125,13 +120,6 @@ const ActionCalendarTable = ({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setViewingAction(action)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
