@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { ProcessDocument, ProcessFolder } from '@/types/processDocuments';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Edit, Trash2, Share2, Eye, Calendar, Plus } from 'lucide-react';
+import { FileText, Edit, Trash2, Share2, Eye, Calendar, Plus, Download } from 'lucide-react';
 import { useProcessDocuments } from '@/hooks/useProcessDocuments';
 import EditDocumentDialog from './EditDocumentDialog';
 import ViewDocumentDialog from './ViewDocumentDialog';
 import ShareDialog from './ShareDialog';
 import CreateDocumentDialog from './CreateDocumentDialog';
+import DocumentDownloadDialog from './DocumentDownloadDialog';
 
 interface FolderViewProps {
   folder: ProcessFolder;
@@ -21,6 +22,7 @@ const FolderView = ({ folder, documents, folders }: FolderViewProps) => {
   const [editingDocument, setEditingDocument] = useState<ProcessDocument | null>(null);
   const [viewingDocument, setViewingDocument] = useState<ProcessDocument | null>(null);
   const [sharingDocument, setSharingDocument] = useState<ProcessDocument | null>(null);
+  const [downloadingDocument, setDownloadingDocument] = useState<ProcessDocument | null>(null);
   const [isCreateDocumentOpen, setIsCreateDocumentOpen] = useState(false);
 
   // Filtrar documentos que pertencem a esta pasta
@@ -96,6 +98,14 @@ const FolderView = ({ folder, documents, folders }: FolderViewProps) => {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => setDownloadingDocument(document)}
+                    title="Baixar documento"
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setEditingDocument(document)}
                   >
                     <Edit className="h-4 w-4" />
@@ -147,6 +157,14 @@ const FolderView = ({ folder, documents, folders }: FolderViewProps) => {
           isOpen={!!sharingDocument}
           onClose={() => setSharingDocument(null)}
           onTogglePublic={(isPublic) => toggleDocumentPublic(sharingDocument.id, isPublic)}
+        />
+      )}
+
+      {downloadingDocument && (
+        <DocumentDownloadDialog
+          document={downloadingDocument}
+          isOpen={!!downloadingDocument}
+          onClose={() => setDownloadingDocument(null)}
         />
       )}
 

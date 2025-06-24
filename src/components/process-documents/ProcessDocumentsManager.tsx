@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, FolderPlus, Plus, Folder, ArrowLeft } from 'lucide-react';
+import { FileText, FolderPlus, Plus, Folder, ArrowLeft, Home } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useProcessDocuments } from '@/hooks/useProcessDocuments';
 import { ProcessFolder } from '@/types/processDocuments';
 import DocumentsList from './DocumentsList';
@@ -17,6 +18,7 @@ const ProcessDocumentsManager = () => {
   const [isCreateDocumentOpen, setIsCreateDocumentOpen] = useState(false);
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<ProcessFolder | null>(null);
+  const navigate = useNavigate();
 
   const handleFolderClick = (folder: ProcessFolder) => {
     setSelectedFolder(folder);
@@ -24,6 +26,10 @@ const ProcessDocumentsManager = () => {
 
   const handleBackToFolders = () => {
     setSelectedFolder(null);
+  };
+
+  const handleBackToMembers = () => {
+    navigate('/membros');
   };
 
   if (isLoading) {
@@ -60,6 +66,15 @@ const ProcessDocumentsManager = () => {
                 <ArrowLeft className="h-4 w-4" />
                 Voltar para Pastas
               </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleBackToMembers}
+                className="flex items-center gap-2"
+              >
+                <Home className="h-4 w-4" />
+                Área de Membros
+              </Button>
             </div>
             <CardTitle className="flex items-center gap-2">
               <Folder className="h-5 w-5" />
@@ -87,14 +102,26 @@ const ProcessDocumentsManager = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Processos Documentados
-          </CardTitle>
-          <CardDescription>
-            Crie e gerencie documentos de processos da sua empresa como playbooks de vendas, 
-            diretrizes e padronizações. Compartilhe com sua equipe através de links públicos.
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Processos Documentados
+              </CardTitle>
+              <CardDescription>
+                Crie e gerencie documentos de processos da sua empresa como playbooks de vendas, 
+                diretrizes e padronizações. Compartilhe com sua equipe através de links públicos.
+              </CardDescription>
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={handleBackToMembers}
+              className="flex items-center gap-2"
+            >
+              <Home className="h-4 w-4" />
+              Área de Membros
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2 mb-6">

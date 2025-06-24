@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { ProcessFolder } from '@/types/processDocuments';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Folder, Edit, Trash2, Share2, Calendar } from 'lucide-react';
+import { Folder, Edit, Trash2, Share2, Calendar, Upload } from 'lucide-react';
 import { useProcessDocuments } from '@/hooks/useProcessDocuments';
 import EditFolderDialog from './EditFolderDialog';
 import ShareDialog from './ShareDialog';
+import FileUploadDialog from './FileUploadDialog';
 
 interface FoldersListProps {
   folders: ProcessFolder[];
@@ -17,6 +18,7 @@ const FoldersList = ({ folders, onFolderClick }: FoldersListProps) => {
   const { deleteFolder, toggleFolderPublic } = useProcessDocuments();
   const [editingFolder, setEditingFolder] = useState<ProcessFolder | null>(null);
   const [sharingFolder, setSharingFolder] = useState<ProcessFolder | null>(null);
+  const [uploadingFolder, setUploadingFolder] = useState<ProcessFolder | null>(null);
 
   const handleDelete = async (folder: ProcessFolder, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -33,6 +35,11 @@ const FoldersList = ({ folders, onFolderClick }: FoldersListProps) => {
   const handleShare = (folder: ProcessFolder, e: React.MouseEvent) => {
     e.stopPropagation();
     setSharingFolder(folder);
+  };
+
+  const handleUpload = (folder: ProcessFolder, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setUploadingFolder(folder);
   };
 
   const handleFolderClick = (folder: ProcessFolder) => {
@@ -91,6 +98,14 @@ const FoldersList = ({ folders, onFolderClick }: FoldersListProps) => {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={(e) => handleUpload(folder, e)}
+                title="Upload de arquivos"
+              >
+                <Upload className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={(e) => handleEdit(folder, e)}
               >
                 <Edit className="h-4 w-4" />
@@ -130,6 +145,14 @@ const FoldersList = ({ folders, onFolderClick }: FoldersListProps) => {
           isOpen={!!sharingFolder}
           onClose={() => setSharingFolder(null)}
           onTogglePublic={(isPublic) => toggleFolderPublic(sharingFolder.id, isPublic)}
+        />
+      )}
+
+      {uploadingFolder && (
+        <FileUploadDialog
+          isOpen={!!uploadingFolder}
+          onClose={() => setUploadingFolder(null)}
+          folderId={uploadingFolder.id}
         />
       )}
     </div>
