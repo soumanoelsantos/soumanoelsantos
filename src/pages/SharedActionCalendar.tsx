@@ -24,21 +24,42 @@ const SharedActionCalendar = () => {
 
   const fetchSharedActions = async () => {
     try {
+      console.log('Buscando calendário compartilhado com token:', shareToken);
+      
       // Primeiro, verificar se o token é válido e o compartilhamento está ativo
       const { data: configData, error: configError } = await supabase
         .from('dashboard_configs')
         .select('user_id, is_public, company_name')
         .eq('share_token', shareToken)
         .eq('is_public', true)
-        .single();
+        .maybeSingle();
 
-      if (configError || !configData) {
+      console.log('Config data:', configData, 'Error:', configError);
+
+      if (configError) {
+        console.error('Erro ao buscar configuração:', configError);
+        setError('Erro ao verificar link de compartilhamento');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!configData) {
+        console.log('Configuração não encontrada ou compartilhamento não público');
         setError('Link de compartilhamento inválido ou expirado');
         setIsLoading(false);
         return;
       }
 
       setOwnerName(configData.company_name || 'Empresa');
+      console.log('Usuário encontrado:', configData.user_id);
+
+      // Buscar todas as ações do usuário (independente de serem públicas ou não para debug)
+      const { data: allActionsData, error: allActionsError } = await supabase
+        .from('action_calendar')
+        .select('*')
+        .eq('user_id', configData.user_id);
+
+      console.log('Todas as ações do usuário:', allActionsData, 'Error:', allActionsError);
 
       // Buscar as ações públicas do usuário
       const { data: actionsData, error: actionsError } = await supabase
@@ -47,6 +68,8 @@ const SharedActionCalendar = () => {
         .eq('user_id', configData.user_id)
         .eq('is_public', true)
         .order('due_date', { ascending: true });
+
+      console.log('Ações públicas:', actionsData, 'Error:', actionsError);
 
       if (actionsError) {
         console.error('Erro ao buscar ações:', actionsError);
@@ -69,6 +92,7 @@ const SharedActionCalendar = () => {
         } as ActionCalendar;
       });
 
+      console.log('Ações transformadas:', transformedActions);
       setActions(transformedActions);
     } catch (error) {
       console.error('Erro ao buscar calendário compartilhado:', error);
@@ -168,6 +192,9 @@ const SharedActionCalendar = () => {
               <div className="text-center py-8 text-gray-500">
                 <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p>Nenhuma ação pública disponível</p>
+                <p className="text-sm mt-2">
+                  Parece que não há ações marcadas como públicas para este calendário
+                </p>
               </div>
             ) : (
               <div className="rounded-md border">
