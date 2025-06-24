@@ -20,13 +20,18 @@ const SharedActionCalendar = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
         <SharedActionCalendarHeader ownerName={ownerName} />
         <SharedActionCalendarTable actions={actions} />
         
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Este calendário é compartilhado publicamente pela {ownerName}</p>
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <p className="text-sm text-gray-600">
+              Atualizado em tempo real
+            </p>
+          </div>
         </div>
       </div>
     </div>
