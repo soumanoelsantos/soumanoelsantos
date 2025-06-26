@@ -70,7 +70,7 @@ export const usePreSalesData = (sharedUserId?: string) => {
         return;
       }
 
-      // Definir período - últimos 30 dias
+      // Definir período - últimos 30 dias para histórico, últimos 7 dias para gráficos semanais
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 30);
@@ -80,7 +80,7 @@ export const usePreSalesData = (sharedUserId?: string) => {
         endDate: endDate.toISOString().split('T')[0]
       });
 
-      // Buscar performance dos SDRs
+      // Buscar performance dos SDRs com join para obter nomes
       const { data: performanceData, error: perfError } = await supabase
         .from('seller_daily_performance')
         .select(`
@@ -112,6 +112,14 @@ export const usePreSalesData = (sharedUserId?: string) => {
         const totalNoShow = sdrPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
         const conversionRate = totalCalls > 0 ? (totalSchedulings / totalCalls) * 100 : 0;
 
+        console.log(`👤 SDR ${sdr.name} performance:`, {
+          totalCalls,
+          totalSchedulings,
+          totalNoShow,
+          conversionRate,
+          recordsCount: sdrPerf.length
+        });
+
         return {
           name: sdr.name,
           calls: totalCalls,
@@ -123,7 +131,7 @@ export const usePreSalesData = (sharedUserId?: string) => {
 
       console.log('👥 SDR Performance processed:', sdrPerformance);
 
-      // Gerar dados dos últimos 7 dias
+      // Gerar dados dos últimos 7 dias para gráficos
       const weeklyData = [];
       for (let i = 6; i >= 0; i--) {
         const date = new Date();
@@ -159,7 +167,8 @@ export const usePreSalesData = (sharedUserId?: string) => {
       console.log('📅 Today performance:', {
         dailyCalls,
         dailySchedulings,
-        dailyNoShow
+        dailyNoShow,
+        todayRecords: todayPerf.length
       });
 
       // Calcular totais gerais

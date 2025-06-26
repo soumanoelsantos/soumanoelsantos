@@ -1,5 +1,9 @@
 
 import React from 'react';
+import PreSalesCallsChart from '../charts/PreSalesCallsChart';
+import PreSalesSchedulingChart from '../charts/PreSalesSchedulingChart';
+import PreSalesNoShowChart from '../charts/PreSalesNoShowChart';
+import PreSalesSDRComparisonChart from '../charts/PreSalesSDRComparisonChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface PreSalesComponentRendererProps {
@@ -20,18 +24,6 @@ interface PreSalesComponentRendererProps {
   isPublicView?: boolean;
   sharedUserId?: string;
 }
-
-// Simple placeholder component for charts
-const ChartPlaceholder = ({ title }: { title: string }) => (
-  <Card className="w-full">
-    <CardHeader>
-      <CardTitle>{title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <p className="text-gray-600">Gráfico em desenvolvimento</p>
-    </CardContent>
-  </Card>
-);
 
 // Simple table component for SDR data
 const SDRTable = ({ data }: { data: Array<{ name: string; calls: number; schedulings: number; noShow: number; conversionRate: number }> }) => (
@@ -79,13 +71,13 @@ const PreSalesComponentRenderer: React.FC<PreSalesComponentRendererProps> = ({
 
   switch (itemKey) {
     case 'showPreSalesCallsChart':
-      return <ChartPlaceholder title="Gráfico de Ligações" />;
+      return <PreSalesCallsChart data={weeklyData} />;
     case 'showPreSalesSchedulingChart':
-      return <ChartPlaceholder title="Gráfico de Agendamentos" />;
+      return <PreSalesSchedulingChart data={weeklyData} />;
     case 'showPreSalesNoShowChart':
-      return <ChartPlaceholder title="Gráfico de No Show" />;
+      return <PreSalesNoShowChart data={weeklyData} />;
     case 'showPreSalesSDRComparisonChart':
-      return <ChartPlaceholder title="Comparação de SDRs" />;
+      return <PreSalesSDRComparisonChart data={sdrPerformance} weeklyData={weeklyData} />;
     case 'showPreSalesSDRTable':
       return <SDRTable data={sdrPerformance} />;
     default:

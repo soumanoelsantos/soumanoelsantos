@@ -35,7 +35,7 @@ interface PreSalesData {
 
 interface PreSalesMetricsProps {
   config: DashboardConfig;
-  preSalesData: PreSalesData;
+  preSalesData?: PreSalesData;
   isPublicView?: boolean;
   sharedUserId?: string;
 }
@@ -45,23 +45,27 @@ const PreSalesMetrics = ({ config, preSalesData, isPublicView = false, sharedUse
   const { getOrderedPreSalesItems } = usePreSalesOrder(config || dashboardConfig);
   const { data: realPreSalesData, isLoading, error } = usePreSalesData(sharedUserId);
   
-  // Use provided preSalesData or fallback to real data
-  const dataToUse = preSalesData || realPreSalesData;
+  // Use real data from hook instead of provided preSalesData
+  const dataToUse = realPreSalesData;
   
   console.log('🔍 PreSalesMetrics - Rendering pre-sales dashboard with config:', config || dashboardConfig);
   console.log('🔍 PreSalesMetrics - Pre-sales data:', dataToUse);
   console.log('🔍 PreSalesMetrics - Public view:', isPublicView, 'Shared user:', sharedUserId);
 
-  if (isLoading && !preSalesData) {
+  if (isLoading) {
     return <PreSalesMetricsLoading />;
   }
 
-  if (error && !preSalesData) {
+  if (error) {
     return <PreSalesMetricsError error={error} />;
   }
 
   if (!dataToUse) {
-    return null;
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-600">Nenhum dado de pré-vendas encontrado</p>
+      </div>
+    );
   }
 
   // Obter itens ordenados baseado na configuração
