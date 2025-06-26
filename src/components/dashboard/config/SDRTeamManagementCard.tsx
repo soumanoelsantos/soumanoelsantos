@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -286,7 +287,7 @@ const SDRTeamManagementCard: React.FC = () => {
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
-                  Tentativas de Ligação (mês)
+                  Tentativas de Ligação (diária)
                 </Label>
                 <div className="flex gap-2">
                   <Input
@@ -296,7 +297,7 @@ const SDRTeamManagementCard: React.FC = () => {
                       ...prev, 
                       tentativas: parseInt(e.target.value) || 0 
                     }))}
-                    placeholder="Ex: 1200"
+                    placeholder="Ex: 40"
                     min="0"
                     className="flex-1"
                   />
@@ -314,7 +315,7 @@ const SDRTeamManagementCard: React.FC = () => {
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  Agendamentos (mês)
+                  Agendamentos (diários)
                 </Label>
                 <div className="flex gap-2">
                   <Input
@@ -324,7 +325,7 @@ const SDRTeamManagementCard: React.FC = () => {
                       ...prev, 
                       agendamentos: parseInt(e.target.value) || 0 
                     }))}
-                    placeholder="Ex: 240"
+                    placeholder="Ex: 8"
                     min="0"
                     className="flex-1"
                   />
@@ -435,10 +436,10 @@ const SDRTeamManagementCard: React.FC = () => {
               <h5 className="text-sm font-medium mb-2">Prévia da Distribuição Igual:</h5>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {companyGoals.tentativas > 0 && (
-                  <div>Tentativas por SDR: {Math.ceil(companyGoals.tentativas / sdrs.length)}/mês</div>
+                  <div>Tentativas por SDR: {Math.ceil(companyGoals.tentativas / sdrs.length)}/dia</div>
                 )}
                 {companyGoals.agendamentos > 0 && (
-                  <div>Agendamentos por SDR: {Math.ceil(companyGoals.agendamentos / sdrs.length)}/mês</div>
+                  <div>Agendamentos por SDR: {Math.ceil(companyGoals.agendamentos / sdrs.length)}/dia</div>
                 )}
                 {companyGoals.noShow > 0 && (
                   <div>No Show por SDR: {companyGoals.noShow}% (máximo)</div>
