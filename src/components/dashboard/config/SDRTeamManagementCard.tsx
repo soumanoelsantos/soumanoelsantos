@@ -37,26 +37,20 @@ const SDRTeamManagementCard: React.FC = () => {
   // Filtrar tipos de metas de pré-vendas
   const preSalesGoalTypes = goalTypes.filter(gt => gt.category === 'pre_vendas');
 
-  const handleCreateGoalTypes = async () => {
-    try {
-      const goalTypesToCreate = [
-        { name: 'Tentativas de Ligação Diárias', unit: 'tentativas', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
-        { name: 'Agendamentos Diários', unit: 'agendamentos', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
-        { name: 'No Show Máximo', unit: '%', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: true },
-        { name: 'Taxa de Reagendamento', unit: '%', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: true }
-      ];
+  const ensureGoalTypesExist = async () => {
+    const goalTypesToCreate = [
+      { name: 'Tentativas de Ligação Diárias', unit: 'tentativas', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
+      { name: 'Agendamentos Diários', unit: 'agendamentos', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
+      { name: 'No Show Máximo', unit: '%', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: true },
+      { name: 'Taxa de Reagendamento', unit: '%', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: true }
+    ];
 
-      for (const goalType of goalTypesToCreate) {
-        const exists = preSalesGoalTypes.some(gt => gt.name === goalType.name);
-        if (!exists) {
-          await createGoalType(goalType);
-        }
+    for (const goalType of goalTypesToCreate) {
+      const exists = goalTypes.some(gt => gt.name === goalType.name && gt.category === goalType.category);
+      if (!exists) {
+        console.log('🔍 Criando tipo de meta:', goalType.name);
+        await createGoalType(goalType);
       }
-      
-      toast.success('Tipos de metas criados com sucesso!');
-    } catch (error) {
-      console.error('Erro ao criar tipos de metas:', error);
-      toast.error('Erro ao criar tipos de metas');
     }
   };
 
@@ -71,24 +65,11 @@ const SDRTeamManagementCard: React.FC = () => {
         return;
       }
 
-      // Verificar se os tipos de metas existem, senão criar automaticamente
-      const requiredGoalTypes = [
-        'Tentativas de Ligação Diárias',
-        'Agendamentos Diários', 
-        'No Show Máximo',
-        'Taxa de Reagendamento'
-      ];
+      // Garantir que os tipos de metas existam
+      await ensureGoalTypesExist();
       
-      const missingTypes = requiredGoalTypes.filter(typeName => 
-        !preSalesGoalTypes.some(gt => gt.name === typeName)
-      );
-
-      if (missingTypes.length > 0) {
-        console.log('🔍 Criando tipos de metas faltantes:', missingTypes);
-        await handleCreateGoalTypes();
-        // Aguardar um pouco para os tipos serem criados
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
+      // Aguardar um pouco para garantir que os tipos foram criados
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
@@ -96,7 +77,7 @@ const SDRTeamManagementCard: React.FC = () => {
 
       console.log('🔍 Salvando metas para o período:', { currentMonth, currentYear });
 
-      // Salvar metas da empresa (sem seller_id)
+      // Mapear as metas com seus tipos
       const goalMappings = [
         { key: 'tentativas', name: 'Tentativas de Ligação Diárias', isPercentage: false },
         { key: 'agendamentos', name: 'Agendamentos Diários', isPercentage: false },
@@ -107,21 +88,24 @@ const SDRTeamManagementCard: React.FC = () => {
       let savedCount = 0;
 
       for (const goalMapping of goalMappings) {
-        const goalTypeRecord = preSalesGoalTypes.find(gt => gt.name === goalMapping.name) || 
-                              goalTypes.find(gt => gt.name === goalMapping.name);
-        
-        if (!goalTypeRecord) {
-          console.error('❌ Tipo de meta não encontrado:', goalMapping.name);
-          continue;
-        }
-
         const companyValue = companyGoals[goalMapping.key as keyof typeof companyGoals];
         if (companyValue <= 0) {
           console.log('⏭️ Pulando meta com valor zero:', goalMapping.key);
           continue;
         }
 
-        console.log('💾 Salvando meta:', {
+        // Buscar o tipo de meta mais recente
+        const goalTypeRecord = goalTypes.find(gt => 
+          gt.name === goalMapping.name && gt.category === 'pre_vendas'
+        );
+        
+        if (!goalTypeRecord) {
+          console.error('❌ Tipo de meta não encontrado:', goalMapping.name);
+          console.log('📋 Tipos disponíveis:', goalTypes.filter(gt => gt.category === 'pre_vendas'));
+          continue;
+        }
+
+        console.log('💾 Salvando meta da empresa:', {
           goal_type_id: goalTypeRecord.id,
           month: currentMonth,
           year: currentYear,
@@ -132,7 +116,6 @@ const SDRTeamManagementCard: React.FC = () => {
         // Salvar meta da empresa (sem seller_id para indicar que é meta geral)
         const success = await createPreSalesGoal({
           goal_type_id: goalTypeRecord.id,
-          // seller_id: undefined, // Meta da empresa não tem seller_id específico
           month: currentMonth,
           year: currentYear,
           target_value: companyValue

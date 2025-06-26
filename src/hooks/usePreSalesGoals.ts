@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { PreSalesGoal, CreatePreSalesGoalData } from '@/types/preSalesGoals';
@@ -60,69 +59,22 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
         throw new Error('Usuário não autenticado');
       }
 
-      // Verificar se já existe uma meta similar
-      const { data: existingGoal, error: checkError } = await supabase
-        .from('pre_sales_goals')
-        .select('id')
-        .eq('goal_type_id', goalData.goal_type_id)
-        .eq('month', goalData.month)
-        .eq('year', goalData.year)
-        .eq('user_id', user.id);
+      console.log('✅ Usuário autenticado:', user.id);
 
-      if (goalData.seller_id) {
-        // Para metas individuais, verificar seller_id também
-        const { data: existingIndividualGoal } = await supabase
-          .from('pre_sales_goals')
-          .select('id')
-          .eq('goal_type_id', goalData.goal_type_id)
-          .eq('seller_id', goalData.seller_id)
-          .eq('month', goalData.month)
-          .eq('year', goalData.year)
-          .eq('user_id', user.id);
-
-        if (existingIndividualGoal && existingIndividualGoal.length > 0) {
-          console.log('⚠️ Meta individual já existe, atualizando...');
-          const { error: updateError } = await supabase
-            .from('pre_sales_goals')
-            .update({ target_value: goalData.target_value })
-            .eq('id', existingIndividualGoal[0].id);
-
-          if (updateError) throw updateError;
-          await fetchPreSalesGoals();
-          return true;
-        }
-      } else {
-        // Para metas da empresa (sem seller_id)
-        const { data: existingCompanyGoal } = await supabase
-          .from('pre_sales_goals')
-          .select('id')
-          .eq('goal_type_id', goalData.goal_type_id)
-          .eq('month', goalData.month)
-          .eq('year', goalData.year)
-          .eq('user_id', user.id)
-          .is('seller_id', null);
-
-        if (existingCompanyGoal && existingCompanyGoal.length > 0) {
-          console.log('⚠️ Meta da empresa já existe, atualizando...');
-          const { error: updateError } = await supabase
-            .from('pre_sales_goals')
-            .update({ target_value: goalData.target_value })
-            .eq('id', existingCompanyGoal[0].id);
-
-          if (updateError) throw updateError;
-          await fetchPreSalesGoals();
-          return true;
-        }
-      }
-
-      // Criar nova meta
+      // Preparar dados para inserção direta
       const insertData = {
-        ...goalData,
         user_id: user.id,
+        goal_type_id: goalData.goal_type_id,
+        seller_id: goalData.seller_id || null,
+        month: goalData.month,
+        year: goalData.year,
+        target_value: goalData.target_value,
+        current_value: 0
       };
 
-      console.log('💾 Inserindo nova meta:', insertData);
+      console.log('💾 Inserindo meta:', insertData);
 
+      // Tentar inserir diretamente
       const { data, error } = await supabase
         .from('pre_sales_goals')
         .insert(insertData)
@@ -130,16 +82,54 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
           *,
           goal_type:goal_types(*),
           seller:sellers(id, name)
-        `)
-        .single();
+        `);
 
       if (error) {
         console.error('❌ Erro ao inserir meta:', error);
+        
+        // Se der erro de duplicata, tentar atualizar
+        if (error.code === '23505') {
+          console.log('⚠️ Meta já existe, tentando atualizar...');
+          
+          let updateQuery = supabase
+            .from('pre_sales_goals')
+            .update({ target_value: goalData.target_value })
+            .eq('goal_type_id', goalData.goal_type_id)
+            .eq('month', goalData.month)
+            .eq('year', goalData.year)
+            .eq('user_id', user.id);
+
+          if (goalData.seller_id) {
+            updateQuery = updateQuery.eq('seller_id', goalData.seller_id);
+          } else {
+            updateQuery = updateQuery.is('seller_id', null);
+          }
+
+          const { data: updateData, error: updateError } = await updateQuery
+            .select(`
+              *,
+              goal_type:goal_types(*),
+              seller:sellers(id, name)
+            `);
+
+          if (updateError) {
+            console.error('❌ Erro ao atualizar meta:', updateError);
+            throw updateError;
+          }
+
+          console.log('✅ Meta atualizada com sucesso:', updateData);
+          await fetchPreSalesGoals();
+          return true;
+        }
+        
         throw error;
       }
 
       console.log('✅ Meta criada com sucesso:', data);
-      setPreSalesGoals(prev => [data as PreSalesGoal, ...prev]);
+      
+      if (data && data.length > 0) {
+        setPreSalesGoals(prev => [data[0] as PreSalesGoal, ...prev]);
+      }
       
       return true;
     } catch (error) {
