@@ -32,11 +32,11 @@ const PreSalesSDRComparisonChart = ({ data, weeklyData }: PreSalesSDRComparisonC
     },
   };
 
-  // Transform weekly data for line chart
+  // Transform weekly data for line chart com meta atualizada para 5
   const chartData = weeklyData.map(item => ({
     date: item.date,
     agendamentos: item.schedulings || 0,
-    meta: 8 // Meta diária de agendamentos
+    meta: 5 // Meta diária de agendamentos atualizada para 5
   }));
 
   console.log('🔍 PreSalesSDRComparisonChart - Chart data:', chartData);

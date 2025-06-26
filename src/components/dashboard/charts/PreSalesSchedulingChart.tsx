@@ -50,11 +50,11 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
   const totalSchedulings = data.reduce((sum, item) => sum + item.schedulings, 0);
   const averageSchedulings = data.length > 0 ? Math.round(totalSchedulings / data.length) : 0;
 
-  // Transform data to include target line and average
+  // Transform data to include target line (5/dia) and average
   const chartData = data.map(item => ({
     date: item.date,
     agendamentos: item.schedulings || 0,
-    meta: 8, // Meta diária de agendamentos
+    meta: 5, // Meta diária de agendamentos atualizada para 5
     average: averageSchedulings
   }));
 
@@ -64,7 +64,7 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
         <CardTitle className="flex items-center justify-between">
           <span>Agendamentos Diários</span>
           <div className="text-sm font-normal text-gray-600 space-x-4">
-            <span>Meta: 8/dia</span>
+            <span>Meta: 5/dia</span>
             <span>Média: {averageSchedulings}/dia</span>
           </div>
         </CardTitle>

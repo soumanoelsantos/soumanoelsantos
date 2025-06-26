@@ -3,7 +3,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
-import { usePreSalesGoals } from '@/hooks/usePreSalesGoals';
 
 interface PreSalesCallsChartProps {
   data: Array<{
@@ -32,20 +31,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentYear = currentDate.getFullYear();
-  
-  const { preSalesGoals } = usePreSalesGoals(currentMonth, currentYear);
-  
-  // Buscar meta de tentativas de ligação
-  const dailyCallsGoal = preSalesGoals.find(goal => 
-    goal.goal_type?.category === 'pre_vendas' && 
-    goal.goal_type?.unit === 'tentativas' &&
-    goal.goal_type?.name.toLowerCase().includes('tentativas')
-  );
-
-  const dailyTarget = dailyCallsGoal ? Math.ceil((dailyCallsGoal.target_value || 0) / 30) : 40;
+  // Meta diária fixa de 300 tentativas
+  const dailyTarget = 300;
 
   // Calcular média das tentativas
   const totalCalls = data.reduce((sum, item) => sum + item.calls, 0);
@@ -80,9 +67,7 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
         <CardTitle className="flex items-center justify-between">
           <span>Tentativas de Ligação Diárias</span>
           <div className="text-sm font-normal text-gray-600 space-x-4">
-            {dailyCallsGoal && (
-              <span>Meta: {dailyTarget}/dia ({dailyCallsGoal.target_value}/mês)</span>
-            )}
+            <span>Meta: {dailyTarget}/dia</span>
             <span>Média: {averageCalls}/dia</span>
           </div>
         </CardTitle>
