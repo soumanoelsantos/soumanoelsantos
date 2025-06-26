@@ -2,19 +2,19 @@
 import { useState } from 'react';
 
 export interface DashboardFilters {
-  startDate: string;
-  endDate: string;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
   selectedSalespeople: string[];
 }
 
 export const useDashboardFilters = () => {
   const [filters, setFilters] = useState<DashboardFilters>({
-    startDate: '',
-    endDate: '',
+    startDate: undefined,
+    endDate: undefined,
     selectedSalespeople: [],
   });
 
-  const updateDateRange = (startDate: string, endDate: string) => {
+  const updateDateRange = (startDate: Date | undefined, endDate: Date | undefined) => {
     setFilters(prev => ({ ...prev, startDate, endDate }));
   };
 
@@ -24,8 +24,8 @@ export const useDashboardFilters = () => {
 
   const resetFilters = () => {
     setFilters({
-      startDate: '',
-      endDate: '',
+      startDate: undefined,
+      endDate: undefined,
       selectedSalespeople: [],
     });
   };
