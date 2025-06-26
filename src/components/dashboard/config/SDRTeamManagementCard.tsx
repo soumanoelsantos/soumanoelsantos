@@ -39,7 +39,6 @@ const SDRTeamManagementCard: React.FC = () => {
 
   const ensureGoalTypesExist = async () => {
     console.log('🔍 Verificando tipos de metas existentes...');
-    console.log('📋 Goal types atuais:', goalTypes);
     
     const goalTypesToCreate = [
       { name: 'Tentativas de Ligação Diárias', unit: 'tentativas', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
@@ -57,10 +56,7 @@ const SDRTeamManagementCard: React.FC = () => {
       
       if (!exists) {
         console.log('🆕 Criando tipo de meta:', goalType.name);
-        const result = await createGoalType(goalType);
-        console.log('✅ Resultado da criação:', result);
-      } else {
-        console.log('✅ Tipo de meta já existe:', goalType.name);
+        await createGoalType(goalType);
       }
     }
   };
@@ -68,7 +64,6 @@ const SDRTeamManagementCard: React.FC = () => {
   const handleSaveGoals = async () => {
     try {
       console.log('🎯 SALVANDO METAS - Início do processo');
-      console.log('📊 Metas da empresa:', companyGoals);
       
       // Validar se pelo menos uma meta foi definida
       const hasGoals = Object.values(companyGoals).some(value => value > 0);
@@ -78,17 +73,14 @@ const SDRTeamManagementCard: React.FC = () => {
       }
 
       // Garantir que os tipos de metas existam
-      console.log('🔄 Garantindo tipos de metas...');
       await ensureGoalTypesExist();
       
       // Aguardar um pouco para garantir que os tipos foram criados
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
-
-      console.log('📅 Período atual:', { currentMonth, currentYear });
 
       // Mapear as metas com seus tipos
       const goalMappings = [
@@ -104,14 +96,21 @@ const SDRTeamManagementCard: React.FC = () => {
       for (const goalMapping of goalMappings) {
         const companyValue = companyGoals[goalMapping.key as keyof typeof companyGoals];
         if (companyValue <= 0) {
-          console.log('⏭️ Pulando meta com valor zero:', goalMapping.key);
           continue;
         }
 
-        // Buscar o tipo de meta
-        const goalTypeRecord = goalTypes.find(gt => 
+        // Buscar o tipo de meta (aguardar um pouco mais se necessário)
+        let goalTypeRecord = goalTypes.find(gt => 
           gt.name === goalMapping.name && gt.category === 'pre_vendas'
         );
+        
+        // Se ainda não encontrou, tentar buscar novamente
+        if (!goalTypeRecord) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          goalTypeRecord = goalTypes.find(gt => 
+            gt.name === goalMapping.name && gt.category === 'pre_vendas'
+          );
+        }
         
         if (!goalTypeRecord) {
           console.error('❌ Tipo de meta não encontrado:', goalMapping.name);

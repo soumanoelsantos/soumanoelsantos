@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { PreSalesGoal, CreatePreSalesGoalData } from '@/types/preSalesGoals';
@@ -35,7 +34,6 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
       }
       
       console.log('✅ Metas carregadas:', data?.length || 0);
-      console.log('📋 Dados das metas:', data);
       setPreSalesGoals((data || []) as PreSalesGoal[]);
     } catch (error) {
       console.error('❌ Erro ao carregar metas de pré-vendas:', error);
@@ -51,7 +49,7 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
 
   const createPreSalesGoal = async (goalData: CreatePreSalesGoalData) => {
     try {
-      console.log('🎯 INÍCIO - Criando meta de pré-vendas:', goalData);
+      console.log('🎯 Criando meta de pré-vendas:', goalData);
       
       // Verificar autenticação
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -68,106 +66,113 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
 
       console.log('✅ Usuário autenticado:', user.id);
 
-      // Preparar dados para inserção
-      const insertData = {
-        user_id: user.id,
-        goal_type_id: goalData.goal_type_id,
-        seller_id: goalData.seller_id || null,
-        month: goalData.month,
-        year: goalData.year,
-        target_value: goalData.target_value,
-        current_value: 0
-      };
-
-      console.log('💾 Dados para inserção:', insertData);
-
-      // Tentar inserir
-      const { data: insertResult, error: insertError } = await supabase
+      // Verificar se já existe uma meta similar
+      let existingQuery = supabase
         .from('pre_sales_goals')
-        .insert(insertData)
-        .select(`
-          *,
-          goal_type:goal_types(*),
-          seller:sellers(id, name)
-        `)
-        .single();
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('goal_type_id', goalData.goal_type_id)
+        .eq('month', goalData.month)
+        .eq('year', goalData.year);
 
-      if (insertError) {
-        console.error('❌ Erro na inserção:', insertError);
-        
-        // Se for erro de duplicata, tentar update
-        if (insertError.code === '23505') {
-          console.log('⚠️ Meta duplicada, tentando atualizar...');
-          
-          let updateQuery = supabase
-            .from('pre_sales_goals')
-            .update({ 
-              target_value: goalData.target_value,
-              updated_at: new Date().toISOString()
-            })
-            .eq('user_id', user.id)
-            .eq('goal_type_id', goalData.goal_type_id)
-            .eq('month', goalData.month)
-            .eq('year', goalData.year);
-
-          if (goalData.seller_id) {
-            updateQuery = updateQuery.eq('seller_id', goalData.seller_id);
-          } else {
-            updateQuery = updateQuery.is('seller_id', null);
-          }
-
-          const { data: updateResult, error: updateError } = await updateQuery
-            .select(`
-              *,
-              goal_type:goal_types(*),
-              seller:sellers(id, name)
-            `)
-            .single();
-
-          if (updateError) {
-            console.error('❌ Erro no update:', updateError);
-            toast({
-              title: "Erro",
-              description: `Erro ao atualizar meta: ${updateError.message}`,
-              variant: "destructive",
-            });
-            return false;
-          }
-
-          console.log('✅ Meta atualizada:', updateResult);
-          toast({
-            title: "Sucesso",
-            description: "Meta atualizada com sucesso!",
-          });
-          
-          // Atualizar lista local
-          await fetchPreSalesGoals();
-          return true;
-        }
-        
-        toast({
-          title: "Erro",
-          description: `Erro ao criar meta: ${insertError.message}`,
-          variant: "destructive",
-        });
-        return false;
+      if (goalData.seller_id) {
+        existingQuery = existingQuery.eq('seller_id', goalData.seller_id);
+      } else {
+        existingQuery = existingQuery.is('seller_id', null);
       }
 
-      console.log('✅ Meta criada com sucesso:', insertResult);
-      toast({
-        title: "Sucesso",
-        description: "Meta criada com sucesso!",
-      });
-      
-      // Atualizar lista local
-      await fetchPreSalesGoals();
-      return true;
+      const { data: existingGoal, error: existingError } = await existingQuery.maybeSingle();
+
+      if (existingError) {
+        console.error('❌ Erro ao verificar meta existente:', existingError);
+        // Continuar mesmo assim
+      }
+
+      if (existingGoal) {
+        console.log('⚠️ Meta já existe, atualizando...', existingGoal.id);
+        
+        // Atualizar meta existente
+        const { data: updatedGoal, error: updateError } = await supabase
+          .from('pre_sales_goals')
+          .update({ 
+            target_value: goalData.target_value,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingGoal.id)
+          .select(`
+            *,
+            goal_type:goal_types(*),
+            seller:sellers(id, name)
+          `)
+          .single();
+
+        if (updateError) {
+          console.error('❌ Erro ao atualizar meta:', updateError);
+          toast({
+            title: "Erro",
+            description: "Erro ao atualizar meta existente",
+            variant: "destructive",
+          });
+          return false;
+        }
+
+        console.log('✅ Meta atualizada:', updatedGoal);
+        toast({
+          title: "Sucesso",
+          description: "Meta atualizada com sucesso!",
+        });
+        
+        await fetchPreSalesGoals();
+        return true;
+      } else {
+        console.log('🆕 Criando nova meta...');
+        
+        // Criar nova meta
+        const insertData = {
+          user_id: user.id,
+          goal_type_id: goalData.goal_type_id,
+          seller_id: goalData.seller_id || null,
+          month: goalData.month,
+          year: goalData.year,
+          target_value: goalData.target_value,
+          current_value: 0
+        };
+
+        const { data: newGoal, error: insertError } = await supabase
+          .from('pre_sales_goals')
+          .insert(insertData)
+          .select(`
+            *,
+            goal_type:goal_types(*),
+            seller:sellers(id, name)
+          `)
+          .single();
+
+        if (insertError) {
+          console.error('❌ Erro ao criar meta:', insertError);
+          toast({
+            title: "Erro",
+            description: "Erro ao criar nova meta",
+            variant: "destructive",
+          });
+          return false;
+        }
+
+        console.log('✅ Meta criada:', newGoal);
+        toast({
+          title: "Sucesso",
+          description: "Meta criada com sucesso!",
+        });
+        
+        await fetchPreSalesGoals();
+        return true;
+      }
       
     } catch (error) {
       console.error('❌ Erro geral ao criar meta:', error);
       toast({
         title: "Erro",
-        description: `Erro inesperado: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        description: "Erro inesperado ao salvar meta",
         variant: "destructive",
       });
       return false;
