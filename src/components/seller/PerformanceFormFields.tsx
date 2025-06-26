@@ -34,8 +34,7 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
   noSalesToday = false,
   onNoSalesTodayChange
 }) => {
-  // Para Closers, os campos de vendas sempre ficam readonly (calculados automaticamente)
-  const salesFieldsReadonly = isCloser;
+  const isSDR = !isCloser;
 
   return (
     <div className="space-y-6">
@@ -67,134 +66,155 @@ const PerformanceFormFields: React.FC<PerformanceFormFieldsProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="sales_count">
-            Quantidade de Vendas
-            {isCloser && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
-            {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
-          </Label>
-          <Input
-            id="sales_count"
-            type="number"
-            min="0"
-            readOnly={salesFieldsReadonly}
-            className={salesFieldsReadonly ? "bg-gray-100 cursor-not-allowed" : ""}
-            {...register('sales_count', { 
-              valueAsNumber: true,
-              min: { value: 0, message: 'Deve ser maior ou igual a 0' }
-            })}
-          />
-          {errors.sales_count && (
-            <p className="text-sm text-red-600">{errors.sales_count.message}</p>
-          )}
-        </div>
+      {/* Campos específicos para SDR */}
+      {isSDR && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="calls_count">Número de Tentativas *</Label>
+              <Input
+                id="calls_count"
+                type="number"
+                min="0"
+                {...register('calls_count', { 
+                  required: 'Número de tentativas é obrigatório',
+                  valueAsNumber: true,
+                  min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+                })}
+              />
+              {errors.calls_count && (
+                <p className="text-sm text-red-600">{errors.calls_count.message}</p>
+              )}
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="revenue_amount">
-            Receita (R$)
-            {isCloser && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
-            {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
-          </Label>
-          <Input
-            id="revenue_amount"
-            type="number"
-            step="0.01"
-            min="0"
-            readOnly={salesFieldsReadonly}
-            className={salesFieldsReadonly ? "bg-gray-100 cursor-not-allowed" : ""}
-            {...register('revenue_amount', { 
-              valueAsNumber: true,
-              min: { value: 0, message: 'Deve ser maior ou igual a 0' }
-            })}
-          />
-          {errors.revenue_amount && (
-            <p className="text-sm text-red-600">{errors.revenue_amount.message}</p>
-          )}
-        </div>
-      </div>
+            <div className="space-y-2">
+              <Label htmlFor="meetings_count">Número de Agendamentos *</Label>
+              <Input
+                id="meetings_count"
+                type="number"
+                min="0"
+                {...register('meetings_count', { 
+                  required: 'Número de agendamentos é obrigatório',
+                  valueAsNumber: true,
+                  min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+                })}
+              />
+              {errors.meetings_count && (
+                <p className="text-sm text-red-600">{errors.meetings_count.message}</p>
+              )}
+            </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="billing_amount">
-            Faturamento (R$)
-            {isCloser && <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>}
-            {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
-          </Label>
-          <Input
-            id="billing_amount"
-            type="number"
-            step="0.01"
-            min="0"
-            readOnly={salesFieldsReadonly}
-            className={salesFieldsReadonly ? "bg-gray-100 cursor-not-allowed" : ""}
-            {...register('billing_amount', { 
-              valueAsNumber: true,
-              min: { value: 0, message: 'Deve ser maior ou igual a 0' }
-            })}
-          />
-          {errors.billing_amount && (
-            <p className="text-sm text-red-600">{errors.billing_amount.message}</p>
-          )}
-        </div>
-
-        {/* Só mostrar Leads para SDRs, não para Closers */}
-        {!isCloser && (
-          <div className="space-y-2">
-            <Label htmlFor="leads_count">Leads</Label>
-            <Input
-              id="leads_count"
-              type="number"
-              min="0"
-              {...register('leads_count', { 
-                valueAsNumber: true,
-                min: { value: 0, message: 'Deve ser maior ou igual a 0' }
-              })}
-            />
-            {errors.leads_count && (
-              <p className="text-sm text-red-600">{errors.leads_count.message}</p>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="leads_count">Número de No Show *</Label>
+              <Input
+                id="leads_count"
+                type="number"
+                min="0"
+                {...register('leads_count', { 
+                  required: 'Número de no show é obrigatório',
+                  valueAsNumber: true,
+                  min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+                })}
+              />
+              {errors.leads_count && (
+                <p className="text-sm text-red-600">{errors.leads_count.message}</p>
+              )}
+            </div>
           </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="meetings_count">Reuniões *</Label>
-          <Input
-            id="meetings_count"
-            type="number"
-            min="0"
-            {...register('meetings_count', { 
-              required: 'Quantidade de reuniões é obrigatória',
-              valueAsNumber: true,
-              min: { value: 0, message: 'Deve ser maior ou igual a 0' }
-            })}
-          />
-          {errors.meetings_count && (
-            <p className="text-sm text-red-600">{errors.meetings_count.message}</p>
-          )}
         </div>
+      )}
 
-        {/* Só mostrar Ligações para SDRs, não para Closers */}
-        {!isCloser && (
-          <div className="space-y-2">
-            <Label htmlFor="calls_count">Ligações</Label>
-            <Input
-              id="calls_count"
-              type="number"
-              min="0"
-              {...register('calls_count', { 
-                valueAsNumber: true,
-                min: { value: 0, message: 'Deve ser maior ou igual a 0' }
-              })}
-            />
-            {errors.calls_count && (
-              <p className="text-sm text-red-600">{errors.calls_count.message}</p>
-            )}
+      {/* Campos específicos para Closer */}
+      {isCloser && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="sales_count">
+                Quantidade de Vendas
+                <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>
+                {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
+              </Label>
+              <Input
+                id="sales_count"
+                type="number"
+                min="0"
+                readOnly={true}
+                className="bg-gray-100 cursor-not-allowed"
+                {...register('sales_count', { 
+                  valueAsNumber: true,
+                  min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+                })}
+              />
+              {errors.sales_count && (
+                <p className="text-sm text-red-600">{errors.sales_count.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="revenue_amount">
+                Receita (R$)
+                <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>
+                {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
+              </Label>
+              <Input
+                id="revenue_amount"
+                type="number"
+                step="0.01"
+                min="0"
+                readOnly={true}
+                className="bg-gray-100 cursor-not-allowed"
+                {...register('revenue_amount', { 
+                  valueAsNumber: true,
+                  min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+                })}
+              />
+              {errors.revenue_amount && (
+                <p className="text-sm text-red-600">{errors.revenue_amount.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="billing_amount">
+                Faturamento (R$)
+                <span className="text-xs text-blue-600 ml-2">(Calculado automaticamente)</span>
+                {noSalesToday && <span className="text-xs text-gray-500 ml-2">(Sem vendas hoje)</span>}
+              </Label>
+              <Input
+                id="billing_amount"
+                type="number"
+                step="0.01"
+                min="0"
+                readOnly={true}
+                className="bg-gray-100 cursor-not-allowed"
+                {...register('billing_amount', { 
+                  valueAsNumber: true,
+                  min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+                })}
+              />
+              {errors.billing_amount && (
+                <p className="text-sm text-red-600">{errors.billing_amount.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="meetings_count">Reuniões *</Label>
+              <Input
+                id="meetings_count"
+                type="number"
+                min="0"
+                {...register('meetings_count', { 
+                  required: 'Quantidade de reuniões é obrigatória',
+                  valueAsNumber: true,
+                  min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+                })}
+              />
+              {errors.meetings_count && (
+                <p className="text-sm text-red-600">{errors.meetings_count.message}</p>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="notes">Observações</Label>
