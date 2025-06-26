@@ -56,6 +56,8 @@ const PerformanceHistoryCard: React.FC<PerformanceHistoryCardProps> = ({
   const revenueAmount = Number(performance.revenue_amount) || 0;
   const billingAmount = Number(performance.billing_amount) || 0;
   const salesCount = Number(performance.sales_count) || 0;
+  const callsCount = Number(performance.calls_count) || 0;
+  const meetingsCount = Number(performance.meetings_count) || 0;
 
   console.log('🔍 [DEBUG] PerformanceHistoryCard - converted values:', {
     revenueAmount,
@@ -89,12 +91,25 @@ const PerformanceHistoryCard: React.FC<PerformanceHistoryCardProps> = ({
               </div>
               
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
-                  {salesCount} vendas
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  {formatCurrency(revenueAmount)}
-                </Badge>
+                {isCloser ? (
+                  <>
+                    <Badge variant="outline" className="text-xs">
+                      {salesCount} vendas
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {formatCurrency(revenueAmount)}
+                    </Badge>
+                  </>
+                ) : (
+                  <>
+                    <Badge variant="outline" className="text-xs">
+                      {callsCount} tentativas
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {meetingsCount} agendamentos
+                    </Badge>
+                  </>
+                )}
               </div>
             </div>
           </CardHeader>
