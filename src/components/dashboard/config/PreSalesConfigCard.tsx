@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -15,19 +14,19 @@ const PreSalesConfigCard: React.FC<PreSalesConfigCardProps> = ({ config, onConfi
   const preSalesMetrics = [
     { 
       key: 'showPreSalesCalls', 
-      label: 'Tentativas de Ligação Diárias',
+      label: 'Média Diária de Tentativas',
       icon: Phone,
       description: 'Card com métricas de tentativas de ligação'
     },
     { 
       key: 'showPreSalesSchedulings', 
-      label: 'Agendamentos Diários',
+      label: 'Média Diária de Agendamentos',
       icon: Calendar,
       description: 'Card com métricas de agendamentos'
     },
     { 
       key: 'showPreSalesNoShow', 
-      label: 'No-Show Diário',
+      label: 'No-Show Mensal',
       icon: UserX,
       description: 'Card com métricas de no-show'
     },
