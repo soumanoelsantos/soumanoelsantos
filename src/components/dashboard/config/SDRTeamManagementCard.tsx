@@ -38,23 +38,32 @@ const SDRTeamManagementCard: React.FC = () => {
   const preSalesGoalTypes = goalTypes.filter(gt => gt.category === 'pre_vendas');
 
   const handleCreateGoalTypes = async () => {
-    const goalTypesToCreate = [
-      { name: 'Tentativas de Ligação Diárias', unit: 'tentativas', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
-      { name: 'Agendamentos Diários', unit: 'agendamentos', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
-      { name: 'No Show Máximo', unit: '%', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: true },
-      { name: 'Taxa de Reagendamento', unit: '%', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: true }
-    ];
+    try {
+      const goalTypesToCreate = [
+        { name: 'Tentativas de Ligação Diárias', unit: 'tentativas', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
+        { name: 'Agendamentos Diários', unit: 'agendamentos', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
+        { name: 'No Show Máximo', unit: '%', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: true },
+        { name: 'Taxa de Reagendamento', unit: '%', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: true }
+      ];
 
-    for (const goalType of goalTypesToCreate) {
-      const exists = preSalesGoalTypes.some(gt => gt.name === goalType.name);
-      if (!exists) {
-        await createGoalType(goalType);
+      for (const goalType of goalTypesToCreate) {
+        const exists = preSalesGoalTypes.some(gt => gt.name === goalType.name);
+        if (!exists) {
+          await createGoalType(goalType);
+        }
       }
+      
+      toast.success('Tipos de metas criados com sucesso!');
+    } catch (error) {
+      console.error('Erro ao criar tipos de metas:', error);
+      toast.error('Erro ao criar tipos de metas');
     }
   };
 
   const handleSaveGoals = async () => {
     try {
+      console.log('🔍 Iniciando salvamento de metas:', companyGoals);
+      
       // Validar se pelo menos uma meta foi definida
       const hasGoals = Object.values(companyGoals).some(value => value > 0);
       if (!hasGoals) {
@@ -62,7 +71,7 @@ const SDRTeamManagementCard: React.FC = () => {
         return;
       }
 
-      // Verificar se os tipos de metas existem
+      // Verificar se os tipos de metas existem, senão criar automaticamente
       const requiredGoalTypes = [
         'Tentativas de Ligação Diárias',
         'Agendamentos Diários', 
@@ -75,43 +84,79 @@ const SDRTeamManagementCard: React.FC = () => {
       );
 
       if (missingTypes.length > 0) {
-        toast.error('Crie os tipos de metas primeiro antes de salvar');
-        return;
+        console.log('🔍 Criando tipos de metas faltantes:', missingTypes);
+        await handleCreateGoalTypes();
+        // Aguardar um pouco para os tipos serem criados
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
 
+      console.log('🔍 Salvando metas para o período:', { currentMonth, currentYear });
+
       // Salvar metas da empresa (sem seller_id)
-      const goalTypes = [
+      const goalMappings = [
         { key: 'tentativas', name: 'Tentativas de Ligação Diárias', isPercentage: false },
         { key: 'agendamentos', name: 'Agendamentos Diários', isPercentage: false },
         { key: 'noShow', name: 'No Show Máximo', isPercentage: true },
         { key: 'reagendamentos', name: 'Taxa de Reagendamento', isPercentage: true }
       ];
 
-      for (const goalType of goalTypes) {
-        const goalTypeRecord = preSalesGoalTypes.find(gt => gt.name === goalType.name);
-        if (!goalTypeRecord) continue;
+      let savedCount = 0;
 
-        const companyValue = companyGoals[goalType.key as keyof typeof companyGoals];
-        if (companyValue <= 0) continue;
+      for (const goalMapping of goalMappings) {
+        const goalTypeRecord = preSalesGoalTypes.find(gt => gt.name === goalMapping.name) || 
+                              goalTypes.find(gt => gt.name === goalMapping.name);
+        
+        if (!goalTypeRecord) {
+          console.error('❌ Tipo de meta não encontrado:', goalMapping.name);
+          continue;
+        }
+
+        const companyValue = companyGoals[goalMapping.key as keyof typeof companyGoals];
+        if (companyValue <= 0) {
+          console.log('⏭️ Pulando meta com valor zero:', goalMapping.key);
+          continue;
+        }
+
+        console.log('💾 Salvando meta:', {
+          goal_type_id: goalTypeRecord.id,
+          month: currentMonth,
+          year: currentYear,
+          target_value: companyValue,
+          goal_name: goalMapping.name
+        });
 
         // Salvar meta da empresa (sem seller_id para indicar que é meta geral)
-        await createPreSalesGoal({
+        const success = await createPreSalesGoal({
           goal_type_id: goalTypeRecord.id,
           // seller_id: undefined, // Meta da empresa não tem seller_id específico
           month: currentMonth,
           year: currentYear,
           target_value: companyValue
         });
+
+        if (success) {
+          savedCount++;
+          console.log('✅ Meta salva com sucesso:', goalMapping.name);
+        } else {
+          console.error('❌ Erro ao salvar meta:', goalMapping.name);
+        }
       }
 
-      toast.success('Metas da empresa salvas com sucesso!');
+      if (savedCount > 0) {
+        toast.success(`${savedCount} meta(s) da empresa salva(s) com sucesso!`);
+        console.log('✅ Processo de salvamento concluído. Metas salvas:', savedCount);
+      } else {
+        toast.error('Nenhuma meta foi salva. Verifique os valores e tente novamente.');
+        console.log('❌ Nenhuma meta foi salva');
+      }
+      
     } catch (error) {
-      console.error('Erro ao salvar metas:', error);
-      toast.error('Erro ao salvar as metas');
+      console.error('❌ Erro ao salvar metas:', error);
+      toast.error('Erro ao salvar as metas: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
     }
   };
 
