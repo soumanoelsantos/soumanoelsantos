@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -63,39 +64,52 @@ export const usePreSalesData = (sharedUserId?: string) => {
 
       if (!sdrData || sdrData.length === 0) {
         console.log('⚠️ No SDRs found, using mock data');
-        // Se não há SDRs, usar dados mock
         const mockData = generateMockData();
         setData(mockData);
         setIsLoading(false);
         return;
       }
 
-      // Buscar performance dos SDRs no mês atual
-      const currentDate = new Date();
-      const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      // Definir período - últimos 30 dias
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
 
+      console.log('📅 Date range:', {
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0]
+      });
+
+      // Buscar performance dos SDRs
       const { data: performanceData, error: perfError } = await supabase
         .from('seller_daily_performance')
-        .select('seller_id, calls_count, meetings_count, leads_count, date')
+        .select(`
+          seller_id, 
+          calls_count, 
+          meetings_count, 
+          leads_count, 
+          date,
+          sellers!inner(name)
+        `)
         .in('seller_id', sdrData.map(sdr => sdr.id))
-        .gte('date', startOfMonth.toISOString().split('T')[0])
-        .lte('date', endOfMonth.toISOString().split('T')[0]);
+        .gte('date', startDate.toISOString().split('T')[0])
+        .lte('date', endDate.toISOString().split('T')[0]);
 
       if (perfError) {
         console.error('❌ Error fetching performance data:', perfError);
         throw perfError;
       }
 
-      console.log('📈 Performance data:', performanceData);
+      console.log('📈 Performance data found:', performanceData?.length || 0, 'records');
+      console.log('📈 Sample performance data:', performanceData?.slice(0, 3));
 
       // Processar dados para cada SDR
       const sdrPerformance = sdrData.map(sdr => {
         const sdrPerf = performanceData?.filter(p => p.seller_id === sdr.id) || [];
         
-        const totalCalls = sdrPerf.reduce((sum, p) => sum + (p.calls_count || 0), 0);
-        const totalSchedulings = sdrPerf.reduce((sum, p) => sum + (p.meetings_count || 0), 0);
-        const totalNoShow = sdrPerf.reduce((sum, p) => sum + (p.leads_count || 0), 0);
+        const totalCalls = sdrPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
+        const totalSchedulings = sdrPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
+        const totalNoShow = sdrPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
         const conversionRate = totalCalls > 0 ? (totalSchedulings / totalCalls) * 100 : 0;
 
         return {
@@ -103,11 +117,13 @@ export const usePreSalesData = (sharedUserId?: string) => {
           calls: totalCalls,
           schedulings: totalSchedulings,
           noShow: totalNoShow,
-          conversionRate: conversionRate
+          conversionRate: Math.round(conversionRate * 100) / 100
         };
       });
 
-      // Gerar dados semanais (últimos 7 dias)
+      console.log('👥 SDR Performance processed:', sdrPerformance);
+
+      // Gerar dados dos últimos 7 dias
       const weeklyData = [];
       for (let i = 6; i >= 0; i--) {
         const date = new Date();
@@ -115,27 +131,41 @@ export const usePreSalesData = (sharedUserId?: string) => {
         const dateStr = date.toISOString().split('T')[0];
         
         const dayPerf = performanceData?.filter(p => p.date === dateStr) || [];
-        const calls = dayPerf.reduce((sum, p) => sum + (p.calls_count || 0), 0);
-        const schedulings = dayPerf.reduce((sum, p) => sum + (p.meetings_count || 0), 0);
-        const noShow = dayPerf.reduce((sum, p) => sum + (p.leads_count || 0), 0);
+        const calls = dayPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
+        const schedulings = dayPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
+        const noShow = dayPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
 
         weeklyData.push({
-          date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+          date: date.toLocaleDateString('pt-BR', { 
+            day: '2-digit', 
+            month: '2-digit',
+            timeZone: 'America/Sao_Paulo'
+          }),
           calls,
           schedulings,
           noShow
         });
       }
 
-      // Calcular totais do dia
+      console.log('📊 Weekly data processed:', weeklyData);
+
+      // Calcular totais do dia atual
       const today = new Date().toISOString().split('T')[0];
       const todayPerf = performanceData?.filter(p => p.date === today) || [];
-      const dailyCalls = todayPerf.reduce((sum, p) => sum + (p.calls_count || 0), 0);
-      const dailySchedulings = todayPerf.reduce((sum, p) => sum + (p.meetings_count || 0), 0);
-      const dailyNoShow = todayPerf.reduce((sum, p) => sum + (p.leads_count || 0), 0);
+      const dailyCalls = todayPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
+      const dailySchedulings = todayPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
+      const dailyNoShow = todayPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
 
+      console.log('📅 Today performance:', {
+        dailyCalls,
+        dailySchedulings,
+        dailyNoShow
+      });
+
+      // Calcular totais gerais
       const totalSchedulings = sdrPerformance.reduce((sum, sdr) => sum + sdr.schedulings, 0);
       const totalNoShow = sdrPerformance.reduce((sum, sdr) => sum + sdr.noShow, 0);
+      const dailyNoShowRate = totalSchedulings > 0 ? (totalNoShow / totalSchedulings) * 100 : 0;
 
       const finalData: PreSalesData = {
         dailyCalls,
@@ -143,9 +173,9 @@ export const usePreSalesData = (sharedUserId?: string) => {
         dailySchedulings,
         dailySchedulingsTarget: 8,
         dailyNoShow,
-        dailyNoShowRate: totalSchedulings > 0 ? (totalNoShow / totalSchedulings) * 100 : 0,
+        dailyNoShowRate: Math.round(dailyNoShowRate * 100) / 100,
         totalSDRs: sdrData.length,
-        averageSchedulingsPerSDR: sdrData.length > 0 ? totalSchedulings / sdrData.length : 0,
+        averageSchedulingsPerSDR: sdrData.length > 0 ? Math.round((totalSchedulings / sdrData.length) * 100) / 100 : 0,
         sdrPerformance,
         weeklyData
       };
@@ -173,7 +203,11 @@ export const usePreSalesData = (sharedUserId?: string) => {
     
     for (let day = Math.max(1, today - 6); day <= today; day++) {
       const date = new Date(now.getFullYear(), now.getMonth(), day);
-      const dayName = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      const dayName = date.toLocaleDateString('pt-BR', { 
+        day: '2-digit', 
+        month: '2-digit',
+        timeZone: 'America/Sao_Paulo'
+      });
       
       const isWeekend = date.getDay() === 0 || date.getDay() === 6;
       let baseCalls = 0;
@@ -211,11 +245,11 @@ export const usePreSalesData = (sharedUserId?: string) => {
       averageSchedulingsPerSDR: totalSchedulings,
       sdrPerformance: [
         { 
-          name: 'Sabrina (Mock)', 
+          name: 'SDR Mock', 
           calls: totalCalls, 
           schedulings: totalSchedulings, 
           noShow: totalNoShow, 
-          conversionRate: conversionRate 
+          conversionRate: Math.round(conversionRate * 100) / 100
         }
       ],
       weeklyData: monthlyData
