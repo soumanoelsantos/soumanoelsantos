@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -38,9 +37,42 @@ const DashboardConfig = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const handleConfigChange = (key: string, value: any) => {
+  const handleConfigChange = async (key: string, value: any) => {
     console.log('🔧 [DEBUG] handleConfigChange chamado:', { key, value });
+    
+    // Atualizar config local
     updateConfig({ [key]: value });
+    
+    // Para mudanças críticas como controle de abas, salvar imediatamente
+    if (key === 'enableCommercialTab' || key === 'enableProductTab' || key === 'enablePreSalesTab') {
+      if (!userId) {
+        console.error('❌ [DEBUG] Usuário não autenticado');
+        toast.error("Erro", {
+          description: "Usuário não autenticado"
+        });
+        return;
+      }
+
+      try {
+        setIsSaving(true);
+        const updatedConfig = { ...config, [key]: value };
+        console.log('💾 [DEBUG] Salvando automaticamente configuração de aba...', { key, value });
+        
+        await saveDashboardConfig(updatedConfig, userId);
+        
+        console.log('✅ [DEBUG] Configuração de aba salva automaticamente!');
+        toast.success("Configuração salva!", {
+          description: "As configurações de abas foram atualizadas."
+        });
+      } catch (error) {
+        console.error('❌ [DEBUG] Erro ao salvar configuração de aba:', error);
+        toast.error("Erro", {
+          description: "Não foi possível salvar a configuração"
+        });
+      } finally {
+        setIsSaving(false);
+      }
+    }
   };
 
   const handleSave = async () => {

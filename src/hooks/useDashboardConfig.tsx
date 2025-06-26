@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -165,7 +164,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
           showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
 
-          // NOVOS CAMPOS DE CONTROLE DE ABAS
+          // CAMPOS DE CONTROLE DE ABAS - CORRIGIDO
           enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
           enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
           enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
@@ -178,112 +177,13 @@ export const useDashboardConfig = (sharedUserId?: string) => {
     }
   };
 
-  const updateConfig = async (updates: Partial<DashboardConfig>) => {
+  const updateConfig = (updates: Partial<DashboardConfig>) => {
     if (!authUserId || sharedUserId) return; // Não permitir updates em visualização compartilhada
 
-    console.log('🔄 [DEBUG] Atualizando configuração:', updates);
-
-    try {
-      const mappedUpdates = {
-        metrics_order: updates.metricsOrder,
-        pre_sales_order: updates.preSalesOrder,
-        product_order: updates.productOrder,
-        show_conversion: updates.showConversion,
-        show_revenue: updates.showRevenue,
-        show_ticket_faturamento: updates.showTicketFaturamento,
-        show_ticket_receita: updates.showTicketReceita,
-        show_falta_faturamento: updates.showFaltaFaturamento,
-        show_falta_receita: updates.showFaltaReceita,
-        show_diaria_receita: updates.showDiariaReceita,
-        show_diaria_faturamento: updates.showDiariaFaturamento,
-        show_super_meta_faturamento: updates.showSuperMetaFaturamento,
-        show_super_meta_receita: updates.showSuperMetaReceita,
-        show_hiper_meta_faturamento: updates.showHiperMetaFaturamento,
-        show_hiper_meta_receita: updates.showHiperMetaReceita,
-        show_falta_receita_super: updates.showFaltaReceitaSuper,
-        show_falta_receita_hiper: updates.showFaltaReceitaHiper,
-        show_falta_faturamento_super: updates.showFaltaFaturamentoSuper,
-        show_falta_faturamento_hiper: updates.showFaltaFaturamentoHiper,
-        show_meta_faturamento: updates.showMetaFaturamento,
-        show_meta_receita: updates.showMetaReceita,
-        show_faturamento: updates.showFaturamento,
-        show_receita: updates.showReceita,
-        show_quantidade_vendas: updates.showQuantidadeVendas,
-        show_cash_collect: updates.showCashCollect,
-        show_cac: updates.showCac,
-        show_projecao_receita: updates.showProjecaoReceita,
-        show_projecao_faturamento: updates.showProjecaoFaturamento,
-        show_no_show: updates.showNoShow,
-        show_closers_performance_table: updates.showClosersPerformanceTable,
-        show_pre_sales_calls: updates.showPreSalesCalls,
-        show_pre_sales_schedulings: updates.showPreSalesSchedulings,
-        show_pre_sales_no_show: updates.showPreSalesNoShow,
-        show_pre_sales_sdr_table: updates.showPreSalesSDRTable,
-        show_pre_sales_calls_chart: updates.showPreSalesCallsChart,
-        show_pre_sales_scheduling_chart: updates.showPreSalesSchedulingChart,
-        show_pre_sales_no_show_chart: updates.showPreSalesNoShowChart,
-        show_pre_sales_sdr_comparison_chart: updates.showPreSalesSDRComparisonChart,
-        company_name: updates.companyName,
-        show_revenue_evolution_chart: updates.showRevenueEvolutionChart,
-        show_billing_evolution_chart: updates.showBillingEvolutionChart,
-        show_seller_revenue_chart: updates.showSellerRevenueChart,
-        show_seller_billing_chart: updates.showSellerBillingChart,
-        show_temporal_revenue_chart: updates.showTemporalRevenueChart,
-        show_temporal_billing_chart: updates.showTemporalBillingChart,
-        
-        // Product metrics mappings - GARANTIR QUE SEMPRE SEJAM MAPEADOS
-        show_product_metrics: updates.showProductMetrics,
-        selected_product_ids: updates.selectedProductIds,
-        show_product_ticket_receita: updates.showProductTicketReceita,
-        show_product_ticket_faturamento: updates.showProductTicketFaturamento,
-        show_product_faturamento: updates.showProductFaturamento,
-        show_product_receita: updates.showProductReceita,
-        show_product_quantidade_vendas: updates.showProductQuantidadeVendas,
-        show_product_meta_faturamento: updates.showProductMetaFaturamento,
-        show_product_meta_receita: updates.showProductMetaReceita,
-        show_product_meta_quantidade_vendas: updates.showProductMetaQuantidadeVendas,
-        show_product_falta_faturamento: updates.showProductFaltaFaturamento,
-        show_product_falta_receita: updates.showProductFaltaReceita,
-        show_product_cash_collect: updates.showProductCashCollect,
-        show_product_projecao_receita: updates.showProductProjecaoReceita,
-        show_product_projecao_faturamento: updates.showProductProjecaoFaturamento,
-        
-        // Product charts mappings - apenas os dois que ficaram
-        show_product_revenue_evolution_chart: updates.showProductRevenueEvolutionChart,
-        show_product_billing_evolution_chart: updates.showProductBillingEvolutionChart,
-
-        // NOVOS MAPEAMENTOS DE CONTROLE DE ABAS
-        enable_commercial_tab: updates.enableCommercialTab,
-        enable_product_tab: updates.enableProductTab,
-        enable_pre_sales_tab: updates.enablePreSalesTab,
-      };
-
-      // Remove undefined values
-      const cleanUpdates = Object.fromEntries(
-        Object.entries(mappedUpdates).filter(([_, v]) => v !== undefined)
-      );
-
-      console.log('🚀 [DEBUG] Dados limpos para salvar:', cleanUpdates);
-
-      const { error } = await supabase
-        .from('dashboard_configs')
-        .upsert({
-          user_id: authUserId,
-          ...cleanUpdates
-        }, {
-          onConflict: 'user_id'
-        });
-
-      if (error) {
-        console.error('❌ [DEBUG] Erro ao atualizar configuração:', error);
-        return;
-      }
-
-      console.log('✅ [DEBUG] Configuração atualizada com sucesso!');
-      setConfig(prev => ({ ...prev, ...updates }));
-    } catch (error) {
-      console.error('💥 [DEBUG] Erro inesperado em updateConfig:', error);
-    }
+    console.log('🔄 [DEBUG] Atualizando configuração local:', updates);
+    
+    // Atualizar estado local imediatamente
+    setConfig(prev => ({ ...prev, ...updates }));
   };
 
   useEffect(() => {
