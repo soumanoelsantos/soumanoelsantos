@@ -103,12 +103,21 @@ const Dashboard = () => {
     );
   }
 
+  // Criar a classe CSS dinâmica baseada no número de abas ativas
+  const getTabsListClass = () => {
+    return `grid w-full mb-6 ${
+      activeTabsCount === 1 ? 'grid-cols-1' :
+      activeTabsCount === 2 ? 'grid-cols-2' :
+      'grid-cols-3'
+    }`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader />
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue={getDefaultTab()} className="w-full">
-          <TabsList className={`grid w-full grid-cols-${activeTabsCount} mb-6`}>
+          <TabsList className={getTabsListClass()}>
             {hasProductTab && (
               <TabsTrigger value="produtos">Dashboard Produtos</TabsTrigger>
             )}
