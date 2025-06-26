@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -80,7 +79,36 @@ const SDRTeamManagementCard: React.FC = () => {
         return;
       }
 
-      toast.success('Metas salvas com sucesso!');
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentYear = currentDate.getFullYear();
+
+      // Salvar metas da empresa (sem seller_id)
+      const goalTypes = [
+        { key: 'tentativas', name: 'Tentativas de Ligação Diárias', isPercentage: false },
+        { key: 'agendamentos', name: 'Agendamentos Diários', isPercentage: false },
+        { key: 'noShow', name: 'No Show Máximo', isPercentage: true },
+        { key: 'reagendamentos', name: 'Taxa de Reagendamento', isPercentage: true }
+      ];
+
+      for (const goalType of goalTypes) {
+        const goalTypeRecord = preSalesGoalTypes.find(gt => gt.name === goalType.name);
+        if (!goalTypeRecord) continue;
+
+        const companyValue = companyGoals[goalType.key as keyof typeof companyGoals];
+        if (companyValue <= 0) continue;
+
+        // Salvar meta da empresa (sem seller_id para indicar que é meta geral)
+        await createPreSalesGoal({
+          goal_type_id: goalTypeRecord.id,
+          // seller_id: undefined, // Meta da empresa não tem seller_id específico
+          month: currentMonth,
+          year: currentYear,
+          target_value: companyValue
+        });
+      }
+
+      toast.success('Metas da empresa salvas com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar metas:', error);
       toast.error('Erro ao salvar as metas');

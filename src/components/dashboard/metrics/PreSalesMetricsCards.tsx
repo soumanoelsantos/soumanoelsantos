@@ -47,13 +47,20 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
   
   console.log('🔍 PreSalesMetricsCards - Goals loaded:', preSalesGoals);
   
-  // Buscar meta de tentativas de ligação
+  // Buscar meta de tentativas de ligação (agora busca por nome exato)
   const dailyCallsGoal = preSalesGoals.find(goal => 
     goal.goal_type?.category === 'pre_vendas' && 
-    (goal.goal_type?.unit === 'Tentativas' || goal.goal_type?.unit === 'tentativas')
+    goal.goal_type?.name === 'Tentativas de Ligação Diárias'
+  );
+
+  // Buscar meta de agendamentos
+  const dailySchedulingsGoal = preSalesGoals.find(goal => 
+    goal.goal_type?.category === 'pre_vendas' && 
+    goal.goal_type?.name === 'Agendamentos Diários'
   );
 
   console.log('🔍 PreSalesMetricsCards - Daily calls goal found:', dailyCallsGoal);
+  console.log('🔍 PreSalesMetricsCards - Daily schedulings goal found:', dailySchedulingsGoal);
 
   const cards = [
     {
@@ -71,7 +78,7 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
       title: 'Média Diária de Agendamentos',
       subtitle: 'No mês atual (dias úteis)',
       value: preSalesData.monthlySchedulingsAverage,
-      target: preSalesData.dailySchedulingsTarget,
+      target: dailySchedulingsGoal?.target_value || preSalesData.dailySchedulingsTarget,
       icon: Calendar,
       show: config.showPreSalesSchedulings,
       format: (val: number) => val.toFixed(1)
