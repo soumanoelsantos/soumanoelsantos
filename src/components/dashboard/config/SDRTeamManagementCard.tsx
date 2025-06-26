@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Users, Plus, Target, Phone, Calendar, UserX, Settings } from 'lucide-react';
+import { Users, Plus, Target, Phone, Calendar, UserX, Settings, Save } from 'lucide-react';
 import { useSellers } from '@/hooks/useSellers';
 import { usePreSalesGoals } from '@/hooks/usePreSalesGoals';
 import { useGoalTypes } from '@/hooks/useGoalTypes';
@@ -51,6 +51,39 @@ const SDRTeamManagementCard: React.FC = () => {
       if (!exists) {
         await createGoalType(goalType);
       }
+    }
+  };
+
+  const handleSaveGoals = async () => {
+    try {
+      // Validar se pelo menos uma meta foi definida
+      const hasGoals = Object.values(companyGoals).some(value => value > 0);
+      if (!hasGoals) {
+        toast.error('Defina pelo menos uma meta antes de salvar');
+        return;
+      }
+
+      // Verificar se os tipos de metas existem
+      const requiredGoalTypes = [
+        'Tentativas de Ligação Diárias',
+        'Agendamentos Diários', 
+        'No Show Máximo',
+        'Taxa de Reagendamento'
+      ];
+      
+      const missingTypes = requiredGoalTypes.filter(typeName => 
+        !preSalesGoalTypes.some(gt => gt.name === typeName)
+      );
+
+      if (missingTypes.length > 0) {
+        toast.error('Crie os tipos de metas primeiro antes de salvar');
+        return;
+      }
+
+      toast.success('Metas salvas com sucesso!');
+    } catch (error) {
+      console.error('Erro ao salvar metas:', error);
+      toast.error('Erro ao salvar as metas');
     }
   };
 
@@ -340,14 +373,25 @@ const SDRTeamManagementCard: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Button 
-                onClick={handleDistributeGoals}
-                disabled={sdrs.length === 0 || Object.values(companyGoals).every(v => v <= 0)}
-                className="w-full"
-              >
-                <Target className="h-4 w-4 mr-2" />
-                Distribuir Metas Igualmente Entre SDRs
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleSaveGoals}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Salvar Metas
+                </Button>
+                
+                <Button 
+                  onClick={handleDistributeGoals}
+                  disabled={sdrs.length === 0 || Object.values(companyGoals).every(v => v <= 0)}
+                  className="flex-1"
+                >
+                  <Target className="h-4 w-4 mr-2" />
+                  Distribuir Entre SDRs
+                </Button>
+              </div>
               
               {sdrs.length > 0 && (
                 <div className="text-xs text-gray-500 text-center">
@@ -394,4 +438,3 @@ const SDRTeamManagementCard: React.FC = () => {
 };
 
 export default SDRTeamManagementCard;
-
