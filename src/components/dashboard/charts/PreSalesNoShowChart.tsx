@@ -23,24 +23,52 @@ const PreSalesNoShowChart = ({ data }: PreSalesNoShowChartProps) => {
       label: "Taxa (%)",
       color: "#8b5cf6",
     },
+    averageNoShow: {
+      label: "Média No-Show",
+      color: "#f59e0b",
+    },
+    averageTaxa: {
+      label: "Média Taxa (%)",
+      color: "#06b6d4",
+    },
   };
 
-  // Transform data to calculate percentage
+  // Transform data to calculate percentage and averages
   const chartData = data.map(item => ({
     date: item.date,
     noShow: item.noShow || 0,
     taxa: item.schedulings > 0 ? ((item.noShow / item.schedulings) * 100) : 0
   }));
 
+  // Calcular médias
+  const totalNoShow = chartData.reduce((sum, item) => sum + item.noShow, 0);
+  const averageNoShow = chartData.length > 0 ? Math.round(totalNoShow / chartData.length) : 0;
+  
+  const totalTaxa = chartData.reduce((sum, item) => sum + item.taxa, 0);
+  const averageTaxa = chartData.length > 0 ? Math.round((totalTaxa / chartData.length) * 100) / 100 : 0;
+
+  // Add averages to chart data
+  const chartDataWithAverages = chartData.map(item => ({
+    ...item,
+    averageNoShow,
+    averageTaxa
+  }));
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>No-Show Diário</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          <span>No-Show Diário</span>
+          <div className="text-sm font-normal text-gray-600 space-x-4">
+            <span>Média No-Show: {averageNoShow}/dia</span>
+            <span>Média Taxa: {averageTaxa}%</span>
+          </div>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+            <LineChart data={chartDataWithAverages} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="date" 
@@ -85,6 +113,26 @@ const PreSalesNoShowChart = ({ data }: PreSalesNoShowChartProps) => {
                 strokeDasharray="5 5"
                 dot={{ fill: "#8b5cf6", strokeWidth: 2, r: 3 }}
                 name="Taxa (%)"
+              />
+              <Line 
+                yAxisId="left"
+                type="monotone" 
+                dataKey="averageNoShow" 
+                stroke="#f59e0b"
+                strokeWidth={2}
+                strokeDasharray="3 3"
+                dot={false}
+                name="Média No-Show"
+              />
+              <Line 
+                yAxisId="right"
+                type="monotone" 
+                dataKey="averageTaxa" 
+                stroke="#06b6d4"
+                strokeWidth={2}
+                strokeDasharray="3 3"
+                dot={false}
+                name="Média Taxa (%)"
               />
             </LineChart>
           </ResponsiveContainer>

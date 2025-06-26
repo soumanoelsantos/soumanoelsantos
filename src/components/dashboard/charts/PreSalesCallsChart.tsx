@@ -30,6 +30,10 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
 
   const dailyTarget = dailyCallsGoal ? Math.ceil((dailyCallsGoal.target_value || 0) / 30) : 40;
 
+  // Calcular média das tentativas
+  const totalCalls = data.reduce((sum, item) => sum + item.calls, 0);
+  const averageCalls = data.length > 0 ? Math.round(totalCalls / data.length) : 0;
+
   const chartConfig = {
     calls: {
       label: "Ligações",
@@ -39,13 +43,18 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
       label: "Meta Diária",
       color: "#ef4444",
     },
+    average: {
+      label: "Média",
+      color: "#10b981",
+    },
   };
 
-  // Transform data to include target line and ensure proper data structure
+  // Transform data to include target line and average
   const chartData = data.map(item => ({
     date: item.date,
     calls: item.calls || 0,
-    target: dailyTarget
+    target: dailyTarget,
+    average: averageCalls
   }));
 
   return (
@@ -53,11 +62,12 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Tentativas de Ligação Diárias</span>
-          {dailyCallsGoal && (
-            <span className="text-sm font-normal text-gray-600">
-              Meta: {dailyTarget}/dia ({dailyCallsGoal.target_value}/mês)
-            </span>
-          )}
+          <div className="text-sm font-normal text-gray-600 space-x-4">
+            {dailyCallsGoal && (
+              <span>Meta: {dailyTarget}/dia ({dailyCallsGoal.target_value}/mês)</span>
+            )}
+            <span>Média: {averageCalls}/dia</span>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -98,6 +108,15 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
                 strokeDasharray="5 5"
                 dot={false}
                 name="Meta Diária"
+              />
+              <Line 
+                type="monotone" 
+                dataKey="average" 
+                stroke="#10b981"
+                strokeWidth={2}
+                strokeDasharray="3 3"
+                dot={false}
+                name="Média"
               />
             </LineChart>
           </ResponsiveContainer>
