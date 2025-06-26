@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -273,14 +272,6 @@ const SDRTeamManagementCard: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium">Metas da Empresa</h4>
-              <Button
-                onClick={handleCreateGoalTypes}
-                size="sm"
-                variant="outline"
-              >
-                <Target className="h-4 w-4 mr-2" />
-                Criar Tipos de Metas
-              </Button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
