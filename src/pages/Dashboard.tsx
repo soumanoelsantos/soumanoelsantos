@@ -46,36 +46,18 @@ const Dashboard = () => {
     weeklyData: []
   };
 
-  // Verificar se há indicadores comerciais ativos E se a aba está habilitada
-  const hasCommercialIndicators = 
-    config.enableCommercialTab && (
-      config.showConversion || config.showRevenue || config.showTicketFaturamento || 
-      config.showTicketReceita || config.showFaltaFaturamento || config.showFaltaReceita ||
-      config.showDiariaReceita || config.showDiariaFaturamento || config.showSuperMetaFaturamento ||
-      config.showSuperMetaReceita || config.showHiperMetaFaturamento || config.showHiperMetaReceita ||
-      config.showFaltaReceitaSuper || config.showFaltaReceitaHiper || config.showFaltaFaturamentoSuper ||
-      config.showFaltaFaturamentoHiper || config.showMetaFaturamento || config.showMetaReceita ||
-      config.showFaturamento || config.showReceita || config.showQuantidadeVendas ||
-      config.showCashCollect || config.showCac || config.showProjecaoReceita ||
-      config.showProjecaoFaturamento || config.showNoShow || config.showClosersPerformanceTable ||
-      config.showRevenueEvolutionChart || config.showBillingEvolutionChart ||
-      config.showSellerRevenueChart || config.showSellerBillingChart ||
-      config.showTemporalRevenueChart || config.showTemporalBillingChart
-    );
-
-  // Verificar se a aba de produtos está habilitada (simplificar a condição)
+  // Usar as configurações de controle das abas diretamente
+  const hasCommercialTab = config.enableCommercialTab;
   const hasProductTab = config.enableProductTab;
-
-  // Verificar se a aba de pré-vendas está habilitada
   const hasPreSalesTab = config.enablePreSalesTab;
 
   console.log('🔍 Debug Dashboard tabs:', {
     hasProductTab,
-    hasCommercialIndicators,
+    hasCommercialTab,
     hasPreSalesTab,
     enableProductTab: config.enableProductTab,
-    showProductMetrics: config.showProductMetrics,
-    selectedProductIds: config.selectedProductIds
+    enableCommercialTab: config.enableCommercialTab,
+    enablePreSalesTab: config.enablePreSalesTab
   });
 
   // Determinar a aba padrão baseada nas abas disponíveis
@@ -83,7 +65,7 @@ const Dashboard = () => {
     if (hasProductTab) {
       return "produtos";
     }
-    if (hasCommercialIndicators) {
+    if (hasCommercialTab) {
       return "comercial";
     }
     if (hasPreSalesTab) {
@@ -93,7 +75,7 @@ const Dashboard = () => {
   };
 
   // Contar quantas abas estão ativas
-  const activeTabs = [hasCommercialIndicators, hasProductTab, hasPreSalesTab].filter(Boolean);
+  const activeTabs = [hasCommercialTab, hasProductTab, hasPreSalesTab].filter(Boolean);
   const activeTabsCount = activeTabs.length;
 
   // Se nenhuma aba estiver ativa, mostrar uma mensagem
@@ -130,7 +112,7 @@ const Dashboard = () => {
             {hasProductTab && (
               <TabsTrigger value="produtos">Dashboard Produtos</TabsTrigger>
             )}
-            {hasCommercialIndicators && (
+            {hasCommercialTab && (
               <TabsTrigger value="comercial">Dashboard Comercial</TabsTrigger>
             )}
             {hasPreSalesTab && (
@@ -160,7 +142,7 @@ const Dashboard = () => {
             </TabsContent>
           )}
 
-          {hasCommercialIndicators && (
+          {hasCommercialTab && (
             <TabsContent value="comercial" className="space-y-6">
               <CommercialDashboardFilters
                 startDate={filters.startDate}
