@@ -13,6 +13,23 @@ interface PreSalesNoShowChartProps {
   }>;
 }
 
+// Custom tooltip with solid background
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+        <p className="font-medium text-gray-900 mb-2">{`Data: ${label}`}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {`${entry.name}: ${entry.value}${entry.name.includes('Taxa') ? '%' : ''}`}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 const PreSalesNoShowChart = ({ data }: PreSalesNoShowChartProps) => {
   const chartConfig = {
     noShow: {
@@ -93,7 +110,7 @@ const PreSalesNoShowChart = ({ data }: PreSalesNoShowChartProps) => {
                 tickLine={false}
                 axisLine={false}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip content={<CustomTooltip />} />
               <Line 
                 yAxisId="left"
                 type="monotone" 

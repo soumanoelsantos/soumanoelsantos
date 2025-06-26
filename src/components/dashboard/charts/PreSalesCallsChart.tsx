@@ -14,6 +14,23 @@ interface PreSalesCallsChartProps {
   }>;
 }
 
+// Custom tooltip with solid background
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+        <p className="font-medium text-gray-900 mb-2">{`Data: ${label}`}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {`${entry.name}: ${entry.value}`}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth() + 1;
@@ -90,7 +107,7 @@ const PreSalesCallsChart = ({ data }: PreSalesCallsChartProps) => {
                 tickLine={false}
                 axisLine={false}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip content={<CustomTooltip />} />
               <Line 
                 type="monotone" 
                 dataKey="calls" 
