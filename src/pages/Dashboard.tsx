@@ -105,13 +105,13 @@ const Dashboard = () => {
         <Tabs defaultValue={getDefaultTab()} className="w-full">
           <TabsList className={getTabsListClass()}>
             {hasProductTab && (
-              <TabsTrigger value="produtos">Dashboard Produtos</TabsTrigger>
+              <TabsTrigger value="produtos">Produto</TabsTrigger>
             )}
             {hasCommercialTab && (
-              <TabsTrigger value="comercial">Dashboard Comercial</TabsTrigger>
+              <TabsTrigger value="comercial">Comercial</TabsTrigger>
             )}
             {hasPreSalesTab && (
-              <TabsTrigger value="pre-vendas">Dashboard Pré-vendas</TabsTrigger>
+              <TabsTrigger value="pre-vendas">Pré-vendas</TabsTrigger>
             )}
           </TabsList>
           
