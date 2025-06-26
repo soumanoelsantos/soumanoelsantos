@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,6 +19,8 @@ export const useDashboardConfig = (sharedUserId?: string) => {
     }
 
     try {
+      console.log('🔍 Loading dashboard config for userId:', userId);
+      
       const { data, error } = await supabase
         .from('dashboard_configs')
         .select('*')
@@ -25,12 +28,15 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         .maybeSingle();
 
       if (error) {
-        console.error('Error loading dashboard config:', error);
+        console.error('❌ Error loading dashboard config:', error);
+        setConfig(defaultConfig);
         setIsLoading(false);
         return;
       }
 
       if (data) {
+        console.log('✅ Dashboard config loaded from database:', data);
+        
         // Safely parse arrays from database with proper type conversion
         let metricsOrder = defaultConfig.metricsOrder;
         if (data.metrics_order) {
@@ -164,26 +170,40 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
           showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
 
-          // CAMPOS DE CONTROLE DE ABAS - CORRIGIDO
+          // CAMPOS DE CONTROLE DE ABAS
           enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
           enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
           enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
         });
+        
+        console.log('✅ Configuration loaded and mapped successfully');
+      } else {
+        console.log('⚠️ No configuration found, using defaults');
+        setConfig(defaultConfig);
       }
     } catch (error) {
-      console.error('Error in loadConfig:', error);
+      console.error('❌ Error in loadConfig:', error);
+      setConfig(defaultConfig);
     } finally {
       setIsLoading(false);
     }
   };
 
   const updateConfig = (updates: Partial<DashboardConfig>) => {
-    if (!authUserId || sharedUserId) return; // Não permitir updates em visualização compartilhada
+    // Permitir updates apenas se for o usuário autenticado (não em visualização compartilhada)
+    if (!authUserId || sharedUserId) {
+      console.warn('⚠️ Updates blocked - user not authenticated or in shared view');
+      return;
+    }
 
-    console.log('🔄 [DEBUG] Atualizando configuração local:', updates);
+    console.log('🔄 [DEBUG] Updating local configuration:', updates);
     
     // Atualizar estado local imediatamente
-    setConfig(prev => ({ ...prev, ...updates }));
+    setConfig(prev => {
+      const newConfig = { ...prev, ...updates };
+      console.log('🔄 [DEBUG] New configuration state:', newConfig);
+      return newConfig;
+    });
   };
 
   useEffect(() => {

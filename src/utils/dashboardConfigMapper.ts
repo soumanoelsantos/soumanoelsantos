@@ -1,7 +1,10 @@
+
 import { DashboardConfig } from '@/types/dashboardConfig';
 
 export const mapConfigToDatabase = (config: DashboardConfig) => {
-  return {
+  console.log('🔄 Mapping config to database format:', config);
+  
+  const dbConfig = {
     metrics_order: config.metricsOrder,
     pre_sales_order: config.preSalesOrder,
     product_order: config.productOrder,
@@ -72,36 +75,41 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
     enable_product_tab: config.enableProductTab,
     enable_pre_sales_tab: config.enablePreSalesTab,
   };
+  
+  console.log('🔄 Mapped database config:', dbConfig);
+  return dbConfig;
 };
 
 export const mapDatabaseToConfig = (data: any): DashboardConfig => {
-  return {
+  console.log('🔄 Mapping database data to config:', data);
+  
+  const config = {
     showConversion: data.show_conversion ?? true,
     showRevenue: data.show_revenue ?? true,
-    showTicketFaturamento: data.show_ticket_faturamento ?? true,
-    showTicketReceita: data.show_ticket_receita ?? true,
-    showFaltaFaturamento: data.show_falta_faturamento ?? true,
-    showFaltaReceita: data.show_falta_receita ?? true,
-    showDiariaReceita: data.show_diaria_receita ?? true,
-    showDiariaFaturamento: data.show_diaria_faturamento ?? true,
-    showSuperMetaFaturamento: data.show_super_meta_faturamento ?? true,
-    showSuperMetaReceita: data.show_super_meta_receita ?? true,
-    showHiperMetaFaturamento: data.show_hiper_meta_faturamento ?? true,
-    showHiperMetaReceita: data.show_hiper_meta_receita ?? true,
-    showFaltaReceitaSuper: data.show_falta_receita_super ?? true,
-    showFaltaReceitaHiper: data.show_falta_receita_hiper ?? true,
-    showFaltaFaturamentoSuper: data.show_falta_faturamento_super ?? true,
-    showFaltaFaturamentoHiper: data.show_falta_faturamento_hiper ?? true,
-    showMetaFaturamento: data.show_meta_faturamento ?? true,
-    showMetaReceita: data.show_meta_receita ?? true,
-    showFaturamento: data.show_faturamento ?? true,
-    showReceita: data.show_receita ?? true,
-    showQuantidadeVendas: data.show_quantidade_vendas ?? true,
-    showCashCollect: data.show_cash_collect ?? true,
-    showCac: data.show_cac ?? true,
-    showProjecaoReceita: data.show_projecao_receita ?? true,
-    showProjecaoFaturamento: data.show_projecao_faturamento ?? true,
-    showNoShow: data.show_no_show ?? true,
+    showTicketFaturamento: data.show_ticket_faturamento ?? false,
+    showTicketReceita: data.show_ticket_receita ?? false,
+    showFaltaFaturamento: data.show_falta_faturamento ?? false,
+    showFaltaReceita: data.show_falta_receita ?? false,
+    showDiariaReceita: data.show_diaria_receita ?? false,
+    showDiariaFaturamento: data.show_diaria_faturamento ?? false,
+    showSuperMetaFaturamento: data.show_super_meta_faturamento ?? false,
+    showSuperMetaReceita: data.show_super_meta_receita ?? false,
+    showHiperMetaFaturamento: data.show_hiper_meta_faturamento ?? false,
+    showHiperMetaReceita: data.show_hiper_meta_receita ?? false,
+    showFaltaReceitaSuper: data.show_falta_receita_super ?? false,
+    showFaltaReceitaHiper: data.show_falta_receita_hiper ?? false,
+    showFaltaFaturamentoSuper: data.show_falta_faturamento_super ?? false,
+    showFaltaFaturamentoHiper: data.show_falta_faturamento_hiper ?? false,
+    showMetaFaturamento: data.show_meta_faturamento ?? false,
+    showMetaReceita: data.show_meta_receita ?? false,
+    showFaturamento: data.show_faturamento ?? false,
+    showReceita: data.show_receita ?? false,
+    showQuantidadeVendas: data.show_quantidade_vendas ?? false,
+    showCashCollect: data.show_cash_collect ?? false,
+    showCac: data.show_cac ?? false,
+    showProjecaoReceita: data.show_projecao_receita ?? false,
+    showProjecaoFaturamento: data.show_projecao_faturamento ?? false,
+    showNoShow: data.show_no_show ?? false,
     showClosersPerformanceTable: data.show_closers_performance_table ?? true,
     showPreSalesCalls: data.show_pre_sales_calls ?? true,
     showPreSalesSchedulings: data.show_pre_sales_schedulings ?? true,
@@ -111,7 +119,7 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showPreSalesSchedulingChart: data.show_pre_sales_scheduling_chart ?? true,
     showPreSalesNoShowChart: data.show_pre_sales_no_show_chart ?? true,
     showPreSalesSDRComparisonChart: data.show_pre_sales_sdr_comparison_chart ?? true,
-    companyName: data.company_name || 'Minha Empresa',
+    companyName: data.company_name || '',
     metricsOrder: data.metrics_order || [],
     preSalesOrder: data.pre_sales_order || [],
     productOrder: data.product_order || [],
@@ -121,29 +129,32 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showSellerBillingChart: data.show_seller_billing_chart ?? true,
     showTemporalRevenueChart: data.show_temporal_revenue_chart ?? true,
     showTemporalBillingChart: data.show_temporal_billing_chart ?? true,
-    showProductMetrics: data.show_product_metrics ?? true,
+    showProductMetrics: data.show_product_metrics ?? false,
     selectedProductIds: data.selected_product_ids || [],
-    showProductTicketReceita: data.show_product_ticket_receita ?? true,
-    showProductTicketFaturamento: data.show_product_ticket_faturamento ?? true,
-    showProductFaturamento: data.show_product_faturamento ?? true,
-    showProductReceita: data.show_product_receita ?? true,
-    showProductQuantidadeVendas: data.show_product_quantidade_vendas ?? true,
-    showProductMetaFaturamento: data.show_product_meta_faturamento ?? true,
-    showProductMetaReceita: data.show_product_meta_receita ?? true,
-    showProductMetaQuantidadeVendas: data.show_product_meta_quantidade_vendas ?? true,
-    showProductFaltaFaturamento: data.show_product_falta_faturamento ?? true,
-    showProductFaltaReceita: data.show_product_falta_receita ?? true,
-    showProductCashCollect: data.show_product_cash_collect ?? true,
-    showProductProjecaoReceita: data.show_product_projecao_receita ?? true,
-    showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? true,
+    showProductTicketReceita: data.show_product_ticket_receita ?? false,
+    showProductTicketFaturamento: data.show_product_ticket_faturamento ?? false,
+    showProductFaturamento: data.show_product_faturamento ?? false,
+    showProductReceita: data.show_product_receita ?? false,
+    showProductQuantidadeVendas: data.show_product_quantidade_vendas ?? false,
+    showProductMetaFaturamento: data.show_product_meta_faturamento ?? false,
+    showProductMetaReceita: data.show_product_meta_receita ?? false,
+    showProductMetaQuantidadeVendas: data.show_product_meta_quantidade_vendas ?? false,
+    showProductFaltaFaturamento: data.show_product_falta_faturamento ?? false,
+    showProductFaltaReceita: data.show_product_falta_receita ?? false,
+    showProductCashCollect: data.show_product_cash_collect ?? false,
+    showProductProjecaoReceita: data.show_product_projecao_receita ?? false,
+    showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? false,
     
     // Product charts fields - apenas os dois que ficaram
-    showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? true,
-    showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? true,
+    showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? false,
+    showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? false,
 
     // CAMPOS DE CONTROLE DE ABAS
     enableCommercialTab: data.enable_commercial_tab ?? true,
     enableProductTab: data.enable_product_tab ?? true,
     enablePreSalesTab: data.enable_pre_sales_tab ?? true,
   };
+  
+  console.log('🔄 Mapped config object:', config);
+  return config;
 };

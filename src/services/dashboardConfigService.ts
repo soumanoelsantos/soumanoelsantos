@@ -34,17 +34,19 @@ export const loadDashboardConfig = async (userId: string): Promise<DashboardConf
 
 export const saveDashboardConfig = async (config: DashboardConfig, userId: string): Promise<void> => {
   console.log('🔵 dashboardConfigService - Starting save for user:', userId);
+  console.log('🔵 dashboardConfigService - Config to save:', config);
   
   try {
     const configData = mapConfigToDatabase(config);
-    console.log('🔵 dashboardConfigService - Mapped data for database');
+    console.log('🔵 dashboardConfigService - Mapped data for database:', configData);
 
     // Use upsert to insert or update in one operation
     const { data, error } = await supabase
       .from('dashboard_configs')
       .upsert({
         user_id: userId,
-        ...configData
+        ...configData,
+        updated_at: new Date().toISOString()
       }, {
         onConflict: 'user_id',
         ignoreDuplicates: false
@@ -57,7 +59,7 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
       throw error;
     }
 
-    console.log('🟢 dashboardConfigService - Configuration saved successfully');
+    console.log('🟢 dashboardConfigService - Configuration saved successfully:', data);
   } catch (error) {
     console.error('🔴 dashboardConfigService - Unexpected error during save:', error);
     throw error;
