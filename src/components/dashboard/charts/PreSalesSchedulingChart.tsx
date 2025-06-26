@@ -13,6 +13,23 @@ interface PreSalesSchedulingChartProps {
   }>;
 }
 
+// Custom tooltip with solid background
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+        <p className="font-medium text-gray-900 mb-2">{`Data: ${label}`}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {`${entry.name}: ${entry.value}`}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
   const chartConfig = {
     schedulings: {
@@ -23,19 +40,34 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
       label: "Meta",
       color: "#f59e0b",
     },
+    average: {
+      label: "Média",
+      color: "#8b5cf6",
+    },
   };
 
-  // Transform data to include target line
+  // Calcular média dos agendamentos
+  const totalSchedulings = data.reduce((sum, item) => sum + item.schedulings, 0);
+  const averageSchedulings = data.length > 0 ? Math.round(totalSchedulings / data.length) : 0;
+
+  // Transform data to include target line and average
   const chartData = data.map(item => ({
     date: item.date,
     agendamentos: item.schedulings || 0,
-    meta: 8 // Meta diária de agendamentos
+    meta: 8, // Meta diária de agendamentos
+    average: averageSchedulings
   }));
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Agendamentos Diários</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          <span>Agendamentos Diários</span>
+          <div className="text-sm font-normal text-gray-600 space-x-4">
+            <span>Meta: 8/dia</span>
+            <span>Média: {averageSchedulings}/dia</span>
+          </div>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[400px] w-full">
@@ -57,7 +89,7 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
                 tickLine={false}
                 axisLine={false}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip content={<CustomTooltip />} />
               <Line 
                 type="monotone" 
                 dataKey="agendamentos" 
@@ -75,6 +107,15 @@ const PreSalesSchedulingChart = ({ data }: PreSalesSchedulingChartProps) => {
                 strokeDasharray="5 5"
                 dot={false}
                 name="Meta"
+              />
+              <Line 
+                type="monotone" 
+                dataKey="average" 
+                stroke="#8b5cf6"
+                strokeWidth={2}
+                strokeDasharray="3 3"
+                dot={false}
+                name="Média"
               />
             </LineChart>
           </ResponsiveContainer>
