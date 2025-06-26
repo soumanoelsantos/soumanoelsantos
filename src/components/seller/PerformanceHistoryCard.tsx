@@ -28,6 +28,7 @@ const PerformanceHistoryCard: React.FC<PerformanceHistoryCardProps> = ({
   onDelete
 }) => {
   const isCloser = seller.seller_type === 'closer';
+  const isSDR = seller.seller_type === 'sdr';
 
   const formatCurrency = (value: number) => {
     console.log('🔍 [DEBUG] PerformanceHistoryCard - formatCurrency input:', value);
@@ -100,7 +101,7 @@ const PerformanceHistoryCard: React.FC<PerformanceHistoryCardProps> = ({
                       {formatCurrency(revenueAmount)}
                     </Badge>
                   </>
-                ) : (
+                ) : isSDR ? (
                   <>
                     <Badge variant="outline" className="text-xs">
                       {callsCount} tentativas
@@ -109,7 +110,7 @@ const PerformanceHistoryCard: React.FC<PerformanceHistoryCardProps> = ({
                       {meetingsCount} agendamentos
                     </Badge>
                   </>
-                )}
+                ) : null}
               </div>
             </div>
           </CardHeader>
