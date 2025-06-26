@@ -1,54 +1,39 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-interface DashboardFilters {
-  startDate: Date | undefined;
-  endDate: Date | undefined;
+export interface DashboardFilters {
+  startDate: string;
+  endDate: string;
   selectedSalespeople: string[];
 }
 
 export const useDashboardFilters = () => {
   const [filters, setFilters] = useState<DashboardFilters>({
-    startDate: undefined,
-    endDate: undefined,
-    selectedSalespeople: ['all']
+    startDate: '',
+    endDate: '',
+    selectedSalespeople: [],
   });
 
-  const updateDateRange = (startDate: Date | undefined, endDate: Date | undefined) => {
-    console.log('🔵 useDashboardFilters - Updating date range:', { startDate, endDate });
-    setFilters(prev => ({
-      ...prev,
-      startDate,
-      endDate
-    }));
+  const updateDateRange = (startDate: string, endDate: string) => {
+    setFilters(prev => ({ ...prev, startDate, endDate }));
   };
 
   const updateSalespeople = (selectedSalespeople: string[]) => {
-    console.log('🔵 useDashboardFilters - Updating salespeople:', selectedSalespeople);
-    setFilters(prev => ({
-      ...prev,
-      selectedSalespeople
-    }));
+    setFilters(prev => ({ ...prev, selectedSalespeople }));
   };
 
   const resetFilters = () => {
-    console.log('🔵 useDashboardFilters - Resetting filters');
     setFilters({
-      startDate: undefined,
-      endDate: undefined,
-      selectedSalespeople: ['all']
+      startDate: '',
+      endDate: '',
+      selectedSalespeople: [],
     });
   };
-
-  // Log filter changes for debugging
-  useEffect(() => {
-    console.log('🔵 useDashboardFilters - Current filters:', filters);
-  }, [filters]);
 
   return {
     filters,
     updateDateRange,
     updateSalespeople,
-    resetFilters
+    resetFilters,
   };
 };

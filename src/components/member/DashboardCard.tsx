@@ -13,7 +13,7 @@ const DashboardCard = () => {
   };
 
   const handleConfigureDashboard = () => {
-    navigate('/dashboard/configurar');
+    navigate('/dashboard-config');
   };
 
   return (

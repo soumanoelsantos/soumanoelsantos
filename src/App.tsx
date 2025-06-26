@@ -6,6 +6,7 @@ import Index from './pages/Index';
 import Login from './pages/Login';
 import MemberArea from './pages/MemberArea';
 import AdminPage from './pages/AdminPage';
+import Dashboard from './pages/Dashboard';
 import DashboardConfig from './pages/DashboardConfig';
 import MapaMental from './pages/MapaMental';
 import MindMapEditor from './pages/MindMapEditor';
@@ -33,6 +34,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/membros" element={<MemberArea />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard-config" element={<DashboardConfig />} />
           <Route path="/mapa-mental" element={<MapaMental />} />
           <Route path="/mapa-mental/:id" element={<MindMapEditor />} />

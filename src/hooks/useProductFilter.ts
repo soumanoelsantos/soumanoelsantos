@@ -10,6 +10,6 @@ export const useProductFilter = () => {
 
   return {
     selectedProductId,
-    updateSelectedProduct
+    updateSelectedProduct,
   };
 };
