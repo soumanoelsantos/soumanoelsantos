@@ -22,7 +22,14 @@ export const useGoalTypes = () => {
         .order('name');
 
       if (error) throw error;
-      setGoalTypes(data || []);
+      
+      // Cast the data to proper GoalType interface
+      const typedGoalTypes: GoalType[] = (data || []).map(item => ({
+        ...item,
+        target_scope: item.target_scope as 'individual' | 'empresa'
+      }));
+      
+      setGoalTypes(typedGoalTypes);
     } catch (error) {
       console.error('Erro ao carregar tipos de metas:', error);
       toast({
@@ -50,7 +57,13 @@ export const useGoalTypes = () => {
 
       if (error) throw error;
 
-      setGoalTypes(prev => [...prev, data]);
+      // Cast the returned data to proper GoalType interface
+      const typedGoalType: GoalType = {
+        ...data,
+        target_scope: data.target_scope as 'individual' | 'empresa'
+      };
+
+      setGoalTypes(prev => [...prev, typedGoalType]);
       toast({
         title: "Sucesso",
         description: "Tipo de meta criado com sucesso",
@@ -78,7 +91,13 @@ export const useGoalTypes = () => {
 
       if (error) throw error;
 
-      setGoalTypes(prev => prev.map(gt => gt.id === goalTypeId ? updatedGoalType : gt));
+      // Cast the returned data to proper GoalType interface
+      const typedGoalType: GoalType = {
+        ...updatedGoalType,
+        target_scope: updatedGoalType.target_scope as 'individual' | 'empresa'
+      };
+
+      setGoalTypes(prev => prev.map(gt => gt.id === goalTypeId ? typedGoalType : gt));
       toast({
         title: "Sucesso",
         description: "Tipo de meta atualizado com sucesso",
