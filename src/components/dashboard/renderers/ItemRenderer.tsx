@@ -158,7 +158,7 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
   // Verificar se é um indicador de pré-vendas
   if (itemKey.startsWith('showPreSales')) {
     console.log('🔍 [DEBUG] ItemRenderer - Detected pre-sales indicator:', itemKey);
-    // Criar dados simulados completos para pré-vendas
+    // Criar dados simulados completos para pré-vendas com as novas propriedades mensais
     const mockPreSalesData = {
       dailyCalls: 0,
       dailyCallsTarget: 40,
@@ -168,6 +168,10 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
       dailyNoShowRate: 0,
       totalSDRs: 0,
       averageSchedulingsPerSDR: 0,
+      // Adicionar as novas propriedades mensais
+      monthlyCallsAverage: 0,
+      monthlySchedulingsAverage: 0,
+      monthlyNoShowRate: 0,
       sdrPerformance: [],
       weeklyData: []
     };
