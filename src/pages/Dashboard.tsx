@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -109,7 +110,7 @@ const Dashboard = () => {
               Vá para as configurações para ativar pelo menos uma aba do dashboard.
             </p>
             <a 
-              href="/dashboard/configurar" 
+              href="/dashboard-config" 
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Ir para Configurações
