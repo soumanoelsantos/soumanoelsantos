@@ -3,7 +3,6 @@ import React from 'react';
 import PreSalesCallsChart from '../charts/PreSalesCallsChart';
 import PreSalesSchedulingChart from '../charts/PreSalesSchedulingChart';
 import PreSalesNoShowChart from '../charts/PreSalesNoShowChart';
-import PreSalesSDRComparisonChart from '../charts/PreSalesSDRComparisonChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface PreSalesComponentRendererProps {
@@ -76,10 +75,9 @@ const PreSalesComponentRenderer: React.FC<PreSalesComponentRendererProps> = ({
       return <PreSalesSchedulingChart data={weeklyData} />;
     case 'showPreSalesNoShowChart':
       return <PreSalesNoShowChart data={weeklyData} />;
-    case 'showPreSalesSDRComparisonChart':
-      return <PreSalesSDRComparisonChart data={sdrPerformance} weeklyData={weeklyData} />;
     case 'showPreSalesSDRTable':
       return <SDRTable data={sdrPerformance} />;
+    // Removed showPreSalesSDRComparisonChart case
     default:
       console.warn(`⚠️ PreSalesComponentRenderer - Unknown component: ${itemKey}`);
       return null;

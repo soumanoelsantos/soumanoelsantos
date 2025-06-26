@@ -70,10 +70,10 @@ export const usePreSalesData = (sharedUserId?: string) => {
         return;
       }
 
-      // Definir período - últimos 30 dias para histórico, últimos 7 dias para gráficos semanais
+      // Definir período - últimos 30 dias para histórico, últimos 30 dias úteis para gráficos
       const endDate = new Date();
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 30);
+      startDate.setDate(startDate.getDate() - 45); // Buscar mais dias para garantir 30 dias úteis
 
       console.log('📅 Date range:', {
         startDate: startDate.toISOString().split('T')[0],
@@ -131,31 +131,41 @@ export const usePreSalesData = (sharedUserId?: string) => {
 
       console.log('👥 SDR Performance processed:', sdrPerformance);
 
-      // Gerar dados dos últimos 7 dias para gráficos
+      // Gerar dados dos últimos 30 dias úteis (excluindo fins de semana) para gráficos
       const weeklyData = [];
-      for (let i = 6; i >= 0; i--) {
+      let daysAdded = 0;
+      let currentDay = 0;
+      
+      while (daysAdded < 30) {
         const date = new Date();
-        date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
+        date.setDate(date.getDate() - currentDay);
         
-        const dayPerf = performanceData?.filter(p => p.date === dateStr) || [];
-        const calls = dayPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
-        const schedulings = dayPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
-        const noShow = dayPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
+        // Pular fins de semana (0 = domingo, 6 = sábado)
+        if (date.getDay() !== 0 && date.getDay() !== 6) {
+          const dateStr = date.toISOString().split('T')[0];
+          
+          const dayPerf = performanceData?.filter(p => p.date === dateStr) || [];
+          const calls = dayPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
+          const schedulings = dayPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
+          const noShow = dayPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
 
-        weeklyData.push({
-          date: date.toLocaleDateString('pt-BR', { 
-            day: '2-digit', 
-            month: '2-digit',
-            timeZone: 'America/Sao_Paulo'
-          }),
-          calls,
-          schedulings,
-          noShow
-        });
+          weeklyData.unshift({
+            date: date.toLocaleDateString('pt-BR', { 
+              day: '2-digit', 
+              month: '2-digit',
+              timeZone: 'America/Sao_Paulo'
+            }),
+            calls,
+            schedulings,
+            noShow
+          });
+          
+          daysAdded++;
+        }
+        currentDay++;
       }
 
-      console.log('📊 Weekly data processed:', weeklyData);
+      console.log('📊 Weekly data processed (30 business days):', weeklyData.length, 'days');
 
       // Calcular totais do dia atual
       const today = new Date().toISOString().split('T')[0];
@@ -207,34 +217,36 @@ export const usePreSalesData = (sharedUserId?: string) => {
   // Função para gerar dados mock como fallback
   const generateMockData = () => {
     const monthlyData = [];
-    const now = new Date();
-    const today = now.getDate();
+    let daysAdded = 0;
+    let currentDay = 0;
     
-    for (let day = Math.max(1, today - 6); day <= today; day++) {
-      const date = new Date(now.getFullYear(), now.getMonth(), day);
-      const dayName = date.toLocaleDateString('pt-BR', { 
-        day: '2-digit', 
-        month: '2-digit',
-        timeZone: 'America/Sao_Paulo'
-      });
+    // Gerar 30 dias úteis de dados mock
+    while (daysAdded < 30) {
+      const date = new Date();
+      date.setDate(date.getDate() - currentDay);
       
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-      let baseCalls = 0;
-      let schedulings = 0;
-      let noShow = 0;
-      
-      if (!isWeekend) {
-        baseCalls = Math.floor(Math.random() * 15) + 30;
-        schedulings = Math.floor(baseCalls * (0.15 + Math.random() * 0.10));
-        noShow = schedulings > 0 ? Math.floor(schedulings * (Math.random() * 0.2)) : 0;
+      // Pular fins de semana
+      if (date.getDay() !== 0 && date.getDay() !== 6) {
+        const dayName = date.toLocaleDateString('pt-BR', { 
+          day: '2-digit', 
+          month: '2-digit',
+          timeZone: 'America/Sao_Paulo'
+        });
+        
+        const baseCalls = Math.floor(Math.random() * 15) + 30;
+        const schedulings = Math.floor(baseCalls * (0.15 + Math.random() * 0.10));
+        const noShow = schedulings > 0 ? Math.floor(schedulings * (Math.random() * 0.2)) : 0;
+        
+        monthlyData.unshift({
+          date: dayName,
+          calls: baseCalls,
+          schedulings: schedulings,
+          noShow: noShow
+        });
+        
+        daysAdded++;
       }
-      
-      monthlyData.push({
-        date: dayName,
-        calls: baseCalls,
-        schedulings: schedulings,
-        noShow: noShow
-      });
+      currentDay++;
     }
     
     const todayData = monthlyData[monthlyData.length - 1] || { calls: 0, schedulings: 0, noShow: 0 };
