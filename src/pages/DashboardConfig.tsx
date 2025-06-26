@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -12,6 +13,7 @@ import ProductMetricsConfigCard from '@/components/dashboard/config/ProductMetri
 import ProductGoalsConfigCard from '@/components/dashboard/config/ProductGoalsConfigCard';
 import ProductsManagementCard from '@/components/dashboard/config/ProductsManagementCard';
 import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
+import SDRTeamManagementCard from '@/components/dashboard/config/SDRTeamManagementCard';
 import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
 import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
@@ -181,6 +183,7 @@ const DashboardConfig = () => {
                   config={config} 
                   onConfigChange={handleConfigChange} 
                 />
+                <SDRTeamManagementCard />
               </div>
               
               {/* Coluna da direita - Pré-vendas */}

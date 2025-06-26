@@ -2,23 +2,27 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { GoalType, CreateGoalTypeData } from '@/types/preSalesGoals';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/use-toast';
 
 export const useGoalTypes = () => {
+  const { userId } = useAuth();
   const { toast } = useToast();
   const [goalTypes, setGoalTypes] = useState<GoalType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchGoalTypes = async () => {
+    if (!userId) return;
+
     try {
       const { data, error } = await supabase
         .from('goal_types')
         .select('*')
-        .order('category', { ascending: true })
-        .order('name', { ascending: true });
+        .eq('user_id', userId)
+        .order('name');
 
       if (error) throw error;
-      setGoalTypes((data || []) as GoalType[]);
+      setGoalTypes(data || []);
     } catch (error) {
       console.error('Erro ao carregar tipos de metas:', error);
       toast({
@@ -32,19 +36,21 @@ export const useGoalTypes = () => {
   };
 
   const createGoalType = async (goalTypeData: CreateGoalTypeData) => {
+    if (!userId) return false;
+
     try {
       const { data, error } = await supabase
         .from('goal_types')
         .insert({
           ...goalTypeData,
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: userId,
         })
         .select()
         .single();
 
       if (error) throw error;
 
-      setGoalTypes(prev => [...prev, data as GoalType]);
+      setGoalTypes(prev => [...prev, data]);
       toast({
         title: "Sucesso",
         description: "Tipo de meta criado com sucesso",
@@ -72,7 +78,7 @@ export const useGoalTypes = () => {
 
       if (error) throw error;
 
-      setGoalTypes(prev => prev.map(gt => gt.id === goalTypeId ? updatedGoalType as GoalType : gt));
+      setGoalTypes(prev => prev.map(gt => gt.id === goalTypeId ? updatedGoalType : gt));
       toast({
         title: "Sucesso",
         description: "Tipo de meta atualizado com sucesso",
@@ -117,7 +123,7 @@ export const useGoalTypes = () => {
 
   useEffect(() => {
     fetchGoalTypes();
-  }, []);
+  }, [userId]);
 
   return {
     goalTypes,
