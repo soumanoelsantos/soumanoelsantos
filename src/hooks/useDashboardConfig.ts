@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardConfig } from '@/types/dashboardConfig';
-import { supabase } from '@/integrations/supabase/client';
 
 const defaultConfig: DashboardConfig = {
   showConversion: true,
@@ -72,6 +72,23 @@ const defaultConfig: DashboardConfig = {
   enablePreSalesTab: true,
 };
 
+const parseJsonToStringArray = (data: any): string[] => {
+  if (Array.isArray(data)) {
+    return data.filter((item): item is string => typeof item === 'string');
+  }
+  if (typeof data === 'string') {
+    try {
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) {
+        return parsed.filter((item): item is string => typeof item === 'string');
+      }
+    } catch (e) {
+      console.warn('Failed to parse JSON string to array');
+    }
+  }
+  return [];
+};
+
 export const useDashboardConfig = () => {
   const { userId, isAuthenticated } = useAuth();
   const [config, setConfig] = useState<DashboardConfig>(defaultConfig);
@@ -108,10 +125,10 @@ export const useDashboardConfig = () => {
           setConfig({
             ...defaultConfig,
             ...data,
-            selectedProductIds: data.selected_product_ids || [],
-            metricsOrder: data.metrics_order || [],
-            preSalesOrder: data.pre_sales_order || [],
-            productOrder: data.product_order || [],
+            selectedProductIds: parseJsonToStringArray(data.selected_product_ids),
+            metricsOrder: parseJsonToStringArray(data.metrics_order),
+            preSalesOrder: parseJsonToStringArray(data.pre_sales_order),
+            productOrder: parseJsonToStringArray(data.product_order),
           });
         }
       } catch (error) {

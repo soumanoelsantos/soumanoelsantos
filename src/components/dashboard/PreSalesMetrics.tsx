@@ -41,7 +41,7 @@ interface PreSalesMetricsProps {
 }
 
 const PreSalesMetrics = ({ config, preSalesData, isPublicView = false, sharedUserId }: PreSalesMetricsProps) => {
-  const { config: dashboardConfig } = useDashboardConfig(sharedUserId);
+  const { config: dashboardConfig } = useDashboardConfig();
   const { getOrderedPreSalesItems } = usePreSalesOrder(config || dashboardConfig);
   const { data: realPreSalesData, isLoading, error } = usePreSalesData(sharedUserId);
   
