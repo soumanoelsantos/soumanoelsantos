@@ -23,6 +23,7 @@ import SharedDocument from './pages/SharedDocument';
 import SharedFolder from './pages/SharedFolder';
 import ActionCalendar from './pages/ActionCalendar';
 import SharedActionCalendar from './pages/SharedActionCalendar';
+import SellerPerformanceForm from './pages/SellerPerformanceForm';
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
           <Route path="/shared/folder/:token" element={<SharedFolder />} />
           <Route path="/calendario-acoes" element={<ActionCalendar />} />
           <Route path="/shared/calendar/:shareToken" element={<SharedActionCalendar />} />
+          <Route path="/seller-performance/:token" element={<SellerPerformanceForm />} />
         </Routes>
       </div>
     </BrowserRouter>
