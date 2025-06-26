@@ -53,90 +53,103 @@ const PerformanceHistoryMetrics: React.FC<PerformanceHistoryMetricsProps> = ({
     cashCollectPercent: `${cashCollectPercent.toFixed(2)}%`
   });
 
-  return (
-    <>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-green-600" />
-          <div>
-            <p className="text-sm font-medium text-gray-900">
-              {salesCount}
-            </p>
-            <p className="text-xs text-gray-500">Vendas</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-blue-600" />
-          <div>
-            <p className="text-sm font-medium text-gray-900">
-              {formatCurrency(revenueAmount)}
-            </p>
-            <p className="text-xs text-gray-500">Receita</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-purple-600" />
-          <div>
-            <p className="text-sm font-medium text-gray-900">
-              {formatCurrency(billingAmount)}
-            </p>
-            <p className="text-xs text-gray-500">Faturamento</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Users className="h-4 w-4 text-orange-600" />
-          <div>
-            <p className="text-sm font-medium text-gray-900">
-              {meetingsCount}
-            </p>
-            <p className="text-xs text-gray-500">Reuniões</p>
-          </div>
-        </div>
-      </div>
-
-      {!isCloser && (
-        <div className="grid grid-cols-2 gap-4 mb-4">
+  if (isCloser) {
+    return (
+      <>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-indigo-600" />
+            <TrendingUp className="h-4 w-4 text-green-600" />
             <div>
               <p className="text-sm font-medium text-gray-900">
-                {leadsCount}
+                {salesCount}
               </p>
-              <p className="text-xs text-gray-500">Leads</p>
+              <p className="text-xs text-gray-500">Vendas</p>
             </div>
           </div>
           
           <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4 text-green-600" />
+            <DollarSign className="h-4 w-4 text-blue-600" />
             <div>
               <p className="text-sm font-medium text-gray-900">
-                {callsCount}
+                {formatCurrency(revenueAmount)}
               </p>
-              <p className="text-xs text-gray-500">Ligações</p>
+              <p className="text-xs text-gray-500">Receita</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-purple-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-900">
+                {formatCurrency(billingAmount)}
+              </p>
+              <p className="text-xs text-gray-500">Faturamento</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-orange-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-900">
+                {meetingsCount}
+              </p>
+              <p className="text-xs text-gray-500">Reuniões</p>
             </div>
           </div>
         </div>
-      )}
 
-      {/* Cash Collect Section */}
-      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-        <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-green-600" />
-          <div>
-            <p className="text-sm font-medium text-gray-900">
-              {cashCollectPercent.toFixed(2)}%
-            </p>
-            <p className="text-xs text-gray-500">Cash Collect</p>
+        {/* Cash Collect Section */}
+        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-green-600" />
+            <div>
+              <p className="text-sm font-medium text-gray-900">
+                {cashCollectPercent.toFixed(2)}%
+              </p>
+              <p className="text-xs text-gray-500">Cash Collect</p>
+            </div>
           </div>
+          <p className="text-xs text-gray-600 mt-1">
+            Taxa de conversão de faturamento em receita
+          </p>
         </div>
-        <p className="text-xs text-gray-600 mt-1">
-          Taxa de conversão de faturamento em receita
-        </p>
+      </>
+    );
+  }
+
+  // Para SDRs, mostrar apenas os campos relevantes
+  return (
+    <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="flex items-center gap-2">
+        <Phone className="h-4 w-4 text-green-600" />
+        <div>
+          <p className="text-sm font-medium text-gray-900">
+            {callsCount}
+          </p>
+          <p className="text-xs text-gray-500">Tentativas</p>
+        </div>
       </div>
-    </>
+      
+      <div className="flex items-center gap-2">
+        <Users className="h-4 w-4 text-blue-600" />
+        <div>
+          <p className="text-sm font-medium text-gray-900">
+            {meetingsCount}
+          </p>
+          <p className="text-xs text-gray-500">Agendamentos</p>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-2">
+        <TrendingUp className="h-4 w-4 text-red-600" />
+        <div>
+          <p className="text-sm font-medium text-gray-900">
+            {leadsCount}
+          </p>
+          <p className="text-xs text-gray-500">No Show</p>
+        </div>
+      </div>
+    </div>
   );
 };
 
