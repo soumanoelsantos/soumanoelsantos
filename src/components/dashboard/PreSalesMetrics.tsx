@@ -5,6 +5,7 @@ import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { usePreSalesOrder } from './config/pre-sales-order/usePreSalesOrder';
 import { usePreSalesData } from '@/hooks/usePreSalesData';
 import PreSalesMetricsCards from './metrics/PreSalesMetricsCards';
+import PreSalesGoalsIndicators from './metrics/PreSalesGoalsIndicators';
 import PreSalesComponentRenderer from './renderers/PreSalesComponentRenderer';
 import PreSalesMetricsLoading from './loading/PreSalesMetricsLoading';
 import PreSalesMetricsError from './error/PreSalesMetricsError';
@@ -78,6 +79,9 @@ const PreSalesMetrics = ({ config, preSalesData, isPublicView = false, sharedUse
       {/* Cards de métricas no mesmo estilo do comercial */}
       <PreSalesMetricsCards config={config || dashboardConfig} preSalesData={dataToUse} />
       
+      {/* Indicadores de Metas */}
+      <PreSalesGoalsIndicators sharedUserId={sharedUserId} />
+      
       {/* Renderizar componentes na ordem configurada */}
       {orderedItems.map((item) => {
         const component = (
@@ -106,3 +110,4 @@ const PreSalesMetrics = ({ config, preSalesData, isPublicView = false, sharedUse
 };
 
 export default PreSalesMetrics;
+

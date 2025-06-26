@@ -7,6 +7,7 @@ export interface GoalType {
   unit: string; // 'tentativas', 'agendamentos', 'percentage', 'calls', etc.
   category: string; // 'pre_vendas', 'vendas', 'geral'
   target_scope: 'individual' | 'empresa';
+  is_percentage: boolean; // Nova propriedade para indicar se é porcentagem
   created_at: string;
   updated_at: string;
 }
@@ -35,6 +36,7 @@ export interface CreateGoalTypeData {
   unit: string;
   category: string;
   target_scope: 'individual' | 'empresa';
+  is_percentage?: boolean;
 }
 
 export interface CreatePreSalesGoalData {
@@ -44,3 +46,10 @@ export interface CreatePreSalesGoalData {
   year: number;
   target_value: number;
 }
+
+export interface SDRGoalDistribution {
+  seller_id: string;
+  seller_name: string;
+  target_value: number;
+}
+

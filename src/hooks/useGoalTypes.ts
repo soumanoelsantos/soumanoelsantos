@@ -26,7 +26,8 @@ export const useGoalTypes = () => {
       // Cast the data to proper GoalType interface
       const typedGoalTypes: GoalType[] = (data || []).map(item => ({
         ...item,
-        target_scope: item.target_scope as 'individual' | 'empresa'
+        target_scope: item.target_scope as 'individual' | 'empresa',
+        is_percentage: item.is_percentage || false
       }));
       
       setGoalTypes(typedGoalTypes);
@@ -51,6 +52,7 @@ export const useGoalTypes = () => {
         .insert({
           ...goalTypeData,
           user_id: userId,
+          is_percentage: goalTypeData.is_percentage || false,
         })
         .select()
         .single();
@@ -60,7 +62,8 @@ export const useGoalTypes = () => {
       // Cast the returned data to proper GoalType interface
       const typedGoalType: GoalType = {
         ...data,
-        target_scope: data.target_scope as 'individual' | 'empresa'
+        target_scope: data.target_scope as 'individual' | 'empresa',
+        is_percentage: data.is_percentage || false
       };
 
       setGoalTypes(prev => [...prev, typedGoalType]);
@@ -153,3 +156,4 @@ export const useGoalTypes = () => {
     refetch: fetchGoalTypes,
   };
 };
+
