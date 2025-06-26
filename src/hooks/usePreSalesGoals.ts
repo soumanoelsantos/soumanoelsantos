@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { PreSalesGoal, CreatePreSalesGoalData } from '@/types/preSalesGoals';
@@ -34,6 +35,7 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
       }
       
       console.log('✅ Metas carregadas:', data?.length || 0);
+      console.log('📋 Dados das metas:', data);
       setPreSalesGoals((data || []) as PreSalesGoal[]);
     } catch (error) {
       console.error('❌ Erro ao carregar metas de pré-vendas:', error);
@@ -49,19 +51,24 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
 
   const createPreSalesGoal = async (goalData: CreatePreSalesGoalData) => {
     try {
-      console.log('🔍 Criando meta de pré-vendas:', goalData);
+      console.log('🎯 INÍCIO - Criando meta de pré-vendas:', goalData);
       
-      // Obter o usuário autenticado
+      // Verificar autenticação
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
       if (userError || !user) {
         console.error('❌ Erro de autenticação:', userError);
-        throw new Error('Usuário não autenticado');
+        toast({
+          title: "Erro",
+          description: "Usuário não autenticado",
+          variant: "destructive",
+        });
+        return false;
       }
 
       console.log('✅ Usuário autenticado:', user.id);
 
-      // Preparar dados para inserção direta
+      // Preparar dados para inserção
       const insertData = {
         user_id: user.id,
         goal_type_id: goalData.goal_type_id,
@@ -72,32 +79,36 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
         current_value: 0
       };
 
-      console.log('💾 Inserindo meta:', insertData);
+      console.log('💾 Dados para inserção:', insertData);
 
-      // Tentar inserir diretamente
-      const { data, error } = await supabase
+      // Tentar inserir
+      const { data: insertResult, error: insertError } = await supabase
         .from('pre_sales_goals')
         .insert(insertData)
         .select(`
           *,
           goal_type:goal_types(*),
           seller:sellers(id, name)
-        `);
+        `)
+        .single();
 
-      if (error) {
-        console.error('❌ Erro ao inserir meta:', error);
+      if (insertError) {
+        console.error('❌ Erro na inserção:', insertError);
         
-        // Se der erro de duplicata, tentar atualizar
-        if (error.code === '23505') {
-          console.log('⚠️ Meta já existe, tentando atualizar...');
+        // Se for erro de duplicata, tentar update
+        if (insertError.code === '23505') {
+          console.log('⚠️ Meta duplicada, tentando atualizar...');
           
           let updateQuery = supabase
             .from('pre_sales_goals')
-            .update({ target_value: goalData.target_value })
+            .update({ 
+              target_value: goalData.target_value,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id)
             .eq('goal_type_id', goalData.goal_type_id)
             .eq('month', goalData.month)
-            .eq('year', goalData.year)
-            .eq('user_id', user.id);
+            .eq('year', goalData.year);
 
           if (goalData.seller_id) {
             updateQuery = updateQuery.eq('seller_id', goalData.seller_id);
@@ -105,38 +116,58 @@ export const usePreSalesGoals = (month?: number, year?: number) => {
             updateQuery = updateQuery.is('seller_id', null);
           }
 
-          const { data: updateData, error: updateError } = await updateQuery
+          const { data: updateResult, error: updateError } = await updateQuery
             .select(`
               *,
               goal_type:goal_types(*),
               seller:sellers(id, name)
-            `);
+            `)
+            .single();
 
           if (updateError) {
-            console.error('❌ Erro ao atualizar meta:', updateError);
-            throw updateError;
+            console.error('❌ Erro no update:', updateError);
+            toast({
+              title: "Erro",
+              description: `Erro ao atualizar meta: ${updateError.message}`,
+              variant: "destructive",
+            });
+            return false;
           }
 
-          console.log('✅ Meta atualizada com sucesso:', updateData);
+          console.log('✅ Meta atualizada:', updateResult);
+          toast({
+            title: "Sucesso",
+            description: "Meta atualizada com sucesso!",
+          });
+          
+          // Atualizar lista local
           await fetchPreSalesGoals();
           return true;
         }
         
-        throw error;
+        toast({
+          title: "Erro",
+          description: `Erro ao criar meta: ${insertError.message}`,
+          variant: "destructive",
+        });
+        return false;
       }
 
-      console.log('✅ Meta criada com sucesso:', data);
+      console.log('✅ Meta criada com sucesso:', insertResult);
+      toast({
+        title: "Sucesso",
+        description: "Meta criada com sucesso!",
+      });
       
-      if (data && data.length > 0) {
-        setPreSalesGoals(prev => [data[0] as PreSalesGoal, ...prev]);
-      }
-      
+      // Atualizar lista local
+      await fetchPreSalesGoals();
       return true;
+      
     } catch (error) {
-      console.error('❌ Erro ao criar meta de pré-vendas:', error);
+      console.error('❌ Erro geral ao criar meta:', error);
       toast({
         title: "Erro",
-        description: `Não foi possível criar a meta: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        description: `Erro inesperado: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
         variant: "destructive",
       });
       return false;

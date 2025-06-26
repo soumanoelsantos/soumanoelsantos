@@ -19,8 +19,8 @@ const SDRTeamManagementCard: React.FC = () => {
   const [companyGoals, setCompanyGoals] = useState({
     tentativas: 0,
     agendamentos: 0,
-    noShow: 20, // Porcentagem padrão
-    reagendamentos: 15 // Porcentagem padrão
+    noShow: 20,
+    reagendamentos: 15
   });
 
   const [showCustomDistribution, setShowCustomDistribution] = useState(false);
@@ -38,6 +38,9 @@ const SDRTeamManagementCard: React.FC = () => {
   const preSalesGoalTypes = goalTypes.filter(gt => gt.category === 'pre_vendas');
 
   const ensureGoalTypesExist = async () => {
+    console.log('🔍 Verificando tipos de metas existentes...');
+    console.log('📋 Goal types atuais:', goalTypes);
+    
     const goalTypesToCreate = [
       { name: 'Tentativas de Ligação Diárias', unit: 'tentativas', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
       { name: 'Agendamentos Diários', unit: 'agendamentos', category: 'pre_vendas', target_scope: 'individual' as const, is_percentage: false },
@@ -46,17 +49,26 @@ const SDRTeamManagementCard: React.FC = () => {
     ];
 
     for (const goalType of goalTypesToCreate) {
-      const exists = goalTypes.some(gt => gt.name === goalType.name && gt.category === goalType.category);
+      // Verificar se já existe
+      const exists = goalTypes.some(gt => 
+        gt.name === goalType.name && 
+        gt.category === goalType.category
+      );
+      
       if (!exists) {
-        console.log('🔍 Criando tipo de meta:', goalType.name);
-        await createGoalType(goalType);
+        console.log('🆕 Criando tipo de meta:', goalType.name);
+        const result = await createGoalType(goalType);
+        console.log('✅ Resultado da criação:', result);
+      } else {
+        console.log('✅ Tipo de meta já existe:', goalType.name);
       }
     }
   };
 
   const handleSaveGoals = async () => {
     try {
-      console.log('🔍 Iniciando salvamento de metas:', companyGoals);
+      console.log('🎯 SALVANDO METAS - Início do processo');
+      console.log('📊 Metas da empresa:', companyGoals);
       
       // Validar se pelo menos uma meta foi definida
       const hasGoals = Object.values(companyGoals).some(value => value > 0);
@@ -66,16 +78,17 @@ const SDRTeamManagementCard: React.FC = () => {
       }
 
       // Garantir que os tipos de metas existam
+      console.log('🔄 Garantindo tipos de metas...');
       await ensureGoalTypesExist();
       
       // Aguardar um pouco para garantir que os tipos foram criados
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
 
-      console.log('🔍 Salvando metas para o período:', { currentMonth, currentYear });
+      console.log('📅 Período atual:', { currentMonth, currentYear });
 
       // Mapear as metas com seus tipos
       const goalMappings = [
@@ -86,6 +99,7 @@ const SDRTeamManagementCard: React.FC = () => {
       ];
 
       let savedCount = 0;
+      let errors = [];
 
       for (const goalMapping of goalMappings) {
         const companyValue = companyGoals[goalMapping.key as keyof typeof companyGoals];
@@ -94,18 +108,18 @@ const SDRTeamManagementCard: React.FC = () => {
           continue;
         }
 
-        // Buscar o tipo de meta mais recente
+        // Buscar o tipo de meta
         const goalTypeRecord = goalTypes.find(gt => 
           gt.name === goalMapping.name && gt.category === 'pre_vendas'
         );
         
         if (!goalTypeRecord) {
           console.error('❌ Tipo de meta não encontrado:', goalMapping.name);
-          console.log('📋 Tipos disponíveis:', goalTypes.filter(gt => gt.category === 'pre_vendas'));
+          errors.push(`Tipo de meta "${goalMapping.name}" não encontrado`);
           continue;
         }
 
-        console.log('💾 Salvando meta da empresa:', {
+        console.log('💾 Salvando meta:', {
           goal_type_id: goalTypeRecord.id,
           month: currentMonth,
           year: currentYear,
@@ -113,7 +127,7 @@ const SDRTeamManagementCard: React.FC = () => {
           goal_name: goalMapping.name
         });
 
-        // Salvar meta da empresa (sem seller_id para indicar que é meta geral)
+        // Salvar meta da empresa (sem seller_id)
         const success = await createPreSalesGoal({
           goal_type_id: goalTypeRecord.id,
           month: currentMonth,
@@ -123,22 +137,25 @@ const SDRTeamManagementCard: React.FC = () => {
 
         if (success) {
           savedCount++;
-          console.log('✅ Meta salva com sucesso:', goalMapping.name);
+          console.log('✅ Meta salva:', goalMapping.name);
         } else {
-          console.error('❌ Erro ao salvar meta:', goalMapping.name);
+          console.error('❌ Falha ao salvar meta:', goalMapping.name);
+          errors.push(`Falha ao salvar "${goalMapping.name}"`);
         }
       }
 
+      console.log('📊 Resultado final:', { savedCount, errors });
+
       if (savedCount > 0) {
-        toast.success(`${savedCount} meta(s) da empresa salva(s) com sucesso!`);
-        console.log('✅ Processo de salvamento concluído. Metas salvas:', savedCount);
-      } else {
-        toast.error('Nenhuma meta foi salva. Verifique os valores e tente novamente.');
-        console.log('❌ Nenhuma meta foi salva');
+        toast.success(`${savedCount} meta(s) salva(s) com sucesso!`);
+      }
+      
+      if (errors.length > 0) {
+        toast.error(`Alguns erros: ${errors.join(', ')}`);
       }
       
     } catch (error) {
-      console.error('❌ Erro ao salvar metas:', error);
+      console.error('❌ Erro geral ao salvar metas:', error);
       toast.error('Erro ao salvar as metas: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
     }
   };
