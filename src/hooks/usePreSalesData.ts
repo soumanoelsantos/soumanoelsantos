@@ -12,6 +12,10 @@ interface PreSalesData {
   dailyNoShowRate: number;
   totalSDRs: number;
   averageSchedulingsPerSDR: number;
+  // Novos campos para as médias mensais
+  monthlyCallsAverage: number;
+  monthlySchedulingsAverage: number;
+  monthlyNoShowRate: number;
   sdrPerformance: Array<{
     name: string;
     calls: number;
@@ -34,6 +38,22 @@ export const usePreSalesData = (sharedUserId?: string) => {
   const [data, setData] = useState<PreSalesData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Função para calcular dias úteis no mês
+  const getBusinessDaysInMonth = (year: number, month: number) => {
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    let businessDays = 0;
+    
+    for (let day = new Date(firstDay); day <= lastDay; day.setDate(day.getDate() + 1)) {
+      // 0 = domingo, 6 = sábado
+      if (day.getDay() !== 0 && day.getDay() !== 6) {
+        businessDays++;
+      }
+    }
+    
+    return businessDays;
+  };
 
   const loadPreSalesData = useCallback(async () => {
     if (!userId) {
@@ -70,18 +90,29 @@ export const usePreSalesData = (sharedUserId?: string) => {
         return;
       }
 
-      // Definir período - últimos 30 dias para histórico, últimos 30 dias úteis para gráficos
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 45); // Buscar mais dias para garantir 30 dias úteis
+      // Definir períodos
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
+      
+      // Primeiro dia do mês atual
+      const monthStart = new Date(currentYear, currentMonth, 1);
+      // Último dia do mês atual
+      const monthEnd = new Date(currentYear, currentMonth + 1, 0);
+      
+      // Para o gráfico, buscar últimos 45 dias para garantir 30 dias úteis
+      const chartStartDate = new Date();
+      chartStartDate.setDate(chartStartDate.getDate() - 45);
 
-      console.log('📅 Date range:', {
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0]
+      console.log('📅 Date ranges:', {
+        monthStart: monthStart.toISOString().split('T')[0],
+        monthEnd: monthEnd.toISOString().split('T')[0],
+        chartStart: chartStartDate.toISOString().split('T')[0],
+        today: currentDate.toISOString().split('T')[0]
       });
 
-      // Buscar performance dos SDRs com join para obter nomes
-      const { data: performanceData, error: perfError } = await supabase
+      // Buscar dados do mês atual
+      const { data: monthlyPerformanceData, error: monthlyPerfError } = await supabase
         .from('seller_daily_performance')
         .select(`
           seller_id, 
@@ -92,33 +123,70 @@ export const usePreSalesData = (sharedUserId?: string) => {
           sellers!inner(name)
         `)
         .in('seller_id', sdrData.map(sdr => sdr.id))
-        .gte('date', startDate.toISOString().split('T')[0])
-        .lte('date', endDate.toISOString().split('T')[0]);
+        .gte('date', monthStart.toISOString().split('T')[0])
+        .lte('date', monthEnd.toISOString().split('T')[0]);
 
-      if (perfError) {
-        console.error('❌ Error fetching performance data:', perfError);
-        throw perfError;
+      if (monthlyPerfError) {
+        console.error('❌ Error fetching monthly performance data:', monthlyPerfError);
+        throw monthlyPerfError;
       }
 
-      console.log('📈 Performance data found:', performanceData?.length || 0, 'records');
-      console.log('📈 Sample performance data:', performanceData?.slice(0, 3));
+      // Buscar dados para gráfico (últimos 45 dias)
+      const { data: chartPerformanceData, error: chartPerfError } = await supabase
+        .from('seller_daily_performance')
+        .select(`
+          seller_id, 
+          calls_count, 
+          meetings_count, 
+          leads_count, 
+          date,
+          sellers!inner(name)
+        `)
+        .in('seller_id', sdrData.map(sdr => sdr.id))
+        .gte('date', chartStartDate.toISOString().split('T')[0])
+        .lte('date', currentDate.toISOString().split('T')[0]);
+
+      if (chartPerfError) {
+        console.error('❌ Error fetching chart performance data:', chartPerfError);
+        throw chartPerfError;
+      }
+
+      console.log('📈 Monthly performance data found:', monthlyPerformanceData?.length || 0, 'records');
+      console.log('📈 Chart performance data found:', chartPerformanceData?.length || 0, 'records');
+
+      // Calcular totais mensais
+      const monthlyTotals = {
+        calls: monthlyPerformanceData?.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0) || 0,
+        schedulings: monthlyPerformanceData?.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0) || 0,
+        noShow: monthlyPerformanceData?.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0) || 0
+      };
+
+      // Calcular número de dias úteis no mês atual
+      const businessDaysInMonth = getBusinessDaysInMonth(currentYear, currentMonth);
+      
+      // Calcular médias diárias (apenas dias úteis)
+      const monthlyCallsAverage = businessDaysInMonth > 0 ? Math.round((monthlyTotals.calls / businessDaysInMonth) * 100) / 100 : 0;
+      const monthlySchedulingsAverage = businessDaysInMonth > 0 ? Math.round((monthlyTotals.schedulings / businessDaysInMonth) * 100) / 100 : 0;
+      
+      // Calcular taxa de no-show mensal
+      const monthlyNoShowRate = monthlyTotals.schedulings > 0 ? Math.round((monthlyTotals.noShow / monthlyTotals.schedulings) * 10000) / 100 : 0;
+
+      console.log('📊 Monthly calculations:', {
+        businessDaysInMonth,
+        monthlyTotals,
+        monthlyCallsAverage,
+        monthlySchedulingsAverage,
+        monthlyNoShowRate: `${monthlyNoShowRate}%`
+      });
 
       // Processar dados para cada SDR
       const sdrPerformance = sdrData.map(sdr => {
-        const sdrPerf = performanceData?.filter(p => p.seller_id === sdr.id) || [];
+        const sdrPerf = monthlyPerformanceData?.filter(p => p.seller_id === sdr.id) || [];
         
         const totalCalls = sdrPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
         const totalSchedulings = sdrPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
         const totalNoShow = sdrPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
         const conversionRate = totalCalls > 0 ? (totalSchedulings / totalCalls) * 100 : 0;
-
-        console.log(`👤 SDR ${sdr.name} performance:`, {
-          totalCalls,
-          totalSchedulings,
-          totalNoShow,
-          conversionRate,
-          recordsCount: sdrPerf.length
-        });
 
         return {
           name: sdr.name,
@@ -129,9 +197,7 @@ export const usePreSalesData = (sharedUserId?: string) => {
         };
       });
 
-      console.log('👥 SDR Performance processed:', sdrPerformance);
-
-      // Gerar dados dos últimos 30 dias úteis (excluindo fins de semana) para gráficos
+      // Gerar dados dos últimos 30 dias úteis para gráficos
       const weeklyData = [];
       let daysAdded = 0;
       let currentDay = 0;
@@ -140,11 +206,11 @@ export const usePreSalesData = (sharedUserId?: string) => {
         const date = new Date();
         date.setDate(date.getDate() - currentDay);
         
-        // Pular fins de semana (0 = domingo, 6 = sábado)
+        // Pular fins de semana
         if (date.getDay() !== 0 && date.getDay() !== 6) {
           const dateStr = date.toISOString().split('T')[0];
           
-          const dayPerf = performanceData?.filter(p => p.date === dateStr) || [];
+          const dayPerf = chartPerformanceData?.filter(p => p.date === dateStr) || [];
           const calls = dayPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
           const schedulings = dayPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
           const noShow = dayPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
@@ -165,36 +231,31 @@ export const usePreSalesData = (sharedUserId?: string) => {
         currentDay++;
       }
 
-      console.log('📊 Weekly data processed (30 business days):', weeklyData.length, 'days');
-
-      // Calcular totais do dia atual
+      // Calcular dados do dia atual (para manter compatibilidade)
       const today = new Date().toISOString().split('T')[0];
-      const todayPerf = performanceData?.filter(p => p.date === today) || [];
+      const todayPerf = chartPerformanceData?.filter(p => p.date === today) || [];
       const dailyCalls = todayPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
       const dailySchedulings = todayPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
       const dailyNoShow = todayPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
-
-      console.log('📅 Today performance:', {
-        dailyCalls,
-        dailySchedulings,
-        dailyNoShow,
-        todayRecords: todayPerf.length
-      });
-
-      // Calcular totais gerais
-      const totalSchedulings = sdrPerformance.reduce((sum, sdr) => sum + sdr.schedulings, 0);
-      const totalNoShow = sdrPerformance.reduce((sum, sdr) => sum + sdr.noShow, 0);
-      const dailyNoShowRate = totalSchedulings > 0 ? (totalNoShow / totalSchedulings) * 100 : 0;
+      const dailyNoShowRate = dailySchedulings > 0 ? (dailyNoShow / dailySchedulings) * 100 : 0;
 
       const finalData: PreSalesData = {
+        // Dados diários (para compatibilidade)
         dailyCalls,
         dailyCallsTarget: 40,
         dailySchedulings,
         dailySchedulingsTarget: 8,
         dailyNoShow,
         dailyNoShowRate: Math.round(dailyNoShowRate * 100) / 100,
+        
+        // Novos dados mensais
+        monthlyCallsAverage,
+        monthlySchedulingsAverage,
+        monthlyNoShowRate,
+        
+        // Dados gerais
         totalSDRs: sdrData.length,
-        averageSchedulingsPerSDR: sdrData.length > 0 ? Math.round((totalSchedulings / sdrData.length) * 100) / 100 : 0,
+        averageSchedulingsPerSDR: sdrData.length > 0 ? Math.round((monthlyTotals.schedulings / sdrData.length) * 100) / 100 : 0,
         sdrPerformance,
         weeklyData
       };
@@ -216,6 +277,11 @@ export const usePreSalesData = (sharedUserId?: string) => {
 
   // Função para gerar dados mock como fallback
   const generateMockData = () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    const businessDaysInMonth = getBusinessDaysInMonth(currentYear, currentMonth);
+    
     const monthlyData = [];
     let daysAdded = 0;
     let currentDay = 0;
@@ -253,7 +319,11 @@ export const usePreSalesData = (sharedUserId?: string) => {
     const totalCalls = monthlyData.reduce((sum, day) => sum + day.calls, 0);
     const totalSchedulings = monthlyData.reduce((sum, day) => sum + day.schedulings, 0);
     const totalNoShow = monthlyData.reduce((sum, day) => sum + day.noShow, 0);
-    const conversionRate = totalCalls > 0 ? (totalSchedulings / totalCalls) * 100 : 0;
+    
+    // Calcular médias mensais
+    const monthlyCallsAverage = businessDaysInMonth > 0 ? Math.round((totalCalls / businessDaysInMonth) * 100) / 100 : 0;
+    const monthlySchedulingsAverage = businessDaysInMonth > 0 ? Math.round((totalSchedulings / businessDaysInMonth) * 100) / 100 : 0;
+    const monthlyNoShowRate = totalSchedulings > 0 ? Math.round((totalNoShow / totalSchedulings) * 10000) / 100 : 0;
     
     return {
       dailyCalls: todayData.calls,
@@ -261,7 +331,13 @@ export const usePreSalesData = (sharedUserId?: string) => {
       dailySchedulings: todayData.schedulings,
       dailySchedulingsTarget: 8,
       dailyNoShow: todayData.noShow,
-      dailyNoShowRate: totalSchedulings > 0 ? (totalNoShow / totalSchedulings) * 100 : 0,
+      dailyNoShowRate: todayData.schedulings > 0 ? (todayData.noShow / todayData.schedulings) * 100 : 0,
+      
+      // Novos dados mensais
+      monthlyCallsAverage,
+      monthlySchedulingsAverage,
+      monthlyNoShowRate,
+      
       totalSDRs: 1,
       averageSchedulingsPerSDR: totalSchedulings,
       sdrPerformance: [
@@ -270,7 +346,7 @@ export const usePreSalesData = (sharedUserId?: string) => {
           calls: totalCalls, 
           schedulings: totalSchedulings, 
           noShow: totalNoShow, 
-          conversionRate: Math.round(conversionRate * 100) / 100
+          conversionRate: totalCalls > 0 ? Math.round((totalSchedulings / totalCalls) * 10000) / 100 : 0
         }
       ],
       weeklyData: monthlyData

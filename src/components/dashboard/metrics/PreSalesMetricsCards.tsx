@@ -14,6 +14,10 @@ interface PreSalesData {
   dailyNoShowRate: number;
   totalSDRs: number;
   averageSchedulingsPerSDR: number;
+  // Novos campos
+  monthlyCallsAverage: number;
+  monthlySchedulingsAverage: number;
+  monthlyNoShowRate: number;
   sdrPerformance: Array<{
     name: string;
     calls: number;
@@ -43,7 +47,7 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
   
   console.log('🔍 PreSalesMetricsCards - Goals loaded:', preSalesGoals);
   
-  // Buscar meta de tentativas de ligação - corrigida para buscar pela unidade "Tentativas"
+  // Buscar meta de tentativas de ligação
   const dailyCallsGoal = preSalesGoals.find(goal => 
     goal.goal_type?.category === 'pre_vendas' && 
     (goal.goal_type?.unit === 'Tentativas' || goal.goal_type?.unit === 'tentativas')
@@ -54,35 +58,43 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
   const cards = [
     {
       key: 'showPreSalesCalls',
-      title: 'Ligações Hoje',
-      value: preSalesData.dailyCalls,
-      target: preSalesData.dailyCallsTarget,
+      title: 'Média Diária de Tentativas',
+      subtitle: 'No mês atual (dias úteis)',
+      value: preSalesData.monthlyCallsAverage,
+      target: dailyCallsGoal?.target_value || preSalesData.dailyCallsTarget,
       icon: Phone,
-      show: config.showPreSalesCalls
+      show: config.showPreSalesCalls,
+      format: (val: number) => val.toFixed(1)
     },
     {
       key: 'showPreSalesSchedulings',
-      title: 'Agendamentos Hoje',
-      value: preSalesData.dailySchedulings,
+      title: 'Média Diária de Agendamentos',
+      subtitle: 'No mês atual (dias úteis)',
+      value: preSalesData.monthlySchedulingsAverage,
       target: preSalesData.dailySchedulingsTarget,
       icon: Calendar,
-      show: config.showPreSalesSchedulings
+      show: config.showPreSalesSchedulings,
+      format: (val: number) => val.toFixed(1)
     },
     {
       key: 'showPreSalesNoShow',
-      title: 'No-Show Hoje',
-      value: preSalesData.dailyNoShow,
+      title: 'No-Show Mensal',
+      subtitle: 'Taxa do mês atual',
+      value: preSalesData.monthlyNoShowRate,
       target: null,
       icon: UserX,
-      show: config.showPreSalesNoShow
+      show: config.showPreSalesNoShow,
+      format: (val: number) => `${val.toFixed(1)}%`
     },
     {
       key: 'showPreSalesSDRTable',
       title: 'Total SDRs',
+      subtitle: 'Vendedores ativos',
       value: preSalesData.totalSDRs,
       target: null,
       icon: Users,
-      show: config.showPreSalesSDRTable
+      show: config.showPreSalesSDRTable,
+      format: (val: number) => val.toString()
     }
   ];
 
@@ -90,7 +102,7 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
 
   return (
     <div className="space-y-4">
-      {/* Cards de métricas normais */}
+      {/* Cards de métricas atualizados */}
       {visibleCards.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {visibleCards.map((card) => {
@@ -100,18 +112,23 @@ const PreSalesMetricsCards: React.FC<PreSalesMetricsCardsProps> = ({ config, pre
             return (
               <Card key={card.key}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">
-                    {card.title}
-                  </CardTitle>
+                  <div className="space-y-1">
+                    <CardTitle className="text-sm font-medium text-gray-600">
+                      {card.title}
+                    </CardTitle>
+                    {card.subtitle && (
+                      <p className="text-xs text-gray-500">{card.subtitle}</p>
+                    )}
+                  </div>
                   <Icon className="h-4 w-4 text-gray-600" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-gray-900">
-                    {card.value}
+                    {card.format(card.value)}
                   </div>
                   {card.target && (
                     <p className="text-xs text-gray-600 mt-1">
-                      Meta: {card.target} ({percentage}%)
+                      Meta: {card.format(card.target)} ({percentage}%)
                     </p>
                   )}
                 </CardContent>

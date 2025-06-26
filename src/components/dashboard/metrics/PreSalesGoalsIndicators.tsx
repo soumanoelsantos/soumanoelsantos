@@ -35,11 +35,11 @@ const PreSalesGoalsIndicators: React.FC<PreSalesGoalsIndicatorsProps> = ({ share
     return null;
   }
 
-  // Calcular valores atuais baseados nos dados
+  // Calcular valores atuais baseados nos dados atualizados
   const currentValues = {
-    tentativas: preSalesData.dailyCalls,
-    agendamentos: preSalesData.dailySchedulings,
-    noShow: preSalesData.dailyNoShowRate,
+    tentativas: preSalesData.monthlyCallsAverage, // Média diária do mês
+    agendamentos: preSalesData.monthlySchedulingsAverage, // Média diária do mês
+    noShow: preSalesData.monthlyNoShowRate, // Taxa mensal em %
     reagendamentos: 0 // Precisaria ser calculado dos dados reais
   };
 
@@ -71,26 +71,29 @@ const PreSalesGoalsIndicators: React.FC<PreSalesGoalsIndicatorsProps> = ({ share
   };
 
   const formatValue = (value: number, isPercentage: boolean) => {
-    return isPercentage ? `${value.toFixed(1)}%` : value.toString();
+    return isPercentage ? `${value.toFixed(1)}%` : value.toFixed(1);
   };
 
   const indicators = [
     {
-      name: 'Tentativas de Ligação',
+      name: 'Média Diária de Tentativas',
+      description: 'Média de tentativas por dia útil no mês',
       goals: goalsByType['Tentativas de Ligação Diárias'] || [],
       current: currentValues.tentativas,
       isPercentage: false,
       isMaxGoal: false
     },
     {
-      name: 'Agendamentos',
+      name: 'Média Diária de Agendamentos',
+      description: 'Média de agendamentos por dia útil no mês',
       goals: goalsByType['Agendamentos Diários'] || [],
       current: currentValues.agendamentos,
       isPercentage: false,
       isMaxGoal: false
     },
     {
-      name: 'No Show',
+      name: 'No Show Mensal',
+      description: 'Taxa de no-show do mês atual',
       goals: goalsByType['No Show Máximo'] || [],
       current: currentValues.noShow,
       isPercentage: true,
@@ -98,6 +101,7 @@ const PreSalesGoalsIndicators: React.FC<PreSalesGoalsIndicatorsProps> = ({ share
     },
     {
       name: 'Reagendamentos',
+      description: 'Taxa de reagendamento',
       goals: goalsByType['Taxa de Reagendamento'] || [],
       current: currentValues.reagendamentos,
       isPercentage: true,
@@ -137,6 +141,9 @@ const PreSalesGoalsIndicators: React.FC<PreSalesGoalsIndicatorsProps> = ({ share
                   <div className="text-xs text-gray-600">
                     Meta média: {formatValue(averageTarget, indicator.isPercentage)}
                   </div>
+                  <div className="text-xs text-gray-500">
+                    {indicator.description}
+                  </div>
                   <div className="text-xs">
                     <span className="text-green-600">{metGoals}</span>
                     <span className="text-gray-500"> de </span>
@@ -154,4 +161,3 @@ const PreSalesGoalsIndicators: React.FC<PreSalesGoalsIndicatorsProps> = ({ share
 };
 
 export default PreSalesGoalsIndicators;
-
