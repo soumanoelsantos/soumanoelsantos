@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,11 @@ import { toast } from 'sonner';
 
 const SDRTeamManagementCard: React.FC = () => {
   const { sellers, isLoading } = useSellers();
-  const { createPreSalesGoal } = usePreSalesGoals();
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentYear = currentDate.getFullYear();
+  
+  const { preSalesGoals, createPreSalesGoal, isLoading: goalsLoading } = usePreSalesGoals(currentMonth, currentYear);
   const { goalTypes, createGoalType } = useGoalTypes();
   
   const [companyGoals, setCompanyGoals] = useState({
@@ -36,6 +41,33 @@ const SDRTeamManagementCard: React.FC = () => {
 
   // Filtrar tipos de metas de pré-vendas
   const preSalesGoalTypes = goalTypes.filter(gt => gt.category === 'pre_vendas');
+
+  // Carregar metas existentes nos campos do formulário
+  useEffect(() => {
+    if (!goalsLoading && preSalesGoals.length > 0) {
+      console.log('🔍 Carregando metas existentes:', preSalesGoals);
+      
+      // Filtrar apenas metas da empresa (sem seller_id)
+      const companyGoalsData = preSalesGoals.filter(goal => !goal.seller_id);
+      
+      const updatedGoals = { ...companyGoals };
+      
+      companyGoalsData.forEach(goal => {
+        if (goal.goal_type?.name === 'Tentativas de Ligação Diárias') {
+          updatedGoals.tentativas = Number(goal.target_value);
+        } else if (goal.goal_type?.name === 'Agendamentos Diários') {
+          updatedGoals.agendamentos = Number(goal.target_value);
+        } else if (goal.goal_type?.name === 'No Show Máximo') {
+          updatedGoals.noShow = Number(goal.target_value);
+        } else if (goal.goal_type?.name === 'Taxa de Reagendamento') {
+          updatedGoals.reagendamentos = Number(goal.target_value);
+        }
+      });
+      
+      console.log('✅ Metas carregadas nos campos:', updatedGoals);
+      setCompanyGoals(updatedGoals);
+    }
+  }, [preSalesGoals, goalsLoading]);
 
   const ensureGoalTypesExist = async () => {
     console.log('🔍 Verificando tipos de metas existentes...');
@@ -77,10 +109,6 @@ const SDRTeamManagementCard: React.FC = () => {
       
       // Aguardar um pouco para garantir que os tipos foram criados
       await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const currentDate = new Date();
-      const currentMonth = currentDate.getMonth() + 1;
-      const currentYear = currentDate.getFullYear();
 
       // Mapear as metas com seus tipos
       const goalMappings = [
@@ -165,10 +193,6 @@ const SDRTeamManagementCard: React.FC = () => {
       return;
     }
 
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
-
     // Distribuir metas igualmente por padrão
     const goalTypes = [
       { key: 'tentativas', name: 'Tentativas de Ligação Diárias', isPercentage: false },
@@ -200,14 +224,6 @@ const SDRTeamManagementCard: React.FC = () => {
     }
 
     toast.success('Metas distribuídas com sucesso entre os SDRs!');
-    
-    // Limpar os campos após distribuição
-    setCompanyGoals({
-      tentativas: 0,
-      agendamentos: 0,
-      noShow: 20,
-      reagendamentos: 15
-    });
   };
 
   const handleCustomDistribution = (goalKey: string) => {
@@ -238,10 +254,6 @@ const SDRTeamManagementCard: React.FC = () => {
   const handleCustomDistributionSave = async (distributions: SDRGoalDistribution[]) => {
     if (!currentGoalForDistribution) return;
 
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
-
     for (const distribution of distributions) {
       await createPreSalesGoal({
         goal_type_id: currentGoalForDistribution.goalTypeId,
@@ -256,7 +268,7 @@ const SDRTeamManagementCard: React.FC = () => {
     setCurrentGoalForDistribution(null);
   };
 
-  if (isLoading) {
+  if (isLoading || goalsLoading) {
     return (
       <Card>
         <CardHeader>
@@ -267,7 +279,7 @@ const SDRTeamManagementCard: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="text-center py-4">
-            Carregando SDRs...
+            Carregando SDRs e metas...
           </div>
         </CardContent>
       </Card>
@@ -316,6 +328,9 @@ const SDRTeamManagementCard: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium">Metas da Empresa</h4>
+              <div className="text-xs text-gray-500">
+                Mês: {currentMonth}/{currentYear}
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -332,7 +347,7 @@ const SDRTeamManagementCard: React.FC = () => {
                       ...prev, 
                       tentativas: parseInt(e.target.value) || 0 
                     }))}
-                    placeholder="Ex: 40"
+                    placeholder="Ex: 300"
                     min="0"
                     className="flex-1"
                   />
@@ -360,7 +375,7 @@ const SDRTeamManagementCard: React.FC = () => {
                       ...prev, 
                       agendamentos: parseInt(e.target.value) || 0 
                     }))}
-                    placeholder="Ex: 8"
+                    placeholder="Ex: 5"
                     min="0"
                     className="flex-1"
                   />
