@@ -661,6 +661,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_percentage: boolean | null
           name: string
           target_scope: string
           unit: string
@@ -672,6 +673,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_percentage?: boolean | null
           name: string
           target_scope: string
           unit: string
@@ -683,6 +685,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_percentage?: boolean | null
           name?: string
           target_scope?: string
           unit?: string
