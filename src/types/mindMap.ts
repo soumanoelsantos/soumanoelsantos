@@ -1,3 +1,12 @@
+
+export interface MindMapAttachment {
+  id: string;
+  type: 'pdf' | 'image' | 'video';
+  name: string;
+  url: string;
+  size?: number;
+}
+
 export interface MindMapNode {
   id: string;
   type: 'default' | 'input' | 'output';
@@ -5,7 +14,8 @@ export interface MindMapNode {
   data: { 
     label: string; 
     color?: string;
-    notes?: string; // Nova propriedade para as notas
+    notes?: string;
+    attachments?: MindMapAttachment[]; // Nova propriedade para anexos
   };
 }
 

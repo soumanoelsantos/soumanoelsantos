@@ -1,10 +1,11 @@
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export const usePanAndZoom = () => {
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [lastPanPoint, setLastPanPoint] = useState({ x: 0, y: 0 });
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   const handlePanStart = useCallback((e: React.MouseEvent) => {
     setIsPanning(true);
@@ -37,6 +38,25 @@ export const usePanAndZoom = () => {
     }
   }, [handlePanStart]);
 
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setZoomLevel(prev => Math.max(0.1, Math.min(3, prev + delta)));
+  }, []);
+
+  const zoomIn = useCallback(() => {
+    setZoomLevel(prev => Math.min(3, prev + 0.2));
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    setZoomLevel(prev => Math.max(0.1, prev - 0.2));
+  }, []);
+
+  const resetZoom = useCallback(() => {
+    setZoomLevel(1);
+    setPanOffset({ x: 0, y: 0 });
+  }, []);
+
   useEffect(() => {
     if (isPanning) {
       document.addEventListener('mousemove', handlePanMove);
@@ -52,7 +72,12 @@ export const usePanAndZoom = () => {
   return {
     panOffset,
     isPanning,
+    zoomLevel,
     handlePanStart,
-    handleCanvasMouseDown
+    handleCanvasMouseDown,
+    handleWheel,
+    zoomIn,
+    zoomOut,
+    resetZoom
   };
 };

@@ -2,8 +2,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit2, Trash2, Eye, EyeOff, Network, NotebookPen, Plus } from 'lucide-react';
+import { Edit2, Trash2, Eye, EyeOff, Network, NotebookPen, Plus, Paperclip } from 'lucide-react';
 import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
+import NodeAttachmentsDialog from './NodeAttachmentsDialog';
 
 interface MindMapNodeProps {
   node: MindMapNodeType;
@@ -20,6 +21,7 @@ interface MindMapNodeProps {
   onChangeType: () => void;
   onOpenNotes: () => void;
   onAddChild: () => void;
+  onUpdateNodeAttachments?: (attachments: any[]) => void;
 }
 
 const MindMapNode = ({
@@ -36,7 +38,8 @@ const MindMapNode = ({
   onToggleConnections,
   onChangeType,
   onOpenNotes,
-  onAddChild
+  onAddChild,
+  onUpdateNodeAttachments
 }: MindMapNodeProps) => {
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only start dragging if not clicking on buttons
@@ -57,6 +60,7 @@ const MindMapNode = ({
   };
 
   const hasNotes = node.data.notes && node.data.notes.trim().length > 0;
+  const hasAttachments = node.data.attachments && node.data.attachments.length > 0;
 
   return (
     <div
@@ -74,7 +78,7 @@ const MindMapNode = ({
       onTouchStart={handleTouchStart}
       onClick={onClick}
     >
-      <Card className={`min-w-[120px] shadow-lg hover:shadow-xl transition-all relative ${
+      <Card className={`min-w-[120px] max-w-[200px] shadow-lg hover:shadow-xl transition-all relative ${
         isSelected ? 'border-blue-500 bg-blue-50' : 'bg-white'
       } ${isDragged ? 'shadow-2xl' : ''}`}>
         <CardContent className="p-3">
@@ -98,6 +102,13 @@ const MindMapNode = ({
               >
                 <NotebookPen className="h-3 w-3" />
               </Button>
+              
+              {onUpdateNodeAttachments && (
+                <NodeAttachmentsDialog
+                  attachments={node.data.attachments || []}
+                  onUpdateAttachments={(attachments) => onUpdateNodeAttachments(attachments)}
+                />
+              )}
             </div>
             {hasChildNodes && (
               <Button
@@ -119,12 +130,29 @@ const MindMapNode = ({
             )}
           </div>
           
-          <div className="text-sm font-medium text-center break-words pointer-events-none">
+          <div className="text-sm font-medium text-center break-words pointer-events-none mb-2">
             {node.data.label}
           </div>
           
+          {/* Indicadores de conteúdo */}
+          {(hasAttachments || hasNotes) && (
+            <div className="flex justify-center gap-1 mb-2">
+              {hasAttachments && (
+                <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-1 py-0.5 rounded">
+                  <Paperclip className="h-2 w-2" />
+                  <span>{node.data.attachments!.length}</span>
+                </div>
+              )}
+              {hasNotes && (
+                <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-1 py-0.5 rounded">
+                  <NotebookPen className="h-2 w-2" />
+                </div>
+              )}
+            </div>
+          )}
+          
           {isSelected && (
-            <div className="flex gap-1 mt-2 flex-wrap">
+            <div className="flex gap-1 flex-wrap">
               <Button
                 size="sm"
                 variant="outline"
@@ -133,6 +161,7 @@ const MindMapNode = ({
                   onEdit();
                 }}
                 title="Editar nó"
+                className="h-6 px-2 text-xs"
               >
                 <Edit2 className="h-3 w-3" />
               </Button>
@@ -144,6 +173,7 @@ const MindMapNode = ({
                   onChangeType();
                 }}
                 title="Alterar tipo do nó"
+                className="h-6 px-2 text-xs"
               >
                 <Network className="h-3 w-3" />
               </Button>
@@ -155,6 +185,7 @@ const MindMapNode = ({
                   onDelete();
                 }}
                 title="Excluir nó"
+                className="h-6 px-2 text-xs"
               >
                 <Trash2 className="h-3 w-3" />
               </Button>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
@@ -9,6 +10,7 @@ import MindMapToolbar from './components/MindMapToolbar';
 import CanvasContent from './components/CanvasContent';
 import MindMapListView from './components/MindMapListView';
 import DialogManager from './components/DialogManager';
+import ZoomControls from './components/ZoomControls';
 
 interface MindMapCanvasProps {
   initialContent: MindMapContent;
@@ -17,7 +19,7 @@ interface MindMapCanvasProps {
 }
 
 const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanvasProps) => {
-  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('canvas'); // Sempre inicia no canvas
+  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('canvas');
   
   console.log('MindMapCanvas renderizando com viewMode:', viewMode);
   
@@ -32,6 +34,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     updateNodeLabel,
     updateNodePosition,
     updateNodeNotes,
+    updateNodeAttachments,
     toggleNodeVisibility,
     getAvailableParents,
     changeNodeToMain,
@@ -50,7 +53,16 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setSelectedNode
   });
 
-  const { panOffset, isPanning, handleCanvasMouseDown: panMouseDown } = usePanAndZoom();
+  const { 
+    panOffset, 
+    isPanning, 
+    zoomLevel, 
+    handleCanvasMouseDown: panMouseDown,
+    handleWheel,
+    zoomIn,
+    zoomOut,
+    resetZoom
+  } = usePanAndZoom();
 
   const {
     selectedNodes,
@@ -78,6 +90,18 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [selectedParentForNewNode, setSelectedParentForNewNode] = useState<string | null>(null);
+
+  // Adicionar event listener para wheel
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    canvas.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      canvas.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   const handleSave = async () => {
     try {
@@ -146,6 +170,10 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     }
   };
 
+  const handleUpdateNodeAttachments = (nodeId: string, attachments: any[]) => {
+    updateNodeAttachments(nodeId, attachments);
+  };
+
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
   console.log('Nodes disponíveis:', nodes.length);
@@ -194,17 +222,17 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         ) : (
           <div 
             ref={canvasRef}
-            className="w-full h-full relative overflow-auto cursor-grab active:cursor-grabbing"
+            className="w-full h-full relative overflow-hidden cursor-grab active:cursor-grabbing touch-none"
             style={{ minHeight: '600px', minWidth: '100%' }}
             onMouseDown={panMouseDown}
             onClick={handleCanvasClick}
           >
             <div 
-              className="relative"
+              className="relative origin-center"
               style={{ 
                 minWidth: '200vw', 
                 minHeight: '200vh',
-                transform: `translate(${panOffset.x}px, ${panOffset.y}px)`,
+                transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
                 transition: isPanning ? 'none' : 'transform 0.1s ease-out'
               }}
             >
@@ -227,8 +255,17 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
                 onChangeNodeType={handleChangeNodeType}
                 onOpenNodeNotes={handleOpenNodeNotes}
                 onAddChildNode={handleAddChildNode}
+                onUpdateNodeAttachments={handleUpdateNodeAttachments}
               />
             </div>
+            
+            {/* Controles de Zoom */}
+            <ZoomControls
+              zoomLevel={zoomLevel}
+              onZoomIn={zoomIn}
+              onZoomOut={zoomOut}
+              onResetZoom={resetZoom}
+            />
           </div>
         )}
       </div>
