@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import { MindMapNode, MindMapEdge, MindMapAttachment } from '@/types/mindMap';
 
@@ -292,16 +293,65 @@ export const useNodeOperations = ({
   }, [nodes, setNodes]);
 
   const reconnectNode = useCallback((nodeId: string, newParentId: string | null) => {
-    setEdges(prev => {
-      const updatedEdges = prev.filter(edge => edge.source !== nodeId && edge.target !== nodeId);
-  
-      if (newParentId) {
-        updatedEdges.push({ id: `${newParentId}-${nodeId}`, source: newParentId, target: nodeId });
+    console.log('Reconectando nó:', nodeId, 'para novo pai:', newParentId);
+    
+    const nodeToMove = nodes.find(n => n.id === nodeId);
+    if (!nodeToMove) return;
+
+    // Obter todos os descendentes que serão movidos junto
+    const allDescendants = getAllDescendants(nodeId);
+    console.log('Descendentes que serão movidos:', allDescendants);
+    
+    // Calcular nova posição base
+    let newBasePosition = { x: 300, y: 300 }; // posição padrão
+    
+    if (newParentId) {
+      const newParent = nodes.find(n => n.id === newParentId);
+      if (newParent) {
+        // Posicionar próximo ao novo pai
+        newBasePosition = {
+          x: newParent.position.x + 150,
+          y: newParent.position.y + 100
+        };
       }
-  
+    }
+    
+    // Calcular offset da posição atual para a nova posição
+    const offsetX = newBasePosition.x - nodeToMove.position.x;
+    const offsetY = newBasePosition.y - nodeToMove.position.y;
+    
+    setEdges(prev => {
+      // Remover conexão atual do nó principal
+      const updatedEdges = prev.filter(edge => edge.target !== nodeId);
+      
+      // Adicionar nova conexão se houver novo pai
+      if (newParentId) {
+        updatedEdges.push({ 
+          id: `${newParentId}-${nodeId}`, 
+          source: newParentId, 
+          target: nodeId 
+        });
+      }
+      
       return updatedEdges;
     });
-  }, [setEdges]);
+
+    // Mover o nó principal e todos os seus descendentes mantendo as posições relativas
+    setNodes(prev => prev.map(node => {
+      if (node.id === nodeId || allDescendants.includes(node.id)) {
+        return {
+          ...node,
+          position: {
+            x: node.position.x + offsetX,
+            y: node.position.y + offsetY
+          }
+        };
+      }
+      return node;
+    }));
+    
+    console.log('Reconexão concluída - nó e descendentes movidos juntos');
+  }, [setEdges, nodes, getAllDescendants, setNodes]);
 
   return {
     addNode,
