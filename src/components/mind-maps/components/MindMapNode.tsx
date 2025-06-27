@@ -23,32 +23,12 @@ import {
 import NodeNotesDialog from './NodeNotesDialog';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
 
-// Define the data interface - it extends Record<string, unknown> for ReactFlow compatibility
-interface MindMapNodeData extends Record<string, unknown> {
-  label: string;
-  color?: string;
-  notes?: string;
-  attachments?: any[];
-  mindMapId?: string;
-  onEdit?: (id: string, label: string) => void;
-  onDelete?: (id: string) => void;
-  onAddChild?: (parentId: string) => void;
-  onToggleVisibility?: (nodeId: string) => void;
-  onReconnect?: (nodeId: string) => void;
-  onChangeColor?: (nodeId: string, color: string) => void;
-  hasChildren?: boolean;
-  childrenVisible?: boolean;
-}
-
-const MindMapNode = ({ 
-  id, 
-  data
-}: NodeProps<MindMapNodeData>) => {
+const MindMapNode = ({ id, data }: NodeProps) => {
   const [showNotes, setShowNotes] = useState(false);
 
   const handleEditClick = useCallback(() => {
     if (data?.onEdit) {
-      data.onEdit(id, data.label);
+      data.onEdit(id);
     }
   }, [id, data]);
 
@@ -83,12 +63,10 @@ const MindMapNode = ({
   }, [id, data]);
 
   const handleUpdateNotes = useCallback((notes: string) => {
-    // Notes are updated through the callback that already exists
     console.log('Notes updated for node:', id, notes);
   }, [id]);
 
   const handleUpdateAttachments = useCallback((attachments: any[]) => {
-    // Attachments are updated through the callback that already exists
     console.log('Attachments updated for node:', id, attachments);
   }, [id]);
 
