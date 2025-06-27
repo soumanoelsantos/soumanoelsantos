@@ -43,7 +43,10 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
     show_pre_sales_scheduling_chart: config.showPreSalesSchedulingChart,
     show_pre_sales_no_show_chart: config.showPreSalesNoShowChart,
     show_pre_sales_sdr_comparison_chart: config.showPreSalesSDRComparisonChart,
-    company_name: config.companyName,
+    
+    // CAMPO NOME DA EMPRESA - CORRIGIDO
+    company_name: config.companyName || '',
+    
     show_revenue_evolution_chart: config.showRevenueEvolutionChart,
     show_billing_evolution_chart: config.showBillingEvolutionChart,
     show_seller_revenue_chart: config.showSellerRevenueChart,
@@ -66,11 +69,11 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
     show_product_projecao_receita: config.showProductProjecaoReceita,
     show_product_projecao_faturamento: config.showProductProjecaoFaturamento,
     
-    // Product charts mappings - apenas os dois que ficaram
+    // Product charts mappings
     show_product_revenue_evolution_chart: config.showProductRevenueEvolutionChart,
     show_product_billing_evolution_chart: config.showProductBillingEvolutionChart,
 
-    // MAPEAMENTOS DE CONTROLE DE ABAS
+    // MAPEAMENTOS DE CONTROLE DE ABAS - CORRIGIDO
     enable_commercial_tab: config.enableCommercialTab,
     enable_product_tab: config.enableProductTab,
     enable_pre_sales_tab: config.enablePreSalesTab,
@@ -119,7 +122,10 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showPreSalesSchedulingChart: data.show_pre_sales_scheduling_chart ?? true,
     showPreSalesNoShowChart: data.show_pre_sales_no_show_chart ?? true,
     showPreSalesSDRComparisonChart: data.show_pre_sales_sdr_comparison_chart ?? true,
+    
+    // NOME DA EMPRESA - CORRIGIDO
     companyName: data.company_name || '',
+    
     metricsOrder: data.metrics_order || [],
     preSalesOrder: data.pre_sales_order || [],
     productOrder: data.product_order || [],
@@ -145,11 +151,11 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProductProjecaoReceita: data.show_product_projecao_receita ?? false,
     showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? false,
     
-    // Product charts fields - apenas os dois que ficaram
+    // Product charts fields
     showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? false,
     showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? false,
 
-    // CAMPOS DE CONTROLE DE ABAS
+    // CAMPOS DE CONTROLE DE ABAS - CORRIGIDO
     enableCommercialTab: data.enable_commercial_tab ?? true,
     enableProductTab: data.enable_product_tab ?? true,
     enablePreSalesTab: data.enable_pre_sales_tab ?? true,

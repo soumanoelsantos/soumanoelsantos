@@ -102,7 +102,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           }
         }
 
-        setConfig({
+        const mappedConfig: DashboardConfig = {
           showConversion: data.show_conversion ?? defaultConfig.showConversion,
           showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
           showTicketFaturamento: data.show_ticket_faturamento ?? defaultConfig.showTicketFaturamento,
@@ -166,17 +166,18 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
           showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,
 
-          // Product charts fields - apenas os dois que ficaram
+          // Product charts fields
           showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
           showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
 
-          // CAMPOS DE CONTROLE DE ABAS
+          // CAMPOS DE CONTROLE DE ABAS - CORRIGIDO
           enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
           enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
           enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
-        });
+        };
         
-        console.log('✅ Configuration loaded and mapped successfully');
+        console.log('✅ Configuration loaded and mapped successfully:', mappedConfig);
+        setConfig(mappedConfig);
       } else {
         console.log('⚠️ No configuration found, using defaults');
         setConfig(defaultConfig);

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -42,16 +41,14 @@ const DashboardConfig = () => {
   const handleConfigChange = async (key: string, value: any) => {
     console.log('🔧 [DEBUG] handleConfigChange chamado:', { key, value });
     
-    // Atualizar config local
+    // Atualizar config local imediatamente
     updateConfig({ [key]: value });
     
     // Para mudanças críticas como controle de abas, salvar imediatamente
     if (key === 'enableCommercialTab' || key === 'enableProductTab' || key === 'enablePreSalesTab') {
       if (!userId) {
         console.error('❌ [DEBUG] Usuário não autenticado');
-        toast.error("Erro", {
-          description: "Usuário não autenticado"
-        });
+        toast.error("Erro: Usuário não autenticado");
         return;
       }
 
@@ -63,14 +60,10 @@ const DashboardConfig = () => {
         await saveDashboardConfig(updatedConfig, userId);
         
         console.log('✅ [DEBUG] Configuração de aba salva automaticamente!');
-        toast.success("Configuração salva!", {
-          description: "As configurações de abas foram atualizadas."
-        });
+        toast.success("Configuração salva! As configurações de abas foram atualizadas.");
       } catch (error) {
         console.error('❌ [DEBUG] Erro ao salvar configuração de aba:', error);
-        toast.error("Erro", {
-          description: "Não foi possível salvar a configuração"
-        });
+        toast.error("Erro: Não foi possível salvar a configuração");
       } finally {
         setIsSaving(false);
       }
@@ -80,9 +73,7 @@ const DashboardConfig = () => {
   const handleSave = async () => {
     if (!userId) {
       console.error('❌ [DEBUG] Usuário não autenticado');
-      toast.error("Erro", {
-        description: "Usuário não autenticado"
-      });
+      toast.error("Erro: Usuário não autenticado");
       return;
     }
 
@@ -93,14 +84,10 @@ const DashboardConfig = () => {
       await saveDashboardConfig(config, userId);
       
       console.log('✅ [DEBUG] Configuração salva com sucesso!');
-      toast.success("Sucesso!", {
-        description: "Configuração salva com sucesso!"
-      });
+      toast.success("Sucesso! Configuração salva com sucesso!");
     } catch (error) {
       console.error('❌ [DEBUG] Erro ao salvar configuração:', error);
-      toast.error("Erro", {
-        description: "Não foi possível salvar a configuração"
-      });
+      toast.error("Erro: Não foi possível salvar a configuração");
     } finally {
       setIsSaving(false);
     }

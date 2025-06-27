@@ -60,6 +60,11 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
     }
 
     console.log('🟢 dashboardConfigService - Configuration saved successfully:', data);
+    
+    // Força uma atualização da página para garantir que os dados sejam recarregados
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   } catch (error) {
     console.error('🔴 dashboardConfigService - Unexpected error during save:', error);
     throw error;
