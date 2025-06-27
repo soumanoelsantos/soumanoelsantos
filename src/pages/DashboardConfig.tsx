@@ -1,32 +1,28 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ConfigHeader from '@/components/dashboard/config/ConfigHeader';
-import GeneralConfigCard from '@/components/dashboard/config/GeneralConfigCard';
-import MetricsConfigCard from '@/components/dashboard/config/MetricsConfigCard';
-import PreSalesConfigCard from '@/components/dashboard/config/PreSalesConfigCard';
-import ProductChartsConfigCard from '@/components/dashboard/config/ProductChartsConfigCard';
-import ProductMetricsConfigCard from '@/components/dashboard/config/ProductMetricsConfigCard';
-import ProductGoalsConfigCard from '@/components/dashboard/config/ProductGoalsConfigCard';
-import ProductsManagementCard from '@/components/dashboard/config/ProductsManagementCard';
-import SellersManagementCard from '@/components/dashboard/config/SellersManagementCard';
-import SDRTeamManagementCard from '@/components/dashboard/config/SDRTeamManagementCard';
-import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
-import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
-import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
-import ProductOrderManager from '@/components/dashboard/config/product-order/ProductOrderManager';
-import { saveDashboardConfig } from '@/services/dashboardConfigService';
-import { toast } from 'sonner';
-import TabControlSection from '@/components/dashboard/config/TabControlSection';
-import SaveButton from '@/components/dashboard/config/SaveButton';
+import GeneralTab from '@/components/dashboard/config/tabs/GeneralTab';
+import CommercialTab from '@/components/dashboard/config/tabs/CommercialTab';
+import PreSalesTab from '@/components/dashboard/config/tabs/PreSalesTab';
+import ProductTab from '@/components/dashboard/config/tabs/ProductTab';
+import { useDashboardConfigHandlers } from '@/hooks/useDashboardConfigHandlers';
 
 const DashboardConfig = () => {
-  const { isAuthenticated, isLoading, userId } = useAuth();
-  const { config, updateConfig, isLoading: configLoading } = useDashboardConfig();
-  const [isSaving, setIsSaving] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading: configLoading } = useDashboardConfig();
+  const {
+    config,
+    isSaving,
+    handleConfigChange,
+    handleSaveConfig,
+    handleReorderMetrics,
+    handleReorderPreSales,
+    handleReorderProducts
+  } = useDashboardConfigHandlers();
 
   if (isLoading || configLoading) {
     return (
@@ -39,90 +35,6 @@ const DashboardConfig = () => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-
-  const handleConfigChange = async (key: string, value: any) => {
-    console.log('🔧 [DEBUG] handleConfigChange called:', { key, value });
-    
-    try {
-      // Atualizar config local imediatamente
-      updateConfig({ [key]: value });
-      
-      // Remover auto-save para companyName - apenas para abas críticas
-      const criticalKeys = ['enableCommercialTab', 'enableProductTab', 'enablePreSalesTab'];
-      
-      if (criticalKeys.includes(key)) {
-        if (!userId) {
-          console.error('❌ [DEBUG] Usuário não autenticado');
-          toast.error("Erro: Usuário não autenticado");
-          return;
-        }
-
-        try {
-          const updatedConfig = { ...config, [key]: value };
-          console.log('💾 [DEBUG] Salvando automaticamente configuração crítica...', { key, value });
-          
-          await saveDashboardConfig(updatedConfig, userId);
-          
-          console.log('✅ [DEBUG] Configuração crítica salva automaticamente!');
-          toast.success("Configuração salva automaticamente!");
-        } catch (error) {
-          console.error('❌ [DEBUG] Erro ao salvar configuração crítica:', error);
-          toast.error("Erro: Não foi possível salvar a configuração");
-        }
-      }
-    } catch (error) {
-      console.error('❌ [DEBUG] Erro em handleConfigChange:', error);
-      toast.error("Erro: Falha ao processar mudança de configuração");
-    }
-  };
-
-  const handleSaveConfig = async () => {
-    if (!userId) {
-      toast.error("Erro: Usuário não autenticado");
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      await saveDashboardConfig(config, userId);
-      toast.success("Configurações salvas com sucesso!");
-    } catch (error) {
-      console.error('❌ [DEBUG] Erro ao salvar configurações:', error);
-      toast.error("Erro ao salvar configurações");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleReorderMetrics = (newOrder: string[]) => {
-    console.log('🔄 [DEBUG] handleReorderMetrics:', newOrder);
-    try {
-      updateConfig({ metricsOrder: newOrder });
-    } catch (error) {
-      console.error('❌ [DEBUG] Erro ao reordenar métricas:', error);
-      toast.error("Erro ao reordenar métricas");
-    }
-  };
-
-  const handleReorderPreSales = (newOrder: string[]) => {
-    console.log('🔄 [DEBUG] handleReorderPreSales:', newOrder);
-    try {
-      updateConfig({ preSalesOrder: newOrder });
-    } catch (error) {
-      console.error('❌ [DEBUG] Erro ao reordenar pré-vendas:', error);
-      toast.error("Erro ao reordenar pré-vendas");
-    }
-  };
-
-  const handleReorderProducts = (newOrder: string[]) => {
-    console.log('🔄 [DEBUG] handleReorderProducts:', newOrder);
-    try {
-      updateConfig({ productOrder: newOrder });
-    } catch (error) {
-      console.error('❌ [DEBUG] Erro ao reordenar produtos:', error);
-      toast.error("Erro ao reordenar produtos");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -137,118 +49,42 @@ const DashboardConfig = () => {
             <TabsTrigger value="produto">Produto</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="geral" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Coluna da esquerda - Configurações Gerais */}
-              <div className="space-y-6">
-                <GeneralConfigCard 
-                  config={config} 
-                  onConfigChange={handleConfigChange} 
-                />
-                <TabControlSection 
-                  config={config} 
-                  onConfigChange={handleConfigChange} 
-                />
-              </div>
-              
-              {/* Coluna da direita - Gerenciamento do Time */}
-              <div className="space-y-6">
-                <SellersManagementCard />
-              </div>
-            </div>
-            
-            <SaveButton 
+          <TabsContent value="geral">
+            <GeneralTab
+              config={config}
+              onConfigChange={handleConfigChange}
               onSave={handleSaveConfig}
-              isLoading={isSaving}
+              isSaving={isSaving}
             />
           </TabsContent>
           
-          <TabsContent value="comercial" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Coluna da esquerda - Comercial */}
-              <div className="space-y-6">
-                <MetricsConfigCard 
-                  config={config} 
-                  onConfigChange={handleConfigChange} 
-                />
-                <MetricsOrderManager
-                  config={config}
-                  metricsOrder={config.metricsOrder}
-                  onReorderMetrics={handleReorderMetrics}
-                />
-              </div>
-              
-              {/* Coluna da direita - Comercial */}
-              <div className="space-y-6">
-                <DisplayConfigCard 
-                  config={config} 
-                  onConfigChange={handleConfigChange} 
-                />
-              </div>
-            </div>
-            
-            <SaveButton 
+          <TabsContent value="comercial">
+            <CommercialTab
+              config={config}
+              onConfigChange={handleConfigChange}
+              onReorderMetrics={handleReorderMetrics}
               onSave={handleSaveConfig}
-              isLoading={isSaving}
+              isSaving={isSaving}
             />
           </TabsContent>
 
-          <TabsContent value="pre-vendas" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Coluna da esquerda - Pré-vendas */}
-              <div className="space-y-6">
-                <PreSalesConfigCard 
-                  config={config} 
-                  onConfigChange={handleConfigChange} 
-                />
-                <SDRTeamManagementCard />
-              </div>
-              
-              {/* Coluna da direita - Pré-vendas */}
-              <div className="space-y-6">
-                <PreSalesOrderManager
-                  config={config}
-                  preSalesOrder={config.preSalesOrder}
-                  onReorderPreSales={handleReorderPreSales}
-                />
-              </div>
-            </div>
-            
-            <SaveButton 
+          <TabsContent value="pre-vendas">
+            <PreSalesTab
+              config={config}
+              onConfigChange={handleConfigChange}
+              onReorderPreSales={handleReorderPreSales}
               onSave={handleSaveConfig}
-              isLoading={isSaving}
+              isSaving={isSaving}
             />
           </TabsContent>
 
-          <TabsContent value="produto" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Coluna da esquerda - Produto */}
-              <div className="space-y-6">
-                <ProductsManagementCard />
-                <ProductMetricsConfigCard 
-                  config={config} 
-                  onConfigChange={handleConfigChange} 
-                />
-                <ProductGoalsConfigCard />
-              </div>
-              
-              {/* Coluna da direita - Produto */}
-              <div className="space-y-6">
-                <ProductChartsConfigCard 
-                  config={config} 
-                  onConfigChange={handleConfigChange} 
-                />
-                <ProductOrderManager
-                  config={config}
-                  productOrder={config.productOrder}
-                  onReorderProducts={handleReorderProducts}
-                />
-              </div>
-            </div>
-            
-            <SaveButton 
+          <TabsContent value="produto">
+            <ProductTab
+              config={config}
+              onConfigChange={handleConfigChange}
+              onReorderProducts={handleReorderProducts}
               onSave={handleSaveConfig}
-              isLoading={isSaving}
+              isSaving={isSaving}
             />
           </TabsContent>
         </Tabs>
