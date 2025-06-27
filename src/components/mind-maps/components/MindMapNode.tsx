@@ -22,8 +22,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import NodeNotesDialog from './NodeNotesDialog';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
+import { MindMapNodeData } from '../types/canvasTypes';
 
-const MindMapNode = ({ id, data }: NodeProps) => {
+const MindMapNode = ({ id, data }: NodeProps<MindMapNodeData>) => {
   const [showNotes, setShowNotes] = useState(false);
 
   const handleEditClick = useCallback(() => {
@@ -71,7 +72,7 @@ const MindMapNode = ({ id, data }: NodeProps) => {
   }, [id]);
 
   const nodeStyle = {
-    backgroundColor: data?.color || '#ffffff',
+    backgroundColor: (data?.color as string) || '#ffffff',
     borderColor: data?.color ? `${data.color}80` : '#e5e7eb',
   };
 
@@ -106,7 +107,7 @@ const MindMapNode = ({ id, data }: NodeProps) => {
               </div>
               {data?.notes && (
                 <div className="text-xs text-gray-500 mt-1 line-clamp-2">
-                  {data.notes}
+                  {data.notes as string}
                 </div>
               )}
             </div>
@@ -130,7 +131,7 @@ const MindMapNode = ({ id, data }: NodeProps) => {
                 <NodeAttachmentsDialog
                   nodeId={id}
                   mindMapId={data.mindMapId as string}
-                  attachments={data?.attachments || []}
+                  attachments={(data?.attachments as any[]) || []}
                   onUpdateAttachments={handleUpdateAttachments}
                 />
               )}
@@ -221,7 +222,7 @@ const MindMapNode = ({ id, data }: NodeProps) => {
         isOpen={showNotes}
         onClose={() => setShowNotes(false)}
         nodeId={id}
-        initialNotes={data?.notes as string || ''}
+        initialNotes={(data?.notes as string) || ''}
         onSave={handleUpdateNotes}
       />
     </>

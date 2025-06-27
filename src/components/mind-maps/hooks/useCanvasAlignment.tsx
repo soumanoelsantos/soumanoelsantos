@@ -1,11 +1,12 @@
 
 import { useCallback } from 'react';
 import { Node } from '@xyflow/react';
+import { MindMapNodeData } from '../types/canvasTypes';
 
 interface UseCanvasAlignmentProps {
-  nodes: Node[];
+  nodes: Node<MindMapNodeData>[];
   selectedNode: string | null;
-  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  setNodes: React.Dispatch<React.SetStateAction<Node<MindMapNodeData>[]>>;
 }
 
 export const useCanvasAlignment = ({ nodes, selectedNode, setNodes }: UseCanvasAlignmentProps) => {
