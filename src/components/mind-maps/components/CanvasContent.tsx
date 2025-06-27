@@ -58,18 +58,18 @@ const CanvasContent = ({
     !hiddenNodes.has(edge.source) && !hiddenNodes.has(edge.target)
   );
 
-  const getChildNodes = (nodeId: string): string[] => {
+  const getDirectChildren = (nodeId: string): string[] => {
     return edges
       .filter(edge => edge.source === nodeId)
       .map(edge => edge.target);
   };
 
-  const hasChildNodes = (nodeId: string): boolean => {
-    return getChildNodes(nodeId).length > 0;
+  const hasDirectChildren = (nodeId: string): boolean => {
+    return getDirectChildren(nodeId).length > 0;
   };
 
   const hasHiddenDirectChildren = (nodeId: string): boolean => {
-    const directChildren = getChildNodes(nodeId);
+    const directChildren = getDirectChildren(nodeId);
     return directChildren.some(childId => hiddenNodes.has(childId));
   };
 
@@ -105,7 +105,7 @@ const CanvasContent = ({
           node={node}
           isSelected={isNodeSelected(node.id, selectedNode)}
           isDragged={draggedNode === node.id}
-          hasChildNodes={hasChildNodes(node.id)}
+          hasChildNodes={hasDirectChildren(node.id)}
           hasHiddenDirectChildren={hasHiddenDirectChildren(node.id)}
           onMouseDown={(e) => onMouseDown(node.id, e)}
           onTouchStart={(e) => onTouchStart(node.id, e)}

@@ -101,53 +101,50 @@ export const useNodeOperations = ({
     );
   }, [setNodes]);
 
-  // Função recursiva para encontrar todos os descendentes de um nó
-  const getAllDescendants = useCallback((nodeId: string): string[] => {
-    const descendants: string[] = [];
-    const directChildren = edges.filter(edge => edge.source === nodeId).map(edge => edge.target);
-    
-    for (const childId of directChildren) {
-      descendants.push(childId);
-      descendants.push(...getAllDescendants(childId));
-    }
-    
-    return descendants;
+  // Função para obter filhos diretos de um nó
+  const getDirectChildren = useCallback((nodeId: string): string[] => {
+    return edges
+      .filter(edge => edge.source === nodeId)
+      .map(edge => edge.target);
   }, [edges]);
 
+  // Nova lógica de visibilidade hierárquica
   const toggleNodeVisibility = useCallback((nodeId: string) => {
     console.log('Toggling visibility for node:', nodeId);
     
+    // Obter filhos diretos do nó
+    const directChildren = getDirectChildren(nodeId);
+    console.log('Direct children:', directChildren);
+    
+    if (directChildren.length === 0) {
+      console.log('No children to toggle');
+      return;
+    }
+
     setHiddenNodes(prev => {
       const newHiddenNodes = new Set(prev);
       
-      if (newHiddenNodes.has(nodeId)) {
-        // Se o nó está oculto, torná-lo visível
-        console.log('Showing node:', nodeId);
-        newHiddenNodes.delete(nodeId);
-        
-        // Também mostrar todos os seus descendentes
-        const descendants = getAllDescendants(nodeId);
-        descendants.forEach(descendantId => {
-          console.log('Showing descendant:', descendantId);
-          newHiddenNodes.delete(descendantId);
+      // Verificar se algum filho direto está visível
+      const hasVisibleChildren = directChildren.some(childId => !newHiddenNodes.has(childId));
+      
+      if (hasVisibleChildren) {
+        // Se tem filhos visíveis, ocultar todos os filhos diretos
+        directChildren.forEach(childId => {
+          console.log('Hiding direct child:', childId);
+          newHiddenNodes.add(childId);
         });
       } else {
-        // Se o nó está visível, ocultá-lo
-        console.log('Hiding node:', nodeId);
-        newHiddenNodes.add(nodeId);
-        
-        // Também ocultar todos os seus descendentes
-        const descendants = getAllDescendants(nodeId);
-        descendants.forEach(descendantId => {
-          console.log('Hiding descendant:', descendantId);
-          newHiddenNodes.add(descendantId);
+        // Se todos os filhos estão ocultos, mostrar apenas os filhos diretos
+        directChildren.forEach(childId => {
+          console.log('Showing direct child:', childId);
+          newHiddenNodes.delete(childId);
         });
       }
       
       console.log('New hidden nodes:', Array.from(newHiddenNodes));
       return newHiddenNodes;
     });
-  }, [setHiddenNodes, getAllDescendants]);
+  }, [setHiddenNodes, getDirectChildren]);
 
   const moveNodeInList = useCallback((nodeId: string, direction: 'up' | 'down') => {
     setNodes(prevNodes => {
