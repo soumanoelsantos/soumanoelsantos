@@ -47,8 +47,8 @@ const DashboardConfig = () => {
       // Atualizar config local imediatamente
       updateConfig({ [key]: value });
       
-      // Para mudanças críticas como nome da empresa, salvar imediatamente
-      const criticalKeys = ['companyName', 'enableCommercialTab', 'enableProductTab', 'enablePreSalesTab'];
+      // Remover auto-save para companyName - apenas para abas críticas
+      const criticalKeys = ['enableCommercialTab', 'enableProductTab', 'enablePreSalesTab'];
       
       if (criticalKeys.includes(key)) {
         if (!userId) {
