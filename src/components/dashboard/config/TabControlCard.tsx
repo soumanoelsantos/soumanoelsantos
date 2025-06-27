@@ -18,6 +18,13 @@ const TabControlCard: React.FC<TabControlCardProps> = ({
   isEnabled,
   onToggle
 }) => {
+  console.log(`🔧 [DEBUG] TabControlCard - ${title} isEnabled:`, isEnabled);
+
+  const handleToggle = (checked: boolean) => {
+    console.log(`🔧 [DEBUG] TabControlCard - ${title} toggling to:`, checked);
+    onToggle(checked);
+  };
+
   return (
     <Card className="border border-gray-200">
       <CardHeader className="pb-3">
@@ -46,7 +53,7 @@ const TabControlCard: React.FC<TabControlCardProps> = ({
             )}
             <Switch
               checked={isEnabled}
-              onCheckedChange={onToggle}
+              onCheckedChange={handleToggle}
             />
           </div>
         </div>

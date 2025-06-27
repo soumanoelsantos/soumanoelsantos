@@ -39,13 +39,15 @@ const DashboardConfig = () => {
   }
 
   const handleConfigChange = async (key: string, value: any) => {
-    console.log('🔧 [DEBUG] handleConfigChange chamado:', { key, value });
+    console.log('🔧 [DEBUG] handleConfigChange called:', { key, value });
     
     // Atualizar config local imediatamente
     updateConfig({ [key]: value });
     
     // Para mudanças críticas como controle de abas, salvar imediatamente
-    if (key === 'enableCommercialTab' || key === 'enableProductTab' || key === 'enablePreSalesTab') {
+    const criticalKeys = ['enableCommercialTab', 'enableProductTab', 'enablePreSalesTab', 'companyName'];
+    
+    if (criticalKeys.includes(key)) {
       if (!userId) {
         console.error('❌ [DEBUG] Usuário não autenticado');
         toast.error("Erro: Usuário não autenticado");
@@ -55,14 +57,23 @@ const DashboardConfig = () => {
       try {
         setIsSaving(true);
         const updatedConfig = { ...config, [key]: value };
-        console.log('💾 [DEBUG] Salvando automaticamente configuração de aba...', { key, value });
+        console.log('💾 [DEBUG] Salvando automaticamente configuração crítica...', { key, value, updatedConfig });
         
         await saveDashboardConfig(updatedConfig, userId);
         
-        console.log('✅ [DEBUG] Configuração de aba salva automaticamente!');
-        toast.success("Configuração salva! As configurações de abas foram atualizadas.");
+        console.log('✅ [DEBUG] Configuração crítica salva automaticamente!');
+        
+        if (criticalKeys.slice(0, 3).includes(key)) {
+          toast.success("Configuração de aba salva! A página será recarregada para aplicar as mudanças.");
+          // Recarregar página após mudança de controle de aba
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          toast.success("Configuração salva automaticamente!");
+        }
       } catch (error) {
-        console.error('❌ [DEBUG] Erro ao salvar configuração de aba:', error);
+        console.error('❌ [DEBUG] Erro ao salvar configuração crítica:', error);
         toast.error("Erro: Não foi possível salvar a configuração");
       } finally {
         setIsSaving(false);

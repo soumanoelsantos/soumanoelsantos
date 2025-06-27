@@ -32,37 +32,45 @@ const Dashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Usar as configurações de controle das abas diretamente
-  const hasCommercialTab = config.enableCommercialTab;
-  const hasProductTab = config.enableProductTab;
-  const hasPreSalesTab = config.enablePreSalesTab;
+  // Verificar controles de abas com logs detalhados
+  const hasCommercialTab = Boolean(config.enableCommercialTab);
+  const hasProductTab = Boolean(config.enableProductTab);
+  const hasPreSalesTab = Boolean(config.enablePreSalesTab);
 
-  console.log('🔍 Debug Dashboard tabs:', {
-    hasProductTab,
+  console.log('🔍 [DEBUG] Dashboard tab controls:', {
     hasCommercialTab,
+    hasProductTab,
     hasPreSalesTab,
-    enableProductTab: config.enableProductTab,
-    enableCommercialTab: config.enableCommercialTab,
-    enablePreSalesTab: config.enablePreSalesTab
+    config: {
+      enableCommercialTab: config.enableCommercialTab,
+      enableProductTab: config.enableProductTab,
+      enablePreSalesTab: config.enablePreSalesTab
+    }
   });
 
   // Determinar a aba padrão baseada nas abas disponíveis
   const getDefaultTab = () => {
     if (hasProductTab) {
+      console.log('🔍 [DEBUG] Default tab: produtos');
       return "produtos";
     }
     if (hasCommercialTab) {
+      console.log('🔍 [DEBUG] Default tab: comercial');
       return "comercial";
     }
     if (hasPreSalesTab) {
+      console.log('🔍 [DEBUG] Default tab: pre-vendas');
       return "pre-vendas";
     }
+    console.log('🔍 [DEBUG] Default tab: produtos (fallback)');
     return "produtos"; // fallback
   };
 
   // Contar quantas abas estão ativas
   const activeTabs = [hasCommercialTab, hasProductTab, hasPreSalesTab].filter(Boolean);
   const activeTabsCount = activeTabs.length;
+
+  console.log('🔍 [DEBUG] Active tabs count:', activeTabsCount);
 
   // Se nenhuma aba estiver ativa, mostrar uma mensagem
   if (activeTabsCount === 0) {

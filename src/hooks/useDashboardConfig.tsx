@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,12 +13,14 @@ export const useDashboardConfig = (sharedUserId?: string) => {
 
   const loadConfig = async () => {
     if (!userId) {
+      console.log('⚠️ [DEBUG] No userId provided, using default config');
+      setConfig(defaultConfig);
       setIsLoading(false);
       return;
     }
 
     try {
-      console.log('🔍 Loading dashboard config for userId:', userId);
+      console.log('🔍 [DEBUG] Loading dashboard config for userId:', userId);
       
       const { data, error } = await supabase
         .from('dashboard_configs')
@@ -28,81 +29,32 @@ export const useDashboardConfig = (sharedUserId?: string) => {
         .maybeSingle();
 
       if (error) {
-        console.error('❌ Error loading dashboard config:', error);
+        console.error('❌ [DEBUG] Error loading dashboard config:', error);
         setConfig(defaultConfig);
         setIsLoading(false);
         return;
       }
 
       if (data) {
-        console.log('✅ Dashboard config loaded from database:', data);
+        console.log('✅ [DEBUG] Dashboard config loaded from database:', data);
         
-        // Safely parse arrays from database with proper type conversion
-        let metricsOrder = defaultConfig.metricsOrder;
-        if (data.metrics_order) {
-          if (Array.isArray(data.metrics_order)) {
-            metricsOrder = data.metrics_order.filter((item): item is string => typeof item === 'string');
-          } else if (typeof data.metrics_order === 'string') {
+        // Parse arrays with better error handling
+        const parseJsonArray = (field: any, fallback: string[] = []): string[] => {
+          if (Array.isArray(field)) return field.filter((item): item is string => typeof item === 'string');
+          if (typeof field === 'string') {
             try {
-              const parsed = JSON.parse(data.metrics_order);
-              if (Array.isArray(parsed)) {
-                metricsOrder = parsed.filter((item): item is string => typeof item === 'string');
-              }
+              const parsed = JSON.parse(field);
+              return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : fallback;
             } catch (e) {
-              console.warn('Failed to parse metrics_order');
+              console.warn(`Failed to parse ${field}:`, e);
+              return fallback;
             }
           }
-        }
-
-        let preSalesOrder = defaultConfig.preSalesOrder;
-        if (data.pre_sales_order) {
-          if (Array.isArray(data.pre_sales_order)) {
-            preSalesOrder = data.pre_sales_order.filter((item): item is string => typeof item === 'string');
-          } else if (typeof data.pre_sales_order === 'string') {
-            try {
-              const parsed = JSON.parse(data.pre_sales_order);
-              if (Array.isArray(parsed)) {
-                preSalesOrder = parsed.filter((item): item is string => typeof item === 'string');
-              }
-            } catch (e) {
-              console.warn('Failed to parse pre_sales_order');
-            }
-          }
-        }
-
-        let productOrder = defaultConfig.productOrder;
-        if (data.product_order) {
-          if (Array.isArray(data.product_order)) {
-            productOrder = data.product_order.filter((item): item is string => typeof item === 'string');
-          } else if (typeof data.product_order === 'string') {
-            try {
-              const parsed = JSON.parse(data.product_order);
-              if (Array.isArray(parsed)) {
-                productOrder = parsed.filter((item): item is string => typeof item === 'string');
-              }
-            } catch (e) {
-              console.warn('Failed to parse product_order');
-            }
-          }
-        }
-
-        let selectedProductIds = defaultConfig.selectedProductIds;
-        if (data.selected_product_ids) {
-          if (Array.isArray(data.selected_product_ids)) {
-            selectedProductIds = data.selected_product_ids.filter((item): item is string => typeof item === 'string');
-          } else if (typeof data.selected_product_ids === 'string') {
-            try {
-              const parsed = JSON.parse(data.selected_product_ids);
-              if (Array.isArray(parsed)) {
-                selectedProductIds = parsed.filter((item): item is string => typeof item === 'string');
-              }
-            } catch (e) {
-              console.warn('Failed to parse selected_product_ids');
-            }
-          }
-        }
+          return fallback;
+        };
 
         const mappedConfig: DashboardConfig = {
+          // ... keep existing code (basic fields mapping)
           showConversion: data.show_conversion ?? defaultConfig.showConversion,
           showRevenue: data.show_revenue ?? defaultConfig.showRevenue,
           showTicketFaturamento: data.show_ticket_faturamento ?? defaultConfig.showTicketFaturamento,
@@ -138,10 +90,17 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showPreSalesSchedulingChart: data.show_pre_sales_scheduling_chart ?? defaultConfig.showPreSalesSchedulingChart,
           showPreSalesNoShowChart: data.show_pre_sales_no_show_chart ?? defaultConfig.showPreSalesNoShowChart,
           showPreSalesSDRComparisonChart: data.show_pre_sales_sdr_comparison_chart ?? defaultConfig.showPreSalesSDRComparisonChart,
+          
+          // Company name mapping
           companyName: data.company_name || defaultConfig.companyName,
-          metricsOrder: metricsOrder,
-          preSalesOrder: preSalesOrder,
-          productOrder: productOrder,
+          
+          // Arrays parsing
+          metricsOrder: parseJsonArray(data.metrics_order, defaultConfig.metricsOrder),
+          preSalesOrder: parseJsonArray(data.pre_sales_order, defaultConfig.preSalesOrder),
+          productOrder: parseJsonArray(data.product_order, defaultConfig.productOrder),
+          selectedProductIds: parseJsonArray(data.selected_product_ids, defaultConfig.selectedProductIds),
+          
+          // Charts configuration
           showRevenueEvolutionChart: data.show_revenue_evolution_chart ?? defaultConfig.showRevenueEvolutionChart,
           showBillingEvolutionChart: data.show_billing_evolution_chart ?? defaultConfig.showBillingEvolutionChart,
           showSellerRevenueChart: data.show_seller_revenue_chart ?? defaultConfig.showSellerRevenueChart,
@@ -149,9 +108,8 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showTemporalRevenueChart: data.show_temporal_revenue_chart ?? defaultConfig.showTemporalRevenueChart,
           showTemporalBillingChart: data.show_temporal_billing_chart ?? defaultConfig.showTemporalBillingChart,
           
-          // Product metrics fields
+          // Product metrics
           showProductMetrics: data.show_product_metrics ?? defaultConfig.showProductMetrics,
-          selectedProductIds: selectedProductIds,
           showProductTicketReceita: data.show_product_ticket_receita ?? defaultConfig.showProductTicketReceita,
           showProductTicketFaturamento: data.show_product_ticket_faturamento ?? defaultConfig.showProductTicketFaturamento,
           showProductFaturamento: data.show_product_faturamento ?? defaultConfig.showProductFaturamento,
@@ -165,25 +123,29 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductCashCollect: data.show_product_cash_collect ?? defaultConfig.showProductCashCollect,
           showProductProjecaoReceita: data.show_product_projecao_receita ?? defaultConfig.showProductProjecaoReceita,
           showProductProjecaoFaturamento: data.show_product_projecao_faturamento ?? defaultConfig.showProductProjecaoFaturamento,
-
-          // Product charts fields
           showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
           showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
 
-          // CAMPOS DE CONTROLE DE ABAS - CORRIGIDO
+          // TAB CONTROLS - CRITICAL MAPPING
           enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
           enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
           enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
         };
         
-        console.log('✅ Configuration loaded and mapped successfully:', mappedConfig);
+        console.log('✅ [DEBUG] Final mapped configuration:', {
+          enableCommercialTab: mappedConfig.enableCommercialTab,
+          enableProductTab: mappedConfig.enableProductTab,
+          enablePreSalesTab: mappedConfig.enablePreSalesTab,
+          companyName: mappedConfig.companyName
+        });
+        
         setConfig(mappedConfig);
       } else {
-        console.log('⚠️ No configuration found, using defaults');
+        console.log('⚠️ [DEBUG] No configuration found, using defaults');
         setConfig(defaultConfig);
       }
     } catch (error) {
-      console.error('❌ Error in loadConfig:', error);
+      console.error('❌ [DEBUG] Error in loadConfig:', error);
       setConfig(defaultConfig);
     } finally {
       setIsLoading(false);
@@ -193,7 +155,7 @@ export const useDashboardConfig = (sharedUserId?: string) => {
   const updateConfig = (updates: Partial<DashboardConfig>) => {
     // Permitir updates apenas se for o usuário autenticado (não em visualização compartilhada)
     if (!authUserId || sharedUserId) {
-      console.warn('⚠️ Updates blocked - user not authenticated or in shared view');
+      console.warn('⚠️ [DEBUG] Updates blocked - user not authenticated or in shared view');
       return;
     }
 
@@ -202,7 +164,12 @@ export const useDashboardConfig = (sharedUserId?: string) => {
     // Atualizar estado local imediatamente
     setConfig(prev => {
       const newConfig = { ...prev, ...updates };
-      console.log('🔄 [DEBUG] New configuration state:', newConfig);
+      console.log('🔄 [DEBUG] New configuration state:', {
+        enableCommercialTab: newConfig.enableCommercialTab,
+        enableProductTab: newConfig.enableProductTab,
+        enablePreSalesTab: newConfig.enablePreSalesTab,
+        companyName: newConfig.companyName
+      });
       return newConfig;
     });
   };
