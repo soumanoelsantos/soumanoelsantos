@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MindMapNode, MindMapEdge } from '@/types/mindMap';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,9 @@ const MindMapListView = ({
   onMoveNode
 }: MindMapListViewProps) => {
   console.log('MindMapListView renderizando com', nodes.length, 'nodes');
+  
+  // Calculate visible nodes
+  const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
   
   const getNodeLevel = (nodeId: string): number => {
     let level = 0;
