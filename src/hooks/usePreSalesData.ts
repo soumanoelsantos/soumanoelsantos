@@ -100,35 +100,31 @@ export const usePreSalesData = (sharedUserId?: string, filters?: PreSalesFilters
       // Definir períodos baseado nos filtros
       const currentDate = new Date();
       
-      // Se há filtros de data, usar essas datas
+      // Lógica atualizada para mostrar apenas o mês atual quando não há filtros
       let startDate: Date;
       let endDate: Date;
       
       if (filters?.startDate && filters?.endDate) {
+        // Se há filtros de data, usar essas datas
         startDate = filters.startDate;
         endDate = filters.endDate;
         console.log('📅 Using filtered date range:', { startDate, endDate });
       } else {
-        // Usar o mês atual como padrão
+        // Se não há filtros, usar do primeiro dia do mês atual até hoje
         startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-        console.log('📅 Using current month range:', { startDate, endDate });
+        endDate = new Date(currentDate); // Até hoje
+        console.log('📅 Using current month range (first day to today):', { startDate, endDate });
       }
 
-      // Para o gráfico, se não há filtros específicos, usar últimos 30 dias úteis
-      let chartStartDate: Date;
-      if (filters?.startDate) {
-        chartStartDate = startDate;
-      } else {
-        chartStartDate = new Date();
-        chartStartDate.setDate(chartStartDate.getDate() - 45); // 45 dias para garantir 30 dias úteis
-      }
+      // Para o gráfico, usar o mesmo período definido acima
+      const chartStartDate = startDate;
+      const chartEndDate = endDate;
 
       console.log('📅 Date ranges:', {
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
         chartStart: chartStartDate.toISOString().split('T')[0],
-        today: currentDate.toISOString().split('T')[0]
+        chartEnd: chartEndDate.toISOString().split('T')[0]
       });
 
       // Filtrar por SDRs selecionados se houver
@@ -159,7 +155,7 @@ export const usePreSalesData = (sharedUserId?: string, filters?: PreSalesFilters
         throw periodPerfError;
       }
 
-      // Buscar dados para gráfico
+      // Buscar dados para gráfico (mesmo período)
       const { data: chartPerformanceData, error: chartPerfError } = await supabase
         .from('seller_daily_performance')
         .select(`
@@ -172,7 +168,7 @@ export const usePreSalesData = (sharedUserId?: string, filters?: PreSalesFilters
         `)
         .in('seller_id', sdrIds)
         .gte('date', chartStartDate.toISOString().split('T')[0])
-        .lte('date', (filters?.endDate || currentDate).toISOString().split('T')[0]);
+        .lte('date', chartEndDate.toISOString().split('T')[0]);
 
       if (chartPerfError) {
         console.error('❌ Error fetching chart performance data:', chartPerfError);
@@ -227,11 +223,11 @@ export const usePreSalesData = (sharedUserId?: string, filters?: PreSalesFilters
           };
         });
 
-      // Gerar dados para gráficos baseado no período selecionado
+      // Gerar dados para gráficos baseado no período selecionado (apenas dias úteis)
       const chartData = [];
       const currentChartDate = new Date(chartStartDate);
       
-      while (currentChartDate <= (filters?.endDate || currentDate)) {
+      while (currentChartDate <= chartEndDate) {
         // Pular fins de semana
         if (currentChartDate.getDay() !== 0 && currentChartDate.getDay() !== 6) {
           const dateStr = currentChartDate.toISOString().split('T')[0];
@@ -303,7 +299,7 @@ export const usePreSalesData = (sharedUserId?: string, filters?: PreSalesFilters
   const generateMockData = (filters?: PreSalesFilters) => {
     const currentDate = new Date();
     
-    // Definir período para mock
+    // Definir período para mock - mesma lógica do código principal
     let startDate: Date;
     let endDate: Date;
     
@@ -311,8 +307,9 @@ export const usePreSalesData = (sharedUserId?: string, filters?: PreSalesFilters
       startDate = filters.startDate;
       endDate = filters.endDate;
     } else {
+      // Usar do primeiro dia do mês atual até hoje
       startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      endDate = new Date(currentDate);
     }
     
     const businessDaysInPeriod = getBusinessDaysInPeriod(startDate, endDate);
@@ -320,7 +317,7 @@ export const usePreSalesData = (sharedUserId?: string, filters?: PreSalesFilters
     const mockChartData = [];
     const currentMockDate = new Date(startDate);
     
-    // Gerar dados mock para o período selecionado
+    // Gerar dados mock apenas para o período definido
     let totalCalls = 0;
     let totalSchedulings = 0;
     let totalNoShow = 0;
