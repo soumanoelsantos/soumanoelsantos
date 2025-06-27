@@ -20,6 +20,7 @@ interface DialogManagerProps {
   edges: MindMapEdge[];
   onAddNode: (label: string, connectToNodeId?: string) => void;
   onUpdateNodeLabel: (nodeId: string, label: string) => void;
+  onUpdateNodeColor?: (nodeId: string, color: string) => void;
   onUpdateNodeNotes: (nodeId: string, notes: string) => void;
   getAvailableParents: (nodeId: string) => MindMapNode[];
   onChangeToMain: (nodeId: string) => void;
@@ -42,6 +43,7 @@ const DialogManager = ({
   edges,
   onAddNode,
   onUpdateNodeLabel,
+  onUpdateNodeColor,
   onUpdateNodeNotes,
   getAvailableParents,
   onChangeToMain,
@@ -65,6 +67,7 @@ const DialogManager = ({
         nodeId={editingNode}
         nodes={nodes}
         onUpdateLabel={onUpdateNodeLabel}
+        onUpdateColor={onUpdateNodeColor}
       />
 
       <ChangeNodeTypeDialog

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
@@ -33,6 +32,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     addNode,
     deleteNode,
     updateNodeLabel,
+    updateNodeColor,
     updateNodePosition,
     updateNodeNotes,
     updateNodeAttachments,
@@ -325,6 +325,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         edges={edges}
         onAddNode={handleAddNode}
         onUpdateNodeLabel={updateNodeLabel}
+        onUpdateNodeColor={updateNodeColor}
         onUpdateNodeNotes={updateNodeNotes}
         getAvailableParents={getAvailableParents}
         onChangeToMain={changeNodeToMain}
