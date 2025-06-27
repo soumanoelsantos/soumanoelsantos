@@ -27,6 +27,21 @@ export const useNodeOperations = ({ nodes, setNodes, setSelectedNode }: UseNodeO
     return newNodeId;
   }, [setNodes]);
 
+  const addNodeAtPosition = useCallback((label: string, position: { x: number; y: number }) => {
+    const newNodeId = Date.now().toString();
+    const newNode: MindMapNode = {
+      id: newNodeId,
+      type: 'default',
+      position,
+      data: {
+        label: label
+      }
+    };
+
+    setNodes(prevNodes => [...prevNodes, newNode]);
+    return newNodeId;
+  }, [setNodes]);
+
   const deleteNode = useCallback((id: string) => {
     setNodes(prevNodes => prevNodes.filter(node => node.id !== id));
     setSelectedNode(null);
@@ -90,6 +105,7 @@ export const useNodeOperations = ({ nodes, setNodes, setSelectedNode }: UseNodeO
 
   return {
     addNode,
+    addNodeAtPosition,
     deleteNode,
     updateNodeLabel,
     updateNodePosition,

@@ -21,6 +21,7 @@ interface MindMapNodeProps {
   onChangeType: () => void;
   onOpenNotes: () => void;
   onAddChild: () => void;
+  onReconnect?: () => void;
   onUpdateNodeAttachments?: (attachments: any[]) => void;
 }
 
@@ -39,6 +40,7 @@ const MindMapNode = ({
   onChangeType,
   onOpenNotes,
   onAddChild,
+  onReconnect,
   onUpdateNodeAttachments
 }: MindMapNodeProps) => {
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -177,6 +179,20 @@ const MindMapNode = ({
               >
                 <Network className="h-3 w-3" />
               </Button>
+              {onReconnect && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onReconnect();
+                  }}
+                  title="Reconectar nó"
+                  className="h-6 px-2 text-xs"
+                >
+                  <Network className="h-3 w-3" />
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant="destructive"

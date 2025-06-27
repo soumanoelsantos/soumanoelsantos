@@ -23,12 +23,36 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     if (connectToNodeId) {
       edgeOperations.addEdge(connectToNodeId, newNodeId);
     }
+    
+    return newNodeId;
   };
 
   // Enhanced deleteNode that also removes edges
   const deleteNode = (id: string) => {
     edgeOperations.removeEdgesForNode(id);
     nodeOperations.deleteNode(id);
+  };
+
+  // Insert node between two connected nodes
+  const insertNodeInEdge = (sourceId: string, targetId: string) => {
+    // Encontrar posição média para o novo nó
+    const sourceNode = nodes.find(n => n.id === sourceId);
+    const targetNode = nodes.find(n => n.id === targetId);
+    
+    if (!sourceNode || !targetNode) return;
+    
+    const midPosition = {
+      x: (sourceNode.position.x + targetNode.position.x) / 2,
+      y: (sourceNode.position.y + targetNode.position.y) / 2
+    };
+    
+    // Criar novo nó
+    const newNodeId = nodeOperations.addNodeAtPosition('Novo Nó', midPosition);
+    
+    // Reorganizar arestas
+    edgeOperations.insertNodeInEdge(sourceId, targetId, newNodeId);
+    
+    return newNodeId;
   };
 
   return {
@@ -49,6 +73,8 @@ export const useMindMapState = (initialContent: MindMapContent) => {
     changeNodeToChild: edgeOperations.changeNodeToChild,
     changeNodeToGrandchild: edgeOperations.changeNodeToGrandchild,
     moveNodeInList: nodeOperations.moveNodeInList,
+    insertNodeInEdge,
+    reconnectNode: edgeOperations.reconnectNode,
     ...alignmentOperations
   };
 };

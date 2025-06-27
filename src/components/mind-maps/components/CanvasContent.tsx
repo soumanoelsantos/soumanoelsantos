@@ -24,6 +24,8 @@ interface CanvasContentProps {
   onOpenNodeNotes: (nodeId: string) => void;
   onAddChildNode: (parentNodeId: string) => void;
   onUpdateNodeAttachments?: (nodeId: string, attachments: any[]) => void;
+  onInsertNodeInEdge?: (sourceId: string, targetId: string) => void;
+  onReconnectNode?: (nodeId: string) => void;
 }
 
 const CanvasContent = ({
@@ -45,7 +47,9 @@ const CanvasContent = ({
   onChangeNodeType,
   onOpenNodeNotes,
   onAddChildNode,
-  onUpdateNodeAttachments
+  onUpdateNodeAttachments,
+  onInsertNodeInEdge,
+  onReconnectNode
 }: CanvasContentProps) => {
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
   const visibleEdges = edges.filter(edge => 
@@ -73,6 +77,8 @@ const CanvasContent = ({
       <MindMapEdges
         edges={visibleEdges}
         nodes={visibleNodes}
+        hiddenNodes={hiddenNodes}
+        onInsertNodeInEdge={onInsertNodeInEdge}
       />
 
       {/* Render alignment lines */}
@@ -108,6 +114,7 @@ const CanvasContent = ({
           onChangeType={() => onChangeNodeType(node.id)}
           onOpenNotes={() => onOpenNodeNotes(node.id)}
           onAddChild={() => onAddChildNode(node.id)}
+          onReconnect={onReconnectNode ? () => onReconnectNode(node.id) : undefined}
           onUpdateNodeAttachments={onUpdateNodeAttachments ? (attachments) => onUpdateNodeAttachments(node.id, attachments) : undefined}
         />
       ))}

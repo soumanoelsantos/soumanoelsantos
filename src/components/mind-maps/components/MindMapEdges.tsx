@@ -1,14 +1,16 @@
 
 import React from 'react';
 import { MindMapNode, MindMapEdge } from '@/types/mindMap';
+import EdgeInsertButton from './EdgeInsertButton';
 
 interface MindMapEdgesProps {
   nodes: MindMapNode[];
   edges: MindMapEdge[];
   hiddenNodes?: Set<string>;
+  onInsertNodeInEdge?: (sourceId: string, targetId: string) => void;
 }
 
-const MindMapEdges = ({ nodes, edges, hiddenNodes = new Set() }: MindMapEdgesProps) => {
+const MindMapEdges = ({ nodes, edges, hiddenNodes = new Set(), onInsertNodeInEdge }: MindMapEdgesProps) => {
   const getNodeBounds = (node: MindMapNode) => ({
     left: node.position.x - 60,
     right: node.position.x + 60,
@@ -84,52 +86,85 @@ const MindMapEdges = ({ nodes, edges, hiddenNodes = new Set() }: MindMapEdgesPro
     return `M ${source.x} ${source.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${target.x} ${target.y}`;
   };
 
+  const getMidPoint = (source: { x: number; y: number }, target: { x: number; y: number }) => {
+    return {
+      x: (source.x + target.x) / 2,
+      y: (source.y + target.y) / 2
+    };
+  };
+
   return (
-    <svg 
-      className="absolute inset-0 w-full h-full pointer-events-none" 
-      style={{ zIndex: -1 }}
-    >
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="9"
-          refY="3.5"
-          orient="auto"
-        >
-          <polygon
-            points="0 0, 10 3.5, 0 7"
-            fill="#6b7280"
-          />
-        </marker>
-      </defs>
-      
-      {edges.map(edge => {
+    <div className="absolute inset-0">
+      <svg 
+        className="absolute inset-0 w-full h-full pointer-events-none" 
+        style={{ zIndex: -1 }}
+      >
+        <defs>
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="7"
+            refX="9"
+            refY="3.5"
+            orient="auto"
+          >
+            <polygon
+              points="0 0, 10 3.5, 0 7"
+              fill="#6b7280"
+            />
+          </marker>
+        </defs>
+        
+        {edges.map(edge => {
+          const sourceNode = nodes.find(n => n.id === edge.source);
+          const targetNode = nodes.find(n => n.id === edge.target);
+          
+          if (!sourceNode || !targetNode) return null;
+          
+          // Hide edge if either node is hidden
+          if (hiddenNodes.has(edge.source) || hiddenNodes.has(edge.target)) return null;
+
+          const { sourcePoint, targetPoint } = getClosestPoints(sourceNode, targetNode);
+          const pathData = createSmoothPath(sourcePoint, targetPoint);
+
+          return (
+            <path
+              key={edge.id}
+              d={pathData}
+              stroke="#6b7280"
+              strokeWidth="2"
+              fill="none"
+              markerEnd="url(#arrowhead)"
+              className="transition-all duration-200"
+            />
+          );
+        })}
+      </svg>
+
+      {/* Botões de inserção de nós */}
+      {onInsertNodeInEdge && edges.map(edge => {
         const sourceNode = nodes.find(n => n.id === edge.source);
         const targetNode = nodes.find(n => n.id === edge.target);
         
         if (!sourceNode || !targetNode) return null;
         
-        // Hide edge if either node is hidden
+        // Hide button if either node is hidden
         if (hiddenNodes.has(edge.source) || hiddenNodes.has(edge.target)) return null;
 
         const { sourcePoint, targetPoint } = getClosestPoints(sourceNode, targetNode);
-        const pathData = createSmoothPath(sourcePoint, targetPoint);
+        const midPoint = getMidPoint(sourcePoint, targetPoint);
 
         return (
-          <path
-            key={edge.id}
-            d={pathData}
-            stroke="#6b7280"
-            strokeWidth="2"
-            fill="none"
-            markerEnd="url(#arrowhead)"
-            className="transition-all duration-200"
+          <EdgeInsertButton
+            key={`insert-${edge.id}`}
+            sourceId={edge.source}
+            targetId={edge.target}
+            position={midPoint}
+            onInsertNode={onInsertNodeInEdge}
           />
         );
       })}
-    </svg>
+    </div>
   );
 };
 

@@ -65,11 +65,57 @@ export const useEdgeOperations = ({ edges, setEdges }: UseEdgeOperationsProps) =
     });
   }, [setEdges]);
 
+  const insertNodeInEdge = useCallback((sourceId: string, targetId: string, newNodeId: string) => {
+    setEdges(prevEdges => {
+      // Remover a aresta original
+      const filteredEdges = prevEdges.filter(edge => 
+        !(edge.source === sourceId && edge.target === targetId)
+      );
+      
+      // Adicionar duas novas arestas
+      const newEdges: MindMapEdge[] = [
+        {
+          id: `${sourceId}-${newNodeId}`,
+          source: sourceId,
+          target: newNodeId
+        },
+        {
+          id: `${newNodeId}-${targetId}`,
+          source: newNodeId,
+          target: targetId
+        }
+      ];
+      
+      return [...filteredEdges, ...newEdges];
+    });
+  }, [setEdges]);
+
+  const reconnectNode = useCallback((nodeId: string, newParentId: string | null) => {
+    setEdges(prevEdges => {
+      // Remover conexão atual
+      const filteredEdges = prevEdges.filter(edge => edge.target !== nodeId);
+      
+      // Adicionar nova conexão se houver pai
+      if (newParentId) {
+        const newEdge: MindMapEdge = {
+          id: `${newParentId}-${nodeId}`,
+          source: newParentId,
+          target: nodeId
+        };
+        return [...filteredEdges, newEdge];
+      }
+      
+      return filteredEdges;
+    });
+  }, [setEdges]);
+
   return {
     addEdge,
     removeEdgesForNode,
     changeNodeToMain,
     changeNodeToChild,
-    changeNodeToGrandchild
+    changeNodeToGrandchild,
+    insertNodeInEdge,
+    reconnectNode
   };
 };

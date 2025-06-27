@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Paperclip, Upload, X, FileText, Image, Video, Eye, Download } from 'lucide-react';
+import { Paperclip, Upload, X, FileText, Image, Video, Eye, Download, Play } from 'lucide-react';
 import { MindMapAttachment } from '@/types/mindMap';
 import { useToast } from '@/hooks/use-toast';
 
@@ -17,6 +17,7 @@ interface NodeAttachmentsDialogProps {
 const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachmentsDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [previewAttachment, setPreviewAttachment] = useState<MindMapAttachment | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -95,6 +96,10 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
     }
   };
 
+  const handlePreview = (attachment: MindMapAttachment) => {
+    setPreviewAttachment(attachment);
+  };
+
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'pdf': return <FileText className="h-4 w-4" />;
@@ -111,115 +116,200 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
     return `${Math.round(bytes / Math.pow(1024, i) * 100) / 100} ${sizes[i]}`;
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="sm"
-          variant="ghost"
-          className={`h-5 w-5 p-0 hover:bg-gray-100 ${
-            attachments.length > 0 ? 'text-blue-600' : 'text-gray-400'
-          }`}
-          title={attachments.length > 0 ? `${attachments.length} anexo(s)` : "Adicionar anexos"}
-        >
-          <Paperclip className="h-3 w-3" />
-        </Button>
-      </DialogTrigger>
-      
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Anexos do Nó</DialogTitle>
-        </DialogHeader>
-        
-        <Tabs defaultValue="list" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="list">Lista</TabsTrigger>
-            <TabsTrigger value="upload">Adicionar</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="list" className="space-y-3">
-            {attachments.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Paperclip className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>Nenhum anexo</p>
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {attachments.map(attachment => (
-                  <div key={attachment.id} className="flex items-center gap-2 p-2 border rounded-lg">
-                    {getFileIcon(attachment.type)}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{attachment.name}</p>
-                      <p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0"
-                        onClick={() => window.open(attachment.url, '_blank')}
-                        title="Visualizar"
-                      >
-                        <Eye className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700"
-                        onClick={() => handleDownloadAttachment(attachment)}
-                        title="Baixar"
-                      >
-                        <Download className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                        onClick={() => handleRemoveAttachment(attachment.id)}
-                        title="Remover"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="upload" className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="file-upload">Escolher arquivo</Label>
-              <Input
-                id="file-upload"
-                type="file"
-                ref={fileInputRef}
-                accept=".pdf,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov,.webm"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    handleFileUpload(file);
-                  }
-                }}
-                disabled={isUploading}
-              />
-              <p className="text-xs text-gray-500">
-                Suporte: PDF, Imagens (JPG, PNG, GIF), Vídeos (MP4, AVI, MOV, WEBM)
-              </p>
-            </div>
-            
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="w-full"
+  const renderPreview = (attachment: MindMapAttachment) => {
+    switch (attachment.type) {
+      case 'image':
+        return (
+          <div className="max-w-full max-h-96 overflow-hidden rounded-lg">
+            <img 
+              src={attachment.url} 
+              alt={attachment.name}
+              className="w-full h-auto object-contain"
+            />
+          </div>
+        );
+      case 'video':
+        return (
+          <div className="max-w-full max-h-96 overflow-hidden rounded-lg">
+            <video 
+              controls 
+              className="w-full h-auto"
+              preload="metadata"
             >
-              <Upload className="h-4 w-4 mr-2" />
-              {isUploading ? 'Enviando...' : 'Selecionar Arquivo'}
+              <source src={attachment.url} />
+              Seu navegador não suporta reprodução de vídeo.
+            </video>
+          </div>
+        );
+      case 'pdf':
+        return (
+          <div className="text-center p-8 bg-gray-50 rounded-lg">
+            <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-600">Preview de PDF não disponível</p>
+            <Button 
+              onClick={() => window.open(attachment.url, '_blank')}
+              className="mt-4"
+            >
+              Abrir PDF
             </Button>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button
+            size="sm"
+            variant="ghost"
+            className={`h-5 w-5 p-0 hover:bg-gray-100 ${
+              attachments.length > 0 ? 'text-blue-600' : 'text-gray-400'
+            }`}
+            title={attachments.length > 0 ? `${attachments.length} anexo(s)` : "Adicionar anexos"}
+          >
+            <Paperclip className="h-3 w-3" />
+          </Button>
+        </DialogTrigger>
+        
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Anexos do Nó</DialogTitle>
+          </DialogHeader>
+          
+          <Tabs defaultValue="list" className="w-full h-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="list">Lista</TabsTrigger>
+              <TabsTrigger value="upload">Adicionar</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="list" className="space-y-3 max-h-[60vh] overflow-y-auto">
+              {attachments.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Paperclip className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>Nenhum anexo</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3">
+                  {attachments.map(attachment => (
+                    <div key={attachment.id} className="border rounded-lg p-3 space-y-3">
+                      <div className="flex items-center gap-2">
+                        {getFileIcon(attachment.type)}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{attachment.name}</p>
+                          <p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0"
+                            onClick={() => handlePreview(attachment)}
+                            title="Visualizar"
+                          >
+                            <Eye className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700"
+                            onClick={() => handleDownloadAttachment(attachment)}
+                            title="Baixar"
+                          >
+                            <Download className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                            onClick={() => handleRemoveAttachment(attachment.id)}
+                            title="Remover"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Preview inline para arquivos pequenos */}
+                      {attachment.type === 'image' && (
+                        <div className="max-h-32 overflow-hidden rounded border">
+                          <img 
+                            src={attachment.url} 
+                            alt={attachment.name}
+                            className="w-full h-auto object-cover"
+                          />
+                        </div>
+                      )}
+                      
+                      {attachment.type === 'video' && (
+                        <div className="max-h-32 overflow-hidden rounded border bg-gray-100 flex items-center justify-center">
+                          <Button
+                            variant="ghost"
+                            onClick={() => handlePreview(attachment)}
+                            className="flex items-center gap-2"
+                          >
+                            <Play className="h-4 w-4" />
+                            Reproduzir vídeo
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="upload" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="file-upload">Escolher arquivo</Label>
+                <Input
+                  id="file-upload"
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".pdf,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov,.webm"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleFileUpload(file);
+                    }
+                  }}
+                  disabled={isUploading}
+                />
+                <p className="text-xs text-gray-500">
+                  Suporte: PDF, Imagens (JPG, PNG, GIF), Vídeos (MP4, AVI, MOV, WEBM)
+                </p>
+              </div>
+              
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="w-full"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                {isUploading ? 'Enviando...' : 'Selecionar Arquivo'}
+              </Button>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Preview */}
+      {previewAttachment && (
+        <Dialog open={!!previewAttachment} onOpenChange={() => setPreviewAttachment(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+            <DialogHeader>
+              <DialogTitle>{previewAttachment.name}</DialogTitle>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-auto">
+              {renderPreview(previewAttachment)}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 

@@ -10,6 +10,7 @@ import CanvasContent from './components/CanvasContent';
 import MindMapListView from './components/MindMapListView';
 import DialogManager from './components/DialogManager';
 import ZoomControls from './components/ZoomControls';
+import ReconnectNodeDialog from './components/ReconnectNodeDialog';
 
 interface MindMapCanvasProps {
   initialContent: MindMapContent;
@@ -44,7 +45,9 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     distributeNodesHorizontally,
     distributeNodesVertically,
     arrangeInGrid,
-    moveNodeInList
+    moveNodeInList,
+    insertNodeInEdge,
+    reconnectNode
   } = useMindMapState(initialContent);
 
   const { draggedNode, canvasRef, handleMouseDown: dragMouseDown, handleTouchStart: dragTouchStart, isDragging } = useDragAndDrop({
@@ -89,6 +92,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [selectedParentForNewNode, setSelectedParentForNewNode] = useState<string | null>(null);
+  const [reconnectingNode, setReconnectingNode] = useState<string | null>(null);
 
   // Corrigir o event listener para wheel
   useEffect(() => {
@@ -181,6 +185,30 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     updateNodeAttachments(nodeId, attachments);
   };
 
+  const handleInsertNodeInEdge = (sourceId: string, targetId: string) => {
+    console.log('Inserindo nó entre:', sourceId, 'e', targetId);
+    insertNodeInEdge(sourceId, targetId);
+  };
+
+  const handleReconnectNode = (nodeId: string) => {
+    console.log('Reconectando nó:', nodeId);
+    setReconnectingNode(nodeId);
+  };
+
+  const handleConfirmReconnect = (nodeId: string, newParentId: string | null) => {
+    console.log('Confirmando reconexão:', nodeId, 'para', newParentId);
+    reconnectNode(nodeId, newParentId);
+    setReconnectingNode(null);
+  };
+
+  const handleReconnectNodeDialogClose = () => {
+    setReconnectingNode(null);
+  };
+
+  const handleReconnectNodeDialogOpen = (nodeId: string) => {
+    setReconnectingNode(nodeId);
+  };
+
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
   console.log('Nodes disponíveis:', nodes.length);
@@ -263,6 +291,8 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
                 onOpenNodeNotes={handleOpenNodeNotes}
                 onAddChildNode={handleAddChildNode}
                 onUpdateNodeAttachments={handleUpdateNodeAttachments}
+                onInsertNodeInEdge={handleInsertNodeInEdge}
+                onReconnectNode={handleReconnectNode}
               />
             </div>
             
@@ -297,6 +327,15 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         onChangeToChild={changeNodeToChild}
         onChangeToGrandchild={changeNodeToGrandchild}
         selectedParentForNewNode={selectedParentForNewNode}
+      />
+
+      <ReconnectNodeDialog
+        isOpen={!!reconnectingNode}
+        onClose={handleReconnectNodeDialogClose}
+        nodeId={reconnectingNode}
+        nodes={nodes}
+        edges={edges}
+        onReconnect={handleConfirmReconnect}
       />
     </div>
   );
