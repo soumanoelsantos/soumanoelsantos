@@ -3,7 +3,6 @@ import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
 import MetricsCards from '@/components/dashboard/metrics/MetricsCards';
 import PreSalesMetricsCards from '@/components/dashboard/metrics/PreSalesMetricsCards';
-import ProductMetricsCards from '@/components/dashboard/products/ProductMetricsCards';
 import SingleProductMetricsCards from '@/components/dashboard/products/SingleProductMetricsCards';
 import RevenueEvolutionChart from '@/components/dashboard/charts/RevenueEvolutionChart';
 import BillingEvolutionChart from '@/components/dashboard/charts/BillingEvolutionChart';
@@ -23,46 +22,6 @@ interface ItemRendererProps {
 
 export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, selectedProductId }) => {
   console.log('🔍 [DEBUG] ItemRenderer - Rendering item:', itemKey);
-  console.log('🔍 [DEBUG] ItemRenderer - selectedProductId:', selectedProductId);
-  console.log('🔍 [DEBUG] ItemRenderer - config for item:', config[itemKey as keyof DashboardConfig]);
-
-  // Lista de indicadores de produtos
-  const productIndicators = [
-    'showProductReceita',
-    'showProductFaturamento',
-    'showProductQuantidadeVendas',
-    'showProductTicketReceita',
-    'showProductTicketFaturamento',
-    'showProductMetaReceita',
-    'showProductMetaFaturamento',
-    'showProductMetaQuantidadeVendas',
-    'showProductFaltaReceita',
-    'showProductFaltaFaturamento',
-    'showProductCashCollect',
-    'showProductProjecaoReceita',
-    'showProductProjecaoFaturamento'
-  ];
-
-  // Lista de gráficos de produtos (apenas os dois gráficos de evolução + os novos 4 gráficos)
-  const productCharts = [
-    'showProductRevenueEvolutionChart',
-    'showProductBillingEvolutionChart',
-    'showSellerRevenueChart',
-    'showSellerBillingChart',
-    'showTemporalRevenueChart',
-    'showTemporalBillingChart'
-  ];
-
-  // Lista de indicadores comerciais
-  const commercialIndicators = [
-    'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
-    'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
-    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
-    'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
-    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
-    'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
-  ];
 
   // GRÁFICOS COMERCIAIS - renderizar diretamente
   switch (itemKey) {
@@ -88,10 +47,17 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
       return config.showClosersPerformanceTable ? <ClosersPerformanceTable /> : null;
   }
 
+  // Lista de indicadores de produtos
+  const productIndicators = [
+    'showProductReceita', 'showProductFaturamento', 'showProductQuantidadeVendas',
+    'showProductTicketReceita', 'showProductTicketFaturamento',
+    'showProductMetaReceita', 'showProductMetaFaturamento', 'showProductMetaQuantidadeVendas',
+    'showProductFaltaReceita', 'showProductFaltaFaturamento',
+    'showProductCashCollect', 'showProductProjecaoReceita', 'showProductProjecaoFaturamento'
+  ];
+
   // Se é um indicador de produto, só renderizar se um produto específico estiver selecionado
   if (productIndicators.includes(itemKey)) {
-    console.log('🔍 [DEBUG] ItemRenderer - Detected product indicator:', itemKey);
-    // Só renderizar se um produto específico estiver selecionado
     if (!selectedProductId) {
       console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering product indicator');
       return null;
@@ -103,20 +69,23 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     />;
   }
 
+  // Lista de gráficos de produtos
+  const productCharts = [
+    'showProductRevenueEvolutionChart',
+    'showProductBillingEvolutionChart',
+    'showSellerRevenueChart',
+    'showSellerBillingChart', 
+    'showTemporalRevenueChart',
+    'showTemporalBillingChart'
+  ];
+
   // Se é um gráfico de produto, renderizar o gráfico específico
   if (productCharts.includes(itemKey)) {
-    console.log('🔍 [DEBUG] ItemRenderer - Detected product chart:', itemKey, 'enabled:', config[itemKey as keyof DashboardConfig]);
-    
-    // Verificar se o gráfico está habilitado na configuração
     if (!config[itemKey as keyof DashboardConfig]) {
-      console.log('🔍 [DEBUG] ItemRenderer - Product chart not enabled in config');
       return null;
     }
 
-    // Se um produto específico está selecionado, renderizar o gráfico para esse produto
     if (selectedProductId) {
-      console.log('🔍 [DEBUG] ItemRenderer - Rendering specific product chart for:', selectedProductId);
-      
       switch (itemKey) {
         case 'showProductRevenueEvolutionChart':
           return <ProductRevenueEvolutionChart selectedProductId={selectedProductId} />;
@@ -140,15 +109,22 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
           return null;
       }
     }
-
-    // Se nenhum produto específico está selecionado, não renderizar nada
-    console.log('🔍 [DEBUG] ItemRenderer - No product selected, not rendering chart');
     return null;
   }
 
+  // Lista de indicadores comerciais
+  const commercialIndicators = [
+    'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
+    'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
+    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
+    'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
+    'showQuantidadeVendas', 'showCashCollect', 'showCac',
+    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
+  ];
+
   // Verificar se é um indicador comercial
   if (commercialIndicators.includes(itemKey)) {
-    console.log('🔍 [DEBUG] ItemRenderer - Detected commercial indicator:', itemKey);
     if (config[itemKey as keyof DashboardConfig]) {
       return <MetricsCards config={config} />;
     }
@@ -157,8 +133,6 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
 
   // Verificar se é um indicador de pré-vendas
   if (itemKey.startsWith('showPreSales')) {
-    console.log('🔍 [DEBUG] ItemRenderer - Detected pre-sales indicator:', itemKey);
-    // Criar dados simulados completos para pré-vendas com as novas propriedades mensais
     const mockPreSalesData = {
       dailyCalls: 0,
       dailyCallsTarget: 40,
@@ -168,7 +142,6 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
       dailyNoShowRate: 0,
       totalSDRs: 0,
       averageSchedulingsPerSDR: 0,
-      // Adicionar as novas propriedades mensais
       monthlyCallsAverage: 0,
       monthlySchedulingsAverage: 0,
       monthlyNoShowRate: 0,

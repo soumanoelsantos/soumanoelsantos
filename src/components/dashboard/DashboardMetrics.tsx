@@ -18,113 +18,138 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   const { getOrderedItems } = useDashboardOrder(config);
   
   console.log('📊 [DEBUG] DashboardMetrics - Config:', {
-    metricsOrder: config.metricsOrder,
-    productOrder: config.productOrder,
-    selectedProductIds: config.selectedProductIds,
-    showProductMetrics: config.showProductMetrics,
-    dashboardType
+    dashboardType,
+    enableCommercialTab: config.enableCommercialTab,
+    enableProductTab: config.enableProductTab,
+    enablePreSalesTab: config.enablePreSalesTab
   });
 
   const renderMetrics = () => {
-    const orderedItems = getOrderedItems();
     const metricsComponents: JSX.Element[] = [];
     const chartsComponents: JSX.Element[] = [];
 
-    console.log('📊 [DEBUG] DashboardMetrics - Ordered items:', orderedItems);
-    console.log('📊 [DEBUG] DashboardMetrics - Dashboard type:', dashboardType);
-
-    // Lista de indicadores de produtos
-    const productIndicators = [
-      'showProductReceita',
-      'showProductFaturamento',
-      'showProductQuantidadeVendas',
-      'showProductTicketReceita',
-      'showProductTicketFaturamento',
-      'showProductMetaReceita',
-      'showProductMetaFaturamento',
-      'showProductMetaQuantidadeVendas',
-      'showProductFaltaReceita',
-      'showProductFaltaFaturamento',
-      'showProductCashCollect',
-      'showProductProjecaoReceita',
-      'showProductProjecaoFaturamento'
-    ];
-
-    // Lista de gráficos de produtos (incluindo os novos 4 gráficos)
-    const productCharts = [
-      'showProductRevenueEvolutionChart',
-      'showProductBillingEvolutionChart',
-      'showSellerRevenueChart',
-      'showSellerBillingChart',
-      'showTemporalRevenueChart',
-      'showTemporalBillingChart'
-    ];
-
-    // Lista de gráficos comerciais
-    const commercialCharts = [
-      'revenueEvolutionChart',
-      'billingEvolutionChart',
-      'sellerRevenueChart',
-      'sellerBillingChart',
-      'temporalRevenueChart',
-      'temporalBillingChart',
-      'showClosersPerformanceTable'
-    ];
-
-    // Lista de indicadores comerciais
-    const commercialIndicators = [
-      'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
-      'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
-      'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
-      'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
-      'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
-      'showQuantidadeVendas', 'showCashCollect', 'showCac',
-      'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
-    ];
-
-    orderedItems.forEach((itemKey, index) => {
-      console.log('📊 [DEBUG] Processing metric:', itemKey, 'Dashboard type:', dashboardType);
-
-      // Filtrar por tipo de dashboard
-      let shouldRender = true;
+    // Para dashboard comercial, renderizar métricas básicas e gráficos
+    if (dashboardType === 'comercial') {
+      console.log('📊 [DEBUG] Rendering commercial dashboard');
       
-      if (dashboardType === 'produtos') {
-        // No dashboard de produtos, mostrar apenas indicadores e gráficos de produtos
-        shouldRender = productIndicators.includes(itemKey) || productCharts.includes(itemKey);
-        console.log('📊 [DEBUG] Product dashboard - Should render:', shouldRender, 'for item:', itemKey);
-      } else if (dashboardType === 'comercial') {
-        // No dashboard comercial, mostrar apenas indicadores comerciais
-        shouldRender = commercialIndicators.includes(itemKey) || commercialCharts.includes(itemKey);
-      }
+      // Métricas comerciais básicas
+      const commercialMetrics = [
+        'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
+        'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
+        'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
+        'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
+        'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
+        'showQuantidadeVendas', 'showCashCollect', 'showCac',
+        'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
+      ];
 
-      if (!shouldRender) {
-        console.log('📊 [DEBUG] Skipping metric for dashboard type:', itemKey, dashboardType);
-        return;
-      }
-
-      // Renderizar componentes através do ItemRenderer
-      const renderedComponent = (
-        <ItemRenderer 
-          key={`${itemKey}-${index}`}
-          itemKey={itemKey} 
-          config={config} 
-          selectedProductId={selectedProductId} 
-        />
-      );
-
-      if (renderedComponent) {
-        // Separar gráficos de métricas
-        const isChart = productCharts.includes(itemKey) || commercialCharts.includes(itemKey);
-        
-        if (isChart) {
-          chartsComponents.push(renderedComponent);
-        } else {
-          metricsComponents.push(renderedComponent);
+      // Renderizar métricas comerciais habilitadas
+      commercialMetrics.forEach((metricKey, index) => {
+        if (config[metricKey as keyof DashboardConfig]) {
+          console.log('📊 [DEBUG] Adding commercial metric:', metricKey);
+          const component = (
+            <ItemRenderer 
+              key={`commercial-${metricKey}-${index}`}
+              itemKey={metricKey} 
+              config={config} 
+              selectedProductId={null} 
+            />
+          );
+          if (component) {
+            metricsComponents.push(component);
+          }
         }
+      });
+
+      // Gráficos comerciais
+      const commercialCharts = [
+        'revenueEvolutionChart',
+        'billingEvolutionChart', 
+        'sellerRevenueChart',
+        'sellerBillingChart',
+        'temporalRevenueChart',
+        'temporalBillingChart',
+        'showClosersPerformanceTable'
+      ];
+
+      commercialCharts.forEach((chartKey, index) => {
+        const configKey = chartKey === 'revenueEvolutionChart' ? 'showRevenueEvolutionChart' :
+                         chartKey === 'billingEvolutionChart' ? 'showBillingEvolutionChart' :
+                         chartKey;
         
-        console.log('📊 [DEBUG] Added component for:', itemKey, 'Type:', isChart ? 'chart' : 'metric');
-      }
-    });
+        if (config[configKey as keyof DashboardConfig]) {
+          console.log('📊 [DEBUG] Adding commercial chart:', chartKey);
+          const component = (
+            <ItemRenderer 
+              key={`commercial-chart-${chartKey}-${index}`}
+              itemKey={chartKey} 
+              config={config} 
+              selectedProductId={null} 
+            />
+          );
+          if (component) {
+            chartsComponents.push(component);
+          }
+        }
+      });
+    }
+
+    // Para dashboard de produtos
+    else if (dashboardType === 'produtos') {
+      console.log('📊 [DEBUG] Rendering products dashboard');
+      
+      const productIndicators = [
+        'showProductReceita', 'showProductFaturamento', 'showProductQuantidadeVendas',
+        'showProductTicketReceita', 'showProductTicketFaturamento',
+        'showProductMetaReceita', 'showProductMetaFaturamento', 'showProductMetaQuantidadeVendas',
+        'showProductFaltaReceita', 'showProductFaltaFaturamento',
+        'showProductCashCollect', 'showProductProjecaoReceita', 'showProductProjecaoFaturamento'
+      ];
+
+      productIndicators.forEach((metricKey, index) => {
+        if (config[metricKey as keyof DashboardConfig] && selectedProductId) {
+          console.log('📊 [DEBUG] Adding product metric:', metricKey);
+          const component = (
+            <ItemRenderer 
+              key={`product-${metricKey}-${index}`}
+              itemKey={metricKey} 
+              config={config} 
+              selectedProductId={selectedProductId} 
+            />
+          );
+          if (component) {
+            metricsComponents.push(component);
+          }
+        }
+      });
+
+      // Gráficos de produtos
+      const productCharts = [
+        'showProductRevenueEvolutionChart',
+        'showProductBillingEvolutionChart',
+        'showSellerRevenueChart',
+        'showSellerBillingChart',
+        'showTemporalRevenueChart',
+        'showTemporalBillingChart'
+      ];
+
+      productCharts.forEach((chartKey, index) => {
+        if (config[chartKey as keyof DashboardConfig] && selectedProductId) {
+          console.log('📊 [DEBUG] Adding product chart:', chartKey);
+          const component = (
+            <ItemRenderer 
+              key={`product-chart-${chartKey}-${index}`}
+              itemKey={chartKey} 
+              config={config} 
+              selectedProductId={selectedProductId} 
+            />
+          );
+          if (component) {
+            chartsComponents.push(component);
+          }
+        }
+      });
+    }
 
     console.log('📊 [DEBUG] Total metrics rendered:', metricsComponents.length);
     console.log('📊 [DEBUG] Total charts rendered:', chartsComponents.length);
@@ -147,6 +172,24 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       {chartsComponents.length > 0 && (
         <div className="space-y-6">
           {chartsComponents}
+        </div>
+      )}
+
+      {/* Fallback para quando não há métricas habilitadas */}
+      {metricsComponents.length === 0 && chartsComponents.length === 0 && dashboardType === 'comercial' && (
+        <div className="text-center py-12">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Nenhuma métrica comercial ativa
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Vá para as configurações para ativar métricas comerciais.
+          </p>
+          <a 
+            href="/dashboard-config" 
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Configurar Métricas
+          </a>
         </div>
       )}
     </div>
