@@ -240,11 +240,6 @@ const MindMapCanvas = ({
             onAddNode={() => setShowAddDialog(true)}
             onSave={() => onSave({ nodes, edges })}
             isSaving={isSaving}
-            selectedNodes={selectedNodes}
-            onDeleteSelected={() => {
-              selectedNodes.forEach(nodeId => handleDeleteNode(nodeId));
-            }}
-            hasSelectedNodes={selectedNodes.length > 0}
           />
         </Panel>
 
@@ -267,7 +262,7 @@ const MindMapCanvas = ({
               onAlignVertically={nodeOperations.alignNodesVertically}
               onDistributeHorizontally={nodeOperations.distributeNodesHorizontally}
               onDistributeVertically={nodeOperations.distributeNodesVertically}
-              onArrangeGrid={nodeOperations.arrangeInGrid}
+              onArrangeInGrid={nodeOperations.arrangeInGrid}
             />
           </Panel>
         )}

@@ -70,7 +70,7 @@ export const mindMapAttachmentsService = {
     }
 
     console.log('Anexo salvo com sucesso:', attachmentData);
-    return attachmentData;
+    return attachmentData as MindMapAttachmentRecord;
   },
 
   // Buscar anexos de um mapa mental
@@ -89,7 +89,7 @@ export const mindMapAttachmentsService = {
     }
 
     console.log('Anexos encontrados:', data);
-    return data || [];
+    return (data || []) as MindMapAttachmentRecord[];
   },
 
   // Buscar anexos de um nó específico
@@ -109,7 +109,7 @@ export const mindMapAttachmentsService = {
     }
 
     console.log('Anexos do nó encontrados:', data);
-    return data || [];
+    return (data || []) as MindMapAttachmentRecord[];
   },
 
   // Obter URL pública do arquivo

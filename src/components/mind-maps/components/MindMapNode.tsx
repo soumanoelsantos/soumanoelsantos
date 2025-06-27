@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, Position, NodeProps } from '@xyflow/react';
 import { Button } from '@/components/ui/button';
 import { 
   MoreHorizontal, 
@@ -24,7 +24,11 @@ import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
 import NodeNotesDialog from './NodeNotesDialog';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
 
-interface MindMapNodeProps extends NodeProps<MindMapNodeType['data']> {
+interface MindMapNodeData {
+  label: string;
+  color?: string;
+  notes?: string;
+  attachments?: any[];
   mindMapId?: string;
   onEdit?: (id: string, label: string) => void;
   onDelete?: (id: string) => void;
@@ -38,54 +42,45 @@ interface MindMapNodeProps extends NodeProps<MindMapNodeType['data']> {
 
 const MindMapNode = ({ 
   id, 
-  data, 
-  mindMapId,
-  onEdit, 
-  onDelete, 
-  onAddChild, 
-  onToggleVisibility,
-  onReconnect,
-  onChangeColor,
-  hasChildren = false,
-  childrenVisible = true
-}: MindMapNodeProps) => {
+  data
+}: NodeProps<MindMapNodeData>) => {
   const [showNotes, setShowNotes] = useState(false);
 
   const handleEditClick = useCallback(() => {
-    if (onEdit) {
-      onEdit(id, data.label);
+    if (data.onEdit) {
+      data.onEdit(id, data.label);
     }
-  }, [id, data.label, onEdit]);
+  }, [id, data.label, data.onEdit]);
 
   const handleDeleteClick = useCallback(() => {
-    if (onDelete) {
-      onDelete(id);
+    if (data.onDelete) {
+      data.onDelete(id);
     }
-  }, [id, onDelete]);
+  }, [id, data.onDelete]);
 
   const handleAddChildClick = useCallback(() => {
-    if (onAddChild) {
-      onAddChild(id);
+    if (data.onAddChild) {
+      data.onAddChild(id);
     }
-  }, [id, onAddChild]);
+  }, [id, data.onAddChild]);
 
   const handleToggleVisibilityClick = useCallback(() => {
-    if (onToggleVisibility) {
-      onToggleVisibility(id);
+    if (data.onToggleVisibility) {
+      data.onToggleVisibility(id);
     }
-  }, [id, onToggleVisibility]);
+  }, [id, data.onToggleVisibility]);
 
   const handleReconnectClick = useCallback(() => {
-    if (onReconnect) {
-      onReconnect(id);
+    if (data.onReconnect) {
+      data.onReconnect(id);
     }
-  }, [id, onReconnect]);
+  }, [id, data.onReconnect]);
 
   const handleColorChange = useCallback((color: string) => {
-    if (onChangeColor) {
-      onChangeColor(id, color);
+    if (data.onChangeColor) {
+      data.onChangeColor(id, color);
     }
-  }, [id, onChangeColor]);
+  }, [id, data.onChangeColor]);
 
   const handleUpdateNotes = useCallback((notes: string) => {
     // As notas são atualizadas através do callback que já existe
@@ -153,10 +148,10 @@ const MindMapNode = ({
               </Button>
 
               {/* Botão de Anexos */}
-              {mindMapId && (
+              {data.mindMapId && (
                 <NodeAttachmentsDialog
                   nodeId={id}
-                  mindMapId={mindMapId}
+                  mindMapId={data.mindMapId}
                   attachments={data.attachments || []}
                   onUpdateAttachments={handleUpdateAttachments}
                 />
@@ -182,9 +177,9 @@ const MindMapNode = ({
                     <Plus className="h-4 w-4 mr-2" />
                     Adicionar filho
                   </DropdownMenuItem>
-                  {hasChildren && (
+                  {data.hasChildren && (
                     <DropdownMenuItem onClick={handleToggleVisibilityClick}>
-                      {childrenVisible ? (
+                      {data.childrenVisible ? (
                         <>
                           <EyeOff className="h-4 w-4 mr-2" />
                           Ocultar filhos
@@ -247,8 +242,9 @@ const MindMapNode = ({
       <NodeNotesDialog
         isOpen={showNotes}
         onClose={() => setShowNotes(false)}
-        initialNotes={data.notes || ''}
-        onSave={handleUpdateNotes}
+        nodeId={id}
+        nodes={[]}
+        onUpdateNotes={handleUpdateNotes}
       />
     </>
   );
