@@ -1,302 +1,352 @@
-
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import {
-  ReactFlow,
-  addEdge,
-  useNodesState,
-  useEdgesState,
-  Controls,
-  Background,
-  useReactFlow,
-  ReactFlowProvider,
-  ControlButton,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import { MindMapNode, MindMapEdge, MindMapContent } from '@/types/mindMap';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState, useEffect } from 'react';
+import { MindMapContent } from '@/types/mindMap';
+import { useMindMapState } from './hooks/useMindMapState';
+import { useMultiNodeDrag } from './hooks/useMultiNodeDrag';
+import { usePanAndZoom } from './hooks/usePanAndZoom';
+import { useCanvasInteractions } from './hooks/useCanvasInteractions';
 import { useAutoSave } from './hooks/useAutoSave';
-import { Save, Download, Plus, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import MindMapNodeComponent from './components/MindMapNode';
+import MindMapToolbar from './components/MindMapToolbar';
+import CanvasContent from './components/CanvasContent';
+import MindMapListView from './components/MindMapListView';
+import DialogManager from './components/DialogManager';
 import ZoomControls from './components/ZoomControls';
+import ReconnectNodeDialog from './components/ReconnectNodeDialog';
 
 interface MindMapCanvasProps {
-  initialContent?: MindMapContent;
+  initialContent: MindMapContent;
   onSave: (content: MindMapContent) => Promise<void>;
-  isSaving: boolean;
+  isSaving?: boolean;
 }
 
-const initialNodes: MindMapNode[] = [
-  {
-    id: 'node-1',
-    type: 'default',
-    position: { x: 250, y: 250 },
-    data: { label: 'Ideia Central' }
-  }
-];
+const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanvasProps) => {
+  const [viewMode, setViewMode] = useState<'canvas' | 'list'>('canvas');
+  
+  console.log('MindMapCanvas renderizando com viewMode:', viewMode);
+  
+  const {
+    nodes,
+    edges,
+    selectedNode,
+    hiddenNodes,
+    setSelectedNode,
+    addNode,
+    deleteNode,
+    updateNodeLabel,
+    updateNodeColor,
+    updateNodePosition,
+    updateNodeNotes,
+    updateNodeAttachments,
+    toggleNodeVisibility,
+    getAvailableParents,
+    changeNodeToMain,
+    changeNodeToChild,
+    changeNodeToGrandchild,
+    alignNodesHorizontally,
+    alignNodesVertically,
+    distributeNodesHorizontally,
+    distributeNodesVertically,
+    arrangeInGrid,
+    moveNodeInList,
+    insertNodeInEdge,
+    reconnectNode
+  } = useMindMapState(initialContent);
 
-const initialEdges: MindMapEdge[] = [];
+  const {
+    selectedNodes,
+    setSelectedNodes,
+    showAlignmentToolbar,
+    setShowAlignmentToolbar,
+    handleNodeClick: canvasNodeClick,
+    handleCanvasClick,
+    clearSelection,
+    isNodeSelected
+  } = useCanvasInteractions({
+    setSelectedNode,
+    isPanning: false,
+    isDragging: false
+  });
 
-const MindMapCanvas = ({ initialContent, onSave, isSaving }: MindMapCanvasProps) => {
-  const { toast } = useToast();
-  const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNode>(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<MindMapEdge>(initialEdges);
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
-  const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
-  const [draggedNode, setDraggedNode] = useState<string | null>(null);
-  const [editingNode, setEditingNode] = useState<string | null>(null);
-  const [changingColorNode, setChangingColorNode] = useState<string | null>(null);
-  const [notesNode, setNotesNode] = useState<string | null>(null);
-  const [reconnectingNode, setReconnectingNode] = useState<string | null>(null);
-  const [isPanning, setIsPanning] = useState(false);
-  const [isMultiSelect, setIsMultiSelect] = useState(false);
-  const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
+  const { draggedNode, canvasRef, handleMouseDown: dragMouseDown, handleTouchStart: dragTouchStart, isDragging } = useMultiNodeDrag({
+    selectedNodes,
+    updateNodePosition,
+    setSelectedNode
+  });
 
-  // Obter o mindMapId da URL
-  const mindMapId = window.location.pathname.split('/').pop() || '';
-
-  useEffect(() => {
-    if (initialContent) {
-      setNodes(initialContent.nodes || []);
-      setEdges(initialContent.edges || []);
-    }
-  }, [initialContent, setNodes, setEdges]);
+  const { 
+    panOffset, 
+    isPanning, 
+    zoomLevel, 
+    handleCanvasMouseDown: panMouseDown,
+    handleWheel,
+    zoomIn,
+    zoomOut,
+    resetZoom
+  } = usePanAndZoom();
 
   useAutoSave({
     content: { nodes, edges },
     onSave,
-    enabled: !isSaving,
-    delay: 1500
+    delay: 2000,
+    enabled: true
   });
 
+  const [isAddingNode, setIsAddingNode] = useState(false);
+  const [editingNode, setEditingNode] = useState<string | null>(null);
+  const [changingNodeType, setChangingNodeType] = useState<string | null>(null);
+  const [editingNotes, setEditingNotes] = useState<string | null>(null);
+  const [selectedParentForNewNode, setSelectedParentForNewNode] = useState<string | null>(null);
+  const [reconnectingNode, setReconnectingNode] = useState<string | null>(null);
+
+  // Corrigir o event listener para wheel
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Shift') {
-        setIsMultiSelect(true);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const wheelHandler = (e: WheelEvent) => {
+      // Apenas prevenir o comportamento padrão se Ctrl estiver pressionado
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        handleWheel(e);
       }
     };
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key === 'Shift') {
-        setIsMultiSelect(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
+    canvas.addEventListener('wheel', wheelHandler, { passive: false });
+    
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      canvas.removeEventListener('wheel', wheelHandler);
     };
-  }, []);
+  }, [handleWheel]);
 
-  const getDirectChildren = (nodeId: string): string[] => {
-    return edges
-      .filter(edge => edge.source === nodeId)
-      .map(edge => edge.target);
+  const handleSave = async () => {
+    try {
+      await onSave({ nodes, edges });
+    } catch (error) {
+      console.error('Erro ao salvar mapa mental:', error);
+    }
   };
 
-  const onConnect = useCallback((params) => {
-    setEdges((eds) => addEdge(params, eds));
-  }, [setEdges]);
+  const handleAddNode = (label: string, connectToNodeId?: string) => {
+    console.log('handleAddNode chamado com:', { label, connectToNodeId });
+    try {
+      addNode(label, connectToNodeId);
+      console.log('Nó adicionado com sucesso');
+    } catch (error) {
+      console.error('Erro ao adicionar nó:', error);
+    }
+  };
 
-  const onNodeDragStart = useCallback((event, node) => {
-    setDraggedNode(node.id);
-  }, [setDraggedNode]);
+  const handleAddChildNode = (parentNodeId: string) => {
+    console.log('handleAddChildNode chamado com parentNodeId:', parentNodeId);
+    setSelectedParentForNewNode(parentNodeId);
+    setIsAddingNode(true);
+  };
 
-  const onNodeDrag = useCallback((event, node) => {
-    // Handle node drag
-  }, []);
+  const handleEditNode = (nodeId: string) => {
+    setEditingNode(nodeId);
+  };
 
-  const onNodeDragStop = useCallback((event, node) => {
-    setDraggedNode(null);
-  }, [setDraggedNode]);
+  const handleChangeNodeType = (nodeId: string) => {
+    setChangingNodeType(nodeId);
+  };
 
-  const onNodeClick = useCallback((event, node) => {
-    if (isMultiSelect) {
-      setSelectedNodes(prev => {
-        if (prev.includes(node.id)) {
-          return prev.filter(id => id !== node.id);
-        } else {
-          return [...prev, node.id];
-        }
-      });
-      setSelectedNode(null);
+  const handleOpenNodeNotes = (nodeId: string) => {
+    setEditingNotes(nodeId);
+  };
+
+  const handleNodeClick = (nodeId: string, e?: React.MouseEvent) => {
+    if (e) {
+      canvasNodeClick(e, nodeId);
     } else {
-      setSelectedNodes([]);
-      setSelectedNode(node.id);
+      setSelectedNode(nodeId);
     }
-  }, [isMultiSelect, setSelectedNode, setSelectedNodes]);
+  };
 
-  const onNodesDelete = useCallback((deleted) => {
-    setEdges(eds => eds.filter(edge => !deleted.find(node => node.id === edge.source || node.id === edge.target)));
-  }, [setEdges]);
+  const handleViewModeChange = (mode: 'canvas' | 'list') => {
+    console.log('Mudando viewMode para:', mode);
+    setViewMode(mode);
+  };
 
-  const onEdgesDelete = useCallback((deleted) => {
-    console.log('Edges deleted', deleted);
-  }, []);
+  const handleMoveNode = (nodeId: string, direction: 'up' | 'down') => {
+    moveNodeInList(nodeId, direction);
+  };
 
-  const addNode = useCallback(() => {
-    const newNodeId = `node-${nodes.length + 1}`;
-    const x = 0;
-    const y = 0;
-
-    const newNode: MindMapNode = {
-      id: newNodeId,
-      type: 'default',
-      position: { x, y },
-      data: { label: 'Novo Nó' }
-    };
-
-    setNodes(prevNodes => [...prevNodes, newNode]);
-  }, [nodes, setNodes]);
-
-  const addChildNode = useCallback((parentNodeId: string) => {
-    const newNodeId = `node-${nodes.length + 1}`;
-    const parentNode = nodes.find(node => node.id === parentNodeId);
-
-    if (!parentNode) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Nó pai não encontrado."
-      });
-      return;
+  const handleNodeMouseDown = (nodeId: string, e: React.MouseEvent) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      dragMouseDown(e, nodeId, node.position, nodes);
     }
+  };
 
-    const x = parentNode.position.x + 200;
-    const y = parentNode.position.y;
+  const handleNodeTouchStart = (nodeId: string, e: React.TouchEvent) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      dragTouchStart(e, nodeId, node.position, nodes);
+    }
+  };
 
-    const newNode: MindMapNode = {
-      id: newNodeId,
-      type: 'default',
-      position: { x, y },
-      data: { label: 'Novo Nó' }
-    };
+  const handleUpdateNodeAttachments = (nodeId: string, attachments: any[]) => {
+    updateNodeAttachments(nodeId, attachments);
+  };
 
-    setNodes(prevNodes => [...prevNodes, newNode]);
-    setEdges(prevEdges => [...prevEdges, { id: `edge-${parentNodeId}-${newNodeId}`, source: parentNodeId, target: newNodeId }]);
-  }, [nodes, edges, setNodes, setEdges, toast]);
+  const handleInsertNodeInEdge = (sourceId: string, targetId: string) => {
+    console.log('Inserindo nó entre:', sourceId, 'e', targetId);
+    insertNodeInEdge(sourceId, targetId);
+  };
 
-  const deleteNode = useCallback((nodeId: string) => {
-    setNodes(prevNodes => prevNodes.filter(node => node.id !== nodeId));
-    setEdges(prevEdges => prevEdges.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
-  }, [setNodes, setEdges]);
+  const handleReconnectNode = (nodeId: string) => {
+    console.log('Reconectando nó:', nodeId);
+    setReconnectingNode(nodeId);
+  };
 
-  const toggleNodeVisibility = useCallback((nodeId: string) => {
-    setHiddenNodes(prev => {
-      const newHiddenNodes = new Set(prev);
-      const directChildren = getDirectChildren(nodeId);
+  const handleConfirmReconnect = (nodeId: string, newParentId: string | null) => {
+    console.log('Confirmando reconexão:', nodeId, 'para', newParentId);
+    reconnectNode(nodeId, newParentId);
+    setReconnectingNode(null);
+  };
 
-      if (newHiddenNodes.has(nodeId)) {
-        newHiddenNodes.delete(nodeId);
-        directChildren.forEach(childId => newHiddenNodes.delete(childId)); // Mostrar filhos também
-      } else {
-        newHiddenNodes.add(nodeId);
-        directChildren.forEach(childId => newHiddenNodes.add(childId)); // Ocultar filhos também
-      }
+  const handleReconnectNodeDialogClose = () => {
+    setReconnectingNode(null);
+  };
 
-      return newHiddenNodes;
-    });
-  }, [setHiddenNodes, edges]);
+  const handleReconnectNodeDialogOpen = (nodeId: string) => {
+    setReconnectingNode(nodeId);
+  };
 
-  const updateNodeData = useCallback((nodeId: string, updates: Partial<MindMapNode['data']>) => {
-    setNodes(prevNodes =>
-      prevNodes.map(node =>
-        node.id === nodeId
-          ? { ...node, data: { ...node.data, ...updates } }
-          : node
-      )
-    );
-  }, [setNodes]);
+  const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
-  const handleUpdateNodeAttachments = useCallback((nodeId: string, attachments: any[]) => {
-    updateNodeData(nodeId, { attachments });
-  }, [updateNodeData]);
+  console.log('Nodes disponíveis:', nodes.length);
+  console.log('Nodes visíveis:', visibleNodes.length);
+  console.log('Estado isAddingNode:', isAddingNode);
 
-  const onZoomIn = useCallback(() => {
-    setZoomLevel(prev => Math.min(prev * 1.2, 2));
-  }, []);
+  const handleAddNodeClick = () => {
+    console.log('Botão + clicado, abrindo dialog para adicionar nó');
+    setSelectedParentForNewNode(null);
+    setIsAddingNode(true);
+  };
 
-  const onZoomOut = useCallback(() => {
-    setZoomLevel(prev => Math.max(prev / 1.2, 0.2));
-  }, []);
+  const handleCloseAddDialog = () => {
+    console.log('Fechando dialog de adicionar nó');
+    setIsAddingNode(false);
+    setSelectedParentForNewNode(null);
+  };
 
-  const onResetZoom = useCallback(() => {
-    setZoomLevel(1);
-  }, []);
-
-  const nodeTypes = useMemo(() => ({
-    default: (nodeProps: any) => (
-      <MindMapNodeComponent
-        {...nodeProps}
-        data={{
-          ...nodeProps.data,
-          mindMapId, // Passar o mindMapId para o nó
-          onEdit: () => setEditingNode(nodeProps.id),
-          onDelete: () => deleteNode(nodeProps.id),
-          onAddChild: () => addChildNode(nodeProps.id),
-          onToggleVisibility: () => toggleNodeVisibility(nodeProps.id),
-          onReconnect: () => setReconnectingNode(nodeProps.id),
-          onChangeColor: () => setChangingColorNode(nodeProps.id),
-          onOpenNotes: () => setNotesNode(nodeProps.id),
-          onUpdateNodeAttachments: (attachments: any[]) => handleUpdateNodeAttachments(nodeProps.id, attachments),
-          hasChildren: getDirectChildren(nodeProps.id).length > 0,
-          hasHiddenChildren: getDirectChildren(nodeProps.id).some((childId: string) => hiddenNodes.has(childId))
-        }}
-        isSelected={selectedNodes.includes(nodeProps.id)}
-      />
-    )
-  }), [
-    setEditingNode, deleteNode, addChildNode, toggleNodeVisibility, 
-    setReconnectingNode, setChangingColorNode, setNotesNode, handleUpdateNodeAttachments,
-    getDirectChildren, hiddenNodes, selectedNodes, mindMapId
-  ]);
+  const handleCanvasClickInternal = (e: React.MouseEvent) => {
+    console.log('Canvas clicado');
+    handleCanvasClick(e);
+  };
 
   return (
-    <div className="w-full h-full" ref={reactFlowWrapper}>
-      <ReactFlow
+    <div className="relative w-full h-full bg-white">
+      <MindMapToolbar
+        onAddNode={handleAddNodeClick}
+        onSave={handleSave}
+        isSaving={isSaving}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
+
+      <div className="h-[calc(100%-73px)]">
+        {viewMode === 'list' ? (
+          <div className="w-full h-full overflow-auto bg-gray-50">
+            <MindMapListView
+              nodes={nodes}
+              edges={edges}
+              selectedNode={selectedNode}
+              hiddenNodes={hiddenNodes}
+              onNodeClick={(nodeId) => handleNodeClick(nodeId)}
+              onEditNode={setEditingNode}
+              onDeleteNode={deleteNode}
+              onOpenNodeNotes={setEditingNotes}
+              onAddChildNode={handleAddChildNode}
+              onToggleNodeVisibility={toggleNodeVisibility}
+              onMoveNode={moveNodeInList}
+            />
+          </div>
+        ) : (
+          <div 
+            ref={canvasRef}
+            className="w-full h-full relative overflow-hidden cursor-grab active:cursor-grabbing touch-none canvas-background"
+            style={{ minHeight: '600px', minWidth: '100%' }}
+            onMouseDown={panMouseDown}
+            onClick={handleCanvasClickInternal}
+          >
+            <div 
+              className="relative origin-center"
+              style={{ 
+                minWidth: '200vw', 
+                minHeight: '200vh',
+                transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
+                transition: isPanning ? 'none' : 'transform 0.1s ease-out'
+              }}
+            >
+              <CanvasContent
+                nodes={nodes}
+                edges={edges}
+                selectedNode={selectedNode}
+                selectedNodes={selectedNodes}
+                hiddenNodes={hiddenNodes}
+                draggedNode={draggedNode}
+                alignmentLines={[]}
+                panOffset={{ x: 0, y: 0 }}
+                isPanning={isPanning}
+                isNodeSelected={isNodeSelected}
+                onMouseDown={handleNodeMouseDown}
+                onTouchStart={handleNodeTouchStart}
+                onNodeClick={(nodeId, e) => handleNodeClick(nodeId, e)}
+                onEditNode={handleEditNode}
+                onDeleteNode={deleteNode}
+                onToggleNodeVisibility={toggleNodeVisibility}
+                onChangeNodeType={handleChangeNodeType}
+                onOpenNodeNotes={handleOpenNodeNotes}
+                onAddChildNode={handleAddChildNode}
+                onUpdateNodeAttachments={handleUpdateNodeAttachments}
+                onInsertNodeInEdge={handleInsertNodeInEdge}
+                onReconnectNode={handleReconnectNode}
+              />
+            </div>
+            
+            {/* Controles de Zoom */}
+            <ZoomControls
+              zoomLevel={zoomLevel}
+              onZoomIn={zoomIn}
+              onZoomOut={zoomOut}
+              onResetZoom={resetZoom}
+            />
+          </div>
+        )}
+      </div>
+
+      <DialogManager
+        isAddingNode={isAddingNode}
+        setIsAddingNode={handleCloseAddDialog}
+        editingNode={editingNode}
+        setEditingNode={setEditingNode}
+        changingNodeType={changingNodeType}
+        setChangingNodeType={setChangingNodeType}
+        editingNotes={editingNotes}
+        setEditingNotes={setEditingNotes}
+        visibleNodes={visibleNodes}
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeDragStart={onNodeDragStart}
-        onNodeDrag={onNodeDrag}
-        onNodeDragStop={onNodeDragStop}
-        onNodeClick={onNodeClick}
-        onNodesDelete={onNodesDelete}
-        onEdgesDelete={onEdgesDelete}
-        nodeTypes={nodeTypes}
-        fitView
-        snapToGrid
-        snapGrid={[20, 20]}
-        minZoom={0.2}
-        maxZoom={2}
-        className="bg-gray-100"
-        onInit={setReactFlowInstance}
-        zoomOnPinch={false}
-        zoomOnScroll={false}
-        panOnScroll={false}
-      >
-        <Background color="#444" variant="dots" gap={20} size={0.8} />
-        <Controls
-          showInteractive={false}
-          showFitView={false}
-          showZoom={false}
-        />
+        onAddNode={handleAddNode}
+        onUpdateNodeLabel={updateNodeLabel}
+        onUpdateNodeColor={updateNodeColor}
+        onUpdateNodeNotes={updateNodeNotes}
+        getAvailableParents={getAvailableParents}
+        onChangeToMain={changeNodeToMain}
+        onChangeToChild={changeNodeToChild}
+        onChangeToGrandchild={changeNodeToGrandchild}
+        selectedParentForNewNode={selectedParentForNewNode}
+      />
 
-        <ZoomControls
-          zoomLevel={zoomLevel}
-          onZoomIn={onZoomIn}
-          onZoomOut={onZoomOut}
-          onResetZoom={onResetZoom}
-        />
-      </ReactFlow>
+      <ReconnectNodeDialog
+        isOpen={!!reconnectingNode}
+        onClose={handleReconnectNodeDialogClose}
+        nodeId={reconnectingNode}
+        nodes={nodes}
+        edges={edges}
+        onReconnect={handleConfirmReconnect}
+      />
     </div>
   );
 };

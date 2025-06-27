@@ -6,102 +6,112 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Paperclip } from 'lucide-react';
 import { MindMapAttachment } from '@/types/mindMap';
 import { useToast } from '@/hooks/use-toast';
-import { attachmentService } from '@/services/attachmentService';
 import AttachmentsList from './AttachmentsList';
 import FileUploadSection from './FileUploadSection';
 import AttachmentPreview from './AttachmentPreview';
 
 interface NodeAttachmentsDialogProps {
-  nodeId: string;
-  mindMapId: string;
   attachments: MindMapAttachment[];
   onUpdateAttachments: (attachments: MindMapAttachment[]) => void;
 }
 
-const NodeAttachmentsDialog = ({ nodeId, mindMapId, attachments, onUpdateAttachments }: NodeAttachmentsDialogProps) => {
+const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachmentsDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [previewAttachment, setPreviewAttachment] = useState<MindMapAttachment | null>(null);
   const [fileDataMap, setFileDataMap] = useState<Map<string, { file: File; url: string }>>(new Map());
   const { toast } = useToast();
 
-  // Carregar anexos do banco quando abrir o diálogo
-  useEffect(() => {
-    if (isOpen && mindMapId && nodeId) {
-      loadAttachments();
-    }
-  }, [isOpen, mindMapId, nodeId]);
-
-  const loadAttachments = async () => {
-    try {
-      const loadedAttachments = await attachmentService.getAttachmentsByNode(mindMapId, nodeId);
-      onUpdateAttachments(loadedAttachments);
-    } catch (error) {
-      console.error('Erro ao carregar anexos:', error);
-    }
-  };
-
   const handleFileUpload = async (file: File) => {
-    if (!file || !mindMapId || !nodeId) return;
+    if (!file) return;
 
     setIsUploading(true);
     
     try {
-      const newAttachment = await attachmentService.uploadFile(file, mindMapId, nodeId);
+      const url = URL.createObjectURL(file);
       
+      let type: 'pdf' | 'image' | 'video' = 'pdf';
+      if (file.type.startsWith('image/')) type = 'image';
+      else if (file.type.startsWith('video/')) type = 'video';
+      
+      const attachmentId = Date.now().toString();
+      const newAttachment: MindMapAttachment = {
+        id: attachmentId,
+        type,
+        name: file.name,
+        url,
+        size: file.size
+      };
+      
+      setFileDataMap(prev => new Map(prev).set(attachmentId, { file, url }));
       onUpdateAttachments([...attachments, newAttachment]);
       
       toast({
         title: "Arquivo anexado!",
-        description: `${file.name} foi salvo com sucesso.`
+        description: `${file.name} foi adicionado ao nó.`
       });
     } catch (error) {
       console.error('Erro ao anexar arquivo:', error);
       toast({
         variant: "destructive",
         title: "Erro ao anexar arquivo",
-        description: "Não foi possível salvar o arquivo."
+        description: "Não foi possível anexar o arquivo."
       });
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleRemoveAttachment = async (attachmentId: string) => {
-    try {
-      await attachmentService.deleteFile(attachmentId);
-      
-      const updatedAttachments = attachments.filter(att => att.id !== attachmentId);
-      onUpdateAttachments(updatedAttachments);
-      
-      toast({
-        title: "Anexo removido",
-        description: "O arquivo foi removido com sucesso."
-      });
-    } catch (error) {
-      console.error('Erro ao remover anexo:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao remover anexo",
-        description: "Não foi possível remover o arquivo."
-      });
+  const handleRemoveAttachment = (attachmentId: string) => {
+    const attachment = attachments.find(att => att.id === attachmentId);
+    if (attachment) {
+      const fileData = fileDataMap.get(attachmentId);
+      if (fileData) {
+        URL.revokeObjectURL(fileData.url);
+        setFileDataMap(prev => {
+          const newMap = new Map(prev);
+          newMap.delete(attachmentId);
+          return newMap;
+        });
+      }
     }
+    
+    const updatedAttachments = attachments.filter(att => att.id !== attachmentId);
+    onUpdateAttachments(updatedAttachments);
+    
+    toast({
+      title: "Anexo removido",
+      description: "O arquivo foi removido do nó."
+    });
   };
 
   const handleDownloadAttachment = async (attachment: MindMapAttachment) => {
     try {
-      // Criar link de download direto
-      const a = document.createElement('a');
-      a.href = attachment.url;
-      a.download = attachment.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      console.log('Iniciando download para anexo:', attachment.name);
       
-      toast({
-        title: "Download iniciado!",
-        description: `${attachment.name} foi baixado com sucesso.`
-      });
+      const fileData = fileDataMap.get(attachment.id);
+      
+      if (fileData) {
+        console.log('Usando dados do arquivo para download');
+        const a = document.createElement('a');
+        a.href = fileData.url;
+        a.download = attachment.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        toast({
+          title: "Download iniciado!",
+          description: `${attachment.name} foi baixado com sucesso.`
+        });
+      } else {
+        console.log('Dados do arquivo não encontrados');
+        toast({
+          variant: "destructive",
+          title: "Erro ao baixar arquivo",
+          description: "Os dados do arquivo não estão mais disponíveis."
+        });
+      }
     } catch (error) {
       console.error('Erro ao baixar arquivo:', error);
       toast({
@@ -116,6 +126,15 @@ const NodeAttachmentsDialog = ({ nodeId, mindMapId, attachments, onUpdateAttachm
     console.log('Abrindo preview para:', attachment.name);
     setPreviewAttachment(attachment);
   };
+
+  // Cleanup URLs quando o componente for desmontado
+  useEffect(() => {
+    return () => {
+      fileDataMap.forEach(({ url }) => {
+        URL.revokeObjectURL(url);
+      });
+    };
+  }, [fileDataMap]);
 
   return (
     <>
