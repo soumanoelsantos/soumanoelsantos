@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
@@ -91,15 +90,23 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [selectedParentForNewNode, setSelectedParentForNewNode] = useState<string | null>(null);
 
-  // Adicionar event listener para wheel
+  // Corrigir o event listener para wheel
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    canvas.addEventListener('wheel', handleWheel, { passive: false });
+    const wheelHandler = (e: WheelEvent) => {
+      // Apenas prevenir o comportamento padrão se Ctrl estiver pressionado
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        handleWheel(e);
+      }
+    };
+
+    canvas.addEventListener('wheel', wheelHandler, { passive: false });
     
     return () => {
-      canvas.removeEventListener('wheel', handleWheel);
+      canvas.removeEventListener('wheel', wheelHandler);
     };
   }, [handleWheel]);
 

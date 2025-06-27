@@ -40,8 +40,13 @@ export const usePanAndZoom = () => {
 
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setZoomLevel(prev => Math.max(0.1, Math.min(3, prev + delta)));
+    e.stopPropagation();
+    
+    // Only zoom if Ctrl key is pressed (standard zoom behavior)
+    if (e.ctrlKey || e.metaKey) {
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setZoomLevel(prev => Math.max(0.1, Math.min(3, prev + delta)));
+    }
   }, []);
 
   const zoomIn = useCallback(() => {

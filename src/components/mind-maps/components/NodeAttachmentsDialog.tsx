@@ -68,6 +68,33 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
     });
   };
 
+  const handleDownloadAttachment = async (attachment: MindMapAttachment) => {
+    try {
+      const response = await fetch(attachment.url);
+      const blob = await response.blob();
+      
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = attachment.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download iniciado!",
+        description: `${attachment.name} foi baixado com sucesso.`
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao baixar arquivo",
+        description: "Não foi possível baixar o arquivo."
+      });
+    }
+  };
+
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'pdf': return <FileText className="h-4 w-4" />;
@@ -134,6 +161,15 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
                         title="Visualizar"
                       >
                         <Eye className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700"
+                        onClick={() => handleDownloadAttachment(attachment)}
+                        title="Baixar"
+                      >
+                        <Download className="h-3 w-3" />
                       </Button>
                       <Button
                         size="sm"
