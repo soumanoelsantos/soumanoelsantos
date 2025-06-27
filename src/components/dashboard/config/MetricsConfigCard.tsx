@@ -40,18 +40,39 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     { key: 'showClosersPerformanceTable', label: 'Tabela de desempenho dos closers' }
   ];
 
-  console.log('🔍 MetricsConfigCard - Rendering with config keys:', Object.keys(config));
+  console.log('🔍 MetricsConfigCard - Current config:', config);
 
   const handleCheckboxChange = (key: string, checked: boolean) => {
     console.log('🔍 MetricsConfigCard - Checkbox changed:', key, '=', checked);
     
     try {
+      // Verificar se a função de callback existe
+      if (typeof onConfigChange !== 'function') {
+        console.error('❌ MetricsConfigCard - onConfigChange is not a function');
+        return;
+      }
+      
       // Chama a função de callback de forma segura
       onConfigChange(key, checked);
     } catch (error) {
       console.error('❌ MetricsConfigCard - Error in onConfigChange:', error);
     }
   };
+
+  const getConfigValue = (key: string): boolean => {
+    try {
+      const value = config[key as keyof DashboardConfig];
+      return Boolean(value);
+    } catch (error) {
+      console.error('❌ MetricsConfigCard - Error getting config value for key:', key, error);
+      return false;
+    }
+  };
+
+  if (!config) {
+    console.log('⚠️ MetricsConfigCard - No config provided, rendering with defaults');
+    return null;
+  }
 
   return (
     <Card>
@@ -62,7 +83,7 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
       <CardContent className="space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {allMetrics.map((metric) => {
-            const isChecked = Boolean(config[metric.key as keyof DashboardConfig]);
+            const isChecked = getConfigValue(metric.key);
             
             return (
               <div key={metric.key} className="flex items-center space-x-2">
