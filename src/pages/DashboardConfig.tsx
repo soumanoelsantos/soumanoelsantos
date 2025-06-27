@@ -24,7 +24,7 @@ import TabControlSection from '@/components/dashboard/config/TabControlSection';
 const DashboardConfig = () => {
   const { isAuthenticated, isLoading, userId } = useAuth();
   const { config, updateConfig, isLoading: configLoading } = useDashboardConfig();
-  const [isSaving, setIsSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   if (isLoading || configLoading) {
     return (
@@ -46,7 +46,7 @@ const DashboardConfig = () => {
       updateConfig({ [key]: value });
       
       // Para mudanças críticas como nome da empresa, salvar imediatamente
-      const criticalKeys = ['companyName'];
+      const criticalKeys = ['companyName', 'enableCommercialTab', 'enableProductTab', 'enablePreSalesTab'];
       
       if (criticalKeys.includes(key)) {
         if (!userId) {
@@ -56,7 +56,7 @@ const DashboardConfig = () => {
         }
 
         try {
-          setIsSaving(true);
+          setHasUnsavedChanges(true);
           const updatedConfig = { ...config, [key]: value };
           console.log('💾 [DEBUG] Salvando automaticamente configuração crítica...', { key, value });
           
@@ -68,51 +68,12 @@ const DashboardConfig = () => {
           console.error('❌ [DEBUG] Erro ao salvar configuração crítica:', error);
           toast.error("Erro: Não foi possível salvar a configuração");
         } finally {
-          setIsSaving(false);
+          setHasUnsavedChanges(false);
         }
       }
     } catch (error) {
       console.error('❌ [DEBUG] Erro em handleConfigChange:', error);
       toast.error("Erro: Falha ao processar mudança de configuração");
-    }
-  };
-
-  const handleSave = async () => {
-    if (!userId) {
-      console.error('❌ [DEBUG] Usuário não autenticado para salvamento final');
-      toast.error("Erro: Usuário não autenticado");
-      return;
-    }
-
-    if (!config) {
-      console.error('❌ [DEBUG] Configuração não encontrada para salvamento');
-      toast.error("Erro: Configuração não encontrada");
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      console.log('💾 [DEBUG] Iniciando salvamento final da configuração...', config);
-      
-      // Garantir que todas as propriedades de controle de abas estejam definidas
-      const configToSave = {
-        ...config,
-        enableCommercialTab: config.enableCommercialTab ?? true,
-        enableProductTab: config.enableProductTab ?? true,
-        enablePreSalesTab: config.enablePreSalesTab ?? true,
-      };
-      
-      console.log('💾 [DEBUG] Configuração preparada para salvamento:', configToSave);
-      
-      await saveDashboardConfig(configToSave, userId);
-      
-      console.log('✅ [DEBUG] Configuração salva com sucesso!');
-      toast.success("✅ Configuração salva com sucesso!");
-    } catch (error) {
-      console.error('❌ [DEBUG] Erro ao salvar configuração final:', error);
-      toast.error("❌ Erro: Não foi possível salvar a configuração");
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -148,7 +109,7 @@ const DashboardConfig = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ConfigHeader onSave={handleSave} isLoading={isSaving} />
+      <ConfigHeader hasUnsavedChanges={hasUnsavedChanges} />
       
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="geral" className="w-full">
