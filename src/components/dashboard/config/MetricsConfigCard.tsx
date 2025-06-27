@@ -34,16 +34,24 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
     { key: 'showDiariaFaturamento', label: 'Diária de Faturamento' },
     { key: 'showCashCollect', label: 'Cash Collect' },
     { key: 'showCac', label: 'CAC (Custo de Aquisição)' },
-    // Novos indicadores de projeção
     { key: 'showProjecaoReceita', label: 'Projeção de Receita' },
     { key: 'showProjecaoFaturamento', label: 'Projeção de Faturamento' },
     { key: 'showNoShow', label: 'No-Show' },
-    // Nova tabela de performance dos closers
     { key: 'showClosersPerformanceTable', label: 'Tabela de desempenho dos closers' }
   ];
 
-  console.log('🔍 MetricsConfigCard - Current config:', config);
-  console.log('🔍 MetricsConfigCard - Closers table config:', config.showClosersPerformanceTable);
+  console.log('🔍 MetricsConfigCard - Rendering with config keys:', Object.keys(config));
+
+  const handleCheckboxChange = (key: string, checked: boolean) => {
+    console.log('🔍 MetricsConfigCard - Checkbox changed:', key, '=', checked);
+    
+    try {
+      // Chama a função de callback de forma segura
+      onConfigChange(key, checked);
+    } catch (error) {
+      console.error('❌ MetricsConfigCard - Error in onConfigChange:', error);
+    }
+  };
 
   return (
     <Card>
@@ -53,19 +61,22 @@ const MetricsConfigCard: React.FC<MetricsConfigCardProps> = ({ config, onConfigC
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {allMetrics.map((metric) => (
-            <div key={metric.key} className="flex items-center space-x-2">
-              <Checkbox
-                id={metric.key}
-                checked={config[metric.key as keyof DashboardConfig] as boolean}
-                onCheckedChange={(checked) => {
-                  console.log('🔍 MetricsConfigCard - Checkbox changed:', metric.key, '=', checked);
-                  onConfigChange(metric.key, checked as boolean);
-                }}
-              />
-              <Label htmlFor={metric.key} className="text-sm">{metric.label}</Label>
-            </div>
-          ))}
+          {allMetrics.map((metric) => {
+            const isChecked = Boolean(config[metric.key as keyof DashboardConfig]);
+            
+            return (
+              <div key={metric.key} className="flex items-center space-x-2">
+                <Checkbox
+                  id={metric.key}
+                  checked={isChecked}
+                  onCheckedChange={(checked) => handleCheckboxChange(metric.key, checked as boolean)}
+                />
+                <Label htmlFor={metric.key} className="text-sm cursor-pointer">
+                  {metric.label}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>

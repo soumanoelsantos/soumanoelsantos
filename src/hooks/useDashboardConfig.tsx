@@ -126,19 +126,13 @@ export const useDashboardConfig = (sharedUserId?: string) => {
           showProductRevenueEvolutionChart: data.show_product_revenue_evolution_chart ?? defaultConfig.showProductRevenueEvolutionChart,
           showProductBillingEvolutionChart: data.show_product_billing_evolution_chart ?? defaultConfig.showProductBillingEvolutionChart,
 
-          // TAB CONTROLS - CRITICAL MAPPING
-          enableCommercialTab: data.enable_commercial_tab ?? defaultConfig.enableCommercialTab,
-          enableProductTab: data.enable_product_tab ?? defaultConfig.enableProductTab,
-          enablePreSalesTab: data.enable_pre_sales_tab ?? defaultConfig.enablePreSalesTab,
+          // TAB CONTROLS - ALWAYS ENABLED NOW
+          enableCommercialTab: true,
+          enableProductTab: true,
+          enablePreSalesTab: true,
         };
         
-        console.log('✅ [DEBUG] Final mapped configuration:', {
-          enableCommercialTab: mappedConfig.enableCommercialTab,
-          enableProductTab: mappedConfig.enableProductTab,
-          enablePreSalesTab: mappedConfig.enablePreSalesTab,
-          companyName: mappedConfig.companyName
-        });
-        
+        console.log('✅ [DEBUG] Final mapped configuration loaded successfully');
         setConfig(mappedConfig);
       } else {
         console.log('⚠️ [DEBUG] No configuration found, using defaults');
@@ -161,16 +155,16 @@ export const useDashboardConfig = (sharedUserId?: string) => {
 
     console.log('🔄 [DEBUG] Updating local configuration:', updates);
     
-    // Atualizar estado local imediatamente
+    // Atualizar estado local imediatamente com tratamento de erro
     setConfig(prev => {
-      const newConfig = { ...prev, ...updates };
-      console.log('🔄 [DEBUG] New configuration state:', {
-        enableCommercialTab: newConfig.enableCommercialTab,
-        enableProductTab: newConfig.enableProductTab,
-        enablePreSalesTab: newConfig.enablePreSalesTab,
-        companyName: newConfig.companyName
-      });
-      return newConfig;
+      try {
+        const newConfig = { ...prev, ...updates };
+        console.log('🔄 [DEBUG] New configuration state updated successfully');
+        return newConfig;
+      } catch (error) {
+        console.error('❌ [DEBUG] Error updating config state:', error);
+        return prev; // Retorna estado anterior em caso de erro
+      }
     });
   };
 

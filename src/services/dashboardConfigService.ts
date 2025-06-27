@@ -52,7 +52,7 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
         ignoreDuplicates: false
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('🔴 dashboardConfigService - Upsert error:', error);
@@ -61,10 +61,7 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
 
     console.log('🟢 dashboardConfigService - Configuration saved successfully:', data);
     
-    // Força uma atualização da página para garantir que os dados sejam recarregados
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
+    // Não força reload automático - deixar isso para o usuário decidir
   } catch (error) {
     console.error('🔴 dashboardConfigService - Unexpected error during save:', error);
     throw error;

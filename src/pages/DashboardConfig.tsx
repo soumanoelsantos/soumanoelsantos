@@ -41,34 +41,39 @@ const DashboardConfig = () => {
   const handleConfigChange = async (key: string, value: any) => {
     console.log('🔧 [DEBUG] handleConfigChange called:', { key, value });
     
-    // Atualizar config local imediatamente
-    updateConfig({ [key]: value });
-    
-    // Para mudanças críticas como nome da empresa, salvar imediatamente
-    const criticalKeys = ['companyName'];
-    
-    if (criticalKeys.includes(key)) {
-      if (!userId) {
-        console.error('❌ [DEBUG] Usuário não autenticado');
-        toast.error("Erro: Usuário não autenticado");
-        return;
-      }
+    try {
+      // Atualizar config local imediatamente
+      updateConfig({ [key]: value });
+      
+      // Para mudanças críticas como nome da empresa, salvar imediatamente
+      const criticalKeys = ['companyName'];
+      
+      if (criticalKeys.includes(key)) {
+        if (!userId) {
+          console.error('❌ [DEBUG] Usuário não autenticado');
+          toast.error("Erro: Usuário não autenticado");
+          return;
+        }
 
-      try {
-        setIsSaving(true);
-        const updatedConfig = { ...config, [key]: value };
-        console.log('💾 [DEBUG] Salvando automaticamente configuração crítica...', { key, value, updatedConfig });
-        
-        await saveDashboardConfig(updatedConfig, userId);
-        
-        console.log('✅ [DEBUG] Configuração crítica salva automaticamente!');
-        toast.success("Configuração salva automaticamente!");
-      } catch (error) {
-        console.error('❌ [DEBUG] Erro ao salvar configuração crítica:', error);
-        toast.error("Erro: Não foi possível salvar a configuração");
-      } finally {
-        setIsSaving(false);
+        try {
+          setIsSaving(true);
+          const updatedConfig = { ...config, [key]: value };
+          console.log('💾 [DEBUG] Salvando automaticamente configuração crítica...', { key, value });
+          
+          await saveDashboardConfig(updatedConfig, userId);
+          
+          console.log('✅ [DEBUG] Configuração crítica salva automaticamente!');
+          toast.success("Configuração salva automaticamente!");
+        } catch (error) {
+          console.error('❌ [DEBUG] Erro ao salvar configuração crítica:', error);
+          toast.error("Erro: Não foi possível salvar a configuração");
+        } finally {
+          setIsSaving(false);
+        }
       }
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro em handleConfigChange:', error);
+      toast.error("Erro: Falha ao processar mudança de configuração");
     }
   };
 
@@ -97,17 +102,32 @@ const DashboardConfig = () => {
 
   const handleReorderMetrics = (newOrder: string[]) => {
     console.log('🔄 [DEBUG] handleReorderMetrics:', newOrder);
-    updateConfig({ metricsOrder: newOrder });
+    try {
+      updateConfig({ metricsOrder: newOrder });
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro ao reordenar métricas:', error);
+      toast.error("Erro ao reordenar métricas");
+    }
   };
 
   const handleReorderPreSales = (newOrder: string[]) => {
     console.log('🔄 [DEBUG] handleReorderPreSales:', newOrder);
-    updateConfig({ preSalesOrder: newOrder });
+    try {
+      updateConfig({ preSalesOrder: newOrder });
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro ao reordenar pré-vendas:', error);
+      toast.error("Erro ao reordenar pré-vendas");
+    }
   };
 
   const handleReorderProducts = (newOrder: string[]) => {
     console.log('🔄 [DEBUG] handleReorderProducts:', newOrder);
-    updateConfig({ productOrder: newOrder });
+    try {
+      updateConfig({ productOrder: newOrder });
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro ao reordenar produtos:', error);
+      toast.error("Erro ao reordenar produtos");
+    }
   };
 
   return (
