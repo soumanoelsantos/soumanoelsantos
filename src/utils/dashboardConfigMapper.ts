@@ -1,4 +1,3 @@
-
 import { DashboardConfig } from '@/types/dashboardConfig';
 
 export const mapConfigToDatabase = (config: DashboardConfig) => {
@@ -165,10 +164,10 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProductRevenueEvolutionChart: Boolean(data.show_product_revenue_evolution_chart ?? false),
     showProductBillingEvolutionChart: Boolean(data.show_product_billing_evolution_chart ?? false),
 
-    // Controle de abas - sempre habilitado
-    enableCommercialTab: true,
-    enableProductTab: true,
-    enablePreSalesTab: true,
+    // Controle de abas - com valores padrão seguros
+    enableCommercialTab: Boolean(data.enable_commercial_tab ?? true),
+    enableProductTab: Boolean(data.enable_product_tab ?? true),
+    enablePreSalesTab: Boolean(data.enable_pre_sales_tab ?? true),
   };
   
   console.log('🔄 Mapped config object:', config);

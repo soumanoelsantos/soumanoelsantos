@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -20,6 +19,7 @@ import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderMan
 import ProductOrderManager from '@/components/dashboard/config/product-order/ProductOrderManager';
 import { saveDashboardConfig } from '@/services/dashboardConfigService';
 import { toast } from 'sonner';
+import TabControlSection from '@/components/dashboard/config/TabControlSection';
 
 const DashboardConfig = () => {
   const { isAuthenticated, isLoading, userId } = useAuth();
@@ -136,10 +136,11 @@ const DashboardConfig = () => {
       
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="comercial" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="comercial">Comercial</TabsTrigger>
             <TabsTrigger value="pre-vendas">Pré-vendas</TabsTrigger>
             <TabsTrigger value="produto">Produto</TabsTrigger>
+            <TabsTrigger value="controle-abas">Controle de Abas</TabsTrigger>
           </TabsList>
           
           <TabsContent value="comercial" className="space-y-6">
@@ -218,6 +219,15 @@ const DashboardConfig = () => {
                   onReorderProducts={handleReorderProducts}
                 />
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="controle-abas" className="space-y-6">
+            <div className="max-w-4xl mx-auto">
+              <TabControlSection 
+                config={config} 
+                onConfigChange={handleConfigChange} 
+              />
             </div>
           </TabsContent>
         </Tabs>
