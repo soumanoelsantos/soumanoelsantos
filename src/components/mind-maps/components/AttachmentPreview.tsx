@@ -17,13 +17,15 @@ const AttachmentPreview = ({ attachment, fileDataMap }: AttachmentPreviewProps) 
     return fileData ? fileData.url : attachment.url;
   };
 
-  // Auto-open PDFs when component mounts
+  // Auto-open PDFs when component mounts and close dialog
   useEffect(() => {
     if (attachment.type === 'pdf') {
       const url = getAttachmentUrl(attachment);
       if (url) {
         try {
           window.open(url, '_blank');
+          // Close the dialog immediately after opening PDF
+          window.history.back();
         } catch (error) {
           console.error('Erro ao abrir PDF:', error);
           toast({
@@ -87,13 +89,8 @@ const AttachmentPreview = ({ attachment, fileDataMap }: AttachmentPreviewProps) 
           </div>
         );
       case 'pdf':
-        return (
-          <div className="text-center p-8 bg-gray-50 rounded-lg">
-            <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600">PDF aberto em nova aba</p>
-            <p className="text-sm text-gray-500 mt-2">O arquivo foi aberto automaticamente</p>
-          </div>
-        );
+        // For PDFs, don't render anything since they open directly
+        return null;
       default:
         return (
           <div className="text-center p-8 bg-gray-50 rounded-lg">
