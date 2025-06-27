@@ -7,7 +7,7 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
   const dbConfig = {
     company_name: config.companyName || '',
     
-    // Métricas comerciais - mapeamento consistente
+    // Métricas comerciais
     show_conversion: Boolean(config.showConversion),
     show_revenue: Boolean(config.showRevenue),
     show_ticket_faturamento: Boolean(config.showTicketFaturamento),
@@ -46,11 +46,11 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
     show_pre_sales_no_show_chart: Boolean(config.showPreSalesNoShowChart),
     show_pre_sales_sdr_comparison_chart: Boolean(config.showPreSalesSDRComparisonChart),
     
-    // Arrays - salvando como JSON
-    metrics_order: config.metricsOrder || [],
-    pre_sales_order: config.preSalesOrder || [],
-    product_order: config.productOrder || [],
-    selected_product_ids: config.selectedProductIds || [],
+    // Arrays - garantir que sejam arrays válidos
+    metrics_order: Array.isArray(config.metricsOrder) ? config.metricsOrder : [],
+    pre_sales_order: Array.isArray(config.preSalesOrder) ? config.preSalesOrder : [],
+    product_order: Array.isArray(config.productOrder) ? config.productOrder : [],
+    selected_product_ids: Array.isArray(config.selectedProductIds) ? config.selectedProductIds : [],
     
     // Gráficos comerciais
     show_revenue_evolution_chart: Boolean(config.showRevenueEvolutionChart),
@@ -79,9 +79,9 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
     show_product_billing_evolution_chart: Boolean(config.showProductBillingEvolutionChart),
 
     // Controle de abas
-    enable_commercial_tab: Boolean(config.enableCommercialTab ?? true),
-    enable_product_tab: Boolean(config.enableProductTab ?? true),
-    enable_pre_sales_tab: Boolean(config.enablePreSalesTab ?? true),
+    enable_commercial_tab: Boolean(config.enableCommercialTab),
+    enable_product_tab: Boolean(config.enableProductTab),
+    enable_pre_sales_tab: Boolean(config.enablePreSalesTab)
   };
   
   console.log('🔄 Mapped database config:', dbConfig);
@@ -91,10 +91,10 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
 export const mapDatabaseToConfig = (data: any): DashboardConfig => {
   console.log('🔄 Mapping database data to config:', data);
   
-  const config = {
+  const config: DashboardConfig = {
     companyName: data.company_name || '',
     
-    // Métricas comerciais - conversão consistente para boolean
+    // Métricas comerciais
     showConversion: Boolean(data.show_conversion ?? true),
     showRevenue: Boolean(data.show_revenue ?? true),
     showTicketFaturamento: Boolean(data.show_ticket_faturamento ?? false),
@@ -165,10 +165,10 @@ export const mapDatabaseToConfig = (data: any): DashboardConfig => {
     showProductRevenueEvolutionChart: Boolean(data.show_product_revenue_evolution_chart ?? false),
     showProductBillingEvolutionChart: Boolean(data.show_product_billing_evolution_chart ?? false),
 
-    // Controle de abas - com valores padrão seguros
+    // Controle de abas
     enableCommercialTab: Boolean(data.enable_commercial_tab ?? true),
     enableProductTab: Boolean(data.enable_product_tab ?? true),
-    enablePreSalesTab: Boolean(data.enable_pre_sales_tab ?? true),
+    enablePreSalesTab: Boolean(data.enable_pre_sales_tab ?? true)
   };
   
   console.log('🔄 Mapped config object:', config);

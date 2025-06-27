@@ -2,33 +2,42 @@
 import { DashboardConfig } from '@/types/dashboardConfig';
 
 export const defaultConfig: DashboardConfig = {
+  companyName: '',
+  
+  // Métricas comerciais básicas - habilitadas por padrão
   showConversion: true,
   showRevenue: true,
-  showTicketFaturamento: true,
-  showTicketReceita: true,
-  showFaltaFaturamento: true,
-  showFaltaReceita: true,
-  showDiariaReceita: true,
-  showDiariaFaturamento: true,
-  showSuperMetaFaturamento: true,
-  showSuperMetaReceita: true,
-  showHiperMetaFaturamento: true,
-  showHiperMetaReceita: true,
-  showFaltaReceitaSuper: true,
-  showFaltaReceitaHiper: true,
-  showFaltaFaturamentoSuper: true,
-  showFaltaFaturamentoHiper: true,
-  showMetaFaturamento: true,
-  showMetaReceita: true,
-  showFaturamento: true,
-  showReceita: true,
-  showQuantidadeVendas: true,
-  showCashCollect: true,
-  showCac: true,
-  showProjecaoReceita: true,
-  showProjecaoFaturamento: true,
-  showNoShow: true,
+  
+  // Métricas avançadas - desabilitadas por padrão
+  showTicketFaturamento: false,
+  showTicketReceita: false,
+  showFaltaFaturamento: false,
+  showFaltaReceita: false,
+  showDiariaReceita: false,
+  showDiariaFaturamento: false,
+  showSuperMetaFaturamento: false,
+  showSuperMetaReceita: false,
+  showHiperMetaFaturamento: false,
+  showHiperMetaReceita: false,
+  showFaltaReceitaSuper: false,
+  showFaltaReceitaHiper: false,
+  showFaltaFaturamentoSuper: false,
+  showFaltaFaturamentoHiper: false,
+  showMetaFaturamento: false,
+  showMetaReceita: false,
+  showFaturamento: false,
+  showReceita: false,
+  showQuantidadeVendas: false,
+  showCashCollect: false,
+  showCac: false,
+  showProjecaoReceita: false,
+  showProjecaoFaturamento: false,
+  showNoShow: false,
+  
+  // Tabela de performance
   showClosersPerformanceTable: true,
+  
+  // Pré-vendas - habilitadas por padrão
   showPreSalesCalls: true,
   showPreSalesSchedulings: true,
   showPreSalesNoShow: true,
@@ -37,30 +46,8 @@ export const defaultConfig: DashboardConfig = {
   showPreSalesSchedulingChart: true,
   showPreSalesNoShowChart: true,
   showPreSalesSDRComparisonChart: true,
-  companyName: 'Minha Empresa',
-  metricsOrder: [
-    'showConversion', 'showRevenue', 'showTicketFaturamento', 'showTicketReceita',
-    'showFaltaFaturamento', 'showFaltaReceita', 'showDiariaReceita', 'showDiariaFaturamento',
-    'showSuperMetaFaturamento', 'showSuperMetaReceita', 'showHiperMetaFaturamento', 'showHiperMetaReceita',
-    'showFaltaReceitaSuper', 'showFaltaReceitaHiper', 'showFaltaFaturamentoSuper', 'showFaltaFaturamentoHiper',
-    'showMetaFaturamento', 'showMetaReceita', 'showFaturamento', 'showReceita',
-    'showQuantidadeVendas', 'showCashCollect', 'showCac',
-    'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
-  ],
-  preSalesOrder: [
-    'showPreSalesCalls', 'showPreSalesSchedulings', 'showPreSalesNoShow', 'showPreSalesSDRTable',
-    'showPreSalesCallsChart', 'showPreSalesSchedulingChart', 'showPreSalesNoShowChart', 'showPreSalesSDRComparisonChart'
-  ],
-  productOrder: [
-    'showProductReceita', 'showProductFaturamento', 'showProductQuantidadeVendas',
-    'showProductTicketReceita', 'showProductTicketFaturamento',
-    'showProductMetaReceita', 'showProductMetaFaturamento', 'showProductMetaQuantidadeVendas',
-    'showProductFaltaReceita', 'showProductFaltaFaturamento',
-    'showProductCashCollect', 'showProductProjecaoReceita', 'showProductProjecaoFaturamento',
-    'showProductRevenueEvolutionChart', 'showProductBillingEvolutionChart',
-    'showSellerRevenueChart', 'showSellerBillingChart', 
-    'showTemporalRevenueChart', 'showTemporalBillingChart'
-  ],
+  
+  // Gráficos comerciais - habilitados por padrão
   showRevenueEvolutionChart: true,
   showBillingEvolutionChart: true,
   showSellerRevenueChart: true,
@@ -68,29 +55,32 @@ export const defaultConfig: DashboardConfig = {
   showTemporalRevenueChart: true,
   showTemporalBillingChart: true,
   
-  // Product metrics fields
-  showProductMetrics: true,
+  // Produtos - desabilitados por padrão
+  showProductMetrics: false,
   selectedProductIds: [],
-  showProductTicketReceita: true,
-  showProductTicketFaturamento: true,
-  showProductFaturamento: true,
-  showProductReceita: true,
-  showProductQuantidadeVendas: true,
-  showProductMetaFaturamento: true,
-  showProductMetaReceita: true,
-  showProductMetaQuantidadeVendas: true,
-  showProductFaltaFaturamento: true,
-  showProductFaltaReceita: true,
-  showProductCashCollect: true,
-  showProductProjecaoReceita: true,
-  showProductProjecaoFaturamento: true,
-
-  // Product charts fields - apenas os dois que ficaram
-  showProductRevenueEvolutionChart: true,
-  showProductBillingEvolutionChart: true,
-
-  // CONFIGURAÇÕES DE CONTROLE DE ABAS
+  showProductTicketReceita: false,
+  showProductTicketFaturamento: false,
+  showProductFaturamento: false,
+  showProductReceita: false,
+  showProductQuantidadeVendas: false,
+  showProductMetaFaturamento: false,
+  showProductMetaReceita: false,
+  showProductMetaQuantidadeVendas: false,
+  showProductFaltaFaturamento: false,
+  showProductFaltaReceita: false,
+  showProductCashCollect: false,
+  showProductProjecaoReceita: false,
+  showProductProjecaoFaturamento: false,
+  showProductRevenueEvolutionChart: false,
+  showProductBillingEvolutionChart: false,
+  
+  // Controle de abas - todas habilitadas por padrão
   enableCommercialTab: true,
   enableProductTab: true,
   enablePreSalesTab: true,
+  
+  // Ordenação
+  metricsOrder: [],
+  preSalesOrder: [],
+  productOrder: []
 };

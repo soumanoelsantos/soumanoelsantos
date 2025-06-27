@@ -50,6 +50,11 @@ export const useDashboardConfig = (sharedUserId?: string) => {
     });
   };
 
+  const refetchConfig = () => {
+    console.log('🔄 [DEBUG] Refetching configuration...');
+    loadConfig();
+  };
+
   useEffect(() => {
     loadConfig();
   }, [userId]);
@@ -58,6 +63,6 @@ export const useDashboardConfig = (sharedUserId?: string) => {
     config,
     updateConfig,
     isLoading,
-    refetch: loadConfig
+    refetch: refetchConfig
   };
 };

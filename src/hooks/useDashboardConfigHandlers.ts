@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 export const useDashboardConfigHandlers = () => {
   const { userId } = useAuth();
-  const { config, updateConfig } = useDashboardConfig();
+  const { config, updateConfig, refetch } = useDashboardConfig();
   const [isSaving, setIsSaving] = useState(false);
 
   const handleConfigChange = (key: string, value: any) => {
@@ -16,8 +16,7 @@ export const useDashboardConfigHandlers = () => {
     // Atualizar config local imediatamente
     updateConfig({ [key]: value });
     
-    // NÃO salvar automaticamente - apenas atualizar estado local
-    console.log('🔧 [DEBUG] Config updated locally only:', { key, value });
+    console.log('🔧 [DEBUG] Config updated locally:', { key, value });
   };
 
   const handleSaveConfig = async () => {
@@ -36,6 +35,10 @@ export const useDashboardConfigHandlers = () => {
       console.log('💾 [DEBUG] Calling saveDashboardConfig...');
       await saveDashboardConfig(config, userId);
       console.log('✅ [DEBUG] Save completed successfully');
+      
+      // Recarregar configuração para garantir sincronização
+      await refetch();
+      
       toast.success("Configurações salvas com sucesso!");
     } catch (error) {
       console.error('❌ [DEBUG] Error saving config:', error);

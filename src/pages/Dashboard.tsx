@@ -23,7 +23,7 @@ const Dashboard = () => {
   if (isLoading || configLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Carregando...</div>
+        <div className="text-gray-600">Carregando configurações...</div>
       </div>
     );
   }
@@ -32,7 +32,7 @@ const Dashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Verificar controles de abas com logs detalhados
+  // Verificar controles de abas
   const hasCommercialTab = Boolean(config.enableCommercialTab);
   const hasProductTab = Boolean(config.enableProductTab);
   const hasPreSalesTab = Boolean(config.enablePreSalesTab);
@@ -41,29 +41,15 @@ const Dashboard = () => {
     hasCommercialTab,
     hasProductTab,
     hasPreSalesTab,
-    config: {
-      enableCommercialTab: config.enableCommercialTab,
-      enableProductTab: config.enableProductTab,
-      enablePreSalesTab: config.enablePreSalesTab
-    }
+    fullConfig: config
   });
 
   // Determinar a aba padrão baseada nas abas disponíveis
   const getDefaultTab = () => {
-    if (hasProductTab) {
-      console.log('🔍 [DEBUG] Default tab: produtos');
-      return "produtos";
-    }
-    if (hasCommercialTab) {
-      console.log('🔍 [DEBUG] Default tab: comercial');
-      return "comercial";
-    }
-    if (hasPreSalesTab) {
-      console.log('🔍 [DEBUG] Default tab: pre-vendas');
-      return "pre-vendas";
-    }
-    console.log('🔍 [DEBUG] Default tab: produtos (fallback)');
-    return "produtos"; // fallback
+    if (hasCommercialTab) return "comercial";
+    if (hasProductTab) return "produtos";
+    if (hasPreSalesTab) return "pre-vendas";
+    return "comercial"; // fallback
   };
 
   // Contar quantas abas estão ativas
@@ -112,17 +98,35 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue={getDefaultTab()} className="w-full">
           <TabsList className={getTabsListClass()}>
-            {hasProductTab && (
-              <TabsTrigger value="produtos">Produto</TabsTrigger>
-            )}
             {hasCommercialTab && (
               <TabsTrigger value="comercial">Comercial</TabsTrigger>
+            )}
+            {hasProductTab && (
+              <TabsTrigger value="produtos">Produto</TabsTrigger>
             )}
             {hasPreSalesTab && (
               <TabsTrigger value="pre-vendas">Pré-vendas</TabsTrigger>
             )}
           </TabsList>
           
+          {hasCommercialTab && (
+            <TabsContent value="comercial" className="space-y-6">
+              <CommercialDashboardFilters
+                startDate={filters.startDate}
+                endDate={filters.endDate}
+                selectedSalespeople={filters.selectedSalespeople}
+                onDateChange={updateDateRange}
+                onSalespeopleChange={updateSalespeople}
+                onReset={resetFilters}
+              />
+              <DashboardMetrics 
+                config={config} 
+                selectedProductId={null}
+                dashboardType="comercial"
+              />
+            </TabsContent>
+          )}
+
           {hasProductTab && (
             <TabsContent value="produtos" className="space-y-6">
               <DashboardFilters
@@ -141,24 +145,6 @@ const Dashboard = () => {
                 config={config} 
                 selectedProductId={selectedProductId}
                 dashboardType="produtos"
-              />
-            </TabsContent>
-          )}
-
-          {hasCommercialTab && (
-            <TabsContent value="comercial" className="space-y-6">
-              <CommercialDashboardFilters
-                startDate={filters.startDate}
-                endDate={filters.endDate}
-                selectedSalespeople={filters.selectedSalespeople}
-                onDateChange={updateDateRange}
-                onSalespeopleChange={updateSalespeople}
-                onReset={resetFilters}
-              />
-              <DashboardMetrics 
-                config={config} 
-                selectedProductId={null}
-                dashboardType="comercial"
               />
             </TabsContent>
           )}
