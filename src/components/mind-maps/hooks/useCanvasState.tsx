@@ -1,11 +1,11 @@
 
 import { useState, useCallback } from 'react';
-import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection } from '@xyflow/react';
-import { MindMapDialogState, MindMapNodeData } from '../types/canvasTypes';
+import { useNodesState, useEdgesState, addEdge, Connection } from '@xyflow/react';
+import { MindMapDialogState, MindMapNode, MindMapEdge, MindMapNodeData } from '../types/canvasTypes';
 
 interface UseCanvasStateProps {
-  initialNodes: Node<MindMapNodeData>[];
-  initialEdges: Edge[];
+  initialNodes: MindMapNode[];
+  initialEdges: MindMapEdge[];
   mindMapId?: string;
 }
 
@@ -30,7 +30,7 @@ export const useCanvasState = ({ initialNodes, initialEdges, mindMapId }: UseCan
 
   // Node operations
   const handleAddNode = useCallback((label: string) => {
-    const newNode: Node<MindMapNodeData> = {
+    const newNode: MindMapNode = {
       id: Date.now().toString(),
       type: 'default',
       position: { x: Math.random() * 400, y: Math.random() * 400 },
@@ -55,7 +55,7 @@ export const useCanvasState = ({ initialNodes, initialEdges, mindMapId }: UseCan
   }, [setNodes, setEdges]);
 
   const handleAddChildNode = useCallback((parentId: string) => {
-    const newNode: Node<MindMapNodeData> = {
+    const newNode: MindMapNode = {
       id: Date.now().toString(),
       type: 'default',
       position: { x: Math.random() * 400, y: Math.random() * 400 },
@@ -124,7 +124,7 @@ export const useCanvasState = ({ initialNodes, initialEdges, mindMapId }: UseCan
     }
   }, [setEdges]);
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeClick = useCallback((event: React.MouseEvent, node: MindMapNode) => {
     setSelectedNode(node.id);
   }, []);
 

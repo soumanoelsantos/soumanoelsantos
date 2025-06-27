@@ -7,13 +7,11 @@ import {
   MiniMap,
   NodeTypes,
   BackgroundVariant,
-  Panel,
-  Node,
-  Edge
+  Panel
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
-import { MindMapCanvasProps, MindMapNodeData } from '../types/canvasTypes';
+import { MindMapCanvasProps } from '../types/canvasTypes';
 import { useAutoSave } from '../hooks/useAutoSave';
 import { usePanAndZoom } from '../hooks/usePanAndZoom';
 import { useCanvasState } from '../hooks/useCanvasState';
@@ -38,7 +36,7 @@ const MindMapCanvasMain = ({
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   
   // Enhanced nodes with callback handlers
-  const enhancedNodes: Node<MindMapNodeData>[] = initialContent.nodes.map(node => ({
+  const enhancedNodes = initialContent.nodes.map(node => ({
     ...node,
     data: {
       ...node.data,
@@ -82,7 +80,8 @@ const MindMapCanvasMain = ({
 
   // Auto-save functionality
   useAutoSave({
-    content: { nodes, edges },
+    nodes,
+    edges,
     onSave,
     delay: 2000
   });

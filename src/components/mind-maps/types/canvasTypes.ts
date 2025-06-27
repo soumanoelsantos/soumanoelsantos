@@ -1,5 +1,5 @@
 
-import { Node, Edge } from '@xyflow/react';
+import { Node, Edge, NodeProps } from '@xyflow/react';
 
 export interface MindMapNodeData extends Record<string, unknown> {
   label: string;
@@ -17,12 +17,16 @@ export interface MindMapNodeData extends Record<string, unknown> {
   childrenVisible?: boolean;
 }
 
+// Use ReactFlow's Node type with our custom data
+export type MindMapNode = Node<MindMapNodeData>;
+export type MindMapEdge = Edge;
+
 export interface MindMapCanvasProps {
   initialContent: {
-    nodes: Node<MindMapNodeData>[];
-    edges: Edge[];
+    nodes: MindMapNode[];
+    edges: MindMapEdge[];
   };
-  onSave: (content: { nodes: Node<MindMapNodeData>[]; edges: Edge[] }) => void;
+  onSave: (content: { nodes: MindMapNode[]; edges: MindMapEdge[] }) => void;
   isSaving?: boolean;
   mindMapId?: string;
 }
