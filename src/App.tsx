@@ -8,6 +8,7 @@ import MemberArea from './pages/MemberArea';
 import AdminPage from './pages/AdminPage';
 import Dashboard from './pages/Dashboard';
 import DashboardConfig from './pages/DashboardConfig';
+import SharedDashboard from './pages/SharedDashboard';
 import MapaMental from './pages/MapaMental';
 import MindMapEditor from './pages/MindMapEditor';
 import SharedMindMap from './pages/SharedMindMap';
@@ -37,6 +38,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard-config" element={<DashboardConfig />} />
+          <Route path="/shared/:shareToken" element={<SharedDashboard />} />
           <Route path="/mapa-mental" element={<MapaMental />} />
           <Route path="/mapa-mental/:id" element={<MindMapEditor />} />
           <Route path="/mapa-mental/compartilhado/:shareToken" element={<SharedMindMap />} />

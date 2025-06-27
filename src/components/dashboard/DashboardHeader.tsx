@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Settings, Share2 } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDashboardConfig } from '@/hooks/useDashboardConfig';
+import DashboardShareDialog from './DashboardShareDialog';
 
 interface DashboardHeaderProps {
   companyName?: string;
@@ -33,28 +34,20 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </div>
           
           <div className="flex items-center space-x-3">
-            {onShare && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onShare}
-                className="flex items-center gap-2"
-              >
-                <Share2 className="h-4 w-4" />
-                Compartilhar
-              </Button>
-            )}
-            
             {!isPublicView && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/dashboard-config')}
-                className="flex items-center gap-2"
-              >
-                <Settings className="h-4 w-4" />
-                Configurar
-              </Button>
+              <>
+                <DashboardShareDialog />
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/dashboard-config')}
+                  className="flex items-center gap-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  Configurar
+                </Button>
+              </>
             )}
           </div>
         </div>
