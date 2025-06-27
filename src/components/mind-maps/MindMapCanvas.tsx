@@ -230,6 +230,11 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     setSelectedParentForNewNode(null);
   };
 
+  const handleCanvasClickInternal = (e: React.MouseEvent) => {
+    console.log('Canvas clicado');
+    handleCanvasClick(e);
+  };
+
   return (
     <div className="relative w-full h-full bg-white">
       <MindMapToolbar
@@ -260,10 +265,10 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
         ) : (
           <div 
             ref={canvasRef}
-            className="w-full h-full relative overflow-hidden cursor-grab active:cursor-grabbing touch-none"
+            className="w-full h-full relative overflow-hidden cursor-grab active:cursor-grabbing touch-none canvas-background"
             style={{ minHeight: '600px', minWidth: '100%' }}
             onMouseDown={panMouseDown}
-            onClick={handleCanvasClick}
+            onClick={handleCanvasClickInternal}
           >
             <div 
               className="relative origin-center"

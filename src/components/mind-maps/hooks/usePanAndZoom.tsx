@@ -8,6 +8,7 @@ export const usePanAndZoom = () => {
   const [zoomLevel, setZoomLevel] = useState(1);
 
   const handlePanStart = useCallback((e: React.MouseEvent) => {
+    console.log('Pan start iniciado');
     setIsPanning(true);
     setLastPanPoint({ x: e.clientX, y: e.clientY });
   }, []);
@@ -15,6 +16,7 @@ export const usePanAndZoom = () => {
   const handlePanMove = useCallback((e: MouseEvent) => {
     if (!isPanning) return;
 
+    console.log('Pan move ativo');
     const deltaX = e.clientX - lastPanPoint.x;
     const deltaY = e.clientY - lastPanPoint.y;
 
@@ -27,23 +29,31 @@ export const usePanAndZoom = () => {
   }, [isPanning, lastPanPoint]);
 
   const handlePanEnd = useCallback(() => {
+    console.log('Pan end');
     setIsPanning(false);
   }, []);
 
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
-    // Only start panning if clicking on empty canvas (not on nodes)
-    if (e.target === e.currentTarget) {
+    // Verificar se clicou diretamente no canvas (não em um nó)
+    const target = e.target as HTMLElement;
+    
+    // Se clicou no canvas ou em um elemento filho direto do canvas
+    if (target.classList.contains('canvas-background') || 
+        target === e.currentTarget || 
+        target.tagName === 'DIV' && !target.closest('.mind-map-node')) {
+      console.log('Iniciando pan no canvas');
       e.preventDefault();
+      e.stopPropagation();
       handlePanStart(e);
     }
   }, [handlePanStart]);
 
   const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
     // Only zoom if Ctrl key is pressed (standard zoom behavior)
     if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       setZoomLevel(prev => Math.max(0.1, Math.min(3, prev + delta)));
     }
@@ -64,12 +74,24 @@ export const usePanAndZoom = () => {
 
   useEffect(() => {
     if (isPanning) {
-      document.addEventListener('mousemove', handlePanMove);
-      document.addEventListener('mouseup', handlePanEnd);
+      console.log('Adicionando event listeners para pan');
+      const handleMouseMove = (e: MouseEvent) => {
+        e.preventDefault();
+        handlePanMove(e);
+      };
+
+      const handleMouseUp = (e: MouseEvent) => {
+        e.preventDefault();
+        handlePanEnd();
+      };
+
+      document.addEventListener('mousemove', handleMouseMove, { passive: false });
+      document.addEventListener('mouseup', handleMouseUp, { passive: false });
 
       return () => {
-        document.removeEventListener('mousemove', handlePanMove);
-        document.removeEventListener('mouseup', handlePanEnd);
+        console.log('Removendo event listeners para pan');
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
       };
     }
   }, [isPanning, handlePanMove, handlePanEnd]);
