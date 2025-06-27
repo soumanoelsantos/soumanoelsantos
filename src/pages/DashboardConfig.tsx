@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -17,7 +18,6 @@ import DisplayConfigCard from '@/components/dashboard/config/DisplayConfigCard';
 import MetricsOrderManager from '@/components/dashboard/config/MetricsOrderManager';
 import PreSalesOrderManager from '@/components/dashboard/config/PreSalesOrderManager';
 import ProductOrderManager from '@/components/dashboard/config/product-order/ProductOrderManager';
-import TabControlCard from '@/components/dashboard/config/TabControlCard';
 import { saveDashboardConfig } from '@/services/dashboardConfigService';
 import { toast } from 'sonner';
 
@@ -44,8 +44,8 @@ const DashboardConfig = () => {
     // Atualizar config local imediatamente
     updateConfig({ [key]: value });
     
-    // Para mudanças críticas como controle de abas, salvar imediatamente
-    const criticalKeys = ['enableCommercialTab', 'enableProductTab', 'enablePreSalesTab', 'companyName'];
+    // Para mudanças críticas como nome da empresa, salvar imediatamente
+    const criticalKeys = ['companyName'];
     
     if (criticalKeys.includes(key)) {
       if (!userId) {
@@ -62,16 +62,7 @@ const DashboardConfig = () => {
         await saveDashboardConfig(updatedConfig, userId);
         
         console.log('✅ [DEBUG] Configuração crítica salva automaticamente!');
-        
-        if (criticalKeys.slice(0, 3).includes(key)) {
-          toast.success("Configuração de aba salva! A página será recarregada para aplicar as mudanças.");
-          // Recarregar página após mudança de controle de aba
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-        } else {
-          toast.success("Configuração salva automaticamente!");
-        }
+        toast.success("Configuração salva automaticamente!");
       } catch (error) {
         console.error('❌ [DEBUG] Erro ao salvar configuração crítica:', error);
         toast.error("Erro: Não foi possível salvar a configuração");
@@ -135,12 +126,6 @@ const DashboardConfig = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Coluna da esquerda - Comercial */}
               <div className="space-y-6">
-                <TabControlCard
-                  title="Comercial"
-                  description="Controla se a aba Dashboard Comercial aparece no dashboard principal"
-                  isEnabled={config.enableCommercialTab}
-                  onToggle={(enabled) => handleConfigChange('enableCommercialTab', enabled)}
-                />
                 <GeneralConfigCard 
                   config={config} 
                   onConfigChange={handleConfigChange} 
@@ -171,12 +156,6 @@ const DashboardConfig = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Coluna da esquerda - Pré-vendas */}
               <div className="space-y-6">
-                <TabControlCard
-                  title="Pré-vendas"
-                  description="Controla se a aba Dashboard Pré-vendas aparece no dashboard principal"
-                  isEnabled={config.enablePreSalesTab}
-                  onToggle={(enabled) => handleConfigChange('enablePreSalesTab', enabled)}
-                />
                 <PreSalesConfigCard 
                   config={config} 
                   onConfigChange={handleConfigChange} 
@@ -199,12 +178,6 @@ const DashboardConfig = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Coluna da esquerda - Produto */}
               <div className="space-y-6">
-                <TabControlCard
-                  title="Produtos"
-                  description="Controla se a aba Dashboard Produtos aparece no dashboard principal"
-                  isEnabled={config.enableProductTab}
-                  onToggle={(enabled) => handleConfigChange('enableProductTab', enabled)}
-                />
                 <ProductsManagementCard />
                 <ProductMetricsConfigCard 
                   config={config} 
