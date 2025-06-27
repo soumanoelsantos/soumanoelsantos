@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { MindMapNode, MindMapEdge, MindMapAttachment } from '@/types/mindMap';
 
@@ -108,7 +107,22 @@ export const useNodeOperations = ({
       .map(edge => edge.target);
   }, [edges]);
 
-  // Nova lógica de visibilidade hierárquica
+  // Função recursiva para obter todos os descendentes de um nó
+  const getAllDescendants = useCallback((nodeId: string): string[] => {
+    const descendants: string[] = [];
+    const directChildren = getDirectChildren(nodeId);
+    
+    for (const childId of directChildren) {
+      descendants.push(childId);
+      // Recursivamente adicionar descendentes do filho
+      const childDescendants = getAllDescendants(childId);
+      descendants.push(...childDescendants);
+    }
+    
+    return descendants;
+  }, [getDirectChildren]);
+
+  // Nova lógica de visibilidade hierárquica com ocultação recursiva
   const toggleNodeVisibility = useCallback((nodeId: string) => {
     console.log('Toggling visibility for node:', nodeId);
     
@@ -128,13 +142,16 @@ export const useNodeOperations = ({
       const hasVisibleChildren = directChildren.some(childId => !newHiddenNodes.has(childId));
       
       if (hasVisibleChildren) {
-        // Se tem filhos visíveis, ocultar todos os filhos diretos
-        directChildren.forEach(childId => {
-          console.log('Hiding direct child:', childId);
-          newHiddenNodes.add(childId);
+        // Se tem filhos visíveis, ocultar todos os descendentes (filhos, netos, etc.)
+        const allDescendants = getAllDescendants(nodeId);
+        console.log('Hiding all descendants:', allDescendants);
+        
+        allDescendants.forEach(descendantId => {
+          newHiddenNodes.add(descendantId);
         });
       } else {
         // Se todos os filhos estão ocultos, mostrar apenas os filhos diretos
+        // (os netos permanecerão ocultos até que sejam explicitamente mostrados)
         directChildren.forEach(childId => {
           console.log('Showing direct child:', childId);
           newHiddenNodes.delete(childId);
@@ -144,7 +161,7 @@ export const useNodeOperations = ({
       console.log('New hidden nodes:', Array.from(newHiddenNodes));
       return newHiddenNodes;
     });
-  }, [setHiddenNodes, getDirectChildren]);
+  }, [setHiddenNodes, getDirectChildren, getAllDescendants]);
 
   const moveNodeInList = useCallback((nodeId: string, direction: 'up' | 'down') => {
     setNodes(prevNodes => {
