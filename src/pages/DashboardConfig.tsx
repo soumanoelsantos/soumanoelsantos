@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -20,11 +21,12 @@ import ProductOrderManager from '@/components/dashboard/config/product-order/Pro
 import { saveDashboardConfig } from '@/services/dashboardConfigService';
 import { toast } from 'sonner';
 import TabControlSection from '@/components/dashboard/config/TabControlSection';
+import SaveButton from '@/components/dashboard/config/SaveButton';
 
 const DashboardConfig = () => {
   const { isAuthenticated, isLoading, userId } = useAuth();
   const { config, updateConfig, isLoading: configLoading } = useDashboardConfig();
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   if (isLoading || configLoading) {
     return (
@@ -56,7 +58,6 @@ const DashboardConfig = () => {
         }
 
         try {
-          setHasUnsavedChanges(true);
           const updatedConfig = { ...config, [key]: value };
           console.log('💾 [DEBUG] Salvando automaticamente configuração crítica...', { key, value });
           
@@ -67,13 +68,29 @@ const DashboardConfig = () => {
         } catch (error) {
           console.error('❌ [DEBUG] Erro ao salvar configuração crítica:', error);
           toast.error("Erro: Não foi possível salvar a configuração");
-        } finally {
-          setHasUnsavedChanges(false);
         }
       }
     } catch (error) {
       console.error('❌ [DEBUG] Erro em handleConfigChange:', error);
       toast.error("Erro: Falha ao processar mudança de configuração");
+    }
+  };
+
+  const handleSaveConfig = async () => {
+    if (!userId) {
+      toast.error("Erro: Usuário não autenticado");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await saveDashboardConfig(config, userId);
+      toast.success("Configurações salvas com sucesso!");
+    } catch (error) {
+      console.error('❌ [DEBUG] Erro ao salvar configurações:', error);
+      toast.error("Erro ao salvar configurações");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -109,16 +126,15 @@ const DashboardConfig = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ConfigHeader hasUnsavedChanges={hasUnsavedChanges} />
+      <ConfigHeader />
       
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="geral" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="geral">Geral</TabsTrigger>
             <TabsTrigger value="comercial">Comercial</TabsTrigger>
             <TabsTrigger value="pre-vendas">Pré-vendas</TabsTrigger>
             <TabsTrigger value="produto">Produto</TabsTrigger>
-            <TabsTrigger value="controle-abas">Controle de Abas</TabsTrigger>
           </TabsList>
           
           <TabsContent value="geral" className="space-y-6">
@@ -129,6 +145,10 @@ const DashboardConfig = () => {
                   config={config} 
                   onConfigChange={handleConfigChange} 
                 />
+                <TabControlSection 
+                  config={config} 
+                  onConfigChange={handleConfigChange} 
+                />
               </div>
               
               {/* Coluna da direita - Gerenciamento do Time */}
@@ -136,6 +156,11 @@ const DashboardConfig = () => {
                 <SellersManagementCard />
               </div>
             </div>
+            
+            <SaveButton 
+              onSave={handleSaveConfig}
+              isLoading={isSaving}
+            />
           </TabsContent>
           
           <TabsContent value="comercial" className="space-y-6">
@@ -161,6 +186,11 @@ const DashboardConfig = () => {
                 />
               </div>
             </div>
+            
+            <SaveButton 
+              onSave={handleSaveConfig}
+              isLoading={isSaving}
+            />
           </TabsContent>
 
           <TabsContent value="pre-vendas" className="space-y-6">
@@ -183,6 +213,11 @@ const DashboardConfig = () => {
                 />
               </div>
             </div>
+            
+            <SaveButton 
+              onSave={handleSaveConfig}
+              isLoading={isSaving}
+            />
           </TabsContent>
 
           <TabsContent value="produto" className="space-y-6">
@@ -210,15 +245,11 @@ const DashboardConfig = () => {
                 />
               </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="controle-abas" className="space-y-6">
-            <div className="max-w-4xl mx-auto">
-              <TabControlSection 
-                config={config} 
-                onConfigChange={handleConfigChange} 
-              />
-            </div>
+            
+            <SaveButton 
+              onSave={handleSaveConfig}
+              isLoading={isSaving}
+            />
           </TabsContent>
         </Tabs>
       </div>

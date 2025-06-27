@@ -4,11 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
-interface ConfigHeaderProps {
-  hasUnsavedChanges?: boolean;
-}
-
-const ConfigHeader: React.FC<ConfigHeaderProps> = ({ hasUnsavedChanges }) => {
+const ConfigHeader: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -29,11 +25,6 @@ const ConfigHeader: React.FC<ConfigHeaderProps> = ({ hasUnsavedChanges }) => {
               <h1 className="text-2xl font-bold text-gray-800">Configurar Dashboard</h1>
               <p className="text-gray-600">
                 Personalize seu dashboard empresarial
-                {hasUnsavedChanges && (
-                  <span className="ml-2 text-green-600 text-sm">
-                    Salvando automaticamente...
-                  </span>
-                )}
               </p>
             </div>
           </div>
