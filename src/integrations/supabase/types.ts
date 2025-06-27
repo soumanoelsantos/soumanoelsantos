@@ -798,6 +798,53 @@ export type Database = {
           },
         ]
       }
+      mind_map_attachments: {
+        Row: {
+          attachment_type: string
+          created_at: string
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          mind_map_id: string
+          node_id: string
+          storage_path: string
+          updated_at: string
+        }
+        Insert: {
+          attachment_type: string
+          created_at?: string
+          file_name: string
+          file_size: number
+          file_type: string
+          id?: string
+          mind_map_id: string
+          node_id: string
+          storage_path: string
+          updated_at?: string
+        }
+        Update: {
+          attachment_type?: string
+          created_at?: string
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          mind_map_id?: string
+          node_id?: string
+          storage_path?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mind_map_attachments_mind_map_id_fkey"
+            columns: ["mind_map_id"]
+            isOneToOne: false
+            referencedRelation: "mind_maps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mind_maps: {
         Row: {
           content: Json

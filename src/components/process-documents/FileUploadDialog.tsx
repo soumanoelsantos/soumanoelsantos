@@ -45,6 +45,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
   const handleUpload = async () => {
     if (files.length === 0 || !userId) {
       console.log('Upload canceled - missing files or user:', { filesCount: files.length, userId });
+      toast.error('Nenhum arquivo selecionado ou usuário não autenticado');
       return;
     }
 
@@ -58,6 +59,31 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
     setIsUploading(true);
 
     try {
+      // Primeiro, criar o bucket se não existir
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const bucketExists = buckets?.some(bucket => bucket.name === 'process-files');
+      
+      if (!bucketExists) {
+        console.log('Creating process-files bucket...');
+        const { error: bucketError } = await supabase.storage.createBucket('process-files', {
+          public: true,
+          allowedMimeTypes: [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain',
+            'image/png',
+            'image/jpeg',
+            'image/jpg'
+          ]
+        });
+        
+        if (bucketError) {
+          console.error('Error creating bucket:', bucketError);
+          // Continue anyway, bucket might exist but not be listed
+        }
+      }
+
       const uploadPromises = files.map(async (file) => {
         console.log('Processing file:', file.name);
         
@@ -71,7 +97,10 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
         // Upload file to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('process-files')
-          .upload(filePath, file);
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
         if (uploadError) {
           console.error('Storage upload error:', uploadError);
@@ -127,7 +156,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
       onClose();
     } catch (error) {
       console.error('Upload process error:', error);
-      toast.error('Erro ao enviar arquivos');
+      toast.error(`Erro ao enviar arquivos: ${error.message || 'Erro desconhecido'}`);
     } finally {
       setIsUploading(false);
     }
