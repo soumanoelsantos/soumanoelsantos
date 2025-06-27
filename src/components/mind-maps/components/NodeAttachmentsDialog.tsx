@@ -18,7 +18,7 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [previewAttachment, setPreviewAttachment] = useState<MindMapAttachment | null>(null);
-  const [fileData, setFileData] = useState<Map<string, File>>(new Map());
+  const [fileDataMap, setFileDataMap] = useState<Map<string, { file: File; url: string }>>(new Map());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -28,7 +28,7 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
     setIsUploading(true);
     
     try {
-      // Criar URL temporário para o arquivo
+      // Criar URL para o arquivo que não expira
       const url = URL.createObjectURL(file);
       
       let type: 'pdf' | 'image' | 'video' = 'pdf';
@@ -44,8 +44,8 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
         size: file.size
       };
       
-      // Armazenar o arquivo original para download posterior
-      setFileData(prev => new Map(prev).set(attachmentId, file));
+      // Armazenar o arquivo e URL para acesso posterior
+      setFileDataMap(prev => new Map(prev).set(attachmentId, { file, url }));
       
       onUpdateAttachments([...attachments, newAttachment]);
       
@@ -68,17 +68,16 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
   const handleRemoveAttachment = (attachmentId: string) => {
     const attachment = attachments.find(att => att.id === attachmentId);
     if (attachment) {
-      // Limpar URL do blob se existir
-      if (attachment.url.startsWith('blob:')) {
-        URL.revokeObjectURL(attachment.url);
+      // Limpar URL do blob
+      const fileData = fileDataMap.get(attachmentId);
+      if (fileData) {
+        URL.revokeObjectURL(fileData.url);
+        setFileDataMap(prev => {
+          const newMap = new Map(prev);
+          newMap.delete(attachmentId);
+          return newMap;
+        });
       }
-      
-      // Remover dados do arquivo
-      setFileData(prev => {
-        const newMap = new Map(prev);
-        newMap.delete(attachmentId);
-        return newMap;
-      });
     }
     
     const updatedAttachments = attachments.filter(att => att.id !== attachmentId);
@@ -94,38 +93,24 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
     try {
       console.log('Iniciando download para anexo:', attachment.name);
       
-      // Verificar se temos o arquivo original armazenado
-      const originalFile = fileData.get(attachment.id);
+      // Verificar se temos os dados do arquivo
+      const fileData = fileDataMap.get(attachment.id);
       
-      if (originalFile) {
-        console.log('Usando arquivo original para download');
-        // Usar o arquivo original se disponível
-        const url = URL.createObjectURL(originalFile);
+      if (fileData) {
+        console.log('Usando dados do arquivo para download');
         const a = document.createElement('a');
-        a.href = url;
+        a.href = fileData.url;
         a.download = attachment.name;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url);
       } else {
-        console.log('Tentando download via fetch da URL:', attachment.url);
-        // Tentar fazer fetch da URL (pode não funcionar para blobs expirados)
-        const response = await fetch(attachment.url);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = attachment.name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        console.log('Dados do arquivo não encontrados');
+        toast({
+          variant: "destructive",
+          title: "Erro ao baixar arquivo",
+          description: "Os dados do arquivo não estão mais disponíveis."
+        });
       }
       
       toast({
@@ -137,7 +122,7 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
       toast({
         variant: "destructive",
         title: "Erro ao baixar arquivo",
-        description: "Não foi possível baixar o arquivo. O arquivo pode ter expirado."
+        description: "Não foi possível baixar o arquivo."
       });
     }
   };
@@ -163,16 +148,20 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
     return `${Math.round(bytes / Math.pow(1024, i) * 100) / 100} ${sizes[i]}`;
   };
 
+  const getAttachmentUrl = (attachment: MindMapAttachment): string | null => {
+    const fileData = fileDataMap.get(attachment.id);
+    return fileData ? fileData.url : attachment.url;
+  };
+
   const renderPreview = (attachment: MindMapAttachment) => {
-    // Verificar se o URL ainda é válido
-    const isValidUrl = attachment.url && !attachment.url.includes('blob:') || fileData.has(attachment.id);
+    const url = getAttachmentUrl(attachment);
     
-    if (!isValidUrl) {
+    if (!url) {
       return (
         <div className="text-center p-8 bg-gray-50 rounded-lg">
           <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
           <p className="text-gray-600">Preview não disponível</p>
-          <p className="text-sm text-gray-500 mt-2">O arquivo pode ter expirado</p>
+          <p className="text-sm text-gray-500 mt-2">O arquivo não está mais acessível</p>
         </div>
       );
     }
@@ -182,12 +171,15 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
         return (
           <div className="max-w-full max-h-96 overflow-hidden rounded-lg">
             <img 
-              src={attachment.url} 
+              src={url} 
               alt={attachment.name}
               className="w-full h-auto object-contain"
               onError={(e) => {
-                console.error('Erro ao carregar imagem:', e);
+                console.error('Erro ao carregar imagem:', attachment.name);
                 e.currentTarget.style.display = 'none';
+              }}
+              onLoad={() => {
+                console.log('Imagem carregada com sucesso:', attachment.name);
               }}
             />
           </div>
@@ -200,10 +192,13 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
               className="w-full h-auto"
               preload="metadata"
               onError={(e) => {
-                console.error('Erro ao carregar vídeo:', e);
+                console.error('Erro ao carregar vídeo:', attachment.name);
+              }}
+              onLoadedData={() => {
+                console.log('Vídeo carregado com sucesso:', attachment.name);
               }}
             >
-              <source src={attachment.url} />
+              <source src={url} />
               Seu navegador não suporta reprodução de vídeo.
             </video>
           </div>
@@ -212,41 +207,53 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
         return (
           <div className="text-center p-8 bg-gray-50 rounded-lg">
             <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600">Preview de PDF não disponível</p>
-            <Button 
-              onClick={() => {
-                try {
-                  window.open(attachment.url, '_blank');
-                } catch (error) {
-                  console.error('Erro ao abrir PDF:', error);
-                  toast({
-                    variant: "destructive",
-                    title: "Erro ao abrir arquivo",
-                    description: "Não foi possível abrir o PDF."
-                  });
-                }
-              }}
-              className="mt-4"
-            >
-              Abrir PDF
-            </Button>
+            <p className="text-gray-600 mb-4">Preview de PDF</p>
+            <div className="space-y-2">
+              <Button 
+                onClick={() => {
+                  try {
+                    window.open(url, '_blank');
+                  } catch (error) {
+                    console.error('Erro ao abrir PDF:', error);
+                    toast({
+                      variant: "destructive",
+                      title: "Erro ao abrir arquivo",
+                      description: "Não foi possível abrir o PDF."
+                    });
+                  }
+                }}
+                className="mr-2"
+              >
+                Abrir PDF
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => handleDownloadAttachment(attachment)}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Baixar PDF
+              </Button>
+            </div>
           </div>
         );
       default:
-        return null;
+        return (
+          <div className="text-center p-8 bg-gray-50 rounded-lg">
+            <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-600">Tipo de arquivo não suportado para preview</p>
+          </div>
+        );
     }
   };
 
   // Cleanup URLs quando o componente for desmontado
   React.useEffect(() => {
     return () => {
-      attachments.forEach(attachment => {
-        if (attachment.url.startsWith('blob:')) {
-          URL.revokeObjectURL(attachment.url);
-        }
+      fileDataMap.forEach(({ url }) => {
+        URL.revokeObjectURL(url);
       });
     };
-  }, [attachments]);
+  }, [fileDataMap]);
 
   return (
     <>
@@ -283,74 +290,80 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-3">
-                  {attachments.map(attachment => (
-                    <div key={attachment.id} className="border rounded-lg p-3 space-y-3">
-                      <div className="flex items-center gap-2">
-                        {getFileIcon(attachment.type)}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{attachment.name}</p>
-                          <p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
+                  {attachments.map(attachment => {
+                    const url = getAttachmentUrl(attachment);
+                    return (
+                      <div key={attachment.id} className="border rounded-lg p-3 space-y-3">
+                        <div className="flex items-center gap-2">
+                          {getFileIcon(attachment.type)}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{attachment.name}</p>
+                            <p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0"
+                              onClick={() => handlePreview(attachment)}
+                              title="Visualizar"
+                              disabled={!url}
+                            >
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700"
+                              onClick={() => handleDownloadAttachment(attachment)}
+                              title="Baixar"
+                              disabled={!url}
+                            >
+                              <Download className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                              onClick={() => handleRemoveAttachment(attachment.id)}
+                              title="Remover"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex gap-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-6 w-6 p-0"
-                            onClick={() => handlePreview(attachment)}
-                            title="Visualizar"
-                          >
-                            <Eye className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700"
-                            onClick={() => handleDownloadAttachment(attachment)}
-                            title="Baixar"
-                          >
-                            <Download className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                            onClick={() => handleRemoveAttachment(attachment.id)}
-                            title="Remover"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
+                        
+                        {/* Preview inline para imagens */}
+                        {attachment.type === 'image' && url && (
+                          <div className="max-h-32 overflow-hidden rounded border">
+                            <img 
+                              src={url} 
+                              alt={attachment.name}
+                              className="w-full h-auto object-cover cursor-pointer"
+                              onClick={() => handlePreview(attachment)}
+                              onError={(e) => {
+                                console.error('Erro ao carregar preview da imagem');
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
+                        
+                        {attachment.type === 'video' && url && (
+                          <div className="max-h-32 overflow-hidden rounded border bg-gray-100 flex items-center justify-center">
+                            <Button
+                              variant="ghost"
+                              onClick={() => handlePreview(attachment)}
+                              className="flex items-center gap-2"
+                            >
+                              <Play className="h-4 w-4" />
+                              Reproduzir vídeo
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                      
-                      {/* Preview inline para arquivos pequenos */}
-                      {attachment.type === 'image' && (
-                        <div className="max-h-32 overflow-hidden rounded border">
-                          <img 
-                            src={attachment.url} 
-                            alt={attachment.name}
-                            className="w-full h-auto object-cover"
-                            onError={(e) => {
-                              console.error('Erro ao carregar preview da imagem');
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
-                      
-                      {attachment.type === 'video' && (
-                        <div className="max-h-32 overflow-hidden rounded border bg-gray-100 flex items-center justify-center">
-                          <Button
-                            variant="ghost"
-                            onClick={() => handlePreview(attachment)}
-                            className="flex items-center gap-2"
-                          >
-                            <Play className="h-4 w-4" />
-                            Reproduzir vídeo
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </TabsContent>
@@ -367,7 +380,6 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
                     const file = e.target.files?.[0];
                     if (file) {
                       handleFileUpload(file);
-                      // Limpar o input após o upload
                       e.target.value = '';
                     }
                   }}
