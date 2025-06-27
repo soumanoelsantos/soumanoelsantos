@@ -1129,6 +1129,7 @@ export type Database = {
           id: string
           is_public: boolean
           name: string
+          parent_folder_id: string | null
           share_token: string
           updated_at: string
           user_id: string
@@ -1139,6 +1140,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           name: string
+          parent_folder_id?: string | null
           share_token?: string
           updated_at?: string
           user_id: string
@@ -1149,11 +1151,20 @@ export type Database = {
           id?: string
           is_public?: boolean
           name?: string
+          parent_folder_id?: string | null
           share_token?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "process_folders_parent_folder_id_fkey"
+            columns: ["parent_folder_id"]
+            isOneToOne: false
+            referencedRelation: "process_folders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_goals: {
         Row: {

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -223,6 +224,16 @@ export const useProcessDocuments = () => {
     return updateFolder(id, { is_public: isPublic });
   };
 
+  // Helper function to get root folders (folders without parent)
+  const getRootFolders = () => {
+    return folders.filter(folder => !folder.parent_folder_id);
+  };
+
+  // Helper function to get subfolders of a specific folder
+  const getSubfolders = (parentId: string) => {
+    return folders.filter(folder => folder.parent_folder_id === parentId);
+  };
+
   return {
     documents,
     folders,
@@ -235,6 +246,8 @@ export const useProcessDocuments = () => {
     deleteFolder,
     toggleDocumentPublic,
     toggleFolderPublic,
+    getRootFolders,
+    getSubfolders,
     refetch: () => Promise.all([fetchDocuments(), fetchFolders()]),
   };
 };
