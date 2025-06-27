@@ -48,8 +48,8 @@ const MindMapCanvas = ({
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   
-  // Convert our types to ReactFlow types
-  const convertToReactFlowNodes = (mindMapNodes: any[]) => {
+  // Convert our mind map nodes to ReactFlow nodes with enhanced data
+  const convertToReactFlowNodes = (mindMapNodes: any[]): Node[] => {
     return mindMapNodes.map(node => ({
       ...node,
       data: {
@@ -71,18 +71,22 @@ const MindMapCanvas = ({
   };
 
   // Use ReactFlow's native state management
-  const [nodes, setNodes, onNodesChange] = useNodesState(convertToReactFlowNodes(initialContent.nodes));
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialContent.edges);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
 
   // Dialog states
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [isAddingNode, setIsAddingNode] = useState(false);
+  const [editingNode, setEditingNode] = useState<string | null>(null);
   const [showReconnectDialog, setShowReconnectDialog] = useState(false);
-  const [editingNode, setEditingNode] = useState<any>(null);
   const [reconnectingNode, setReconnectingNode] = useState<any>(null);
   const [availableParents, setAvailableParents] = useState<any[]>([]);
+
+  // Initialize nodes with enhanced data
+  useEffect(() => {
+    setNodes(convertToReactFlowNodes(initialContent.nodes));
+  }, [initialContent.nodes, mindMapId]);
 
   // Auto-save functionality
   useAutoSave({
@@ -92,7 +96,7 @@ const MindMapCanvas = ({
   });
 
   // Pan and zoom functionality
-  const panAndZoom = usePanAndZoom(reactFlowInstance);
+  const panAndZoom = usePanAndZoom();
 
   // Node operation handlers
   const handleAddNode = useCallback((label: string) => {
@@ -103,14 +107,13 @@ const MindMapCanvas = ({
       data: { label }
     };
     setNodes((prev) => [...prev, newNode]);
-    setShowAddDialog(false);
+    setIsAddingNode(false);
   }, [setNodes]);
 
   const handleEditNode = useCallback((nodeId: string, label: string) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
-      setEditingNode(node);
-      setShowEditDialog(true);
+      setEditingNode(nodeId);
     }
   }, [nodes]);
 
@@ -323,7 +326,7 @@ const MindMapCanvas = ({
         {/* Toolbar principal */}
         <Panel position="top-left">
           <MindMapToolbar
-            onAddNode={() => setShowAddDialog(true)}
+            onAddNode={() => setIsAddingNode(true)}
             onSave={() => onSave({ nodes, edges })}
             isSaving={isSaving}
           />
@@ -344,7 +347,7 @@ const MindMapCanvas = ({
         {selectedNode && (
           <Panel position="bottom-center">
             <AlignmentToolbar
-              selectedNodes={selectedNode ? [selectedNode] : []}
+              selectedNodes={[selectedNode]}
               onAlignHorizontally={alignNodesHorizontally}
               onAlignVertically={alignNodesVertically}
               onDistributeHorizontally={distributeNodesHorizontally}
@@ -358,33 +361,29 @@ const MindMapCanvas = ({
 
       {/* Dialogs */}
       <DialogManager
-        showAddDialog={showAddDialog}
-        showEditDialog={showEditDialog}
-        showReconnectDialog={showReconnectDialog}
+        isAddingNode={isAddingNode}
+        setIsAddingNode={setIsAddingNode}
         editingNode={editingNode}
-        reconnectingNode={reconnectingNode}
-        availableParents={availableParents}
-        onCloseAddDialog={() => setShowAddDialog(false)}
-        onCloseEditDialog={() => setShowEditDialog(false)}
-        onCloseReconnectDialog={() => setShowReconnectDialog(false)}
+        setEditingNode={setEditingNode}
+        changingNodeType={null}
+        setChangingNodeType={() => {}}
+        editingNotes={null}
+        setEditingNotes={() => {}}
+        visibleNodes={visibleNodes}
+        nodes={nodes}
+        edges={edges}
         onAddNode={handleAddNode}
-        onEditNode={(id, label) => {
+        onUpdateNodeLabel={(nodeId, label) => {
           setNodes((prev) => prev.map(node => 
-            node.id === id ? { ...node, data: { ...node.data, label } } : node
+            node.id === nodeId ? { ...node, data: { ...node.data, label } } : node
           ));
-          setShowEditDialog(false);
+          setEditingNode(null);
         }}
-        onReconnectNode={(nodeId, newParentId) => {
-          // Remove old connections
-          setEdges((prev) => prev.filter(e => e.target !== nodeId));
-          // Add new connection
-          setEdges((prev) => [...prev, {
-            id: `${newParentId}-${nodeId}`,
-            source: newParentId,
-            target: nodeId
-          }]);
-          setShowReconnectDialog(false);
-        }}
+        onUpdateNodeNotes={() => {}}
+        getAvailableParents={() => []}
+        onChangeToMain={() => {}}
+        onChangeToChild={() => {}}
+        onChangeToGrandchild={() => {}}
       />
     </div>
   );
