@@ -13,8 +13,7 @@ import {
   useEdgesState,
   addEdge,
   BackgroundVariant,
-  Panel,
-  NodeProps
+  Panel
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -28,7 +27,7 @@ import DialogManager from './components/DialogManager';
 import AlignmentToolbar from './components/AlignmentToolbar';
 import ZoomControls from './components/ZoomControls';
 
-// Define the data interface for our mind map nodes
+// Define the data interface for our mind map nodes - this extends Record<string, unknown> for ReactFlow compatibility
 interface MindMapNodeData extends Record<string, unknown> {
   label: string;
   color?: string;
@@ -66,8 +65,11 @@ const MindMapCanvas = ({
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   
-  // Use ReactFlow's native state management
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<MindMapNodeData>>([]);
+  // Use ReactFlow's native state management with proper typing
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<MindMapNodeData>>(initialContent.nodes.map(node => ({
+    ...node,
+    data: node.data as MindMapNodeData
+  })));
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialContent.edges);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
@@ -79,9 +81,9 @@ const MindMapCanvas = ({
   const [reconnectingNode, setReconnectingNode] = useState<any>(null);
   const [availableParents, setAvailableParents] = useState<any[]>([]);
 
-  // Auto-save functionality
-  useAutoSave(() => {
-    onSave({ 
+  // Auto-save functionality with correct parameters
+  useAutoSave({
+    content: { 
       nodes: nodes.map(node => ({
         id: node.id,
         type: node.type as 'default' | 'input' | 'output',
@@ -94,8 +96,10 @@ const MindMapCanvas = ({
         }
       })),
       edges 
-    });
-  }, 2000);
+    },
+    onSave,
+    delay: 2000
+  });
 
   // Pan and zoom functionality
   const panAndZoom = usePanAndZoom();

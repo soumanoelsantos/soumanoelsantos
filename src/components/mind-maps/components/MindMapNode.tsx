@@ -23,6 +23,7 @@ import {
 import NodeNotesDialog from './NodeNotesDialog';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
 
+// Define the data interface - it extends Record<string, unknown> for ReactFlow compatibility
 interface MindMapNodeData extends Record<string, unknown> {
   label: string;
   color?: string;
