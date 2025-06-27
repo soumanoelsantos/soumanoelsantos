@@ -1,6 +1,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ReactFlow, { 
+import {
+  ReactFlow, 
   Background, 
   Controls, 
   MiniMap,
@@ -13,8 +14,8 @@ import ReactFlow, {
   addEdge,
   BackgroundVariant,
   Panel
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 
 import { MindMapContent, MindMapNode as MindMapNodeType, MindMapEdge } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
@@ -39,7 +40,7 @@ interface MindMapCanvasProps {
   initialContent: MindMapContent;
   onSave: (content: MindMapContent) => void;
   isSaving?: boolean;
-  mindMapId?: string; // Novo prop para identificar o mapa mental
+  mindMapId?: string;
 }
 
 const MindMapCanvas = ({ 
@@ -51,17 +52,11 @@ const MindMapCanvas = ({
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   
-  // Estados do mapa mental
-  const {
-    nodes,
-    edges,
-    selectedNode,
-    hiddenNodes,
-    setNodes,
-    setEdges,
-    setSelectedNode,
-    setHiddenNodes
-  } = useMindMapState(initialContent);
+  // Estados do mapa mental usando hooks nativos do ReactFlow
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialContent.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialContent.edges);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
 
   // Operações com nós
   const nodeOperations = useNodeOperations({
@@ -78,68 +73,97 @@ const MindMapCanvas = ({
   useAutoSave({
     nodes,
     edges,
-    onSave,
+    onSave: async (content) => {
+      onSave(content);
+    },
     delay: 2000
   });
 
   // Pan e Zoom
-  const {
-    zoomLevel,
-    handleZoomIn,
-    handleZoomOut,
-    handleZoomReset,
-    handleFitView
-  } = usePanAndZoom(reactFlowInstance);
+  const panAndZoom = usePanAndZoom(reactFlowInstance);
 
   // Seleção múltipla
-  const {
-    selectedNodes,
-    setSelectedNodes,
-    handleNodesChange,
-    handleSelectionChange
-  } = useMultipleSelection(setNodes);
+  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
+  
+  // Estados para diálogos
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showReconnectDialog, setShowReconnectDialog] = useState(false);
+  const [editingNode, setEditingNode] = useState<MindMapNodeType | null>(null);
+  const [reconnectingNode, setReconnectingNode] = useState<MindMapNodeType | null>(null);
+  const [availableParents, setAvailableParents] = useState<MindMapNodeType[]>([]);
 
-  // Interações do canvas
-  const {
-    showAddDialog,
-    showEditDialog,
-    showReconnectDialog,
-    editingNode,
-    reconnectingNode,
-    availableParents,
-    setShowAddDialog,
-    setShowEditDialog,
-    setShowReconnectDialog,
-    handleAddNode,
-    handleEditNode,
-    handleDeleteNode,
-    handleAddChildNode,
-    handleReconnectNode,
-    handleChangeNodeColor
-  } = useCanvasInteractions({
-    nodes,
-    edges,
-    setNodes,
-    setEdges,
-    selectedNode,
-    setSelectedNode,
-    ...nodeOperations
-  });
+  // Handlers para diálogos
+  const handleAddNode = useCallback((label: string) => {
+    const newNode: MindMapNodeType = {
+      id: Date.now().toString(),
+      type: 'default',
+      position: { x: Math.random() * 400, y: Math.random() * 400 },
+      data: { label }
+    };
+    setNodes(prev => [...prev, newNode]);
+    setShowAddDialog(false);
+  }, [setNodes]);
+
+  const handleEditNode = useCallback((nodeId: string, label: string) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      setEditingNode(node);
+      setShowEditDialog(true);
+    }
+  }, [nodes]);
+
+  const handleDeleteNode = useCallback((nodeId: string) => {
+    setNodes(prev => prev.filter(n => n.id !== nodeId));
+    setEdges(prev => prev.filter(e => e.source !== nodeId && e.target !== nodeId));
+  }, [setNodes, setEdges]);
+
+  const handleAddChildNode = useCallback((parentId: string) => {
+    const newNode: MindMapNodeType = {
+      id: Date.now().toString(),
+      type: 'default',
+      position: { x: Math.random() * 400, y: Math.random() * 400 },
+      data: { label: 'Novo nó filho' }
+    };
+    setNodes(prev => [...prev, newNode]);
+    setEdges(prev => [...prev, {
+      id: `${parentId}-${newNode.id}`,
+      source: parentId,
+      target: newNode.id
+    }]);
+  }, [setNodes, setEdges]);
+
+  const handleReconnectNode = useCallback((nodeId: string) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      setReconnectingNode(node);
+      setAvailableParents(nodes.filter(n => n.id !== nodeId));
+      setShowReconnectDialog(true);
+    }
+  }, [nodes]);
+
+  const handleChangeNodeColor = useCallback((nodeId: string, color: string) => {
+    setNodes(prev => prev.map(node => 
+      node.id === nodeId 
+        ? { ...node, data: { ...node.data, color } }
+        : node
+    ));
+  }, [setNodes]);
 
   // Filtrar nós visíveis
   const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
 
-  // Filtrar edges visíveis (apenas entre nós visíveis)
+  // Filtrar edges visíveis
   const visibleEdges = edges.filter(edge => 
     !hiddenNodes.has(edge.source) && !hiddenNodes.has(edge.target)
   );
 
-  // Converter para formato ReactFlow e adicionar mindMapId
+  // Converter para formato ReactFlow
   const reactFlowNodes: Node[] = visibleNodes.map(node => ({
     ...node,
     data: {
       ...node.data,
-      mindMapId, // Passar mindMapId para os nós
+      mindMapId,
       onEdit: handleEditNode,
       onDelete: handleDeleteNode,
       onAddChild: handleAddChildNode,
@@ -162,24 +186,23 @@ const MindMapCanvas = ({
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     setSelectedNode(node.id);
-  }, [setSelectedNode]);
+  }, []);
 
   const onPaneClick = useCallback(() => {
     setSelectedNode(null);
     setSelectedNodes([]);
-  }, [setSelectedNode, setSelectedNodes]);
+  }, []);
 
   return (
     <div className="w-full h-full relative" ref={reactFlowWrapper}>
       <ReactFlow
         nodes={reactFlowNodes}
         edges={reactFlowEdges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={() => {}} // Gerenciado internamente
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
-        onSelectionChange={handleSelectionChange}
         onInit={setReactFlowInstance}
         nodeTypes={nodeTypes}
         fitView
@@ -219,7 +242,7 @@ const MindMapCanvas = ({
             isSaving={isSaving}
             selectedNodes={selectedNodes}
             onDeleteSelected={() => {
-              selectedNodes.forEach(node => handleDeleteNode(node.id));
+              selectedNodes.forEach(nodeId => handleDeleteNode(nodeId));
             }}
             hasSelectedNodes={selectedNodes.length > 0}
           />
@@ -228,11 +251,11 @@ const MindMapCanvas = ({
         {/* Controles de zoom */}
         <Panel position="top-right">
           <ZoomControls
-            zoomLevel={zoomLevel}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onZoomReset={handleZoomReset}
-            onFitView={handleFitView}
+            zoomLevel={panAndZoom.zoomLevel}
+            onZoomIn={panAndZoom.zoomIn}
+            onZoomOut={panAndZoom.zoomOut}
+            onZoomReset={panAndZoom.resetZoom}
+            onFitView={() => reactFlowInstance?.fitView()}
           />
         </Panel>
 
@@ -263,11 +286,20 @@ const MindMapCanvas = ({
         onCloseReconnectDialog={() => setShowReconnectDialog(false)}
         onAddNode={handleAddNode}
         onEditNode={(id, label) => {
-          nodeOperations.updateNodeLabel(id, label);
+          setNodes(prev => prev.map(node => 
+            node.id === id ? { ...node, data: { ...node.data, label } } : node
+          ));
           setShowEditDialog(false);
         }}
         onReconnectNode={(nodeId, newParentId) => {
-          nodeOperations.reconnectNode(nodeId, newParentId);
+          // Remover conexões antigas
+          setEdges(prev => prev.filter(e => e.target !== nodeId));
+          // Adicionar nova conexão
+          setEdges(prev => [...prev, {
+            id: `${newParentId}-${nodeId}`,
+            source: newParentId,
+            target: nodeId
+          }]);
           setShowReconnectDialog(false);
         }}
       />
