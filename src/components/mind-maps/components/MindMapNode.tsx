@@ -242,8 +242,8 @@ const MindMapNode = ({
         isOpen={showNotes}
         onClose={() => setShowNotes(false)}
         nodeId={id}
-        nodes={[]}
-        onUpdateNotes={handleUpdateNotes}
+        initialNotes={data.notes || ''}
+        onSave={handleUpdateNotes}
       />
     </>
   );
