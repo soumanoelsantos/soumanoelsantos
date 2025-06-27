@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -79,22 +80,38 @@ const DashboardConfig = () => {
 
   const handleSave = async () => {
     if (!userId) {
-      console.error('❌ [DEBUG] Usuário não autenticado');
+      console.error('❌ [DEBUG] Usuário não autenticado para salvamento final');
       toast.error("Erro: Usuário não autenticado");
+      return;
+    }
+
+    if (!config) {
+      console.error('❌ [DEBUG] Configuração não encontrada para salvamento');
+      toast.error("Erro: Configuração não encontrada");
       return;
     }
 
     try {
       setIsSaving(true);
-      console.log('💾 [DEBUG] Salvando configuração final...', config);
+      console.log('💾 [DEBUG] Iniciando salvamento final da configuração...', config);
       
-      await saveDashboardConfig(config, userId);
+      // Garantir que todas as propriedades de controle de abas estejam definidas
+      const configToSave = {
+        ...config,
+        enableCommercialTab: config.enableCommercialTab ?? true,
+        enableProductTab: config.enableProductTab ?? true,
+        enablePreSalesTab: config.enablePreSalesTab ?? true,
+      };
+      
+      console.log('💾 [DEBUG] Configuração preparada para salvamento:', configToSave);
+      
+      await saveDashboardConfig(configToSave, userId);
       
       console.log('✅ [DEBUG] Configuração salva com sucesso!');
-      toast.success("Sucesso! Configuração salva com sucesso!");
+      toast.success("✅ Configuração salva com sucesso!");
     } catch (error) {
-      console.error('❌ [DEBUG] Erro ao salvar configuração:', error);
-      toast.error("Erro: Não foi possível salvar a configuração");
+      console.error('❌ [DEBUG] Erro ao salvar configuração final:', error);
+      toast.error("❌ Erro: Não foi possível salvar a configuração");
     } finally {
       setIsSaving(false);
     }

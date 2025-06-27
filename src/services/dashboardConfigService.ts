@@ -61,7 +61,6 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
 
     console.log('🟢 dashboardConfigService - Configuration saved successfully:', data);
     
-    // Não força reload automático - deixar isso para o usuário decidir
   } catch (error) {
     console.error('🔴 dashboardConfigService - Unexpected error during save:', error);
     throw error;
