@@ -14,7 +14,7 @@ import CreateFolderDialog from './CreateFolderDialog';
 import FolderView from './FolderView';
 
 const ProcessDocumentsManager = () => {
-  const { documents, folders, isLoading, getRootFolders } = useProcessDocuments();
+  const { documents, folders, isLoading } = useProcessDocuments();
   const [isCreateDocumentOpen, setIsCreateDocumentOpen] = useState(false);
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<ProcessFolder | null>(null);
@@ -170,7 +170,6 @@ const ProcessDocumentsManager = () => {
       <CreateFolderDialog 
         isOpen={isCreateFolderOpen}
         onClose={() => setIsCreateFolderOpen(false)}
-        folders={folders}
       />
     </div>
   );

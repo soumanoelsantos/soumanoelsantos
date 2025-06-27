@@ -2,6 +2,8 @@
 import React, { useState, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Upload, File, X } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
@@ -27,8 +29,13 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    // Removido accept para permitir todos os tipos de arquivo
-    // Removido maxSize para não ter limite de tamanho
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'text/plain': ['.txt'],
+      'image/*': ['.png', '.jpg', '.jpeg']
+    }
   });
 
   const removeFile = (index: number) => {
@@ -52,11 +59,36 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
     setIsUploading(true);
 
     try {
+      // Primeiro, criar o bucket se não existir
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const bucketExists = buckets?.some(bucket => bucket.name === 'process-files');
+      
+      if (!bucketExists) {
+        console.log('Creating process-files bucket...');
+        const { error: bucketError } = await supabase.storage.createBucket('process-files', {
+          public: true,
+          allowedMimeTypes: [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain',
+            'image/png',
+            'image/jpeg',
+            'image/jpg'
+          ]
+        });
+        
+        if (bucketError) {
+          console.error('Error creating bucket:', bucketError);
+          // Continue anyway, bucket might exist but not be listed
+        }
+      }
+
       const uploadPromises = files.map(async (file) => {
-        console.log('Processing file:', file.name, 'Size:', file.size);
+        console.log('Processing file:', file.name);
         
         // Generate unique filename
-        const fileExt = file.name.split('.').pop() || 'unknown';
+        const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `process-documents/${userId}/${fileName}`;
 
@@ -72,7 +104,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
 
         if (uploadError) {
           console.error('Storage upload error:', uploadError);
-          throw new Error(`Erro no upload: ${uploadError.message}`);
+          throw uploadError;
         }
 
         console.log('File uploaded successfully:', uploadData);
@@ -89,7 +121,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
           file_path: filePath,
           file_name: file.name,
           file_size: file.size,
-          file_type: file.type || 'application/octet-stream'
+          file_type: file.type
         };
 
         console.log('Creating document record:', documentData);
@@ -102,7 +134,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
 
         if (documentError) {
           console.error('Database insert error:', documentError);
-          throw new Error(`Erro ao salvar no banco: ${documentError.message}`);
+          throw documentError;
         }
 
         console.log('Document created successfully:', document);
@@ -122,7 +154,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
       }
       
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload process error:', error);
       toast.error(`Erro ao enviar arquivos: ${error.message || 'Erro desconhecido'}`);
     } finally {
@@ -131,18 +163,8 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
   };
 
   const handleClose = () => {
-    if (!isUploading) {
-      setFiles([]);
-      onClose();
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    setFiles([]);
+    onClose();
   };
 
   return (
@@ -169,7 +191,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
                   Arraste e solte arquivos aqui ou clique para selecionar
                 </p>
                 <p className="text-sm text-gray-500">
-                  Qualquer tipo de arquivo - Sem limite de tamanho
+                  Suporte: PDF, DOC, DOCX, TXT, PNG, JPG
                 </p>
               </div>
             )}
@@ -177,7 +199,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
 
           {files.length > 0 && (
             <div className="space-y-2">
-              <h4 className="font-medium">Arquivos selecionados:</h4>
+              <Label>Arquivos selecionados:</Label>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {files.map((file, index) => (
                   <div key={index} className="flex items-center justify-between p-2 border rounded">
@@ -185,14 +207,13 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
                       <File className="h-4 w-4" />
                       <span className="text-sm">{file.name}</span>
                       <span className="text-xs text-gray-500">
-                        ({formatFileSize(file.size)})
+                        ({(file.size / 1024 / 1024).toFixed(2)} MB)
                       </span>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => removeFile(index)}
-                      disabled={isUploading}
                     >
                       <X className="h-4 w-4" />
                     </Button>

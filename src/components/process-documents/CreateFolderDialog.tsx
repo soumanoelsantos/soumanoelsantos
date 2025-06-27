@@ -5,24 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CreateFolderData, ProcessFolder } from '@/types/processDocuments';
+import { CreateFolderData } from '@/types/processDocuments';
 import { useProcessDocuments } from '@/hooks/useProcessDocuments';
 
 interface CreateFolderDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  parentFolderId?: string;
-  folders?: ProcessFolder[];
 }
 
-const CreateFolderDialog = ({ isOpen, onClose, parentFolderId, folders = [] }: CreateFolderDialogProps) => {
+const CreateFolderDialog = ({ isOpen, onClose }: CreateFolderDialogProps) => {
   const { createFolder } = useProcessDocuments();
   const [formData, setFormData] = useState<CreateFolderData>({
     name: '',
     description: '',
     is_public: false,
-    parent_folder_id: parentFolderId,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -37,7 +33,6 @@ const CreateFolderDialog = ({ isOpen, onClose, parentFolderId, folders = [] }: C
         name: '',
         description: '',
         is_public: false,
-        parent_folder_id: parentFolderId,
       });
       onClose();
     } catch (error) {
@@ -53,16 +48,10 @@ const CreateFolderDialog = ({ isOpen, onClose, parentFolderId, folders = [] }: C
         name: '',
         description: '',
         is_public: false,
-        parent_folder_id: parentFolderId,
       });
       onClose();
     }
   };
-
-  // Filter folders to prevent circular references
-  const availableFolders = folders.filter(folder => 
-    !parentFolderId || folder.id !== parentFolderId
-  );
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -92,33 +81,6 @@ const CreateFolderDialog = ({ isOpen, onClose, parentFolderId, folders = [] }: C
               placeholder="Descrição da pasta"
             />
           </div>
-
-          {!parentFolderId && (
-            <div>
-              <Label htmlFor="parent_folder">Pasta Pai (Opcional)</Label>
-              <Select
-                value={formData.parent_folder_id || ''}
-                onValueChange={(value) => 
-                  setFormData(prev => ({ 
-                    ...prev, 
-                    parent_folder_id: value || undefined 
-                  }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma pasta pai" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Nenhuma (pasta raiz)</SelectItem>
-                  {availableFolders.map((folder) => (
-                    <SelectItem key={folder.id} value={folder.id}>
-                      {folder.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
 
           <div className="flex items-center space-x-2">
             <Switch

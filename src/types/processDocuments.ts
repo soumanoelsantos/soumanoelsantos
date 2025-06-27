@@ -1,4 +1,3 @@
-
 export interface ProcessDocument {
   id: string;
   user_id: string;
@@ -24,7 +23,6 @@ export interface ProcessFolder {
   description?: string;
   is_public: boolean;
   share_token: string;
-  parent_folder_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -46,5 +44,4 @@ export interface CreateFolderData {
   name: string;
   description?: string;
   is_public?: boolean;
-  parent_folder_id?: string;
 }
