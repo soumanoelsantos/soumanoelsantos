@@ -1,14 +1,26 @@
 
 import { useCallback } from 'react';
-import { MindMapNode, MindMapAttachment } from '@/types/mindMap';
+import { MindMapNode, MindMapEdge, MindMapAttachment } from '@/types/mindMap';
 
 interface UseNodeOperationsProps {
   nodes: MindMapNode[];
+  edges: MindMapEdge[];
   setNodes: React.Dispatch<React.SetStateAction<MindMapNode[]>>;
-  setSelectedNode: React.Dispatch<React.SetStateAction<string | null>>;
+  setEdges: React.Dispatch<React.SetStateAction<MindMapEdge[]>>;
+  selectedNode: string | null;
+  hiddenNodes: Set<string>;
+  setHiddenNodes: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
-export const useNodeOperations = ({ nodes, setNodes, setSelectedNode }: UseNodeOperationsProps) => {
+export const useNodeOperations = ({ 
+  nodes, 
+  edges, 
+  setNodes, 
+  setEdges, 
+  selectedNode, 
+  hiddenNodes, 
+  setHiddenNodes 
+}: UseNodeOperationsProps) => {
   const addNode = useCallback((label: string, connectToNodeId?: string) => {
     const newNodeId = Date.now().toString();
     const newNode: MindMapNode = {
@@ -24,8 +36,18 @@ export const useNodeOperations = ({ nodes, setNodes, setSelectedNode }: UseNodeO
     };
 
     setNodes(prevNodes => [...prevNodes, newNode]);
+
+    // If connectToNodeId is provided, create an edge
+    if (connectToNodeId) {
+      setEdges(prevEdges => [...prevEdges, {
+        id: `${connectToNodeId}-${newNodeId}`,
+        source: connectToNodeId,
+        target: newNodeId
+      }]);
+    }
+
     return newNodeId;
-  }, [setNodes]);
+  }, [setNodes, setEdges]);
 
   const addNodeAtPosition = useCallback((label: string, position: { x: number; y: number }) => {
     const newNodeId = Date.now().toString();
@@ -44,8 +66,8 @@ export const useNodeOperations = ({ nodes, setNodes, setSelectedNode }: UseNodeO
 
   const deleteNode = useCallback((id: string) => {
     setNodes(prevNodes => prevNodes.filter(node => node.id !== id));
-    setSelectedNode(null);
-  }, [setNodes, setSelectedNode]);
+    setEdges(prevEdges => prevEdges.filter(edge => edge.source !== id && edge.target !== id));
+  }, [setNodes, setEdges]);
 
   const updateNodeLabel = useCallback((id: string, label: string) => {
     setNodes(prevNodes =>
@@ -79,6 +101,18 @@ export const useNodeOperations = ({ nodes, setNodes, setSelectedNode }: UseNodeO
     );
   }, [setNodes]);
 
+  const toggleNodeVisibility = useCallback((nodeId: string) => {
+    setHiddenNodes(prev => {
+      const newHiddenNodes = new Set(prev);
+      if (newHiddenNodes.has(nodeId)) {
+        newHiddenNodes.delete(nodeId);
+      } else {
+        newHiddenNodes.add(nodeId);
+      }
+      return newHiddenNodes;
+    });
+  }, [setHiddenNodes]);
+
   const moveNodeInList = useCallback((nodeId: string, direction: 'up' | 'down') => {
     setNodes(prevNodes => {
       const nodeIndex = prevNodes.findIndex(node => node.id === nodeId);
@@ -103,6 +137,122 @@ export const useNodeOperations = ({ nodes, setNodes, setSelectedNode }: UseNodeO
     return nodes.filter(node => node.id !== nodeId);
   }, [nodes]);
 
+  const changeNodeToMain = useCallback((nodeId: string) => {
+    setEdges(prev => prev.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
+  }, [setEdges]);
+
+  const changeNodeToChild = useCallback((nodeId: string, parentId: string) => {
+    setEdges(prev => [...prev, { id: `${parentId}-${nodeId}`, source: parentId, target: nodeId }]);
+  }, [setEdges]);
+
+  const changeNodeToGrandchild = useCallback((nodeId: string, grandparentId: string) => {
+    const availableParents = getAvailableParents(nodeId);
+    if (availableParents.length > 0) {
+      const parentId = availableParents[0].id;
+      setEdges(prev => [
+        ...prev,
+        { id: `${parentId}-${nodeId}`, source: parentId, target: nodeId },
+        { id: `${grandparentId}-${parentId}`, source: grandparentId, target: parentId }
+      ]);
+    }
+  }, [getAvailableParents, setEdges]);
+
+  const alignNodesHorizontally = useCallback(() => {
+    if (selectedNode) {
+      const selected = nodes.find(node => node.id === selectedNode);
+      if (selected) {
+        setNodes(prev => prev.map(node => ({
+          ...node,
+          position: {
+            ...node.position,
+            y: selected.position.y
+          }
+        })));
+      }
+    }
+  }, [nodes, selectedNode, setNodes]);
+
+  const alignNodesVertically = useCallback(() => {
+    if (selectedNode) {
+      const selected = nodes.find(node => node.id === selectedNode);
+      if (selected) {
+        setNodes(prev => prev.map(node => ({
+          ...node,
+          position: {
+            ...node.position,
+            x: selected.position.x
+          }
+        })));
+      }
+    }
+  }, [nodes, selectedNode, setNodes]);
+
+  const distributeNodesHorizontally = useCallback(() => {
+    if (selectedNode) {
+      const selected = nodes.find(node => node.id === selectedNode);
+      if (selected) {
+        const sortedNodes = [...nodes].sort((a, b) => a.position.x - b.position.x);
+        const totalWidth = sortedNodes.reduce((acc, node) => acc + 100, 0);
+        const startX = selected.position.x - totalWidth / 2;
+        setNodes(prev => sortedNodes.map((node, index) => ({
+          ...node,
+          position: {
+            ...node.position,
+            x: startX + index * 100
+          }
+        })));
+      }
+    }
+  }, [nodes, selectedNode, setNodes]);
+
+  const distributeNodesVertically = useCallback(() => {
+    if (selectedNode) {
+      const selected = nodes.find(node => node.id === selectedNode);
+      if (selected) {
+        const sortedNodes = [...nodes].sort((a, b) => a.position.y - b.position.y);
+        const totalHeight = sortedNodes.reduce((acc, node) => acc + 100, 0);
+        const startY = selected.position.y - totalHeight / 2;
+        setNodes(prev => sortedNodes.map((node, index) => ({
+          ...node,
+          position: {
+            ...node.position,
+            y: startY + index * 100
+          }
+        })));
+      }
+    }
+  }, [nodes, selectedNode, setNodes]);
+
+  const arrangeInGrid = useCallback(() => {
+    const numNodes = nodes.length;
+    const numCols = Math.ceil(Math.sqrt(numNodes));
+    const numRows = Math.ceil(numNodes / numCols);
+
+    setNodes(prev => prev.map((node, index) => {
+      const row = Math.floor(index / numCols);
+      const col = index % numCols;
+      return {
+        ...node,
+        position: {
+          x: 100 + col * 200,
+          y: 100 + row * 200
+        }
+      };
+    }));
+  }, [nodes, setNodes]);
+
+  const reconnectNode = useCallback((nodeId: string, newParentId: string | null) => {
+    setEdges(prev => {
+      const updatedEdges = prev.filter(edge => edge.source !== nodeId && edge.target !== nodeId);
+  
+      if (newParentId) {
+        updatedEdges.push({ id: `${newParentId}-${nodeId}`, source: newParentId, target: nodeId });
+      }
+  
+      return updatedEdges;
+    });
+  }, [setEdges]);
+
   return {
     addNode,
     addNodeAtPosition,
@@ -112,6 +262,16 @@ export const useNodeOperations = ({ nodes, setNodes, setSelectedNode }: UseNodeO
     updateNodeNotes,
     updateNodeAttachments,
     moveNodeInList,
-    getAvailableParents
+    getAvailableParents,
+    toggleNodeVisibility,
+    changeNodeToMain,
+    changeNodeToChild,
+    changeNodeToGrandchild,
+    alignNodesHorizontally,
+    alignNodesVertically,
+    distributeNodesHorizontally,
+    distributeNodesVertically,
+    arrangeInGrid,
+    reconnectNode
   };
 };
