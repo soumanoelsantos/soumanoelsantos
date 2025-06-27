@@ -104,6 +104,11 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+        
+        toast({
+          title: "Download iniciado!",
+          description: `${attachment.name} foi baixado com sucesso.`
+        });
       } else {
         console.log('Dados do arquivo não encontrados');
         toast({
@@ -112,11 +117,6 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
           description: "Os dados do arquivo não estão mais disponíveis."
         });
       }
-      
-      toast({
-        title: "Download iniciado!",
-        description: `${attachment.name} foi baixado com sucesso.`
-      });
     } catch (error) {
       console.error('Erro ao baixar arquivo:', error);
       toast({
@@ -182,6 +182,15 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
                 console.log('Imagem carregada com sucesso:', attachment.name);
               }}
             />
+            <div className="mt-4 text-center">
+              <Button 
+                onClick={() => handleDownloadAttachment(attachment)}
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Baixar Imagem
+              </Button>
+            </div>
           </div>
         );
       case 'video':
@@ -201,6 +210,15 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
               <source src={url} />
               Seu navegador não suporta reprodução de vídeo.
             </video>
+            <div className="mt-4 text-center">
+              <Button 
+                onClick={() => handleDownloadAttachment(attachment)}
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Baixar Vídeo
+              </Button>
+            </div>
           </div>
         );
       case 'pdf':
@@ -241,6 +259,15 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
           <div className="text-center p-8 bg-gray-50 rounded-lg">
             <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-600">Tipo de arquivo não suportado para preview</p>
+            <div className="mt-4">
+              <Button 
+                onClick={() => handleDownloadAttachment(attachment)}
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Baixar Arquivo
+              </Button>
+            </div>
           </div>
         );
     }
@@ -333,7 +360,7 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
                           </div>
                         </div>
                         
-                        {/* Preview inline para imagens */}
+                        {/* Preview inline para imagens - apenas visualização, sem download automático */}
                         {attachment.type === 'image' && url && (
                           <div className="max-h-32 overflow-hidden rounded border">
                             <img 
