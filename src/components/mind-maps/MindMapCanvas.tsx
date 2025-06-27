@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { MindMapContent } from '@/types/mindMap';
-import { MindMapNode, MindMapEdge } from './types/canvasTypes';
+import { MindMapNodeData } from './types/canvasTypes';
 import MindMapCanvasMain from './components/MindMapCanvasMain';
+import { Node } from '@xyflow/react';
 
 interface MindMapCanvasProps {
   initialContent: MindMapContent;
@@ -17,19 +18,22 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving, mindMapId }: MindMapC
     nodes: initialContent.nodes.map(node => ({
       ...node,
       data: {
-        ...node.data,
+        label: node.data.label,
+        color: node.data.color,
+        notes: node.data.notes,
+        attachments: node.data.attachments,
         // Add any required properties that might be missing
-      }
-    })) as MindMapNode[],
-    edges: initialContent.edges as MindMapEdge[]
+      } as MindMapNodeData
+    })) as Node<MindMapNodeData>[],
+    edges: initialContent.edges
   };
 
-  const handleSave = (content: { nodes: MindMapNode[]; edges: MindMapEdge[] }) => {
+  const handleSave = (content: { nodes: Node<MindMapNodeData>[]; edges: any[] }) => {
     // Convert back to MindMapContent format
     const convertedBack: MindMapContent = {
       nodes: content.nodes.map(node => ({
         id: node.id,
-        type: node.type as 'default' | 'input' | 'output',
+        type: (node.type as 'default' | 'input' | 'output') || 'default',
         position: node.position,
         data: {
           label: node.data.label,

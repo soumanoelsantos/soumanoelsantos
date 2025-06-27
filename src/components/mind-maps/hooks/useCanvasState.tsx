@@ -1,17 +1,17 @@
 
 import { useState, useCallback } from 'react';
-import { useNodesState, useEdgesState, addEdge, Connection } from '@xyflow/react';
-import { MindMapDialogState, MindMapNode, MindMapEdge, MindMapNodeData } from '../types/canvasTypes';
+import { useNodesState, useEdgesState, addEdge, Connection, Node } from '@xyflow/react';
+import { MindMapDialogState, MindMapNodeData, MindMapEdge } from '../types/canvasTypes';
 
 interface UseCanvasStateProps {
-  initialNodes: MindMapNode[];
+  initialNodes: Node<MindMapNodeData>[];
   initialEdges: MindMapEdge[];
   mindMapId?: string;
 }
 
 export const useCanvasState = ({ initialNodes, initialEdges, mindMapId }: UseCanvasStateProps) => {
   // ReactFlow state
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState<MindMapNodeData>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   
   // UI state
@@ -30,7 +30,7 @@ export const useCanvasState = ({ initialNodes, initialEdges, mindMapId }: UseCan
 
   // Node operations
   const handleAddNode = useCallback((label: string) => {
-    const newNode: MindMapNode = {
+    const newNode: Node<MindMapNodeData> = {
       id: Date.now().toString(),
       type: 'default',
       position: { x: Math.random() * 400, y: Math.random() * 400 },
@@ -55,7 +55,7 @@ export const useCanvasState = ({ initialNodes, initialEdges, mindMapId }: UseCan
   }, [setNodes, setEdges]);
 
   const handleAddChildNode = useCallback((parentId: string) => {
-    const newNode: MindMapNode = {
+    const newNode: Node<MindMapNodeData> = {
       id: Date.now().toString(),
       type: 'default',
       position: { x: Math.random() * 400, y: Math.random() * 400 },
@@ -124,7 +124,7 @@ export const useCanvasState = ({ initialNodes, initialEdges, mindMapId }: UseCan
     }
   }, [setEdges]);
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: MindMapNode) => {
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node<MindMapNodeData>) => {
     setSelectedNode(node.id);
   }, []);
 
