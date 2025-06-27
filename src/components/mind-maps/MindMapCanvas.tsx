@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import ReactFlow, {
+import {
+  ReactFlow,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -7,19 +9,12 @@ import ReactFlow, {
   Background,
   useReactFlow,
   ReactFlowProvider,
-  useKeydown,
   ControlButton,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { initialNodes, initialEdges } from './initial-data';
 import { MindMapNode, MindMapEdge, MindMapContent } from '@/types/mindMap';
 import { useToast } from '@/hooks/use-toast';
 import { useAutoSave } from './hooks/useAutoSave';
-import { KeyCode } from '@/enums/KeyCode';
-import { snapToGrid } from '@/utils/snapToGrid';
-import { useAlignment } from './hooks/useAlignment';
-import { usePan } from './hooks/usePan';
-import { useZoom } from './hooks/useZoom';
 import { Save, Download, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MindMapNodeComponent from './components/MindMapNode';
@@ -30,6 +25,17 @@ interface MindMapCanvasProps {
   onSave: (content: MindMapContent) => Promise<void>;
   isSaving: boolean;
 }
+
+const initialNodes: MindMapNode[] = [
+  {
+    id: 'node-1',
+    type: 'default',
+    position: { x: 250, y: 250 },
+    data: { label: 'Ideia Central' }
+  }
+];
+
+const initialEdges: MindMapEdge[] = [];
 
 const MindMapCanvas = ({ initialContent, onSave, isSaving }: MindMapCanvasProps) => {
   const { toast } = useToast();
@@ -47,18 +53,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving }: MindMapCanvasProps)
   const [isPanning, setIsPanning] = useState(false);
   const [isMultiSelect, setIsMultiSelect] = useState(false);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const [alignmentLines, setAlignmentLines] = useState<any[]>([]);
-  const { project } = useReactFlow();
-  const { panOffset, setPanOffset, onCanvasPan, onCanvasZoom } = usePan();
-  const { zoomLevel, setZoomLevel, onZoomIn, onZoomOut, onResetZoom } = useZoom();
-  const { onKeyDown, onKeyUp } = useKeydown();
-  const { onAlignmentChange } = useAlignment({
-    nodes,
-    selectedNodes,
-    nodeSize: { width: 150, height: 50 },
-    snapToGrid: true,
-    onAlignmentLinesChange: setAlignmentLines
-  });
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   // Obter o mindMapId da URL
   const mindMapId = window.location.pathname.split('/').pop() || '';
@@ -113,7 +108,9 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving }: MindMapCanvasProps)
     setDraggedNode(node.id);
   }, [setDraggedNode]);
 
-  const onNodeDrag = onAlignmentChange;
+  const onNodeDrag = useCallback((event, node) => {
+    // Handle node drag
+  }, []);
 
   const onNodeDragStop = useCallback((event, node) => {
     setDraggedNode(null);
@@ -221,21 +218,17 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving }: MindMapCanvasProps)
     updateNodeData(nodeId, { attachments });
   }, [updateNodeData]);
 
-  const onNodePositionChange = useCallback((event) => {
-    if (!event.node) return;
+  const onZoomIn = useCallback(() => {
+    setZoomLevel(prev => Math.min(prev * 1.2, 2));
+  }, []);
 
-    setNodes(prevNodes => {
-      return prevNodes.map(node => {
-        if (node.id === event.node.id) {
-          return {
-            ...node,
-            position: snapToGrid(event.node.position)
-          };
-        }
-        return node;
-      });
-    });
-  }, [setNodes]);
+  const onZoomOut = useCallback(() => {
+    setZoomLevel(prev => Math.max(prev / 1.2, 0.2));
+  }, []);
+
+  const onResetZoom = useCallback(() => {
+    setZoomLevel(1);
+  }, []);
 
   const nodeTypes = useMemo(() => ({
     default: (nodeProps: any) => (
@@ -278,7 +271,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving }: MindMapCanvasProps)
         onNodeClick={onNodeClick}
         onNodesDelete={onNodesDelete}
         onEdgesDelete={onEdgesDelete}
-        onNodePositionChange={onNodePositionChange}
         nodeTypes={nodeTypes}
         fitView
         snapToGrid
@@ -290,18 +282,12 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving }: MindMapCanvasProps)
         zoomOnPinch={false}
         zoomOnScroll={false}
         panOnScroll={false}
-        panOnScrollMode={'free'}
-        selectionMode={isMultiSelect ? '框选' : '单选'}
-        onMove={onCanvasPan}
-        onMoveEnd={onCanvasZoom}
-        translateExtent={[[Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY], [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY]]}
       >
         <Background color="#444" variant="dots" gap={20} size={0.8} />
         <Controls
           showInteractive={false}
           showFitView={false}
           showZoom={false}
-          showPan={false}
         />
 
         <ZoomControls

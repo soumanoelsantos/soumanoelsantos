@@ -3,11 +3,11 @@ import React from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Plus, Eye, EyeOff, GitBranch, Palette, StickyNote } from 'lucide-react';
-import { MindMapNodeData } from '@/types/mindMap';
+import { MindMapNode } from '@/types/mindMap';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
 
 interface MindMapNodeComponentProps extends NodeProps {
-  data: MindMapNodeData & {
+  data: MindMapNode['data'] & {
     onEdit?: () => void;
     onDelete?: () => void;
     onAddChild?: () => void;
