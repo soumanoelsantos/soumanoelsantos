@@ -8,12 +8,16 @@ interface DashboardMetricsProps {
   config: DashboardConfig;
   selectedProductId?: string | null;
   dashboardType?: 'comercial' | 'produtos' | 'pre-vendas';
+  isPublicView?: boolean;
+  sharedUserId?: string;
 }
 
 const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ 
   config, 
   selectedProductId,
-  dashboardType = 'comercial'
+  dashboardType = 'comercial',
+  isPublicView = false,
+  sharedUserId
 }) => {
   const { getOrderedItems } = useDashboardOrder(config);
   
@@ -21,7 +25,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
     dashboardType,
     enableCommercialTab: config.enableCommercialTab,
     enableProductTab: config.enableProductTab,
-    enablePreSalesTab: config.enablePreSalesTab
+    enablePreSalesTab: config.enablePreSalesTab,
+    isPublicView,
+    sharedUserId
   });
 
   const renderMetrics = () => {
@@ -52,7 +58,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
               key={`commercial-${metricKey}-${index}`}
               itemKey={metricKey} 
               config={config} 
-              selectedProductId={null} 
+              selectedProductId={null}
+              isPublicView={isPublicView}
+              sharedUserId={sharedUserId}
             />
           );
           if (component) {
@@ -84,7 +92,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
               key={`commercial-chart-${chartKey}-${index}`}
               itemKey={chartKey} 
               config={config} 
-              selectedProductId={null} 
+              selectedProductId={null}
+              isPublicView={isPublicView}
+              sharedUserId={sharedUserId}
             />
           );
           if (component) {
@@ -114,7 +124,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
               key={`product-${metricKey}-${index}`}
               itemKey={metricKey} 
               config={config} 
-              selectedProductId={selectedProductId} 
+              selectedProductId={selectedProductId}
+              isPublicView={isPublicView}
+              sharedUserId={sharedUserId}
             />
           );
           if (component) {
@@ -141,7 +153,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
               key={`product-chart-${chartKey}-${index}`}
               itemKey={chartKey} 
               config={config} 
-              selectedProductId={selectedProductId} 
+              selectedProductId={selectedProductId}
+              isPublicView={isPublicView}
+              sharedUserId={sharedUserId}
             />
           );
           if (component) {
@@ -182,14 +196,19 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
             Nenhuma métrica comercial ativa
           </h3>
           <p className="text-gray-600 mb-4">
-            Vá para as configurações para ativar métricas comerciais.
+            {isPublicView ? 
+              'Este dashboard não possui métricas comerciais configuradas.' :
+              'Vá para as configurações para ativar métricas comerciais.'
+            }
           </p>
-          <a 
-            href="/dashboard-config" 
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Configurar Métricas
-          </a>
+          {!isPublicView && (
+            <a 
+              href="/dashboard-config" 
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Configurar Métricas
+            </a>
+          )}
         </div>
       )}
     </div>
