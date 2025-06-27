@@ -27,6 +27,23 @@ import DialogManager from './components/DialogManager';
 import AlignmentToolbar from './components/AlignmentToolbar';
 import ZoomControls from './components/ZoomControls';
 
+// Define the data interface for our mind map nodes
+interface MindMapNodeData {
+  label: string;
+  color?: string;
+  notes?: string;
+  attachments?: any[];
+  mindMapId?: string;
+  onEdit?: (id: string, label: string) => void;
+  onDelete?: (id: string) => void;
+  onAddChild?: (parentId: string) => void;
+  onToggleVisibility?: (nodeId: string) => void;
+  onReconnect?: (nodeId: string) => void;
+  onChangeColor?: (nodeId: string, color: string) => void;
+  hasChildren?: boolean;
+  childrenVisible?: boolean;
+}
+
 // Define custom node types for ReactFlow
 const nodeTypes: NodeTypes = {
   default: MindMapNode,
@@ -48,10 +65,46 @@ const MindMapCanvas = ({
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   
-  // Convert our mind map nodes to ReactFlow nodes with enhanced data
-  const convertToReactFlowNodes = (mindMapNodes: any[]): Node[] => {
-    return mindMapNodes.map(node => ({
-      ...node,
+  // Use ReactFlow's native state management
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<MindMapNodeData>>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialContent.edges);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
+
+  // Dialog states
+  const [isAddingNode, setIsAddingNode] = useState(false);
+  const [editingNode, setEditingNode] = useState<string | null>(null);
+  const [showReconnectDialog, setShowReconnectDialog] = useState(false);
+  const [reconnectingNode, setReconnectingNode] = useState<any>(null);
+  const [availableParents, setAvailableParents] = useState<any[]>([]);
+
+  // Auto-save functionality
+  useAutoSave(() => {
+    onSave({ 
+      nodes: nodes.map(node => ({
+        id: node.id,
+        type: node.type as 'default' | 'input' | 'output',
+        position: node.position,
+        data: {
+          label: node.data?.label || '',
+          color: node.data?.color,
+          notes: node.data?.notes,
+          attachments: node.data?.attachments
+        }
+      })),
+      edges 
+    });
+  }, 2000);
+
+  // Pan and zoom functionality
+  const panAndZoom = usePanAndZoom();
+
+  // Initialize nodes with enhanced data
+  useEffect(() => {
+    const convertedNodes: Node<MindMapNodeData>[] = initialContent.nodes.map(node => ({
+      id: node.id,
+      type: 'default',
+      position: node.position,
       data: {
         ...node.data,
         mindMapId,
@@ -68,47 +121,29 @@ const MindMapCanvas = ({
           .every(childId => !hiddenNodes.has(childId))
       }
     }));
-  };
-
-  // Use ReactFlow's native state management
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialContent.edges);
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
-
-  // Dialog states
-  const [isAddingNode, setIsAddingNode] = useState(false);
-  const [editingNode, setEditingNode] = useState<string | null>(null);
-  const [showReconnectDialog, setShowReconnectDialog] = useState(false);
-  const [reconnectingNode, setReconnectingNode] = useState<any>(null);
-  const [availableParents, setAvailableParents] = useState<any[]>([]);
-
-  // Initialize nodes with enhanced data
-  useEffect(() => {
-    setNodes(convertToReactFlowNodes(initialContent.nodes));
-  }, [initialContent.nodes, mindMapId]);
-
-  // Auto-save functionality
-  useAutoSave({
-    content: { nodes, edges },
-    onSave,
-    delay: 2000
-  });
-
-  // Pan and zoom functionality
-  const panAndZoom = usePanAndZoom();
+    setNodes(convertedNodes);
+  }, [initialContent.nodes, mindMapId, edges, hiddenNodes]);
 
   // Node operation handlers
   const handleAddNode = useCallback((label: string) => {
-    const newNode: Node = {
+    const newNode: Node<MindMapNodeData> = {
       id: Date.now().toString(),
       type: 'default',
       position: { x: Math.random() * 400, y: Math.random() * 400 },
-      data: { label }
+      data: { 
+        label,
+        mindMapId,
+        onEdit: handleEditNode,
+        onDelete: handleDeleteNode,
+        onAddChild: handleAddChildNode,
+        onToggleVisibility: handleToggleVisibility,
+        onReconnect: handleReconnectNode,
+        onChangeColor: handleChangeNodeColor
+      }
     };
     setNodes((prev) => [...prev, newNode]);
     setIsAddingNode(false);
-  }, [setNodes]);
+  }, [mindMapId]);
 
   const handleEditNode = useCallback((nodeId: string, label: string) => {
     const node = nodes.find(n => n.id === nodeId);
@@ -123,11 +158,20 @@ const MindMapCanvas = ({
   }, [setNodes, setEdges]);
 
   const handleAddChildNode = useCallback((parentId: string) => {
-    const newNode: Node = {
+    const newNode: Node<MindMapNodeData> = {
       id: Date.now().toString(),
       type: 'default',
       position: { x: Math.random() * 400, y: Math.random() * 400 },
-      data: { label: 'Novo nó filho' }
+      data: { 
+        label: 'Novo nó filho',
+        mindMapId,
+        onEdit: handleEditNode,
+        onDelete: handleDeleteNode,
+        onAddChild: handleAddChildNode,
+        onToggleVisibility: handleToggleVisibility,
+        onReconnect: handleReconnectNode,
+        onChangeColor: handleChangeNodeColor
+      }
     };
     setNodes((prev) => [...prev, newNode]);
     setEdges((prev) => [...prev, {
@@ -135,7 +179,7 @@ const MindMapCanvas = ({
       source: parentId,
       target: newNode.id
     }]);
-  }, [setNodes, setEdges]);
+  }, [mindMapId, setNodes, setEdges]);
 
   const handleReconnectNode = useCallback((nodeId: string) => {
     const node = nodes.find(n => n.id === nodeId);
@@ -180,28 +224,6 @@ const MindMapCanvas = ({
   const visibleEdges = edges.filter(edge => 
     !hiddenNodes.has(edge.source) && !hiddenNodes.has(edge.target)
   );
-
-  // Update nodes with enhanced data when dependencies change
-  useEffect(() => {
-    setNodes((prev) => prev.map(node => ({
-      ...node,
-      data: {
-        ...node.data,
-        mindMapId,
-        onEdit: handleEditNode,
-        onDelete: handleDeleteNode,
-        onAddChild: handleAddChildNode,
-        onToggleVisibility: handleToggleVisibility,
-        onReconnect: handleReconnectNode,
-        onChangeColor: handleChangeNodeColor,
-        hasChildren: edges.some(edge => edge.source === node.id),
-        childrenVisible: edges
-          .filter(edge => edge.source === node.id)
-          .map(edge => edge.target)
-          .every(childId => !hiddenNodes.has(childId))
-      }
-    })));
-  }, [edges, hiddenNodes, mindMapId, handleEditNode, handleDeleteNode, handleAddChildNode, handleToggleVisibility, handleReconnectNode, handleChangeNodeColor]);
 
   // ReactFlow event handlers
   const onConnect = useCallback((params: Connection) => {
@@ -327,7 +349,20 @@ const MindMapCanvas = ({
         <Panel position="top-left">
           <MindMapToolbar
             onAddNode={() => setIsAddingNode(true)}
-            onSave={() => onSave({ nodes, edges })}
+            onSave={() => onSave({ 
+              nodes: nodes.map(node => ({
+                id: node.id,
+                type: node.type as 'default' | 'input' | 'output',
+                position: node.position,
+                data: {
+                  label: node.data?.label || '',
+                  color: node.data?.color,
+                  notes: node.data?.notes,
+                  attachments: node.data?.attachments
+                }
+              })),
+              edges 
+            })}
             isSaving={isSaving}
           />
         </Panel>
@@ -369,8 +404,28 @@ const MindMapCanvas = ({
         setChangingNodeType={() => {}}
         editingNotes={null}
         setEditingNotes={() => {}}
-        visibleNodes={visibleNodes}
-        nodes={nodes}
+        visibleNodes={visibleNodes.map(node => ({
+          id: node.id,
+          type: node.type as 'default' | 'input' | 'output',
+          position: node.position,
+          data: {
+            label: node.data?.label || '',
+            color: node.data?.color,
+            notes: node.data?.notes,
+            attachments: node.data?.attachments
+          }
+        }))}
+        nodes={nodes.map(node => ({
+          id: node.id,
+          type: node.type as 'default' | 'input' | 'output',
+          position: node.position,
+          data: {
+            label: node.data?.label || '',
+            color: node.data?.color,
+            notes: node.data?.notes,
+            attachments: node.data?.attachments
+          }
+        }))}
         edges={edges}
         onAddNode={handleAddNode}
         onUpdateNodeLabel={(nodeId, label) => {

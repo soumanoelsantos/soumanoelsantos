@@ -46,40 +46,40 @@ const MindMapNode = ({
   const [showNotes, setShowNotes] = useState(false);
 
   const handleEditClick = useCallback(() => {
-    if (data.onEdit) {
+    if (data?.onEdit) {
       data.onEdit(id, data.label);
     }
-  }, [id, data.label, data.onEdit]);
+  }, [id, data]);
 
   const handleDeleteClick = useCallback(() => {
-    if (data.onDelete) {
+    if (data?.onDelete) {
       data.onDelete(id);
     }
-  }, [id, data.onDelete]);
+  }, [id, data]);
 
   const handleAddChildClick = useCallback(() => {
-    if (data.onAddChild) {
+    if (data?.onAddChild) {
       data.onAddChild(id);
     }
-  }, [id, data.onAddChild]);
+  }, [id, data]);
 
   const handleToggleVisibilityClick = useCallback(() => {
-    if (data.onToggleVisibility) {
+    if (data?.onToggleVisibility) {
       data.onToggleVisibility(id);
     }
-  }, [id, data.onToggleVisibility]);
+  }, [id, data]);
 
   const handleReconnectClick = useCallback(() => {
-    if (data.onReconnect) {
+    if (data?.onReconnect) {
       data.onReconnect(id);
     }
-  }, [id, data.onReconnect]);
+  }, [id, data]);
 
   const handleColorChange = useCallback((color: string) => {
-    if (data.onChangeColor) {
+    if (data?.onChangeColor) {
       data.onChangeColor(id, color);
     }
-  }, [id, data.onChangeColor]);
+  }, [id, data]);
 
   const handleUpdateNotes = useCallback((notes: string) => {
     // Notes are updated through the callback that already exists
@@ -92,8 +92,8 @@ const MindMapNode = ({
   }, [id]);
 
   const nodeStyle = {
-    backgroundColor: data.color || '#ffffff',
-    borderColor: data.color ? `${data.color}80` : '#e5e7eb',
+    backgroundColor: data?.color || '#ffffff',
+    borderColor: data?.color ? `${data.color}80` : '#e5e7eb',
   };
 
   const colors = [
@@ -123,9 +123,9 @@ const MindMapNode = ({
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium text-gray-900 break-words leading-tight">
-                {data.label}
+                {data?.label || 'New Node'}
               </div>
-              {data.notes && (
+              {data?.notes && (
                 <div className="text-xs text-gray-500 mt-1 line-clamp-2">
                   {data.notes}
                 </div>
@@ -138,20 +138,20 @@ const MindMapNode = ({
                 size="sm"
                 variant="ghost"
                 className={`h-5 w-5 p-0 hover:bg-gray-100 ${
-                  data.notes ? 'text-orange-600' : 'text-gray-400'
+                  data?.notes ? 'text-orange-600' : 'text-gray-400'
                 }`}
                 onClick={() => setShowNotes(true)}
-                title={data.notes ? "View notes" : "Add notes"}
+                title={data?.notes ? "View notes" : "Add notes"}
               >
                 <FileText className="h-3 w-3" />
               </Button>
 
               {/* Attachments Button */}
-              {data.mindMapId && (
+              {data?.mindMapId && (
                 <NodeAttachmentsDialog
                   nodeId={id}
                   mindMapId={data.mindMapId}
-                  attachments={data.attachments || []}
+                  attachments={data?.attachments || []}
                   onUpdateAttachments={handleUpdateAttachments}
                 />
               )}
@@ -176,9 +176,9 @@ const MindMapNode = ({
                     <Plus className="h-4 w-4 mr-2" />
                     Add child
                   </DropdownMenuItem>
-                  {data.hasChildren && (
+                  {data?.hasChildren && (
                     <DropdownMenuItem onClick={handleToggleVisibilityClick}>
-                      {data.childrenVisible ? (
+                      {data?.childrenVisible ? (
                         <>
                           <EyeOff className="h-4 w-4 mr-2" />
                           Hide children
@@ -242,7 +242,7 @@ const MindMapNode = ({
         isOpen={showNotes}
         onClose={() => setShowNotes(false)}
         nodeId={id}
-        initialNotes={data.notes || ''}
+        initialNotes={data?.notes || ''}
         onSave={handleUpdateNotes}
       />
     </>
