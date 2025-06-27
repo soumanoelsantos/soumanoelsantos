@@ -101,17 +101,53 @@ export const useNodeOperations = ({
     );
   }, [setNodes]);
 
+  // Função recursiva para encontrar todos os descendentes de um nó
+  const getAllDescendants = useCallback((nodeId: string): string[] => {
+    const descendants: string[] = [];
+    const directChildren = edges.filter(edge => edge.source === nodeId).map(edge => edge.target);
+    
+    for (const childId of directChildren) {
+      descendants.push(childId);
+      descendants.push(...getAllDescendants(childId));
+    }
+    
+    return descendants;
+  }, [edges]);
+
   const toggleNodeVisibility = useCallback((nodeId: string) => {
+    console.log('Toggling visibility for node:', nodeId);
+    
     setHiddenNodes(prev => {
       const newHiddenNodes = new Set(prev);
+      
       if (newHiddenNodes.has(nodeId)) {
+        // Se o nó está oculto, torná-lo visível
+        console.log('Showing node:', nodeId);
         newHiddenNodes.delete(nodeId);
+        
+        // Também mostrar todos os seus descendentes
+        const descendants = getAllDescendants(nodeId);
+        descendants.forEach(descendantId => {
+          console.log('Showing descendant:', descendantId);
+          newHiddenNodes.delete(descendantId);
+        });
       } else {
+        // Se o nó está visível, ocultá-lo
+        console.log('Hiding node:', nodeId);
         newHiddenNodes.add(nodeId);
+        
+        // Também ocultar todos os seus descendentes
+        const descendants = getAllDescendants(nodeId);
+        descendants.forEach(descendantId => {
+          console.log('Hiding descendant:', descendantId);
+          newHiddenNodes.add(descendantId);
+        });
       }
+      
+      console.log('New hidden nodes:', Array.from(newHiddenNodes));
       return newHiddenNodes;
     });
-  }, [setHiddenNodes]);
+  }, [setHiddenNodes, getAllDescendants]);
 
   const moveNodeInList = useCallback((nodeId: string, direction: 'up' | 'down') => {
     setNodes(prevNodes => {
