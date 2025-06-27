@@ -14,6 +14,7 @@ interface CanvasContentProps {
   alignmentLines: any[];
   panOffset: { x: number; y: number };
   isPanning: boolean;
+  isNodeSelected: (nodeId: string, selectedNode: string | null) => boolean;
   onMouseDown: (nodeId: string, e: React.MouseEvent) => void;
   onTouchStart: (nodeId: string, e: React.TouchEvent) => void;
   onNodeClick: (nodeId: string, e: React.MouseEvent) => void;
@@ -38,6 +39,7 @@ const CanvasContent = ({
   alignmentLines,
   panOffset,
   isPanning,
+  isNodeSelected,
   onMouseDown,
   onTouchStart,
   onNodeClick,
@@ -101,7 +103,7 @@ const CanvasContent = ({
         <MindMapNodeComponent
           key={node.id}
           node={node}
-          isSelected={selectedNode === node.id}
+          isSelected={isNodeSelected(node.id, selectedNode)}
           isDragged={draggedNode === node.id}
           hasChildNodes={hasChildNodes(node.id)}
           hasHiddenDirectChildren={hasHiddenDirectChildren(node.id)}

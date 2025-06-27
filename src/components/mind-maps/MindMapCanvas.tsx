@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { MindMapContent } from '@/types/mindMap';
 import { useMindMapState } from './hooks/useMindMapState';
-import { useDragAndDrop } from './hooks/useDragAndDrop';
+import { useMultiNodeDrag } from './hooks/useMultiNodeDrag';
 import { usePanAndZoom } from './hooks/usePanAndZoom';
 import { useCanvasInteractions } from './hooks/useCanvasInteractions';
 import { useAutoSave } from './hooks/useAutoSave';
@@ -50,7 +51,23 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     reconnectNode
   } = useMindMapState(initialContent);
 
-  const { draggedNode, canvasRef, handleMouseDown: dragMouseDown, handleTouchStart: dragTouchStart, isDragging } = useDragAndDrop({
+  const {
+    selectedNodes,
+    setSelectedNodes,
+    showAlignmentToolbar,
+    setShowAlignmentToolbar,
+    handleNodeClick: canvasNodeClick,
+    handleCanvasClick,
+    clearSelection,
+    isNodeSelected
+  } = useCanvasInteractions({
+    setSelectedNode,
+    isPanning: false,
+    isDragging: false
+  });
+
+  const { draggedNode, canvasRef, handleMouseDown: dragMouseDown, handleTouchStart: dragTouchStart, isDragging } = useMultiNodeDrag({
+    selectedNodes,
     updateNodePosition,
     setSelectedNode
   });
@@ -65,20 +82,6 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
     zoomOut,
     resetZoom
   } = usePanAndZoom();
-
-  const {
-    selectedNodes,
-    setSelectedNodes,
-    showAlignmentToolbar,
-    setShowAlignmentToolbar,
-    handleNodeClick: canvasNodeClick,
-    handleCanvasClick,
-    clearSelection
-  } = useCanvasInteractions({
-    setSelectedNode,
-    isPanning,
-    isDragging
-  });
 
   useAutoSave({
     content: { nodes, edges },
@@ -170,14 +173,14 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
   const handleNodeMouseDown = (nodeId: string, e: React.MouseEvent) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
-      dragMouseDown(e, nodeId, node.position);
+      dragMouseDown(e, nodeId, node.position, nodes);
     }
   };
 
   const handleNodeTouchStart = (nodeId: string, e: React.TouchEvent) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
-      dragTouchStart(e, nodeId, node.position);
+      dragTouchStart(e, nodeId, node.position, nodes);
     }
   };
 
@@ -281,6 +284,7 @@ const MindMapCanvas = ({ initialContent, onSave, isSaving = false }: MindMapCanv
                 alignmentLines={[]}
                 panOffset={{ x: 0, y: 0 }}
                 isPanning={isPanning}
+                isNodeSelected={isNodeSelected}
                 onMouseDown={handleNodeMouseDown}
                 onTouchStart={handleNodeTouchStart}
                 onNodeClick={(nodeId, e) => handleNodeClick(nodeId, e)}

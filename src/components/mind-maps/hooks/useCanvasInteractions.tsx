@@ -1,5 +1,6 @@
 
 import { useState, useCallback } from 'react';
+import { useMultipleSelection } from './useMultipleSelection';
 
 interface UseCanvasInteractionsProps {
   setSelectedNode: (nodeId: string | null) => void;
@@ -12,44 +13,30 @@ export const useCanvasInteractions = ({
   isPanning, 
   isDragging 
 }: UseCanvasInteractionsProps) => {
-  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   const [showAlignmentToolbar, setShowAlignmentToolbar] = useState(false);
-
-  const handleNodeClick = useCallback((e: React.MouseEvent, nodeId: string) => {
-    e.stopPropagation();
-    
-    if (e.ctrlKey || e.metaKey) {
-      if (selectedNodes.includes(nodeId)) {
-        setSelectedNodes(prev => prev.filter(id => id !== nodeId));
-      } else {
-        setSelectedNodes(prev => [...prev, nodeId]);
-      }
-    } else {
-      setSelectedNode(nodeId);
-      setSelectedNodes([]);
-    }
-  }, [selectedNodes, setSelectedNode]);
+  
+  const multiSelection = useMultipleSelection({ setSelectedNode });
 
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
     if (!isPanning && !isDragging) {
-      setSelectedNode(null);
-      setSelectedNodes([]);
+      multiSelection.clearSelection();
       setShowAlignmentToolbar(false);
     }
-  }, [isPanning, isDragging, setSelectedNode]);
+  }, [isPanning, isDragging, multiSelection]);
 
   const clearSelection = useCallback(() => {
-    setSelectedNodes([]);
+    multiSelection.clearSelection();
     setShowAlignmentToolbar(false);
-  }, []);
+  }, [multiSelection]);
 
   return {
-    selectedNodes,
-    setSelectedNodes,
+    selectedNodes: multiSelection.selectedNodes,
+    setSelectedNodes: multiSelection.setSelectedNodes,
     showAlignmentToolbar,
     setShowAlignmentToolbar,
-    handleNodeClick,
+    handleNodeClick: multiSelection.handleNodeClick,
     handleCanvasClick,
-    clearSelection
+    clearSelection,
+    isNodeSelected: multiSelection.isNodeSelected
   };
 };
