@@ -3,23 +3,27 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MindMapNode } from '@/types/mindMap';
+import { MindMapNode, MindMapEdge } from '@/types/mindMap';
 
 interface ChangeNodeTypeDialogProps {
   isOpen: boolean;
-  node: MindMapNode | null;
-  availableParents: MindMapNode[];
   onClose: () => void;
+  nodeId: string | null;
+  nodes: MindMapNode[];
+  edges: MindMapEdge[];
+  getAvailableParents: (nodeId: string) => MindMapNode[];
   onChangeToMain: (nodeId: string) => void;
   onChangeToChild: (nodeId: string, parentId: string) => void;
-  onChangeToGrandchild: (nodeId: string, parentId: string) => void;
+  onChangeToGrandchild: (nodeId: string, grandparentId: string) => void;
 }
 
 const ChangeNodeTypeDialog = ({
   isOpen,
-  node,
-  availableParents,
   onClose,
+  nodeId,
+  nodes,
+  edges,
+  getAvailableParents,
   onChangeToMain,
   onChangeToChild,
   onChangeToGrandchild
@@ -27,21 +31,24 @@ const ChangeNodeTypeDialog = ({
   const [selectedType, setSelectedType] = useState<'main' | 'child' | 'grandchild'>('main');
   const [selectedParent, setSelectedParent] = useState<string>('');
 
+  const node = nodeId ? nodes.find(n => n.id === nodeId) : null;
+  const availableParents = nodeId ? getAvailableParents(nodeId) : [];
+
   const handleSave = () => {
-    if (!node) return;
+    if (!nodeId) return;
 
     switch (selectedType) {
       case 'main':
-        onChangeToMain(node.id);
+        onChangeToMain(nodeId);
         break;
       case 'child':
         if (selectedParent) {
-          onChangeToChild(node.id, selectedParent);
+          onChangeToChild(nodeId, selectedParent);
         }
         break;
       case 'grandchild':
         if (selectedParent) {
-          onChangeToGrandchild(node.id, selectedParent);
+          onChangeToGrandchild(nodeId, selectedParent);
         }
         break;
     }

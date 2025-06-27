@@ -10,35 +10,42 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, X } from 'lucide-react';
+import { MindMapNode } from '@/types/mindMap';
 
 interface NodeNotesDialogProps {
   isOpen: boolean;
-  nodeLabel: string;
-  currentNotes: string;
   onClose: () => void;
-  onSave: (notes: string) => void;
+  nodeId: string | null;
+  nodes: MindMapNode[];
+  onUpdateNotes: (nodeId: string, notes: string) => void;
 }
 
 const NodeNotesDialog = ({
   isOpen,
-  nodeLabel,
-  currentNotes,
   onClose,
-  onSave
+  nodeId,
+  nodes,
+  onUpdateNotes
 }: NodeNotesDialogProps) => {
-  const [notes, setNotes] = useState(currentNotes || '');
+  const [notes, setNotes] = useState('');
+
+  const node = nodeId ? nodes.find(n => n.id === nodeId) : null;
+  const currentNotes = node?.data.notes || '';
+  const nodeLabel = node?.data.label || '';
 
   useEffect(() => {
-    setNotes(currentNotes || '');
+    setNotes(currentNotes);
   }, [currentNotes]);
 
   const handleSave = () => {
-    onSave(notes);
-    onClose();
+    if (nodeId) {
+      onUpdateNotes(nodeId, notes);
+      onClose();
+    }
   };
 
   const handleCancel = () => {
-    setNotes(currentNotes || '');
+    setNotes(currentNotes);
     onClose();
   };
 

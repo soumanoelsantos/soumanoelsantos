@@ -5,47 +5,45 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MindMapNode, MindMapEdge } from '@/types/mindMap';
+import { MindMapNode } from '@/types/mindMap';
 
 interface AddNodeDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (label: string, connectToNodeId?: string) => void;
-  nodes: MindMapNode[];
-  edges: MindMapEdge[];
-  preSelectedParent?: string | null;
+  onAddNode: (label: string, connectToNodeId?: string) => void;
+  availableNodes: MindMapNode[];
+  selectedParentId?: string | null;
 }
 
 const AddNodeDialog = ({ 
   isOpen, 
   onClose, 
-  onAdd, 
-  nodes, 
-  edges, 
-  preSelectedParent 
+  onAddNode, 
+  availableNodes, 
+  selectedParentId 
 }: AddNodeDialogProps) => {
   const [label, setLabel] = useState('');
-  const [selectedParentId, setSelectedParentId] = useState<string | undefined>(undefined);
+  const [selectedParentNodeId, setSelectedParentNodeId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (isOpen) {
       setLabel('');
-      setSelectedParentId(preSelectedParent || undefined);
+      setSelectedParentNodeId(selectedParentId || undefined);
     }
-  }, [isOpen, preSelectedParent]);
+  }, [isOpen, selectedParentId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (label.trim()) {
-      console.log('Submetendo novo nó:', { label: label.trim(), selectedParentId });
-      onAdd(label.trim(), selectedParentId);
+      console.log('Submetendo novo nó:', { label: label.trim(), selectedParentNodeId });
+      onAddNode(label.trim(), selectedParentNodeId);
       onClose();
     }
   };
 
   const handleClose = () => {
     setLabel('');
-    setSelectedParentId(undefined);
+    setSelectedParentNodeId(undefined);
     onClose();
   };
 
@@ -67,17 +65,17 @@ const AddNodeDialog = ({
             />
           </div>
           
-          {nodes.length > 0 && (
+          {availableNodes.length > 0 && (
             <div>
               <Label htmlFor="parent">Conectar a (opcional)</Label>
               <div className="space-y-2">
-                <Select value={selectedParentId || "none"} onValueChange={(value) => setSelectedParentId(value === "none" ? undefined : value)}>
+                <Select value={selectedParentNodeId || "none"} onValueChange={(value) => setSelectedParentNodeId(value === "none" ? undefined : value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um nó pai..." />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Nenhum (nó independente)</SelectItem>
-                    {nodes.map(node => (
+                    {availableNodes.map(node => (
                       <SelectItem key={node.id} value={node.id}>
                         {node.data.label}
                       </SelectItem>

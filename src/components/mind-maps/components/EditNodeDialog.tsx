@@ -3,26 +3,30 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MindMapNode } from '@/types/mindMap';
 
 interface EditNodeDialogProps {
   isOpen: boolean;
-  currentLabel: string;
   onClose: () => void;
-  onSave: (label: string) => void;
+  nodeId: string | null;
+  nodes: MindMapNode[];
+  onUpdateLabel: (nodeId: string, label: string) => void;
 }
 
-const EditNodeDialog = ({ isOpen, currentLabel, onClose, onSave }: EditNodeDialogProps) => {
+const EditNodeDialog = ({ isOpen, onClose, nodeId, nodes, onUpdateLabel }: EditNodeDialogProps) => {
   const [editLabel, setEditLabel] = useState('');
 
+  const currentNode = nodeId ? nodes.find(node => node.id === nodeId) : null;
+
   useEffect(() => {
-    if (isOpen) {
-      setEditLabel(currentLabel);
+    if (isOpen && currentNode) {
+      setEditLabel(currentNode.data.label);
     }
-  }, [isOpen, currentLabel]);
+  }, [isOpen, currentNode]);
 
   const handleSave = () => {
-    if (editLabel.trim()) {
-      onSave(editLabel);
+    if (editLabel.trim() && nodeId) {
+      onUpdateLabel(nodeId, editLabel);
       onClose();
     }
   };
