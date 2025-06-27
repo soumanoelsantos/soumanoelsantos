@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { DashboardConfig } from '@/types/dashboardConfig';
-import MetricsCards from '@/components/dashboard/metrics/MetricsCards';
+import CommercialMetricsCards from '@/components/dashboard/metrics/CommercialMetricsCards';
 import PreSalesMetricsCards from '@/components/dashboard/metrics/PreSalesMetricsCards';
 import SingleProductMetricsCards from '@/components/dashboard/products/SingleProductMetricsCards';
 import RevenueEvolutionChart from '@/components/dashboard/charts/RevenueEvolutionChart';
@@ -123,10 +123,11 @@ export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, sel
     'showProjecaoReceita', 'showProjecaoFaturamento', 'showNoShow'
   ];
 
-  // Verificar se é um indicador comercial
+  // Verificar se é um indicador comercial - USAR NOVO COMPONENTE
   if (commercialIndicators.includes(itemKey)) {
     if (config[itemKey as keyof DashboardConfig]) {
-      return <MetricsCards config={config} />;
+      console.log('🔍 [DEBUG] ItemRenderer - Rendering commercial metric with new component:', itemKey);
+      return <CommercialMetricsCards config={config} indicatorKey={itemKey} />;
     }
     return null;
   }
