@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useEffect } from 'react';
 import { FileText, Image, Video } from 'lucide-react';
 import { MindMapAttachment } from '@/types/mindMap';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +16,25 @@ const AttachmentPreview = ({ attachment, fileDataMap }: AttachmentPreviewProps) 
     const fileData = fileDataMap.get(attachment.id);
     return fileData ? fileData.url : attachment.url;
   };
+
+  // Auto-open PDFs when component mounts
+  useEffect(() => {
+    if (attachment.type === 'pdf') {
+      const url = getAttachmentUrl(attachment);
+      if (url) {
+        try {
+          window.open(url, '_blank');
+        } catch (error) {
+          console.error('Erro ao abrir PDF:', error);
+          toast({
+            variant: "destructive",
+            title: "Erro ao abrir arquivo",
+            description: "Não foi possível abrir o PDF."
+          });
+        }
+      }
+    }
+  }, [attachment, fileDataMap, toast]);
 
   const renderPreview = (attachment: MindMapAttachment) => {
     const url = getAttachmentUrl(attachment);
@@ -72,23 +90,8 @@ const AttachmentPreview = ({ attachment, fileDataMap }: AttachmentPreviewProps) 
         return (
           <div className="text-center p-8 bg-gray-50 rounded-lg">
             <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600 mb-4">Preview de PDF</p>
-            <Button 
-              onClick={() => {
-                try {
-                  window.open(url, '_blank');
-                } catch (error) {
-                  console.error('Erro ao abrir PDF:', error);
-                  toast({
-                    variant: "destructive",
-                    title: "Erro ao abrir arquivo",
-                    description: "Não foi possível abrir o PDF."
-                  });
-                }
-              }}
-            >
-              Abrir PDF
-            </Button>
+            <p className="text-gray-600">PDF aberto em nova aba</p>
+            <p className="text-sm text-gray-500 mt-2">O arquivo foi aberto automaticamente</p>
           </div>
         );
       default:
