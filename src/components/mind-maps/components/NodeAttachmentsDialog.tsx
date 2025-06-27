@@ -193,6 +193,7 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
             <AttachmentPreview
               attachment={previewAttachment}
               fileDataMap={fileDataMap}
+              onClose={() => setPreviewAttachment(null)}
             />
           </DialogContent>
         </Dialog>

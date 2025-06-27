@@ -7,9 +7,10 @@ import { useToast } from '@/hooks/use-toast';
 interface AttachmentPreviewProps {
   attachment: MindMapAttachment;
   fileDataMap: Map<string, { file: File; url: string }>;
+  onClose?: () => void;
 }
 
-const AttachmentPreview = ({ attachment, fileDataMap }: AttachmentPreviewProps) => {
+const AttachmentPreview = ({ attachment, fileDataMap, onClose }: AttachmentPreviewProps) => {
   const { toast } = useToast();
 
   const getAttachmentUrl = (attachment: MindMapAttachment): string | null => {
@@ -25,7 +26,9 @@ const AttachmentPreview = ({ attachment, fileDataMap }: AttachmentPreviewProps) 
         try {
           window.open(url, '_blank');
           // Close the dialog immediately after opening PDF
-          window.history.back();
+          if (onClose) {
+            onClose();
+          }
         } catch (error) {
           console.error('Erro ao abrir PDF:', error);
           toast({
@@ -36,7 +39,7 @@ const AttachmentPreview = ({ attachment, fileDataMap }: AttachmentPreviewProps) 
         }
       }
     }
-  }, [attachment, fileDataMap, toast]);
+  }, [attachment, fileDataMap, toast, onClose]);
 
   const renderPreview = (attachment: MindMapAttachment) => {
     const url = getAttachmentUrl(attachment);
