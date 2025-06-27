@@ -1,230 +1,209 @@
 
 import React from 'react';
+import { Handle, Position, NodeProps } from '@xyflow/react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Edit2, Trash2, Eye, EyeOff, Network, NotebookPen, Plus, Paperclip } from 'lucide-react';
-import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
+import { Edit2, Trash2, Plus, Eye, EyeOff, GitBranch, Palette, StickyNote } from 'lucide-react';
+import { MindMapNodeData } from '@/types/mindMap';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
 
-interface MindMapNodeProps {
-  node: MindMapNodeType;
-  isSelected: boolean;
-  isDragged: boolean;
-  hasChildNodes: boolean;
-  hasHiddenDirectChildren: boolean;
-  onMouseDown: (e: React.MouseEvent) => void;
-  onTouchStart?: (e: React.TouchEvent) => void;
-  onClick: (e: React.MouseEvent) => void;
-  onEdit: () => void;
-  onDelete: () => void;
-  onToggleConnections: () => void;
-  onChangeType: () => void;
-  onOpenNotes: () => void;
-  onAddChild: () => void;
-  onReconnect?: () => void;
-  onUpdateNodeAttachments?: (attachments: any[]) => void;
+interface MindMapNodeComponentProps extends NodeProps {
+  data: MindMapNodeData & {
+    onEdit?: () => void;
+    onDelete?: () => void;
+    onAddChild?: () => void;
+    onToggleVisibility?: () => void;
+    onReconnect?: () => void;
+    onChangeColor?: () => void;
+    onOpenNotes?: () => void;
+    onUpdateNodeAttachments?: (attachments: any[]) => void;
+    hasChildren?: boolean;
+    hasHiddenChildren?: boolean;
+    mindMapId?: string;
+  };
+  isSelected?: boolean;
 }
 
-const MindMapNode = ({
-  node,
-  isSelected,
-  isDragged,
-  hasChildNodes,
-  hasHiddenDirectChildren,
-  onMouseDown,
-  onTouchStart,
-  onClick,
-  onEdit,
-  onDelete,
-  onToggleConnections,
-  onChangeType,
-  onOpenNotes,
-  onAddChild,
-  onReconnect,
-  onUpdateNodeAttachments
-}: MindMapNodeProps) => {
-  const handleMouseDown = (e: React.MouseEvent) => {
-    // Only start dragging if not clicking on buttons
-    if ((e.target as HTMLElement).closest('button')) {
-      return;
-    }
-    onMouseDown(e);
+const MindMapNodeComponent = ({ data, isSelected, id }: MindMapNodeComponentProps) => {
+  const { 
+    label, 
+    color = '#ffffff', 
+    notes, 
+    attachments = [],
+    onEdit, 
+    onDelete, 
+    onAddChild, 
+    onToggleVisibility, 
+    onReconnect, 
+    onChangeColor,
+    onOpenNotes,
+    onUpdateNodeAttachments,
+    hasChildren,
+    hasHiddenChildren,
+    mindMapId
+  } = data;
+
+  const handleEdit = () => {
+    if (onEdit) onEdit();
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    // Only start dragging if not touching buttons
-    if ((e.target as HTMLElement).closest('button')) {
-      return;
-    }
-    if (onTouchStart) {
-      onTouchStart(e);
+  const handleDelete = () => {
+    if (onDelete) onDelete();
+  };
+
+  const handleAddChild = () => {
+    if (onAddChild) onAddChild();
+  };
+
+  const handleToggleVisibility = () => {
+    if (onToggleVisibility) onToggleVisibility();
+  };
+
+  const handleReconnect = () => {
+    if (onReconnect) onReconnect();
+  };
+
+  const handleChangeColor = () => {
+    if (onChangeColor) onChangeColor();
+  };
+
+  const handleOpenNotes = () => {
+    if (onOpenNotes) onOpenNotes();
+  };
+
+  const handleUpdateAttachments = (newAttachments: any[]) => {
+    if (onUpdateNodeAttachments) {
+      onUpdateNodeAttachments(newAttachments);
     }
   };
 
-  const hasNotes = node.data.notes && node.data.notes.trim().length > 0;
-  const hasAttachments = node.data.attachments && node.data.attachments.length > 0;
+  const nodeStyle = {
+    backgroundColor: color,
+    borderColor: color === '#ffffff' ? '#e5e7eb' : color,
+    borderWidth: '2px',
+    borderStyle: 'solid'
+  };
 
   return (
-    <div
-      className={`absolute select-none group ${
+    <div 
+      className={`group relative min-w-[120px] max-w-[200px] rounded-lg p-3 shadow-md transition-all duration-200 ${
         isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
-      } ${isDragged ? 'z-50 scale-105' : 'z-10'} transition-all duration-200`}
-      style={{
-        left: node.position.x,
-        top: node.position.y,
-        transform: 'translate(-50%, -50%)',
-        cursor: isDragged ? 'grabbing' : 'grab',
-        zIndex: isDragged ? 1000 : 100
-      }}
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
-      onClick={onClick}
+      }`}
+      style={nodeStyle}
     >
-      <Card className={`min-w-[120px] max-w-[200px] shadow-lg hover:shadow-xl transition-all relative ${
-        isSelected ? 'border-blue-500 bg-blue-50' : 'bg-white'
-      } ${isDragged ? 'shadow-2xl' : ''}`}>
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: node.data.color }}
-              />
-              <Button
-                size="sm"
-                variant="ghost"
-                className={`h-5 w-5 p-0 hover:bg-gray-100 ${
-                  hasNotes ? 'text-blue-600' : 'text-gray-400'
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenNotes();
-                }}
-                title={hasNotes ? "Ver/Editar notas" : "Adicionar notas"}
-              >
-                <NotebookPen className="h-3 w-3" />
-              </Button>
-              
-              {onUpdateNodeAttachments && (
-                <NodeAttachmentsDialog
-                  attachments={node.data.attachments || []}
-                  onUpdateAttachments={(attachments) => onUpdateNodeAttachments(attachments)}
-                />
-              )}
-            </div>
-            {hasChildNodes && (
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0 hover:bg-gray-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleConnections();
-                }}
-                title={hasHiddenDirectChildren ? "Mostrar próximo nível" : "Ocultar filhos diretos"}
-              >
-                {hasHiddenDirectChildren ? (
-                  <Eye className="h-3 w-3" />
-                ) : (
-                  <EyeOff className="h-3 w-3" />
-                )}
-              </Button>
-            )}
-          </div>
-          
-          <div className="text-sm font-medium text-center break-words pointer-events-none mb-2">
-            {node.data.label}
-          </div>
-          
-          {/* Indicadores de conteúdo */}
-          {(hasAttachments || hasNotes) && (
-            <div className="flex justify-center gap-1 mb-2">
-              {hasAttachments && (
-                <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-1 py-0.5 rounded">
-                  <Paperclip className="h-2 w-2" />
-                  <span>{node.data.attachments!.length}</span>
-                </div>
-              )}
-              {hasNotes && (
-                <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-1 py-0.5 rounded">
-                  <NotebookPen className="h-2 w-2" />
-                </div>
-              )}
-            </div>
-          )}
-          
-          {isSelected && (
-            <div className="flex gap-1 flex-wrap">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit();
-                }}
-                title="Editar nó"
-                className="h-6 px-2 text-xs"
-              >
-                <Edit2 className="h-3 w-3" />
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChangeType();
-                }}
-                title="Alterar tipo do nó"
-                className="h-6 px-2 text-xs"
-              >
-                <Network className="h-3 w-3" />
-              </Button>
-              {onReconnect && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onReconnect();
-                  }}
-                  title="Reconectar nó"
-                  className="h-6 px-2 text-xs"
-                >
-                  <Network className="h-3 w-3" />
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete();
-                }}
-                title="Excluir nó"
-                className="h-6 px-2 text-xs"
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="!w-2 !h-2 !bg-blue-500 !border-2 !border-white"
+      />
+      
+      <div className="text-sm font-medium text-gray-800 break-words">
+        {label}
+      </div>
+      
+      {notes && (
+        <div className="mt-1 text-xs text-gray-600 italic truncate" title={notes}>
+          📝 {notes.length > 30 ? `${notes.substring(0, 30)}...` : notes}
+        </div>
+      )}
 
-      {/* Add Child Button - appears on hover */}
-      <Button
-        size="sm"
-        variant="default"
-        className="absolute -bottom-2 -right-2 h-6 w-6 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
-        onClick={(e) => {
-          e.stopPropagation();
-          onAddChild();
-        }}
-        title="Adicionar nó filho"
-      >
-        <Plus className="h-3 w-3" />
-      </Button>
+      {attachments.length > 0 && (
+        <div className="mt-1 text-xs text-blue-600">
+          📎 {attachments.length} anexo{attachments.length > 1 ? 's' : ''}
+        </div>
+      )}
+
+      <div className="absolute -top-2 -right-2 flex flex-wrap gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {mindMapId && (
+          <NodeAttachmentsDialog
+            nodeId={id}
+            mindMapId={mindMapId}
+            attachments={attachments}
+            onUpdateAttachments={handleUpdateAttachments}
+          />
+        )}
+        
+        {notes && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-5 w-5 p-0 hover:bg-gray-100 text-orange-600"
+            onClick={handleOpenNotes}
+            title="Ver anotações"
+          >
+            <StickyNote className="h-3 w-3" />
+          </Button>
+        )}
+        
+        <Button
+          size="sm"
+          variant="ghost"  
+          className="h-5 w-5 p-0 hover:bg-gray-100"
+          onClick={handleEdit}
+          title="Editar"
+        >
+          <Edit2 className="h-3 w-3" />
+        </Button>
+        
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-5 w-5 p-0 hover:bg-gray-100"
+          onClick={handleAddChild}
+          title="Adicionar filho"
+        >
+          <Plus className="h-3 w-3" />
+        </Button>
+        
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-5 w-5 p-0 hover:bg-gray-100"
+          onClick={handleChangeColor}
+          title="Mudar cor"
+        >
+          <Palette className="h-3 w-3" />
+        </Button>
+        
+        {hasChildren && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className={`h-5 w-5 p-0 hover:bg-gray-100 ${hasHiddenChildren ? 'text-orange-500' : ''}`}
+            onClick={handleToggleVisibility}
+            title={hasHiddenChildren ? "Mostrar conexões ocultas" : "Ocultar conexões"}
+          >
+            {hasHiddenChildren ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+          </Button>
+        )}
+        
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-5 w-5 p-0 hover:bg-gray-100"
+          onClick={handleReconnect}
+          title="Reconectar"
+        >
+          <GitBranch className="h-3 w-3" />
+        </Button>
+        
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-5 w-5 p-0 hover:bg-red-100 text-red-600"
+          onClick={handleDelete}
+          title="Excluir"
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
+      </div>
+
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="!w-2 !h-2 !bg-blue-500 !border-2 !border-white"
+      />
     </div>
   );
 };
 
-export default MindMapNode;
+export default MindMapNodeComponent;
