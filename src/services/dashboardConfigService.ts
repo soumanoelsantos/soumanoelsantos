@@ -48,11 +48,10 @@ export const saveDashboardConfig = async (config: DashboardConfig, userId: strin
         ...configData,
         updated_at: new Date().toISOString()
       }, {
-        onConflict: 'user_id',
-        ignoreDuplicates: false
+        onConflict: 'user_id'
       })
       .select()
-      .maybeSingle();
+      .single();
 
     if (error) {
       console.error('🔴 dashboardConfigService - Upsert error:', error);

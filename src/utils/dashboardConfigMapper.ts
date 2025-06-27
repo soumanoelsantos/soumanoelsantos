@@ -46,11 +46,11 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
     show_pre_sales_no_show_chart: Boolean(config.showPreSalesNoShowChart),
     show_pre_sales_sdr_comparison_chart: Boolean(config.showPreSalesSDRComparisonChart),
     
-    // Arrays
-    metrics_order: Array.isArray(config.metricsOrder) ? config.metricsOrder : [],
-    pre_sales_order: Array.isArray(config.preSalesOrder) ? config.preSalesOrder : [],
-    product_order: Array.isArray(config.productOrder) ? config.productOrder : [],
-    selected_product_ids: Array.isArray(config.selectedProductIds) ? config.selectedProductIds : [],
+    // Arrays - salvando como JSON
+    metrics_order: config.metricsOrder || [],
+    pre_sales_order: config.preSalesOrder || [],
+    product_order: config.productOrder || [],
+    selected_product_ids: config.selectedProductIds || [],
     
     // Gráficos comerciais
     show_revenue_evolution_chart: Boolean(config.showRevenueEvolutionChart),
@@ -78,7 +78,7 @@ export const mapConfigToDatabase = (config: DashboardConfig) => {
     show_product_revenue_evolution_chart: Boolean(config.showProductRevenueEvolutionChart),
     show_product_billing_evolution_chart: Boolean(config.showProductBillingEvolutionChart),
 
-    // Controle de abas - agora mapeando corretamente
+    // Controle de abas
     enable_commercial_tab: Boolean(config.enableCommercialTab ?? true),
     enable_product_tab: Boolean(config.enableProductTab ?? true),
     enable_pre_sales_tab: Boolean(config.enablePreSalesTab ?? true),
