@@ -159,7 +159,14 @@ const Dashboard = () => {
                 onSalespeopleChange={updateSalespeople}
                 onReset={resetFilters}
               />
-              <PreSalesMetrics config={config} />
+              <PreSalesMetrics 
+                config={config} 
+                filters={{
+                  startDate: filters.startDate,
+                  endDate: filters.endDate,
+                  selectedSalespeople: filters.selectedSalespeople
+                }}
+              />
             </TabsContent>
           )}
         </Tabs>

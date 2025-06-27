@@ -1,25 +1,20 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
-interface DashboardSharingData {
-  shareToken: string | null;
+interface SharingData {
   isPublic: boolean;
+  shareToken: string | null;
 }
 
 export const useDashboardSharing = () => {
   const { userId } = useAuth();
-  const [sharingData, setSharingData] = useState<DashboardSharingData>({
-    shareToken: null,
-    isPublic: false
+  const [sharingData, setSharingData] = useState<SharingData>({
+    isPublic: false,
+    shareToken: null
   });
   const [isLoading, setIsLoading] = useState(true);
-
-  const generateShareToken = () => {
-    return crypto.randomUUID().replace(/-/g, '').substring(0, 16);
-  };
 
   const loadSharingData = async () => {
     if (!userId) {
@@ -30,7 +25,7 @@ export const useDashboardSharing = () => {
     try {
       const { data, error } = await supabase
         .from('dashboard_configs')
-        .select('share_token, is_public')
+        .select('is_public, share_token')
         .eq('user_id', userId)
         .maybeSingle();
 
@@ -41,50 +36,46 @@ export const useDashboardSharing = () => {
 
       if (data) {
         setSharingData({
-          shareToken: data.share_token,
-          isPublic: data.is_public || false
+          isPublic: data.is_public || false,
+          shareToken: data.share_token
         });
       }
     } catch (error) {
-      console.error('Error in loadSharingData:', error);
+      console.error('Error loading sharing data:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const enablePublicSharing = async () => {
-    if (!userId) return null;
+    if (!userId) return;
 
     try {
-      const newToken = generateShareToken();
-      
+      // Generate a new token if one doesn't exist
+      const shareToken = sharingData.shareToken || crypto.randomUUID();
+
       const { error } = await supabase
         .from('dashboard_configs')
         .upsert({
           user_id: userId,
-          share_token: newToken,
           is_public: true,
+          share_token: shareToken,
+          updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'
         });
 
       if (error) {
         console.error('Error enabling public sharing:', error);
-        toast.error('Erro ao habilitar compartilhamento público');
-        return null;
+        return;
       }
 
       setSharingData({
-        shareToken: newToken,
-        isPublic: true
+        isPublic: true,
+        shareToken
       });
-
-      toast.success('Compartilhamento público habilitado!');
-      return newToken;
     } catch (error) {
-      console.error('Error in enablePublicSharing:', error);
-      toast.error('Erro ao habilitar compartilhamento público');
-      return null;
+      console.error('Error enabling public sharing:', error);
     }
   };
 
@@ -94,55 +85,51 @@ export const useDashboardSharing = () => {
     try {
       const { error } = await supabase
         .from('dashboard_configs')
-        .update({ is_public: false })
+        .update({
+          is_public: false,
+          updated_at: new Date().toISOString()
+        })
         .eq('user_id', userId);
 
       if (error) {
         console.error('Error disabling public sharing:', error);
-        toast.error('Erro ao desabilitar compartilhamento público');
         return;
       }
 
-      setSharingData({
-        shareToken: sharingData.shareToken,
+      setSharingData(prev => ({
+        ...prev,
         isPublic: false
-      });
-
-      toast.success('Compartilhamento público desabilitado!');
+      }));
     } catch (error) {
-      console.error('Error in disablePublicSharing:', error);
-      toast.error('Erro ao desabilitar compartilhamento público');
+      console.error('Error disabling public sharing:', error);
     }
   };
 
   const regenerateToken = async () => {
-    if (!userId) return null;
+    if (!userId) return;
 
     try {
-      const newToken = generateShareToken();
-      
+      const newToken = crypto.randomUUID();
+
       const { error } = await supabase
         .from('dashboard_configs')
-        .update({ share_token: newToken })
+        .update({
+          share_token: newToken,
+          updated_at: new Date().toISOString()
+        })
         .eq('user_id', userId);
 
       if (error) {
         console.error('Error regenerating token:', error);
-        toast.error('Erro ao regenerar token');
-        return null;
+        return;
       }
 
-      setSharingData({
-        shareToken: newToken,
-        isPublic: sharingData.isPublic
-      });
-
-      toast.success('Token regenerado com sucesso!');
-      return newToken;
+      setSharingData(prev => ({
+        ...prev,
+        shareToken: newToken
+      }));
     } catch (error) {
-      console.error('Error in regenerateToken:', error);
-      toast.error('Erro ao regenerar token');
-      return null;
+      console.error('Error regenerating token:', error);
     }
   };
 
@@ -155,7 +142,6 @@ export const useDashboardSharing = () => {
     isLoading,
     enablePublicSharing,
     disablePublicSharing,
-    regenerateToken,
-    refetch: loadSharingData
+    regenerateToken
   };
 };

@@ -33,23 +33,37 @@ interface PreSalesData {
   }>;
 }
 
+interface PreSalesFilters {
+  startDate?: Date;
+  endDate?: Date;
+  selectedSalespeople?: string[];
+}
+
 interface PreSalesMetricsProps {
   config: DashboardConfig;
   preSalesData?: PreSalesData;
   isPublicView?: boolean;
   sharedUserId?: string;
+  filters?: PreSalesFilters;
 }
 
-const PreSalesMetrics = ({ config, preSalesData, isPublicView = false, sharedUserId }: PreSalesMetricsProps) => {
+const PreSalesMetrics = ({ 
+  config, 
+  preSalesData, 
+  isPublicView = false, 
+  sharedUserId,
+  filters 
+}: PreSalesMetricsProps) => {
   const { config: dashboardConfig } = useDashboardConfig();
   const { getOrderedPreSalesItems } = usePreSalesOrder(config || dashboardConfig);
-  const { data: realPreSalesData, isLoading, error } = usePreSalesData(sharedUserId);
+  const { data: realPreSalesData, isLoading, error } = usePreSalesData(sharedUserId, filters);
   
   // Use real data from hook instead of provided preSalesData
   const dataToUse = realPreSalesData;
   
   console.log('🔍 PreSalesMetrics - Rendering pre-sales dashboard with config:', config || dashboardConfig);
   console.log('🔍 PreSalesMetrics - Pre-sales data:', dataToUse);
+  console.log('🔍 PreSalesMetrics - Filters:', filters);
   console.log('🔍 PreSalesMetrics - Public view:', isPublicView, 'Shared user:', sharedUserId);
 
   if (isLoading) {

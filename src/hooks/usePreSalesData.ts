@@ -31,7 +31,13 @@ interface PreSalesData {
   }>;
 }
 
-export const usePreSalesData = (sharedUserId?: string) => {
+interface PreSalesFilters {
+  startDate?: Date;
+  endDate?: Date;
+  selectedSalespeople?: string[];
+}
+
+export const usePreSalesData = (sharedUserId?: string, filters?: PreSalesFilters) => {
   const { userId: authUserId } = useAuth();
   const userId = sharedUserId || authUserId;
   
@@ -39,17 +45,17 @@ export const usePreSalesData = (sharedUserId?: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Função para calcular dias úteis no mês
-  const getBusinessDaysInMonth = (year: number, month: number) => {
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+  // Função para calcular dias úteis no período
+  const getBusinessDaysInPeriod = (startDate: Date, endDate: Date) => {
     let businessDays = 0;
+    const currentDate = new Date(startDate);
     
-    for (let day = new Date(firstDay); day <= lastDay; day.setDate(day.getDate() + 1)) {
+    while (currentDate <= endDate) {
       // 0 = domingo, 6 = sábado
-      if (day.getDay() !== 0 && day.getDay() !== 6) {
+      if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
         businessDays++;
       }
+      currentDate.setDate(currentDate.getDate() + 1);
     }
     
     return businessDays;
@@ -66,6 +72,7 @@ export const usePreSalesData = (sharedUserId?: string) => {
     
     try {
       console.log('🔍 usePreSalesData - Loading pre-sales data from database for user:', userId);
+      console.log('🔍 usePreSalesData - Filters:', filters);
       
       // Buscar SDRs do usuário
       const { data: sdrData, error: sdrError } = await supabase
@@ -84,35 +91,56 @@ export const usePreSalesData = (sharedUserId?: string) => {
 
       if (!sdrData || sdrData.length === 0) {
         console.log('⚠️ No SDRs found, using mock data');
-        const mockData = generateMockData();
+        const mockData = generateMockData(filters);
         setData(mockData);
         setIsLoading(false);
         return;
       }
 
-      // Definir períodos
+      // Definir períodos baseado nos filtros
       const currentDate = new Date();
-      const currentMonth = currentDate.getMonth();
-      const currentYear = currentDate.getFullYear();
       
-      // Primeiro dia do mês atual
-      const monthStart = new Date(currentYear, currentMonth, 1);
-      // Último dia do mês atual
-      const monthEnd = new Date(currentYear, currentMonth + 1, 0);
+      // Se há filtros de data, usar essas datas
+      let startDate: Date;
+      let endDate: Date;
       
-      // Para o gráfico, buscar últimos 45 dias para garantir 30 dias úteis
-      const chartStartDate = new Date();
-      chartStartDate.setDate(chartStartDate.getDate() - 45);
+      if (filters?.startDate && filters?.endDate) {
+        startDate = filters.startDate;
+        endDate = filters.endDate;
+        console.log('📅 Using filtered date range:', { startDate, endDate });
+      } else {
+        // Usar o mês atual como padrão
+        startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        console.log('📅 Using current month range:', { startDate, endDate });
+      }
+
+      // Para o gráfico, se não há filtros específicos, usar últimos 30 dias úteis
+      let chartStartDate: Date;
+      if (filters?.startDate) {
+        chartStartDate = startDate;
+      } else {
+        chartStartDate = new Date();
+        chartStartDate.setDate(chartStartDate.getDate() - 45); // 45 dias para garantir 30 dias úteis
+      }
 
       console.log('📅 Date ranges:', {
-        monthStart: monthStart.toISOString().split('T')[0],
-        monthEnd: monthEnd.toISOString().split('T')[0],
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
         chartStart: chartStartDate.toISOString().split('T')[0],
         today: currentDate.toISOString().split('T')[0]
       });
 
-      // Buscar dados do mês atual
-      const { data: monthlyPerformanceData, error: monthlyPerfError } = await supabase
+      // Filtrar por SDRs selecionados se houver
+      let sdrIds = sdrData.map(sdr => sdr.id);
+      if (filters?.selectedSalespeople && filters.selectedSalespeople.length > 0) {
+        const selectedSdrs = sdrData.filter(sdr => filters.selectedSalespeople!.includes(sdr.id));
+        sdrIds = selectedSdrs.map(sdr => sdr.id);
+        console.log('📊 Filtered SDRs:', selectedSdrs);
+      }
+
+      // Buscar dados do período selecionado para métricas
+      const { data: periodPerformanceData, error: periodPerfError } = await supabase
         .from('seller_daily_performance')
         .select(`
           seller_id, 
@@ -122,16 +150,16 @@ export const usePreSalesData = (sharedUserId?: string) => {
           date,
           sellers!inner(name)
         `)
-        .in('seller_id', sdrData.map(sdr => sdr.id))
-        .gte('date', monthStart.toISOString().split('T')[0])
-        .lte('date', monthEnd.toISOString().split('T')[0]);
+        .in('seller_id', sdrIds)
+        .gte('date', startDate.toISOString().split('T')[0])
+        .lte('date', endDate.toISOString().split('T')[0]);
 
-      if (monthlyPerfError) {
-        console.error('❌ Error fetching monthly performance data:', monthlyPerfError);
-        throw monthlyPerfError;
+      if (periodPerfError) {
+        console.error('❌ Error fetching period performance data:', periodPerfError);
+        throw periodPerfError;
       }
 
-      // Buscar dados para gráfico (últimos 45 dias)
+      // Buscar dados para gráfico
       const { data: chartPerformanceData, error: chartPerfError } = await supabase
         .from('seller_daily_performance')
         .select(`
@@ -142,81 +170,79 @@ export const usePreSalesData = (sharedUserId?: string) => {
           date,
           sellers!inner(name)
         `)
-        .in('seller_id', sdrData.map(sdr => sdr.id))
+        .in('seller_id', sdrIds)
         .gte('date', chartStartDate.toISOString().split('T')[0])
-        .lte('date', currentDate.toISOString().split('T')[0]);
+        .lte('date', (filters?.endDate || currentDate).toISOString().split('T')[0]);
 
       if (chartPerfError) {
         console.error('❌ Error fetching chart performance data:', chartPerfError);
         throw chartPerfError;
       }
 
-      console.log('📈 Monthly performance data found:', monthlyPerformanceData?.length || 0, 'records');
+      console.log('📈 Period performance data found:', periodPerformanceData?.length || 0, 'records');
       console.log('📈 Chart performance data found:', chartPerformanceData?.length || 0, 'records');
 
-      // Calcular totais mensais
-      const monthlyTotals = {
-        calls: monthlyPerformanceData?.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0) || 0,
-        schedulings: monthlyPerformanceData?.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0) || 0,
-        noShow: monthlyPerformanceData?.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0) || 0
+      // Calcular totais do período
+      const periodTotals = {
+        calls: periodPerformanceData?.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0) || 0,
+        schedulings: periodPerformanceData?.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0) || 0,
+        noShow: periodPerformanceData?.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0) || 0
       };
 
-      // Calcular número de dias úteis no mês atual
-      const businessDaysInMonth = getBusinessDaysInMonth(currentYear, currentMonth);
+      // Calcular número de dias úteis no período
+      const businessDaysInPeriod = getBusinessDaysInPeriod(startDate, endDate);
       
       // Calcular médias diárias (apenas dias úteis)
-      const monthlyCallsAverage = businessDaysInMonth > 0 ? Math.round((monthlyTotals.calls / businessDaysInMonth) * 100) / 100 : 0;
-      const monthlySchedulingsAverage = businessDaysInMonth > 0 ? Math.round((monthlyTotals.schedulings / businessDaysInMonth) * 100) / 100 : 0;
+      const periodCallsAverage = businessDaysInPeriod > 0 ? Math.round((periodTotals.calls / businessDaysInPeriod) * 100) / 100 : 0;
+      const periodSchedulingsAverage = businessDaysInPeriod > 0 ? Math.round((periodTotals.schedulings / businessDaysInPeriod) * 100) / 100 : 0;
       
-      // Calcular taxa de no-show mensal
-      const monthlyNoShowRate = monthlyTotals.schedulings > 0 ? Math.round((monthlyTotals.noShow / monthlyTotals.schedulings) * 10000) / 100 : 0;
+      // Calcular taxa de no-show do período
+      const periodNoShowRate = periodTotals.schedulings > 0 ? Math.round((periodTotals.noShow / periodTotals.schedulings) * 10000) / 100 : 0;
 
-      console.log('📊 Monthly calculations:', {
-        businessDaysInMonth,
-        monthlyTotals,
-        monthlyCallsAverage,
-        monthlySchedulingsAverage,
-        monthlyNoShowRate: `${monthlyNoShowRate}%`
+      console.log('📊 Period calculations:', {
+        businessDaysInPeriod,
+        periodTotals,
+        periodCallsAverage,
+        periodSchedulingsAverage,
+        periodNoShowRate: `${periodNoShowRate}%`
       });
 
       // Processar dados para cada SDR
-      const sdrPerformance = sdrData.map(sdr => {
-        const sdrPerf = monthlyPerformanceData?.filter(p => p.seller_id === sdr.id) || [];
-        
-        const totalCalls = sdrPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
-        const totalSchedulings = sdrPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
-        const totalNoShow = sdrPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
-        const conversionRate = totalCalls > 0 ? (totalSchedulings / totalCalls) * 100 : 0;
+      const sdrPerformance = sdrData
+        .filter(sdr => sdrIds.includes(sdr.id))
+        .map(sdr => {
+          const sdrPerf = periodPerformanceData?.filter(p => p.seller_id === sdr.id) || [];
+          
+          const totalCalls = sdrPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
+          const totalSchedulings = sdrPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
+          const totalNoShow = sdrPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
+          const conversionRate = totalCalls > 0 ? (totalSchedulings / totalCalls) * 100 : 0;
 
-        return {
-          name: sdr.name,
-          calls: totalCalls,
-          schedulings: totalSchedulings,
-          noShow: totalNoShow,
-          conversionRate: Math.round(conversionRate * 100) / 100
-        };
-      });
+          return {
+            name: sdr.name,
+            calls: totalCalls,
+            schedulings: totalSchedulings,
+            noShow: totalNoShow,
+            conversionRate: Math.round(conversionRate * 100) / 100
+          };
+        });
 
-      // Gerar dados dos últimos 30 dias úteis para gráficos
-      const weeklyData = [];
-      let daysAdded = 0;
-      let currentDay = 0;
+      // Gerar dados para gráficos baseado no período selecionado
+      const chartData = [];
+      const currentChartDate = new Date(chartStartDate);
       
-      while (daysAdded < 30) {
-        const date = new Date();
-        date.setDate(date.getDate() - currentDay);
-        
+      while (currentChartDate <= (filters?.endDate || currentDate)) {
         // Pular fins de semana
-        if (date.getDay() !== 0 && date.getDay() !== 6) {
-          const dateStr = date.toISOString().split('T')[0];
+        if (currentChartDate.getDay() !== 0 && currentChartDate.getDay() !== 6) {
+          const dateStr = currentChartDate.toISOString().split('T')[0];
           
           const dayPerf = chartPerformanceData?.filter(p => p.date === dateStr) || [];
           const calls = dayPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
           const schedulings = dayPerf.reduce((sum, p) => sum + (Number(p.meetings_count) || 0), 0);
           const noShow = dayPerf.reduce((sum, p) => sum + (Number(p.leads_count) || 0), 0);
 
-          weeklyData.unshift({
-            date: date.toLocaleDateString('pt-BR', { 
+          chartData.push({
+            date: currentChartDate.toLocaleDateString('pt-BR', { 
               day: '2-digit', 
               month: '2-digit',
               timeZone: 'America/Sao_Paulo'
@@ -225,13 +251,11 @@ export const usePreSalesData = (sharedUserId?: string) => {
             schedulings,
             noShow
           });
-          
-          daysAdded++;
         }
-        currentDay++;
+        currentChartDate.setDate(currentChartDate.getDate() + 1);
       }
 
-      // Calcular dados do dia atual (para manter compatibilidade)
+      // Calcular dados do último dia (para compatibilidade)
       const today = new Date().toISOString().split('T')[0];
       const todayPerf = chartPerformanceData?.filter(p => p.date === today) || [];
       const dailyCalls = todayPerf.reduce((sum, p) => sum + (Number(p.calls_count) || 0), 0);
@@ -248,16 +272,16 @@ export const usePreSalesData = (sharedUserId?: string) => {
         dailyNoShow,
         dailyNoShowRate: Math.round(dailyNoShowRate * 100) / 100,
         
-        // Novos dados mensais
-        monthlyCallsAverage,
-        monthlySchedulingsAverage,
-        monthlyNoShowRate,
+        // Dados do período selecionado
+        monthlyCallsAverage: periodCallsAverage,
+        monthlySchedulingsAverage: periodSchedulingsAverage,
+        monthlyNoShowRate: periodNoShowRate,
         
         // Dados gerais
-        totalSDRs: sdrData.length,
-        averageSchedulingsPerSDR: sdrData.length > 0 ? Math.round((monthlyTotals.schedulings / sdrData.length) * 100) / 100 : 0,
+        totalSDRs: sdrIds.length,
+        averageSchedulingsPerSDR: sdrIds.length > 0 ? Math.round((periodTotals.schedulings / sdrIds.length) * 100) / 100 : 0,
         sdrPerformance,
-        weeklyData
+        weeklyData: chartData
       };
       
       setData(finalData);
@@ -268,62 +292,70 @@ export const usePreSalesData = (sharedUserId?: string) => {
       setError('Erro ao carregar dados de pré-vendas');
       
       // Em caso de erro, usar dados mock
-      const mockData = generateMockData();
+      const mockData = generateMockData(filters);
       setData(mockData);
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
+  }, [userId, filters]);
 
   // Função para gerar dados mock como fallback
-  const generateMockData = () => {
+  const generateMockData = (filters?: PreSalesFilters) => {
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-    const businessDaysInMonth = getBusinessDaysInMonth(currentYear, currentMonth);
     
-    const monthlyData = [];
-    let daysAdded = 0;
-    let currentDay = 0;
+    // Definir período para mock
+    let startDate: Date;
+    let endDate: Date;
     
-    // Gerar 30 dias úteis de dados mock
-    while (daysAdded < 30) {
-      const date = new Date();
-      date.setDate(date.getDate() - currentDay);
-      
+    if (filters?.startDate && filters?.endDate) {
+      startDate = filters.startDate;
+      endDate = filters.endDate;
+    } else {
+      startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    }
+    
+    const businessDaysInPeriod = getBusinessDaysInPeriod(startDate, endDate);
+    
+    const mockChartData = [];
+    const currentMockDate = new Date(startDate);
+    
+    // Gerar dados mock para o período selecionado
+    let totalCalls = 0;
+    let totalSchedulings = 0;
+    let totalNoShow = 0;
+    
+    while (currentMockDate <= endDate) {
       // Pular fins de semana
-      if (date.getDay() !== 0 && date.getDay() !== 6) {
-        const dayName = date.toLocaleDateString('pt-BR', { 
-          day: '2-digit', 
-          month: '2-digit',
-          timeZone: 'America/Sao_Paulo'
-        });
-        
+      if (currentMockDate.getDay() !== 0 && currentMockDate.getDay() !== 6) {
         const baseCalls = Math.floor(Math.random() * 15) + 30;
         const schedulings = Math.floor(baseCalls * (0.15 + Math.random() * 0.10));
         const noShow = schedulings > 0 ? Math.floor(schedulings * (Math.random() * 0.2)) : 0;
         
-        monthlyData.unshift({
-          date: dayName,
+        totalCalls += baseCalls;
+        totalSchedulings += schedulings;
+        totalNoShow += noShow;
+        
+        mockChartData.push({
+          date: currentMockDate.toLocaleDateString('pt-BR', { 
+            day: '2-digit', 
+            month: '2-digit',
+            timeZone: 'America/Sao_Paulo'
+          }),
           calls: baseCalls,
           schedulings: schedulings,
           noShow: noShow
         });
-        
-        daysAdded++;
       }
-      currentDay++;
+      currentMockDate.setDate(currentMockDate.getDate() + 1);
     }
     
-    const todayData = monthlyData[monthlyData.length - 1] || { calls: 0, schedulings: 0, noShow: 0 };
-    const totalCalls = monthlyData.reduce((sum, day) => sum + day.calls, 0);
-    const totalSchedulings = monthlyData.reduce((sum, day) => sum + day.schedulings, 0);
-    const totalNoShow = monthlyData.reduce((sum, day) => sum + day.noShow, 0);
+    const todayData = mockChartData[mockChartData.length - 1] || { calls: 0, schedulings: 0, noShow: 0 };
     
-    // Calcular médias mensais
-    const monthlyCallsAverage = businessDaysInMonth > 0 ? Math.round((totalCalls / businessDaysInMonth) * 100) / 100 : 0;
-    const monthlySchedulingsAverage = businessDaysInMonth > 0 ? Math.round((totalSchedulings / businessDaysInMonth) * 100) / 100 : 0;
-    const monthlyNoShowRate = totalSchedulings > 0 ? Math.round((totalNoShow / totalSchedulings) * 10000) / 100 : 0;
+    // Calcular médias do período
+    const periodCallsAverage = businessDaysInPeriod > 0 ? Math.round((totalCalls / businessDaysInPeriod) * 100) / 100 : 0;
+    const periodSchedulingsAverage = businessDaysInPeriod > 0 ? Math.round((totalSchedulings / businessDaysInPeriod) * 100) / 100 : 0;
+    const periodNoShowRate = totalSchedulings > 0 ? Math.round((totalNoShow / totalSchedulings) * 10000) / 100 : 0;
     
     return {
       dailyCalls: todayData.calls,
@@ -333,10 +365,10 @@ export const usePreSalesData = (sharedUserId?: string) => {
       dailyNoShow: todayData.noShow,
       dailyNoShowRate: todayData.schedulings > 0 ? (todayData.noShow / todayData.schedulings) * 100 : 0,
       
-      // Novos dados mensais
-      monthlyCallsAverage,
-      monthlySchedulingsAverage,
-      monthlyNoShowRate,
+      // Dados do período
+      monthlyCallsAverage: periodCallsAverage,
+      monthlySchedulingsAverage: periodSchedulingsAverage,
+      monthlyNoShowRate: periodNoShowRate,
       
       totalSDRs: 1,
       averageSchedulingsPerSDR: totalSchedulings,
@@ -349,7 +381,7 @@ export const usePreSalesData = (sharedUserId?: string) => {
           conversionRate: totalCalls > 0 ? Math.round((totalSchedulings / totalCalls) * 10000) / 100 : 0
         }
       ],
-      weeklyData: monthlyData
+      weeklyData: mockChartData
     };
   };
 
