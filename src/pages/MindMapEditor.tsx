@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import MindMapCanvas from '@/components/mind-maps/MindMapCanvas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Save, Share2 } from 'lucide-react';
+import { ArrowLeft, Share2 } from 'lucide-react';
 
 const MindMapEditor = () => {
   const { id } = useParams<{ id: string }>();
@@ -159,6 +159,7 @@ const MindMapEditor = () => {
           initialContent={mindMap.content}
           onSave={handleSave}
           isSaving={isSaving}
+          mindMapId={mindMap.id}
         />
       </div>
     </div>
