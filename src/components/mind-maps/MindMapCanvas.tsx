@@ -13,7 +13,8 @@ import {
   useEdgesState,
   addEdge,
   BackgroundVariant,
-  Panel
+  Panel,
+  NodeProps
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -28,7 +29,7 @@ import AlignmentToolbar from './components/AlignmentToolbar';
 import ZoomControls from './components/ZoomControls';
 
 // Define the data interface for our mind map nodes
-interface MindMapNodeData {
+interface MindMapNodeData extends Record<string, unknown> {
   label: string;
   color?: string;
   notes?: string;
@@ -119,7 +120,7 @@ const MindMapCanvas = ({
           .filter(edge => edge.source === node.id)
           .map(edge => edge.target)
           .every(childId => !hiddenNodes.has(childId))
-      }
+      } as MindMapNodeData
     }));
     setNodes(convertedNodes);
   }, [initialContent.nodes, mindMapId, edges, hiddenNodes]);
@@ -139,7 +140,7 @@ const MindMapCanvas = ({
         onToggleVisibility: handleToggleVisibility,
         onReconnect: handleReconnectNode,
         onChangeColor: handleChangeNodeColor
-      }
+      } as MindMapNodeData
     };
     setNodes((prev) => [...prev, newNode]);
     setIsAddingNode(false);
@@ -171,7 +172,7 @@ const MindMapCanvas = ({
         onToggleVisibility: handleToggleVisibility,
         onReconnect: handleReconnectNode,
         onChangeColor: handleChangeNodeColor
-      }
+      } as MindMapNodeData
     };
     setNodes((prev) => [...prev, newNode]);
     setEdges((prev) => [...prev, {
@@ -193,7 +194,7 @@ const MindMapCanvas = ({
   const handleChangeNodeColor = useCallback((nodeId: string, color: string) => {
     setNodes((prev) => prev.map(node => 
       node.id === nodeId 
-        ? { ...node, data: { ...node.data, color } }
+        ? { ...node, data: { ...node.data, color } as MindMapNodeData }
         : node
     ));
   }, [setNodes]);
@@ -430,7 +431,7 @@ const MindMapCanvas = ({
         onAddNode={handleAddNode}
         onUpdateNodeLabel={(nodeId, label) => {
           setNodes((prev) => prev.map(node => 
-            node.id === nodeId ? { ...node, data: { ...node.data, label } } : node
+            node.id === nodeId ? { ...node, data: { ...node.data, label } as MindMapNodeData } : node
           ));
           setEditingNode(null);
         }}

@@ -23,7 +23,7 @@ import {
 import NodeNotesDialog from './NodeNotesDialog';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
 
-interface MindMapNodeData {
+interface MindMapNodeData extends Record<string, unknown> {
   label: string;
   color?: string;
   notes?: string;
@@ -150,7 +150,7 @@ const MindMapNode = ({
               {data?.mindMapId && (
                 <NodeAttachmentsDialog
                   nodeId={id}
-                  mindMapId={data.mindMapId}
+                  mindMapId={data.mindMapId as string}
                   attachments={data?.attachments || []}
                   onUpdateAttachments={handleUpdateAttachments}
                 />
@@ -242,7 +242,7 @@ const MindMapNode = ({
         isOpen={showNotes}
         onClose={() => setShowNotes(false)}
         nodeId={id}
-        initialNotes={data?.notes || ''}
+        initialNotes={data?.notes as string || ''}
         onSave={handleUpdateNotes}
       />
     </>
