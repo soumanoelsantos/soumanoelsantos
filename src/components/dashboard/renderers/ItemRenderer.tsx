@@ -18,9 +18,17 @@ interface ItemRendererProps {
   itemKey: string;
   config: DashboardConfig;
   selectedProductId?: string | null;
+  isPublicView?: boolean;
+  sharedUserId?: string;
 }
 
-export const ItemRenderer: React.FC<ItemRendererProps> = ({ itemKey, config, selectedProductId }) => {
+export const ItemRenderer: React.FC<ItemRendererProps> = ({ 
+  itemKey, 
+  config, 
+  selectedProductId,
+  isPublicView = false,
+  sharedUserId
+}) => {
   console.log('🔍 [DEBUG] ItemRenderer - Rendering item:', itemKey);
 
   // GRÁFICOS COMERCIAIS - renderizar diretamente
