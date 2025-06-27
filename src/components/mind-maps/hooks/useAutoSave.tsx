@@ -1,36 +1,76 @@
 
-import { useEffect, useRef } from 'react';
-import { MindMapNode, MindMapEdge } from '../types/canvasTypes';
+import { useEffect, useRef, useCallback } from 'react';
+import { MindMapContent } from '@/types/mindMap';
 
-export interface UseAutoSaveProps {
-  nodes: MindMapNode[];
-  edges: MindMapEdge[];
-  onSave: (content: { nodes: MindMapNode[]; edges: MindMapEdge[] }) => void;
+interface UseAutoSaveProps {
+  content: MindMapContent;
+  onSave: (content: MindMapContent) => Promise<void>;
   delay?: number;
+  enabled?: boolean;
 }
 
-export const useAutoSave = ({ nodes, edges, onSave, delay = 2000 }: UseAutoSaveProps) => {
+export const useAutoSave = ({ 
+  content, 
+  onSave, 
+  delay = 2000, 
+  enabled = true 
+}: UseAutoSaveProps) => {
   const timeoutRef = useRef<NodeJS.Timeout>();
   const lastSavedRef = useRef<string>('');
+  const isSavingRef = useRef(false);
+
+  const saveContent = useCallback(async () => {
+    if (isSavingRef.current) return;
+    
+    try {
+      isSavingRef.current = true;
+      await onSave(content);
+      lastSavedRef.current = JSON.stringify(content);
+      console.log('Conteúdo salvo automaticamente');
+    } catch (error) {
+      console.error('Erro no salvamento automático:', error);
+    } finally {
+      isSavingRef.current = false;
+    }
+  }, [content, onSave]);
 
   useEffect(() => {
-    const currentState = JSON.stringify({ nodes, edges });
-    
-    if (currentState !== lastSavedRef.current) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+    if (!enabled) return;
 
-      timeoutRef.current = setTimeout(() => {
-        onSave({ nodes, edges });
-        lastSavedRef.current = currentState;
-      }, delay);
+    const currentContent = JSON.stringify(content);
+    
+    // Não salvar se o conteúdo não mudou
+    if (currentContent === lastSavedRef.current) return;
+    
+    // Não salvar se está vazio (apenas nó central padrão)
+    if (content.nodes.length <= 1 && content.edges.length === 0) {
+      lastSavedRef.current = currentContent;
+      return;
     }
+
+    // Limpar timeout anterior
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Definir novo timeout para salvar
+    timeoutRef.current = setTimeout(() => {
+      saveContent();
+    }, delay);
 
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [nodes, edges, onSave, delay]);
+  }, [content, delay, enabled, saveContent]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 };

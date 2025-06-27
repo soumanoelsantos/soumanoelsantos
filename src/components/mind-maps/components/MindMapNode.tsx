@@ -1,231 +1,229 @@
 
-import React, { useState, useCallback } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { 
-  MoreHorizontal, 
-  Edit, 
-  Trash2, 
-  Plus, 
-  Eye, 
-  EyeOff, 
-  FileText,
-  Move3D,
-  Palette
-} from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import NodeNotesDialog from './NodeNotesDialog';
+import { Card, CardContent } from '@/components/ui/card';
+import { Edit2, Trash2, Eye, EyeOff, Network, NotebookPen, Plus, Paperclip } from 'lucide-react';
+import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
-import { MindMapNodeData } from '../types/canvasTypes';
 
-const MindMapNode = ({ id, data }: NodeProps<MindMapNodeData>) => {
-  const [showNotes, setShowNotes] = useState(false);
+interface MindMapNodeProps {
+  node: MindMapNodeType;
+  isSelected: boolean;
+  isDragged: boolean;
+  hasChildNodes: boolean;
+  hasHiddenDirectChildren: boolean;
+  onMouseDown: (e: React.MouseEvent) => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
+  onClick: (e: React.MouseEvent) => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onToggleConnections: () => void;
+  onChangeType: () => void;
+  onOpenNotes: () => void;
+  onAddChild: () => void;
+  onReconnect?: () => void;
+  onUpdateNodeAttachments?: (attachments: any[]) => void;
+}
 
-  const handleEditClick = useCallback(() => {
-    if (data?.onEdit) {
-      data.onEdit(id);
+const MindMapNode = ({
+  node,
+  isSelected,
+  isDragged,
+  hasChildNodes,
+  hasHiddenDirectChildren,
+  onMouseDown,
+  onTouchStart,
+  onClick,
+  onEdit,
+  onDelete,
+  onToggleConnections,
+  onChangeType,
+  onOpenNotes,
+  onAddChild,
+  onReconnect,
+  onUpdateNodeAttachments
+}: MindMapNodeProps) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only start dragging if not clicking on buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
     }
-  }, [id, data]);
-
-  const handleDeleteClick = useCallback(() => {
-    if (data?.onDelete) {
-      data.onDelete(id);
-    }
-  }, [id, data]);
-
-  const handleAddChildClick = useCallback(() => {
-    if (data?.onAddChild) {
-      data.onAddChild(id);
-    }
-  }, [id, data]);
-
-  const handleToggleVisibilityClick = useCallback(() => {
-    if (data?.onToggleVisibility) {
-      data.onToggleVisibility(id);
-    }
-  }, [id, data]);
-
-  const handleReconnectClick = useCallback(() => {
-    if (data?.onReconnect) {
-      data.onReconnect(id);
-    }
-  }, [id, data]);
-
-  const handleColorChange = useCallback((color: string) => {
-    if (data?.onChangeColor) {
-      data.onChangeColor(id, color);
-    }
-  }, [id, data]);
-
-  const handleUpdateNotes = useCallback((notes: string) => {
-    console.log('Notes updated for node:', id, notes);
-  }, [id]);
-
-  const handleUpdateAttachments = useCallback((attachments: any[]) => {
-    console.log('Attachments updated for node:', id, attachments);
-  }, [id]);
-
-  const nodeStyle = {
-    backgroundColor: data?.color || '#ffffff',
-    borderColor: data?.color ? `${data.color}80` : '#e5e7eb',
+    onMouseDown(e);
   };
 
-  const colors = [
-    '#ffffff', // White
-    '#fef3c7', // Light yellow
-    '#dbeafe', // Light blue
-    '#dcfce7', // Light green
-    '#fce7f3', // Light pink
-    '#f3e8ff', // Light purple
-    '#fed7d7', // Light red
-    '#e0f2fe', // Light cyan
-  ];
+  const handleTouchStart = (e: React.TouchEvent) => {
+    // Only start dragging if not touching buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    if (onTouchStart) {
+      onTouchStart(e);
+    }
+  };
+
+  const hasNotes = node.data.notes && node.data.notes.trim().length > 0;
+  const hasAttachments = node.data.attachments && node.data.attachments.length > 0;
 
   return (
-    <>
-      <div 
-        className="group relative bg-white border-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 min-w-[200px] max-w-[300px]"
-        style={nodeStyle}
-      >
-        <Handle
-          type="target"
-          position={Position.Top}
-          className="!w-3 !h-3 !bg-blue-500 !border-2 !border-white"
-        />
-        
-        <div className="p-3">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900 break-words leading-tight">
-                {data?.label || 'New Node'}
-              </div>
-              {data?.notes && (
-                <div className="text-xs text-gray-500 mt-1 line-clamp-2">
-                  {data.notes}
-                </div>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              {/* Notes Button */}
+    <div
+      className={`absolute select-none group ${
+        isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
+      } ${isDragged ? 'z-50 scale-105' : 'z-10'} transition-all duration-200`}
+      style={{
+        left: node.position.x,
+        top: node.position.y,
+        transform: 'translate(-50%, -50%)',
+        cursor: isDragged ? 'grabbing' : 'grab',
+        zIndex: isDragged ? 1000 : 100
+      }}
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+      onClick={onClick}
+    >
+      <Card className={`min-w-[120px] max-w-[200px] shadow-lg hover:shadow-xl transition-all relative ${
+        isSelected ? 'border-blue-500 bg-blue-50' : 'bg-white'
+      } ${isDragged ? 'shadow-2xl' : ''}`}>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: node.data.color }}
+              />
               <Button
                 size="sm"
                 variant="ghost"
                 className={`h-5 w-5 p-0 hover:bg-gray-100 ${
-                  data?.notes ? 'text-orange-600' : 'text-gray-400'
+                  hasNotes ? 'text-blue-600' : 'text-gray-400'
                 }`}
-                onClick={() => setShowNotes(true)}
-                title={data?.notes ? "View notes" : "Add notes"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenNotes();
+                }}
+                title={hasNotes ? "Ver/Editar notas" : "Adicionar notas"}
               >
-                <FileText className="h-3 w-3" />
+                <NotebookPen className="h-3 w-3" />
               </Button>
-
-              {/* Attachments Button */}
-              {data?.mindMapId && (
+              
+              {onUpdateNodeAttachments && (
                 <NodeAttachmentsDialog
-                  nodeId={id}
-                  mindMapId={data.mindMapId}
-                  attachments={data?.attachments || []}
-                  onUpdateAttachments={handleUpdateAttachments}
+                  attachments={node.data.attachments || []}
+                  onUpdateAttachments={(attachments) => onUpdateNodeAttachments(attachments)}
                 />
               )}
-
-              {/* Options menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-5 w-5 p-0 hover:bg-gray-100"
-                  >
-                    <MoreHorizontal className="h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={handleEditClick}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit text
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleAddChildClick}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add child
-                  </DropdownMenuItem>
-                  {data?.hasChildren && (
-                    <DropdownMenuItem onClick={handleToggleVisibilityClick}>
-                      {data?.childrenVisible ? (
-                        <>
-                          <EyeOff className="h-4 w-4 mr-2" />
-                          Hide children
-                        </>
-                      ) : (
-                        <>
-                          <Eye className="h-4 w-4 mr-2" />
-                          Show children
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={handleReconnectClick}>
-                    <Move3D className="h-4 w-4 mr-2" />
-                    Reconnect
-                  </DropdownMenuItem>
-                  
-                  {/* Color submenu */}
-                  <DropdownMenuSeparator />
-                  <div className="px-2 py-1">
-                    <div className="text-xs text-gray-500 mb-2 flex items-center">
-                      <Palette className="h-3 w-3 mr-1" />
-                      Node color
-                    </div>
-                    <div className="grid grid-cols-4 gap-1">
-                      {colors.map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => handleColorChange(color)}
-                          className="w-6 h-6 rounded border-2 border-gray-200 hover:border-gray-400 transition-colors"
-                          style={{ backgroundColor: color }}
-                          title={color === '#ffffff' ? 'White' : color}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={handleDeleteClick}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Remove node
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
+            {hasChildNodes && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 hover:bg-gray-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleConnections();
+                }}
+                title={hasHiddenDirectChildren ? "Mostrar próximo nível" : "Ocultar filhos diretos"}
+              >
+                {hasHiddenDirectChildren ? (
+                  <Eye className="h-3 w-3" />
+                ) : (
+                  <EyeOff className="h-3 w-3" />
+                )}
+              </Button>
+            )}
           </div>
-        </div>
+          
+          <div className="text-sm font-medium text-center break-words pointer-events-none mb-2">
+            {node.data.label}
+          </div>
+          
+          {/* Indicadores de conteúdo */}
+          {(hasAttachments || hasNotes) && (
+            <div className="flex justify-center gap-1 mb-2">
+              {hasAttachments && (
+                <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-1 py-0.5 rounded">
+                  <Paperclip className="h-2 w-2" />
+                  <span>{node.data.attachments!.length}</span>
+                </div>
+              )}
+              {hasNotes && (
+                <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-1 py-0.5 rounded">
+                  <NotebookPen className="h-2 w-2" />
+                </div>
+              )}
+            </div>
+          )}
+          
+          {isSelected && (
+            <div className="flex gap-1 flex-wrap">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit();
+                }}
+                title="Editar nó"
+                className="h-6 px-2 text-xs"
+              >
+                <Edit2 className="h-3 w-3" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeType();
+                }}
+                title="Alterar tipo do nó"
+                className="h-6 px-2 text-xs"
+              >
+                <Network className="h-3 w-3" />
+              </Button>
+              {onReconnect && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onReconnect();
+                  }}
+                  title="Reconectar nó"
+                  className="h-6 px-2 text-xs"
+                >
+                  <Network className="h-3 w-3" />
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                title="Excluir nó"
+                className="h-6 px-2 text-xs"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          className="!w-3 !h-3 !bg-blue-500 !border-2 !border-white"
-        />
-      </div>
-
-      {/* Notes Dialog */}
-      <NodeNotesDialog
-        isOpen={showNotes}
-        onClose={() => setShowNotes(false)}
-        nodeId={id}
-        nodes={[]}
-        onUpdateNotes={handleUpdateNotes}
-      />
-    </>
+      {/* Add Child Button - appears on hover */}
+      <Button
+        size="sm"
+        variant="default"
+        className="absolute -bottom-2 -right-2 h-6 w-6 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+        onClick={(e) => {
+          e.stopPropagation();
+          onAddChild();
+        }}
+        title="Adicionar nó filho"
+      >
+        <Plus className="h-3 w-3" />
+      </Button>
+    </div>
   );
 };
 

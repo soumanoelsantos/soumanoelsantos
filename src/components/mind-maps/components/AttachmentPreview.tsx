@@ -1,88 +1,45 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { FileText, Image, Video } from 'lucide-react';
 import { MindMapAttachment } from '@/types/mindMap';
 import { useToast } from '@/hooks/use-toast';
-import { mindMapAttachmentsService } from '@/services/mindMapAttachmentsService';
 
 interface AttachmentPreviewProps {
   attachment: MindMapAttachment;
-  fileDataMap: Map<string, { file: File; url: string }>; // Mantido para compatibilidade
-  onClose?: () => void;
+  fileDataMap: Map<string, { file: File; url: string }>;
 }
 
-const AttachmentPreview = ({ attachment, fileDataMap, onClose }: AttachmentPreviewProps) => {
+const AttachmentPreview = ({ attachment, fileDataMap }: AttachmentPreviewProps) => {
   const { toast } = useToast();
-  const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
-  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
 
-  const getAttachmentUrl = async (attachment: MindMapAttachment): Promise<string | null> => {
-    // Primeiro tenta obter da memória (para anexos recém-adicionados)
+  const getAttachmentUrl = (attachment: MindMapAttachment): string | null => {
     const fileData = fileDataMap.get(attachment.id);
-    if (fileData) {
-      return fileData.url;
-    }
-
-    // Se não encontrou em memória, busca do storage
-    if (attachment.url && attachment.url.startsWith('blob:')) {
-      // URL em memória, retorna direto
-      return attachment.url;
-    }
-
-    try {
-      setIsLoadingUrl(true);
-      // Para anexos salvos no banco, precisamos obter a URL do storage
-      // Como não temos o storage_path aqui, vamos usar a URL que já vem do banco
-      return attachment.url || null;
-    } catch (error) {
-      console.error('Erro ao obter URL do anexo:', error);
-      return null;
-    } finally {
-      setIsLoadingUrl(false);
-    }
+    return fileData ? fileData.url : attachment.url;
   };
 
-  // Carregar URL do anexo quando componente montar
+  // Auto-open PDFs when component mounts
   useEffect(() => {
-    const loadUrl = async () => {
-      const url = await getAttachmentUrl(attachment);
-      setAttachmentUrl(url);
-    };
-    
-    loadUrl();
-  }, [attachment]);
-
-  // Auto-open PDFs quando componente monta e fecha dialog
-  useEffect(() => {
-    if (attachment.type === 'pdf' && attachmentUrl) {
-      try {
-        window.open(attachmentUrl, '_blank');
-        // Close the dialog immediately after opening PDF
-        if (onClose) {
-          onClose();
+    if (attachment.type === 'pdf') {
+      const url = getAttachmentUrl(attachment);
+      if (url) {
+        try {
+          window.open(url, '_blank');
+        } catch (error) {
+          console.error('Erro ao abrir PDF:', error);
+          toast({
+            variant: "destructive",
+            title: "Erro ao abrir arquivo",
+            description: "Não foi possível abrir o PDF."
+          });
         }
-      } catch (error) {
-        console.error('Erro ao abrir PDF:', error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao abrir arquivo",
-          description: "Não foi possível abrir o PDF."
-        });
       }
     }
-  }, [attachment, attachmentUrl, toast, onClose]);
+  }, [attachment, fileDataMap, toast]);
 
   const renderPreview = (attachment: MindMapAttachment) => {
-    if (isLoadingUrl) {
-      return (
-        <div className="text-center p-8 bg-gray-50 rounded-lg">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando preview...</p>
-        </div>
-      );
-    }
-
-    if (!attachmentUrl) {
+    const url = getAttachmentUrl(attachment);
+    
+    if (!url) {
       return (
         <div className="text-center p-8 bg-gray-50 rounded-lg">
           <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
@@ -97,7 +54,7 @@ const AttachmentPreview = ({ attachment, fileDataMap, onClose }: AttachmentPrevi
         return (
           <div className="max-w-full max-h-96 overflow-hidden rounded-lg">
             <img 
-              src={attachmentUrl} 
+              src={url} 
               alt={attachment.name}
               className="w-full h-auto object-contain"
               onError={(e) => {
@@ -124,14 +81,19 @@ const AttachmentPreview = ({ attachment, fileDataMap, onClose }: AttachmentPrevi
                 console.log('Vídeo carregado com sucesso:', attachment.name);
               }}
             >
-              <source src={attachmentUrl} />
+              <source src={url} />
               Seu navegador não suporta reprodução de vídeo.
             </video>
           </div>
         );
       case 'pdf':
-        // For PDFs, don't render anything since they open directly
-        return null;
+        return (
+          <div className="text-center p-8 bg-gray-50 rounded-lg">
+            <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-600">PDF aberto em nova aba</p>
+            <p className="text-sm text-gray-500 mt-2">O arquivo foi aberto automaticamente</p>
+          </div>
+        );
       default:
         return (
           <div className="text-center p-8 bg-gray-50 rounded-lg">

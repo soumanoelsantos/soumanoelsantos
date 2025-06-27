@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import MindMapCanvas from '@/components/mind-maps/MindMapCanvas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Share2 } from 'lucide-react';
+import { ArrowLeft, Save, Share2 } from 'lucide-react';
 
 const SharedMindMap = () => {
   const { shareToken } = useParams<{ shareToken: string }>();
@@ -161,7 +161,6 @@ const SharedMindMap = () => {
           initialContent={mindMap.content}
           onSave={handleSave}
           isSaving={isSaving}
-          mindMapId={mindMap.id}
         />
       </div>
     </div>
