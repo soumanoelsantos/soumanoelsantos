@@ -90,12 +90,12 @@ const ReconnectNodeDialog = ({
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Novo pai (deixe vazio para nó raiz):</label>
-            <Select value={selectedParentId || ''} onValueChange={(value) => setSelectedParentId(value || null)}>
+            <Select value={selectedParentId || 'root'} onValueChange={(value) => setSelectedParentId(value === 'root' ? null : value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um nó pai ou deixe vazio" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Nenhum (nó raiz)</SelectItem>
+                <SelectItem value="root">Nenhum (nó raiz)</SelectItem>
                 {availableParents.map(node => (
                   <SelectItem key={node.id} value={node.id}>
                     {node.data.label}
