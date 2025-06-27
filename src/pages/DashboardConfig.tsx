@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -152,22 +151,36 @@ const DashboardConfig = () => {
       <ConfigHeader onSave={handleSave} isLoading={isSaving} />
       
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="comercial" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+        <Tabs defaultValue="geral" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsTrigger value="geral">Geral</TabsTrigger>
             <TabsTrigger value="comercial">Comercial</TabsTrigger>
             <TabsTrigger value="pre-vendas">Pré-vendas</TabsTrigger>
             <TabsTrigger value="produto">Produto</TabsTrigger>
             <TabsTrigger value="controle-abas">Controle de Abas</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="comercial" className="space-y-6">
+          <TabsContent value="geral" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Coluna da esquerda - Comercial */}
+              {/* Coluna da esquerda - Configurações Gerais */}
               <div className="space-y-6">
                 <GeneralConfigCard 
                   config={config} 
                   onConfigChange={handleConfigChange} 
                 />
+              </div>
+              
+              {/* Coluna da direita - Gerenciamento do Time */}
+              <div className="space-y-6">
+                <SellersManagementCard />
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="comercial" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Coluna da esquerda - Comercial */}
+              <div className="space-y-6">
                 <MetricsConfigCard 
                   config={config} 
                   onConfigChange={handleConfigChange} 
@@ -185,7 +198,6 @@ const DashboardConfig = () => {
                   config={config} 
                   onConfigChange={handleConfigChange} 
                 />
-                <SellersManagementCard />
               </div>
             </div>
           </TabsContent>
