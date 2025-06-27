@@ -1,7 +1,7 @@
 
 import { Node, Edge, NodeProps } from '@xyflow/react';
 
-export interface MindMapNodeData extends Record<string, unknown> {
+export interface MindMapNodeData {
   label: string;
   color?: string;
   notes?: string;

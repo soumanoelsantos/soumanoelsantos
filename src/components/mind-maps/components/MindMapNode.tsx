@@ -72,7 +72,7 @@ const MindMapNode = ({ id, data }: NodeProps<MindMapNodeData>) => {
   }, [id]);
 
   const nodeStyle = {
-    backgroundColor: (data?.color as string) || '#ffffff',
+    backgroundColor: data?.color || '#ffffff',
     borderColor: data?.color ? `${data.color}80` : '#e5e7eb',
   };
 
@@ -107,7 +107,7 @@ const MindMapNode = ({ id, data }: NodeProps<MindMapNodeData>) => {
               </div>
               {data?.notes && (
                 <div className="text-xs text-gray-500 mt-1 line-clamp-2">
-                  {data.notes as string}
+                  {data.notes}
                 </div>
               )}
             </div>
@@ -130,8 +130,8 @@ const MindMapNode = ({ id, data }: NodeProps<MindMapNodeData>) => {
               {data?.mindMapId && (
                 <NodeAttachmentsDialog
                   nodeId={id}
-                  mindMapId={data.mindMapId as string}
-                  attachments={(data?.attachments as any[]) || []}
+                  mindMapId={data.mindMapId}
+                  attachments={data?.attachments || []}
                   onUpdateAttachments={handleUpdateAttachments}
                 />
               )}
@@ -222,8 +222,8 @@ const MindMapNode = ({ id, data }: NodeProps<MindMapNodeData>) => {
         isOpen={showNotes}
         onClose={() => setShowNotes(false)}
         nodeId={id}
-        initialNotes={(data?.notes as string) || ''}
-        onSave={handleUpdateNotes}
+        nodes={[]}
+        onUpdateNotes={handleUpdateNotes}
       />
     </>
   );

@@ -1,41 +1,36 @@
 
 import { useEffect, useRef } from 'react';
-import { MindMapContent } from '@/types/mindMap';
+import { MindMapNode, MindMapEdge } from '../types/canvasTypes';
 
 export interface UseAutoSaveProps {
-  content: MindMapContent;
-  onSave: (content: MindMapContent) => void;
+  nodes: MindMapNode[];
+  edges: MindMapEdge[];
+  onSave: (content: { nodes: MindMapNode[]; edges: MindMapEdge[] }) => void;
   delay?: number;
 }
 
-export const useAutoSave = ({ content, onSave, delay = 2000 }: UseAutoSaveProps) => {
+export const useAutoSave = ({ nodes, edges, onSave, delay = 2000 }: UseAutoSaveProps) => {
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const lastSavedRef = useRef<string>('');
 
   useEffect(() => {
-    // Clear existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+    const currentState = JSON.stringify({ nodes, edges });
+    
+    if (currentState !== lastSavedRef.current) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        onSave({ nodes, edges });
+        lastSavedRef.current = currentState;
+      }, delay);
     }
 
-    // Set new timeout
-    timeoutRef.current = setTimeout(() => {
-      onSave(content);
-    }, delay);
-
-    // Cleanup on unmount
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [content, onSave, delay]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+  }, [nodes, edges, onSave, delay]);
 };
