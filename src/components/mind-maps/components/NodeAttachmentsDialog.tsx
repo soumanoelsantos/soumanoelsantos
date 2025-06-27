@@ -182,15 +182,6 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
                 console.log('Imagem carregada com sucesso:', attachment.name);
               }}
             />
-            <div className="mt-4 text-center">
-              <Button 
-                onClick={() => handleDownloadAttachment(attachment)}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Baixar Imagem
-              </Button>
-            </div>
           </div>
         );
       case 'video':
@@ -210,15 +201,6 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
               <source src={url} />
               Seu navegador não suporta reprodução de vídeo.
             </video>
-            <div className="mt-4 text-center">
-              <Button 
-                onClick={() => handleDownloadAttachment(attachment)}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Baixar Vídeo
-              </Button>
-            </div>
           </div>
         );
       case 'pdf':
@@ -226,32 +208,22 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
           <div className="text-center p-8 bg-gray-50 rounded-lg">
             <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-600 mb-4">Preview de PDF</p>
-            <div className="space-y-2">
-              <Button 
-                onClick={() => {
-                  try {
-                    window.open(url, '_blank');
-                  } catch (error) {
-                    console.error('Erro ao abrir PDF:', error);
-                    toast({
-                      variant: "destructive",
-                      title: "Erro ao abrir arquivo",
-                      description: "Não foi possível abrir o PDF."
-                    });
-                  }
-                }}
-                className="mr-2"
-              >
-                Abrir PDF
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={() => handleDownloadAttachment(attachment)}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Baixar PDF
-              </Button>
-            </div>
+            <Button 
+              onClick={() => {
+                try {
+                  window.open(url, '_blank');
+                } catch (error) {
+                  console.error('Erro ao abrir PDF:', error);
+                  toast({
+                    variant: "destructive",
+                    title: "Erro ao abrir arquivo",
+                    description: "Não foi possível abrir o PDF."
+                  });
+                }
+              }}
+            >
+              Abrir PDF
+            </Button>
           </div>
         );
       default:
@@ -259,15 +231,6 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
           <div className="text-center p-8 bg-gray-50 rounded-lg">
             <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-600">Tipo de arquivo não suportado para preview</p>
-            <div className="mt-4">
-              <Button 
-                onClick={() => handleDownloadAttachment(attachment)}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Baixar Arquivo
-              </Button>
-            </div>
           </div>
         );
     }
