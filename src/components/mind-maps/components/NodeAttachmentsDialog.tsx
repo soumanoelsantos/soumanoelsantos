@@ -18,6 +18,7 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [previewAttachment, setPreviewAttachment] = useState<MindMapAttachment | null>(null);
+  const [fileData, setFileData] = useState<Map<string, File>>(new Map());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -27,20 +28,24 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
     setIsUploading(true);
     
     try {
-      // Simular upload (em produção, usar Supabase Storage)
+      // Criar URL temporário para o arquivo
       const url = URL.createObjectURL(file);
       
       let type: 'pdf' | 'image' | 'video' = 'pdf';
       if (file.type.startsWith('image/')) type = 'image';
       else if (file.type.startsWith('video/')) type = 'video';
       
+      const attachmentId = Date.now().toString();
       const newAttachment: MindMapAttachment = {
-        id: Date.now().toString(),
+        id: attachmentId,
         type,
         name: file.name,
         url,
         size: file.size
       };
+      
+      // Armazenar o arquivo original para download posterior
+      setFileData(prev => new Map(prev).set(attachmentId, file));
       
       onUpdateAttachments([...attachments, newAttachment]);
       
@@ -49,6 +54,7 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
         description: `${file.name} foi adicionado ao nó.`
       });
     } catch (error) {
+      console.error('Erro ao anexar arquivo:', error);
       toast({
         variant: "destructive",
         title: "Erro ao anexar arquivo",
@@ -60,6 +66,21 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
   };
 
   const handleRemoveAttachment = (attachmentId: string) => {
+    const attachment = attachments.find(att => att.id === attachmentId);
+    if (attachment) {
+      // Limpar URL do blob se existir
+      if (attachment.url.startsWith('blob:')) {
+        URL.revokeObjectURL(attachment.url);
+      }
+      
+      // Remover dados do arquivo
+      setFileData(prev => {
+        const newMap = new Map(prev);
+        newMap.delete(attachmentId);
+        return newMap;
+      });
+    }
+    
     const updatedAttachments = attachments.filter(att => att.id !== attachmentId);
     onUpdateAttachments(updatedAttachments);
     
@@ -71,32 +92,58 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
 
   const handleDownloadAttachment = async (attachment: MindMapAttachment) => {
     try {
-      const response = await fetch(attachment.url);
-      const blob = await response.blob();
+      console.log('Iniciando download para anexo:', attachment.name);
       
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = attachment.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Verificar se temos o arquivo original armazenado
+      const originalFile = fileData.get(attachment.id);
+      
+      if (originalFile) {
+        console.log('Usando arquivo original para download');
+        // Usar o arquivo original se disponível
+        const url = URL.createObjectURL(originalFile);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = attachment.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        console.log('Tentando download via fetch da URL:', attachment.url);
+        // Tentar fazer fetch da URL (pode não funcionar para blobs expirados)
+        const response = await fetch(attachment.url);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = attachment.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
       
       toast({
         title: "Download iniciado!",
         description: `${attachment.name} foi baixado com sucesso.`
       });
     } catch (error) {
+      console.error('Erro ao baixar arquivo:', error);
       toast({
         variant: "destructive",
         title: "Erro ao baixar arquivo",
-        description: "Não foi possível baixar o arquivo."
+        description: "Não foi possível baixar o arquivo. O arquivo pode ter expirado."
       });
     }
   };
 
   const handlePreview = (attachment: MindMapAttachment) => {
+    console.log('Abrindo preview para:', attachment.name);
     setPreviewAttachment(attachment);
   };
 
@@ -117,6 +164,19 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
   };
 
   const renderPreview = (attachment: MindMapAttachment) => {
+    // Verificar se o URL ainda é válido
+    const isValidUrl = attachment.url && !attachment.url.includes('blob:') || fileData.has(attachment.id);
+    
+    if (!isValidUrl) {
+      return (
+        <div className="text-center p-8 bg-gray-50 rounded-lg">
+          <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+          <p className="text-gray-600">Preview não disponível</p>
+          <p className="text-sm text-gray-500 mt-2">O arquivo pode ter expirado</p>
+        </div>
+      );
+    }
+
     switch (attachment.type) {
       case 'image':
         return (
@@ -125,6 +185,10 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
               src={attachment.url} 
               alt={attachment.name}
               className="w-full h-auto object-contain"
+              onError={(e) => {
+                console.error('Erro ao carregar imagem:', e);
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </div>
         );
@@ -135,6 +199,9 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
               controls 
               className="w-full h-auto"
               preload="metadata"
+              onError={(e) => {
+                console.error('Erro ao carregar vídeo:', e);
+              }}
             >
               <source src={attachment.url} />
               Seu navegador não suporta reprodução de vídeo.
@@ -147,7 +214,18 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
             <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-600">Preview de PDF não disponível</p>
             <Button 
-              onClick={() => window.open(attachment.url, '_blank')}
+              onClick={() => {
+                try {
+                  window.open(attachment.url, '_blank');
+                } catch (error) {
+                  console.error('Erro ao abrir PDF:', error);
+                  toast({
+                    variant: "destructive",
+                    title: "Erro ao abrir arquivo",
+                    description: "Não foi possível abrir o PDF."
+                  });
+                }
+              }}
               className="mt-4"
             >
               Abrir PDF
@@ -158,6 +236,17 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
         return null;
     }
   };
+
+  // Cleanup URLs quando o componente for desmontado
+  React.useEffect(() => {
+    return () => {
+      attachments.forEach(attachment => {
+        if (attachment.url.startsWith('blob:')) {
+          URL.revokeObjectURL(attachment.url);
+        }
+      });
+    };
+  }, [attachments]);
 
   return (
     <>
@@ -240,6 +329,10 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
                             src={attachment.url} 
                             alt={attachment.name}
                             className="w-full h-auto object-cover"
+                            onError={(e) => {
+                              console.error('Erro ao carregar preview da imagem');
+                              e.currentTarget.style.display = 'none';
+                            }}
                           />
                         </div>
                       )}
@@ -274,6 +367,8 @@ const NodeAttachmentsDialog = ({ attachments, onUpdateAttachments }: NodeAttachm
                     const file = e.target.files?.[0];
                     if (file) {
                       handleFileUpload(file);
+                      // Limpar o input após o upload
+                      e.target.value = '';
                     }
                   }}
                   disabled={isUploading}
