@@ -20,7 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MindMapNode as MindMapNodeType } from '@/types/mindMap';
 import NodeNotesDialog from './NodeNotesDialog';
 import NodeAttachmentsDialog from './NodeAttachmentsDialog';
 
@@ -83,13 +82,13 @@ const MindMapNode = ({
   }, [id, data.onChangeColor]);
 
   const handleUpdateNotes = useCallback((notes: string) => {
-    // As notas são atualizadas através do callback que já existe
-    console.log('Notas atualizadas para o nó:', id, notes);
+    // Notes are updated through the callback that already exists
+    console.log('Notes updated for node:', id, notes);
   }, [id]);
 
   const handleUpdateAttachments = useCallback((attachments: any[]) => {
-    // Os anexos são atualizados através do callback que já existe
-    console.log('Anexos atualizados para o nó:', id, attachments);
+    // Attachments are updated through the callback that already exists
+    console.log('Attachments updated for node:', id, attachments);
   }, [id]);
 
   const nodeStyle = {
@@ -98,14 +97,14 @@ const MindMapNode = ({
   };
 
   const colors = [
-    '#ffffff', // Branco
-    '#fef3c7', // Amarelo claro
-    '#dbeafe', // Azul claro
-    '#dcfce7', // Verde claro
-    '#fce7f3', // Rosa claro
-    '#f3e8ff', // Roxo claro
-    '#fed7d7', // Vermelho claro
-    '#e0f2fe', // Ciano claro
+    '#ffffff', // White
+    '#fef3c7', // Light yellow
+    '#dbeafe', // Light blue
+    '#dcfce7', // Light green
+    '#fce7f3', // Light pink
+    '#f3e8ff', // Light purple
+    '#fed7d7', // Light red
+    '#e0f2fe', // Light cyan
   ];
 
   return (
@@ -134,7 +133,7 @@ const MindMapNode = ({
             </div>
             
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              {/* Botão de Notas */}
+              {/* Notes Button */}
               <Button
                 size="sm"
                 variant="ghost"
@@ -142,12 +141,12 @@ const MindMapNode = ({
                   data.notes ? 'text-orange-600' : 'text-gray-400'
                 }`}
                 onClick={() => setShowNotes(true)}
-                title={data.notes ? "Ver notas" : "Adicionar notas"}
+                title={data.notes ? "View notes" : "Add notes"}
               >
                 <FileText className="h-3 w-3" />
               </Button>
 
-              {/* Botão de Anexos */}
+              {/* Attachments Button */}
               {data.mindMapId && (
                 <NodeAttachmentsDialog
                   nodeId={id}
@@ -157,7 +156,7 @@ const MindMapNode = ({
                 />
               )}
 
-              {/* Menu de opções */}
+              {/* Options menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -171,38 +170,38 @@ const MindMapNode = ({
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem onClick={handleEditClick}>
                     <Edit className="h-4 w-4 mr-2" />
-                    Editar texto
+                    Edit text
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleAddChildClick}>
                     <Plus className="h-4 w-4 mr-2" />
-                    Adicionar filho
+                    Add child
                   </DropdownMenuItem>
                   {data.hasChildren && (
                     <DropdownMenuItem onClick={handleToggleVisibilityClick}>
                       {data.childrenVisible ? (
                         <>
                           <EyeOff className="h-4 w-4 mr-2" />
-                          Ocultar filhos
+                          Hide children
                         </>
                       ) : (
                         <>
                           <Eye className="h-4 w-4 mr-2" />
-                          Mostrar filhos
+                          Show children
                         </>
                       )}
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={handleReconnectClick}>
                     <Move3D className="h-4 w-4 mr-2" />
-                    Reconectar
+                    Reconnect
                   </DropdownMenuItem>
                   
-                  {/* Submenu de cores */}
+                  {/* Color submenu */}
                   <DropdownMenuSeparator />
                   <div className="px-2 py-1">
                     <div className="text-xs text-gray-500 mb-2 flex items-center">
                       <Palette className="h-3 w-3 mr-1" />
-                      Cor do nó
+                      Node color
                     </div>
                     <div className="grid grid-cols-4 gap-1">
                       {colors.map((color) => (
@@ -211,7 +210,7 @@ const MindMapNode = ({
                           onClick={() => handleColorChange(color)}
                           className="w-6 h-6 rounded border-2 border-gray-200 hover:border-gray-400 transition-colors"
                           style={{ backgroundColor: color }}
-                          title={color === '#ffffff' ? 'Branco' : color}
+                          title={color === '#ffffff' ? 'White' : color}
                         />
                       ))}
                     </div>
@@ -223,7 +222,7 @@ const MindMapNode = ({
                     className="text-red-600 hover:text-red-700"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Remover nó
+                    Remove node
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -238,7 +237,7 @@ const MindMapNode = ({
         />
       </div>
 
-      {/* Dialog de Notas */}
+      {/* Notes Dialog */}
       <NodeNotesDialog
         isOpen={showNotes}
         onClose={() => setShowNotes(false)}

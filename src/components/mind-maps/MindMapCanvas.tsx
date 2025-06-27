@@ -18,12 +18,8 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import { MindMapContent, MindMapNode as MindMapNodeType, MindMapEdge } from '@/types/mindMap';
-import { useMindMapState } from './hooks/useMindMapState';
-import { useNodeOperations } from './hooks/useNodeOperations';
 import { useAutoSave } from './hooks/useAutoSave';
 import { usePanAndZoom } from './hooks/usePanAndZoom';
-import { useMultipleSelection } from './hooks/useMultipleSelection';
-import { useCanvasInteractions } from './hooks/useCanvasInteractions';
 
 import MindMapNode from './components/MindMapNode';
 import MindMapToolbar from './components/MindMapToolbar';
@@ -31,7 +27,7 @@ import DialogManager from './components/DialogManager';
 import AlignmentToolbar from './components/AlignmentToolbar';
 import ZoomControls from './components/ZoomControls';
 
-// Definir tipos de nós customizados
+// Define custom node types for ReactFlow
 const nodeTypes: NodeTypes = {
   default: MindMapNode,
 };
@@ -52,40 +48,13 @@ const MindMapCanvas = ({
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
   
-  // Estados do mapa mental usando hooks nativos do ReactFlow
+  // Use ReactFlow's native state management
   const [nodes, setNodes, onNodesChange] = useNodesState(initialContent.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialContent.edges);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
 
-  // Operações com nós
-  const nodeOperations = useNodeOperations({
-    nodes,
-    edges,
-    setNodes,
-    setEdges,
-    selectedNode,
-    hiddenNodes,
-    setHiddenNodes
-  });
-
-  // Auto-save
-  useAutoSave({
-    nodes,
-    edges,
-    onSave: async (content) => {
-      onSave(content);
-    },
-    delay: 2000
-  });
-
-  // Pan e Zoom
-  const panAndZoom = usePanAndZoom(reactFlowInstance);
-
-  // Seleção múltipla
-  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
-  
-  // Estados para diálogos
+  // Dialog states
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showReconnectDialog, setShowReconnectDialog] = useState(false);
@@ -93,9 +62,19 @@ const MindMapCanvas = ({
   const [reconnectingNode, setReconnectingNode] = useState<MindMapNodeType | null>(null);
   const [availableParents, setAvailableParents] = useState<MindMapNodeType[]>([]);
 
-  // Handlers para diálogos
+  // Auto-save functionality
+  useAutoSave({
+    content: { nodes, edges },
+    onSave,
+    delay: 2000
+  });
+
+  // Pan and zoom functionality
+  const panAndZoom = usePanAndZoom(reactFlowInstance);
+
+  // Node operation handlers
   const handleAddNode = useCallback((label: string) => {
-    const newNode: MindMapNodeType = {
+    const newNode: Node = {
       id: Date.now().toString(),
       type: 'default',
       position: { x: Math.random() * 400, y: Math.random() * 400 },
@@ -108,7 +87,7 @@ const MindMapCanvas = ({
   const handleEditNode = useCallback((nodeId: string, label: string) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
-      setEditingNode(node);
+      setEditingNode(node as MindMapNodeType);
       setShowEditDialog(true);
     }
   }, [nodes]);
@@ -119,7 +98,7 @@ const MindMapCanvas = ({
   }, [setNodes, setEdges]);
 
   const handleAddChildNode = useCallback((parentId: string) => {
-    const newNode: MindMapNodeType = {
+    const newNode: Node = {
       id: Date.now().toString(),
       type: 'default',
       position: { x: Math.random() * 400, y: Math.random() * 400 },
@@ -136,8 +115,8 @@ const MindMapCanvas = ({
   const handleReconnectNode = useCallback((nodeId: string) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
-      setReconnectingNode(node);
-      setAvailableParents(nodes.filter(n => n.id !== nodeId));
+      setReconnectingNode(node as MindMapNodeType);
+      setAvailableParents(nodes.filter(n => n.id !== nodeId) as MindMapNodeType[]);
       setShowReconnectDialog(true);
     }
   }, [nodes]);
@@ -150,16 +129,35 @@ const MindMapCanvas = ({
     ));
   }, [setNodes]);
 
-  // Filtrar nós visíveis
-  const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
+  const handleToggleVisibility = useCallback((nodeId: string) => {
+    const getDirectChildren = (parentId: string): string[] => {
+      return edges.filter(edge => edge.source === parentId).map(edge => edge.target);
+    };
 
-  // Filtrar edges visíveis
+    const children = getDirectChildren(nodeId);
+    const allHidden = children.every(childId => hiddenNodes.has(childId));
+    
+    setHiddenNodes(prev => {
+      const newSet = new Set(prev);
+      if (allHidden) {
+        // Show all children
+        children.forEach(childId => newSet.delete(childId));
+      } else {
+        // Hide all children
+        children.forEach(childId => newSet.add(childId));
+      }
+      return newSet;
+    });
+  }, [edges, hiddenNodes]);
+
+  // Filter visible nodes and edges
+  const visibleNodes = nodes.filter(node => !hiddenNodes.has(node.id));
   const visibleEdges = edges.filter(edge => 
     !hiddenNodes.has(edge.source) && !hiddenNodes.has(edge.target)
   );
 
-  // Converter para formato ReactFlow
-  const reactFlowNodes: Node[] = visibleNodes.map(node => ({
+  // Prepare nodes with enhanced data
+  const enhancedNodes: Node[] = visibleNodes.map(node => ({
     ...node,
     data: {
       ...node.data,
@@ -167,17 +165,18 @@ const MindMapCanvas = ({
       onEdit: handleEditNode,
       onDelete: handleDeleteNode,
       onAddChild: handleAddChildNode,
-      onToggleVisibility: nodeOperations.toggleNodeVisibility,
+      onToggleVisibility: handleToggleVisibility,
       onReconnect: handleReconnectNode,
       onChangeColor: handleChangeNodeColor,
-      hasChildren: nodeOperations.getDirectChildren(node.id).length > 0,
-      childrenVisible: nodeOperations.getDirectChildren(node.id).every(childId => !hiddenNodes.has(childId))
+      hasChildren: edges.some(edge => edge.source === node.id),
+      childrenVisible: edges
+        .filter(edge => edge.source === node.id)
+        .map(edge => edge.target)
+        .every(childId => !hiddenNodes.has(childId))
     }
   }));
 
-  const reactFlowEdges: Edge[] = visibleEdges;
-
-  // Handlers para ReactFlow
+  // ReactFlow event handlers
   const onConnect = useCallback((params: Connection) => {
     if (params.source && params.target) {
       setEdges((eds) => addEdge(params, eds));
@@ -190,14 +189,79 @@ const MindMapCanvas = ({
 
   const onPaneClick = useCallback(() => {
     setSelectedNode(null);
-    setSelectedNodes([]);
   }, []);
+
+  // Alignment operations
+  const alignNodesHorizontally = useCallback(() => {
+    if (!selectedNode) return;
+    const selectedNodeObj = nodes.find(n => n.id === selectedNode);
+    if (!selectedNodeObj) return;
+    
+    setNodes(prev => prev.map(node => 
+      node.id === selectedNode ? node : { ...node, position: { ...node.position, y: selectedNodeObj.position.y } }
+    ));
+  }, [selectedNode, nodes, setNodes]);
+
+  const alignNodesVertically = useCallback(() => {
+    if (!selectedNode) return;
+    const selectedNodeObj = nodes.find(n => n.id === selectedNode);
+    if (!selectedNodeObj) return;
+    
+    setNodes(prev => prev.map(node => 
+      node.id === selectedNode ? node : { ...node, position: { ...node.position, x: selectedNodeObj.position.x } }
+    ));
+  }, [selectedNode, nodes, setNodes]);
+
+  const distributeNodesHorizontally = useCallback(() => {
+    // Simple distribution logic
+    const selectedNodes = nodes.filter(n => n.id === selectedNode);
+    if (selectedNodes.length < 2) return;
+    
+    const sortedNodes = [...selectedNodes].sort((a, b) => a.position.x - b.position.x);
+    const totalWidth = sortedNodes[sortedNodes.length - 1].position.x - sortedNodes[0].position.x;
+    const spacing = totalWidth / (sortedNodes.length - 1);
+    
+    setNodes(prev => prev.map(node => {
+      const index = sortedNodes.findIndex(n => n.id === node.id);
+      if (index === -1) return node;
+      return { ...node, position: { ...node.position, x: sortedNodes[0].position.x + index * spacing } };
+    }));
+  }, [selectedNode, nodes, setNodes]);
+
+  const distributeNodesVertically = useCallback(() => {
+    // Simple distribution logic
+    const selectedNodes = nodes.filter(n => n.id === selectedNode);
+    if (selectedNodes.length < 2) return;
+    
+    const sortedNodes = [...selectedNodes].sort((a, b) => a.position.y - b.position.y);
+    const totalHeight = sortedNodes[sortedNodes.length - 1].position.y - sortedNodes[0].position.y;
+    const spacing = totalHeight / (sortedNodes.length - 1);
+    
+    setNodes(prev => prev.map(node => {
+      const index = sortedNodes.findIndex(n => n.id === node.id);
+      if (index === -1) return node;
+      return { ...node, position: { ...node.position, y: sortedNodes[0].position.y + index * spacing } };
+    }));
+  }, [selectedNode, nodes, setNodes]);
+
+  const arrangeInGrid = useCallback(() => {
+    const cols = Math.ceil(Math.sqrt(nodes.length));
+    const spacing = 200;
+    
+    setNodes(prev => prev.map((node, index) => ({
+      ...node,
+      position: {
+        x: (index % cols) * spacing,
+        y: Math.floor(index / cols) * spacing
+      }
+    })));
+  }, [nodes.length, setNodes]);
 
   return (
     <div className="w-full h-full relative" ref={reactFlowWrapper}>
       <ReactFlow
-        nodes={reactFlowNodes}
-        edges={reactFlowEdges}
+        nodes={enhancedNodes}
+        edges={visibleEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -249,7 +313,7 @@ const MindMapCanvas = ({
             zoomLevel={panAndZoom.zoomLevel}
             onZoomIn={panAndZoom.zoomIn}
             onZoomOut={panAndZoom.zoomOut}
-            onZoomReset={panAndZoom.resetZoom}
+            onResetZoom={panAndZoom.resetZoom}
             onFitView={() => reactFlowInstance?.fitView()}
           />
         </Panel>
@@ -258,11 +322,13 @@ const MindMapCanvas = ({
         {selectedNode && (
           <Panel position="bottom-center">
             <AlignmentToolbar
-              onAlignHorizontally={nodeOperations.alignNodesHorizontally}
-              onAlignVertically={nodeOperations.alignNodesVertically}
-              onDistributeHorizontally={nodeOperations.distributeNodesHorizontally}
-              onDistributeVertically={nodeOperations.distributeNodesVertically}
-              onArrangeInGrid={nodeOperations.arrangeInGrid}
+              selectedNodes={selectedNode ? [selectedNode] : []}
+              onAlignHorizontally={alignNodesHorizontally}
+              onAlignVertically={alignNodesVertically}
+              onDistributeHorizontally={distributeNodesHorizontally}
+              onDistributeVertically={distributeNodesVertically}
+              onArrangeInGrid={arrangeInGrid}
+              onClose={() => setSelectedNode(null)}
             />
           </Panel>
         )}
@@ -287,9 +353,9 @@ const MindMapCanvas = ({
           setShowEditDialog(false);
         }}
         onReconnectNode={(nodeId, newParentId) => {
-          // Remover conexões antigas
+          // Remove old connections
           setEdges(prev => prev.filter(e => e.target !== nodeId));
-          // Adicionar nova conexão
+          // Add new connection
           setEdges(prev => [...prev, {
             id: `${newParentId}-${nodeId}`,
             source: newParentId,
