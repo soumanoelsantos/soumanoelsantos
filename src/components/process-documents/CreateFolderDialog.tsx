@@ -5,20 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { CreateFolderData } from '@/types/processDocuments';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CreateFolderData, ProcessFolder } from '@/types/processDocuments';
 import { useProcessDocuments } from '@/hooks/useProcessDocuments';
 
 interface CreateFolderDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  parentFolderId?: string; // Para criar subpastas
+  folders?: ProcessFolder[]; // Lista de pastas para seleção
 }
 
-const CreateFolderDialog = ({ isOpen, onClose }: CreateFolderDialogProps) => {
+const CreateFolderDialog = ({ isOpen, onClose, parentFolderId, folders = [] }: CreateFolderDialogProps) => {
   const { createFolder } = useProcessDocuments();
   const [formData, setFormData] = useState<CreateFolderData>({
     name: '',
     description: '',
     is_public: false,
+    parent_folder_id: parentFolderId,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,6 +37,7 @@ const CreateFolderDialog = ({ isOpen, onClose }: CreateFolderDialogProps) => {
         name: '',
         description: '',
         is_public: false,
+        parent_folder_id: parentFolderId,
       });
       onClose();
     } catch (error) {
@@ -48,6 +53,7 @@ const CreateFolderDialog = ({ isOpen, onClose }: CreateFolderDialogProps) => {
         name: '',
         description: '',
         is_public: false,
+        parent_folder_id: parentFolderId,
       });
       onClose();
     }
@@ -57,7 +63,9 @@ const CreateFolderDialog = ({ isOpen, onClose }: CreateFolderDialogProps) => {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Criar Nova Pasta</DialogTitle>
+          <DialogTitle>
+            {parentFolderId ? 'Criar Subpasta' : 'Criar Nova Pasta'}
+          </DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -81,6 +89,31 @@ const CreateFolderDialog = ({ isOpen, onClose }: CreateFolderDialogProps) => {
               placeholder="Descrição da pasta"
             />
           </div>
+
+          {!parentFolderId && folders.length > 0 && (
+            <div>
+              <Label htmlFor="parent_folder">Pasta Pai (Opcional)</Label>
+              <Select
+                value={formData.parent_folder_id || ''}
+                onValueChange={(value) => setFormData(prev => ({ 
+                  ...prev, 
+                  parent_folder_id: value || undefined 
+                }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione uma pasta pai" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Nenhuma (pasta raiz)</SelectItem>
+                  {folders.map((folder) => (
+                    <SelectItem key={folder.id} value={folder.id}>
+                      {folder.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="flex items-center space-x-2">
             <Switch

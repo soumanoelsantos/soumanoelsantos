@@ -27,19 +27,39 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
     setFiles(prev => [...prev, ...acceptedFiles]);
   }, []);
 
+  // Remover limite de tamanho e aceitar mais tipos de arquivo
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'application/vnd.ms-excel': ['.xls'],
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+      'application/vnd.ms-powerpoint': ['.ppt'],
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
       'text/plain': ['.txt'],
-      'image/*': ['.png', '.jpg', '.jpeg']
-    }
+      'text/csv': ['.csv'],
+      'application/zip': ['.zip'],
+      'application/x-rar-compressed': ['.rar'],
+      'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'],
+      'video/*': ['.mp4', '.avi', '.mov', '.wmv'],
+      'audio/*': ['.mp3', '.wav', '.ogg']
+    },
+    // Remover maxSize para permitir arquivos de qualquer tamanho
+    // maxSize: undefined
   });
 
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const handleUpload = async () => {
@@ -59,33 +79,8 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
     setIsUploading(true);
 
     try {
-      // Primeiro, criar o bucket se não existir
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const bucketExists = buckets?.some(bucket => bucket.name === 'process-files');
-      
-      if (!bucketExists) {
-        console.log('Creating process-files bucket...');
-        const { error: bucketError } = await supabase.storage.createBucket('process-files', {
-          public: true,
-          allowedMimeTypes: [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'text/plain',
-            'image/png',
-            'image/jpeg',
-            'image/jpg'
-          ]
-        });
-        
-        if (bucketError) {
-          console.error('Error creating bucket:', bucketError);
-          // Continue anyway, bucket might exist but not be listed
-        }
-      }
-
       const uploadPromises = files.map(async (file) => {
-        console.log('Processing file:', file.name);
+        console.log('Processing file:', file.name, 'Size:', formatFileSize(file.size));
         
         // Generate unique filename
         const fileExt = file.name.split('.').pop();
@@ -114,7 +109,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
           user_id: userId,
           title: file.name.replace(/\.[^/.]+$/, ''), // Remove file extension
           content: `Arquivo: ${file.name}`,
-          description: `Arquivo enviado: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
+          description: `Arquivo enviado: ${file.name} (${formatFileSize(file.size)})`,
           category: 'arquivo',
           folder_id: folderId,
           is_public: false,
@@ -191,7 +186,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
                   Arraste e solte arquivos aqui ou clique para selecionar
                 </p>
                 <p className="text-sm text-gray-500">
-                  Suporte: PDF, DOC, DOCX, TXT, PNG, JPG
+                  Suporte: Todos os tipos de arquivo • Sem limite de tamanho
                 </p>
               </div>
             )}
@@ -207,7 +202,7 @@ const FileUploadDialog = ({ isOpen, onClose, folderId, onUploadSuccess }: FileUp
                       <File className="h-4 w-4" />
                       <span className="text-sm">{file.name}</span>
                       <span className="text-xs text-gray-500">
-                        ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                        ({formatFileSize(file.size)})
                       </span>
                     </div>
                     <Button

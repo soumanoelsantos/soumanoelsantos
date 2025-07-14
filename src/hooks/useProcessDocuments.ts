@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -198,6 +199,21 @@ export const useProcessDocuments = () => {
     if (!userId) throw new Error('Usuário não autenticado');
 
     try {
+      // First, check if there are subfolders and update their parent_folder_id
+      const { data: subfolders } = await supabase
+        .from('process_folders')
+        .select('id')
+        .eq('parent_folder_id', id);
+
+      if (subfolders && subfolders.length > 0) {
+        // Set parent_folder_id to null for all subfolders
+        await supabase
+          .from('process_folders')
+          .update({ parent_folder_id: null })
+          .eq('parent_folder_id', id);
+      }
+
+      // Delete the folder
       const { error } = await supabase
         .from('process_folders')
         .delete()
