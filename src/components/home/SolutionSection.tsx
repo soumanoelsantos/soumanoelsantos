@@ -64,7 +64,7 @@ const SolutionSection = () => {
               <div className="grid md:grid-cols-2 gap-8 mb-8">
                 <div className="bg-white/10 rounded-lg p-6">
                   <h4 className="text-xl font-bold text-dark-primary mb-4">Formação Acadêmica:</h4>
-                  <ul className="text-gray-300 space-y-2 text-left">
+                  <ul className="text-gray-300 space-y-2 text-center">
                     <li>• Mestrando em Administração de Empresas</li>
                     <li>• Pós-Graduação em Administração de Empresas</li>
                     <li>• Pós-Graduação em Marketing</li>
