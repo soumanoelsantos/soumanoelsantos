@@ -15,7 +15,7 @@ const HeroSection = () => {
 
       {/* Header bar */}
       <div className="bg-red-600 text-white text-center py-3 text-sm font-medium px-4 relative z-10">
-        Deixe-me ser o DIRETOR DE VENDAS do seu time comercial, treinar e acompanhar seus vendedores para bater meta todos os meses!
+        🚀 TRANSFORMAÇÃO EMPRESARIAL • MAIS DE 500 EMPRESAS JÁ TRANSFORMADAS • RESULTADOS COMPROVADOS 🚀
       </div>
 
       <div className="container mx-auto px-4 relative z-10 pt-12 lg:pt-20">
@@ -23,6 +23,12 @@ const HeroSection = () => {
           
           {/* Content Section */}
           <div className="w-full space-y-6 text-center">
+            <div className="mb-6">
+              <p className="text-lg sm:text-xl text-dark-primary font-bold mb-4">
+                Deixe-me ser o DIRETOR DE VENDAS do seu time comercial, treinar e acompanhar seus vendedores para bater meta todos os meses!
+              </p>
+            </div>
+            
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white">
               Está difícil fazer sua <span className="text-dark-primary">equipe comercial</span> performar como você espera?
             </h1>
@@ -32,7 +38,7 @@ const HeroSection = () => {
                 Se você quer mudar esse cenário, inscreva-se agora e marque uma conversa estratégica gratuita com nosso time. Vamos analisar seu negócio e mostrar caminhos reais para alavancar suas vendas.
               </p>
               
-              {/* Image Section - Moved here */}
+              {/* Image Section */}
               <div className="flex justify-center mb-6">
                 <div className="relative max-w-md">
                   <div className="bg-gradient-to-br from-dark-primary/20 to-transparent rounded-3xl p-8 backdrop-blur-sm border border-dark-primary/30">
