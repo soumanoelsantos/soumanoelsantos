@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar, TrendingUp } from "lucide-react";
@@ -15,7 +14,7 @@ const HeroSection = () => {
 
       {/* Header bar */}
       <div className="bg-red-600 text-white text-center py-3 text-sm font-medium px-4 relative z-10">
-        🚀 TRANSFORMAÇÃO EMPRESARIAL • MAIS DE 500 EMPRESAS JÁ TRANSFORMADAS • RESULTADOS COMPROVADOS 🚀
+        EXCLUSIVO PARA EMPRESÁRIOS QUE DESEJAM ALAVANCAR SUAS VENDAS E MELHORAR A GESTÃO DA SUA EMPRESA
       </div>
 
       <div className="container mx-auto px-4 relative z-10 pt-12 lg:pt-20">
