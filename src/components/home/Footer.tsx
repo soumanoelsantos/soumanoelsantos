@@ -7,8 +7,8 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-6">
-            <h3 className="text-2xl font-bold text-white mb-2">Acelerador Empresarial</h3>
-            <p className="text-gray-400">Transformando empresas, acelerando resultados</p>
+            <h3 className="text-2xl font-bold text-white mb-2">Diretor de Vendas</h3>
+            <p className="text-gray-400">Transformando equipes comerciais, acelerando vendas</p>
           </div>
           
           <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-6 text-sm text-gray-400">
@@ -24,7 +24,7 @@ const Footer = () => {
           </div>
           
           <div className="text-center text-sm text-gray-500 mb-4">
-            <p>© {new Date().getFullYear()} Manoel Santos - Acelerador Empresarial.</p>
+            <p>© {new Date().getFullYear()} Manoel Santos - Diretor de Vendas.</p>
             <p>Todos os direitos reservados.</p>
           </div>
           

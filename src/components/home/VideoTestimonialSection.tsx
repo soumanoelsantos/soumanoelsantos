@@ -10,7 +10,7 @@ const VideoTestimonialSection = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Veja o resultado de quem já participou do <span className="text-dark-primary">Acelerador Empresarial</span>
+              Veja o resultado de quem já está <span className="text-dark-primary">mudando o jogo!</span>
             </h2>
             <p className="text-xl text-gray-300">
               Depoimento real de empresário que transformou seu negócio
