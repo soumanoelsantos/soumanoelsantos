@@ -19,14 +19,24 @@ interface ActionShareDialogProps {
 const ActionShareDialog = ({ action, isOpen, onClose, onTogglePublic }: ActionShareDialogProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   
-  const shareUrl = action.is_public 
-    ? `${window.location.origin}/shared/action/${action.share_token}`
+  // Usar o share_token da ação para gerar o link
+  const shareUrl = action.is_public && action.share_token
+    ? `${window.location.origin}/shared/calendar/${action.share_token}`
     : '';
+
+  console.log('ActionShareDialog - Dados da ação:', {
+    id: action.id,
+    title: action.title,
+    is_public: action.is_public,
+    share_token: action.share_token,
+    shareUrl
+  });
 
   const handleTogglePublic = async (isPublic: boolean) => {
     setIsUpdating(true);
     try {
-      await onTogglePublic(action.id, isPublic);
+      const updatedAction = await onTogglePublic(action.id, isPublic);
+      console.log('Ação atualizada:', updatedAction);
       toast.success(isPublic ? 'Ação tornada pública' : 'Ação tornada privada');
     } catch (error) {
       console.error('Erro ao alterar visibilidade:', error);
@@ -39,6 +49,7 @@ const ActionShareDialog = ({ action, isOpen, onClose, onTogglePublic }: ActionSh
   const copyToClipboard = async () => {
     if (!shareUrl) return;
     
+    console.log('Copiando URL:', shareUrl);
     try {
       await navigator.clipboard.writeText(shareUrl);
       toast.success('Link copiado para a área de transferência');
@@ -50,6 +61,7 @@ const ActionShareDialog = ({ action, isOpen, onClose, onTogglePublic }: ActionSh
 
   const openInNewTab = () => {
     if (!shareUrl) return;
+    console.log('Abrindo URL em nova aba:', shareUrl);
     window.open(shareUrl, '_blank');
   };
 

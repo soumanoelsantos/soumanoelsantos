@@ -12,9 +12,11 @@ export const useSharedActionCalendar = (shareToken: string | undefined) => {
 
   useEffect(() => {
     if (shareToken) {
+      console.log('=== HOOK: useSharedActionCalendar ===');
+      console.log('ShareToken recebido:', shareToken);
       fetchSharedActions();
     } else {
-      console.log('Nenhum shareToken fornecido');
+      console.log('ERRO: Nenhum shareToken fornecido');
       setError('Token de compartilhamento não encontrado');
       setIsLoading(false);
     }
@@ -74,7 +76,8 @@ export const useSharedActionCalendar = (shareToken: string | undefined) => {
       // Log detalhado das ações encontradas
       console.log(`Encontradas ${actionsData?.length || 0} ações públicas`);
       if (actionsData && actionsData.length > 0) {
-        console.log('Primeira ação encontrada:', actionsData[0]);
+        console.log('Primeira ação encontrada:', JSON.stringify(actionsData[0], null, 2));
+        console.log('Todas as ações encontradas:', JSON.stringify(actionsData, null, 2));
       }
 
       // Transformar os dados para incluir status atualizado
@@ -92,10 +95,14 @@ export const useSharedActionCalendar = (shareToken: string | undefined) => {
       });
 
       console.log('Ações transformadas:', transformedActions.length);
+      console.log('Setando ações no estado...');
       setActions(transformedActions);
       
       if (transformedActions.length === 0) {
-        console.log('Nenhuma ação pública encontrada para este usuário');
+        console.log('AVISO: Nenhuma ação pública encontrada para este usuário');
+        console.log('Verifique se o usuário tem ações marcadas como públicas');
+      } else {
+        console.log('SUCESSO: Ações carregadas com sucesso');
       }
 
     } catch (error) {
