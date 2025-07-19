@@ -9,15 +9,28 @@ import SharedActionCalendarError from '@/components/action-calendar/shared/Share
 
 const SharedActionCalendar = () => {
   const { shareToken } = useParams();
+  console.log('SharedActionCalendar renderizado com shareToken:', shareToken);
+  
   const { actions, isLoading, error, ownerName } = useSharedActionCalendar(shareToken);
 
+  console.log('Estado atual:', { 
+    actionsCount: actions.length, 
+    isLoading, 
+    error, 
+    ownerName 
+  });
+
   if (isLoading) {
+    console.log('Mostrando tela de loading...');
     return <SharedActionCalendarLoading />;
   }
 
   if (error) {
+    console.log('Mostrando tela de erro:', error);
     return <SharedActionCalendarError error={error} />;
   }
+
+  console.log('Renderizando calendário com', actions.length, 'ações');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">

@@ -13,14 +13,23 @@ export const useSharedActionCalendar = (shareToken: string | undefined) => {
   useEffect(() => {
     if (shareToken) {
       fetchSharedActions();
+    } else {
+      console.log('Nenhum shareToken fornecido');
+      setError('Token de compartilhamento não encontrado');
+      setIsLoading(false);
     }
   }, [shareToken]);
 
   const fetchSharedActions = async () => {
     try {
-      console.log('Buscando calendário compartilhado com token:', shareToken);
+      console.log('=== INICIANDO BUSCA DO CALENDÁRIO COMPARTILHADO ===');
+      console.log('Token recebido:', shareToken);
       
+      setIsLoading(true);
+      setError(null);
+
       // Primeiro, verificar se o token é válido e o compartilhamento está ativo
+      console.log('Passo 1: Buscando configuração do dashboard...');
       const { data: configData, error: configError } = await supabase
         .from('dashboard_configs')
         .select('user_id, is_public, company_name')
@@ -28,34 +37,25 @@ export const useSharedActionCalendar = (shareToken: string | undefined) => {
         .eq('is_public', true)
         .maybeSingle();
 
-      console.log('Config data:', configData, 'Error:', configError);
+      console.log('Resultado da busca de config:', { configData, configError });
 
       if (configError) {
         console.error('Erro ao buscar configuração:', configError);
         setError('Erro ao verificar link de compartilhamento');
-        setIsLoading(false);
         return;
       }
 
       if (!configData) {
-        console.log('Configuração não encontrada ou compartilhamento não público');
+        console.log('Nenhuma configuração encontrada para o token:', shareToken);
         setError('Link de compartilhamento inválido ou expirado');
-        setIsLoading(false);
         return;
       }
 
+      console.log('Configuração encontrada:', configData);
       setOwnerName(configData.company_name || 'Empresa');
-      console.log('Usuário encontrado:', configData.user_id);
-
-      // Buscar todas as ações do usuário (independente de serem públicas ou não para debug)
-      const { data: allActionsData, error: allActionsError } = await supabase
-        .from('action_calendar')
-        .select('*')
-        .eq('user_id', configData.user_id);
-
-      console.log('Todas as ações do usuário:', allActionsData, 'Error:', allActionsError);
 
       // Buscar as ações públicas do usuário
+      console.log('Passo 2: Buscando ações públicas do usuário...', configData.user_id);
       const { data: actionsData, error: actionsError } = await supabase
         .from('action_calendar')
         .select('*')
@@ -63,13 +63,18 @@ export const useSharedActionCalendar = (shareToken: string | undefined) => {
         .eq('is_public', true)
         .order('due_date', { ascending: true });
 
-      console.log('Ações públicas:', actionsData, 'Error:', actionsError);
+      console.log('Resultado da busca de ações:', { actionsData, actionsError });
 
       if (actionsError) {
         console.error('Erro ao buscar ações:', actionsError);
         setError('Erro ao carregar ações');
-        setIsLoading(false);
         return;
+      }
+
+      // Log detalhado das ações encontradas
+      console.log(`Encontradas ${actionsData?.length || 0} ações públicas`);
+      if (actionsData && actionsData.length > 0) {
+        console.log('Primeira ação encontrada:', actionsData[0]);
       }
 
       // Transformar os dados para incluir status atualizado
@@ -86,13 +91,19 @@ export const useSharedActionCalendar = (shareToken: string | undefined) => {
         } as ActionCalendar;
       });
 
-      console.log('Ações transformadas:', transformedActions);
+      console.log('Ações transformadas:', transformedActions.length);
       setActions(transformedActions);
+      
+      if (transformedActions.length === 0) {
+        console.log('Nenhuma ação pública encontrada para este usuário');
+      }
+
     } catch (error) {
-      console.error('Erro ao buscar calendário compartilhado:', error);
+      console.error('Erro geral ao buscar calendário compartilhado:', error);
       setError('Erro ao carregar calendário');
     } finally {
       setIsLoading(false);
+      console.log('=== BUSCA FINALIZADA ===');
     }
   };
 
